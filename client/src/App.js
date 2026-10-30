@@ -49,27 +49,29 @@ export default function App() {
         </Col>
         <Col xs={0} md id='errorCol2'/>
       </Row>
-      <Routes>
-        {loggedIn ? (
-          <Container id='appContainer'>
-            <Route exact path='/' element={
-              <ProtectedUserRoute currentUser={currentUser}>
-                <Dashboard currentUser={currentUser}/>
-              </ProtectedUserRoute>
-            }/>
-            <Route path='/notepad' element={
-              <ProtectedUserRoute>
-                <NotePad/>
-              </ProtectedUserRoute>
-            }/>
-          </Container>
-        ):(
-          <Container id='appContainer'>
-            <Route exact path='/' element={<Login/>}/>
-            <Route path='/reg' element={<Register/>}/>
-          </Container>
-        )}
-      </Routes>
+      <Container id='appContainer'>
+        <Routes>
+          {loggedIn ? (
+            <>
+              <Route path='/' element={
+                <ProtectedUserRoute currentUser={currentUser}>
+                  <Dashboard currentUser={currentUser}/>
+                </ProtectedUserRoute>
+              }/>
+              <Route path='/notepad' element={
+                <ProtectedUserRoute currentUser={currentUser}>
+                  <NotePad/>
+                </ProtectedUserRoute>
+              }/>
+            </>
+          ):(
+            <>
+              <Route path='/' element={<Login/>}/>
+              <Route path='/reg' element={<Register/>}/>
+            </>
+          )}
+        </Routes>
+      </Container>
       </Container>
     </>
   )
