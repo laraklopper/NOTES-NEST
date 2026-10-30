@@ -3,18 +3,36 @@ import './App.css'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Bug } from 'lucide-react';
-import { Routes } from 'react-router-dom';
+import { Bug, GlobeOff} from 'lucide-react';
+import { Routes , Route} from 'react-router-dom';
+import ProtectedUserRoute from './protectedRoutes/ProtectedUserRoute';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import NotePad from './pages/NotePad';
 
 
 export default function App() {
   const [users, setUsers] = useState([])
   const [currentUser, setCurrentUser] = useState(null)
+  const [userData, setUserData] = useState({
+    username: '',
+    fullName: {
+      firstName: '',
+      lastName: ''
+    },
+    contactDetails: {
+      email: '',
+      phoneNumber: '',
+    },
+    dateOfBirth: '',
+    password: '',
+    admin: false
+  })
   const [loggedIn, setLoggedIn] = useState(false)
   const [error, setError] = useState(null)
   return (
     <>
-      <Container id='appContainer'>
          <Row id='globalErrorRow'>
          <Col xs={0} md id='errorCol1'/>
         <Col xs={12} md={8} id='globalErrorCol'>
@@ -30,9 +48,30 @@ export default function App() {
         <Col xs={0} md id='errorCol2'/>
       </Row>
       <Routes>
-        {loggedIn ? ():()}
+        {loggedIn ? (
+          <Container id='appContainer'>
+            <Route exact path='/' element={
+              <ProtectedUserRoute currentUser={currentUser}>
+                <Dashboard currentUser={currentUser}/>
+              </ProtectedUserRoute>
+            }/>
+            <Route path='/notepad' element={
+              <ProtectedUserRoute>
+                <NotePad currentUser={currentUser}/>
+              </ProtectedUserRoute>
+            }/>
+          </Container>
+        ):(
+          <Container id='appContainer'>
+            <Route exact path='/' element={<Login/>}/>
+            <Route path='/reg' element={<Register/>}/>
+          </Container>
+        )}
+        <Route path='*' element=<span id='pageNotFound'>
+<h2 id='pageNotFound-text'>404: Page Not Found </h2><GlobeOff fontSize={42} fontWeight={800} color='#470D09'/>
+        </span>
+      />
       </Routes>
-      </Container>
     </>
   )
 }
