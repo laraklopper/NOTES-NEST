@@ -3,7 +3,7 @@ import './App.css'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Bug, GlobeOff} from 'lucide-react';
+import { Bug} from 'lucide-react';
 import { Routes , Route} from 'react-router-dom';
 import ProtectedUserRoute from './protectedRoutes/ProtectedUserRoute';
 import Dashboard from './pages/Dashboard';
@@ -28,11 +28,13 @@ export default function App() {
     dateOfBirth: '',
     password: '',
     admin: false
+
   })
   const [loggedIn, setLoggedIn] = useState(false)
   const [error, setError] = useState(null)
   return (
     <>
+    <Container>
          <Row id='globalErrorRow'>
          <Col xs={0} md id='errorCol1'/>
         <Col xs={12} md={8} id='globalErrorCol'>
@@ -57,7 +59,7 @@ export default function App() {
             }/>
             <Route path='/notepad' element={
               <ProtectedUserRoute>
-                <NotePad currentUser={currentUser}/>
+                <NotePad/>
               </ProtectedUserRoute>
             }/>
           </Container>
@@ -67,11 +69,8 @@ export default function App() {
             <Route path='/reg' element={<Register/>}/>
           </Container>
         )}
-        <Route path='*' element=<span id='pageNotFound'>
-<h2 id='pageNotFound-text'>404: Page Not Found </h2><GlobeOff fontSize={42} fontWeight={800} color='#470D09'/>
-        </span>
-      />
       </Routes>
+      </Container>
     </>
   )
 }
