@@ -1,0 +1,28 @@
+#loginSection{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: goldenrod;
+}
+#loginPanal{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+#loginRow{
+        width: 100%;
+    margin: 0px;
+    padding: 0px
+}
+#loginDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100;
+    margin: 0px;
+    padding: 0px;
+}

@@ -1,22 +1,26 @@
 import React from 'react'
+import '../css/pagesCss/LoggedOut.css'
+import '../css/pagesCss/PageSetup.css'
 import MainHeader from '../components/MainHeader'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import LoginForm from '../components/LoginForm';
-export default function Login() {
+export default function Login({userData}) {
   return (
     <div>
         <MainHeader mainHeading={'LOGIN'}/>
-        <section>
+        <section id='loginSection'>
         <div id='loginPanal'>
-            <Row>
-        <Col/>
-        <Col xs={6}>
-            <div>
-                <LoginForm/>
+            <Row id='loginRow'>
+        <Col id='loginCol1'/>
+        <Col xs={6} id='loginCol'>
+            <div id='loginDiv'>
+                <LoginForm
+                    userData={userData}
+                />
             </div>
         </Col>
-        <Col/>
+        <Col id='loginCol2'/>
       </Row>
         </div>
             

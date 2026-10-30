@@ -22,3 +22,19 @@ padding: 0px 0px 0px 0px;
   width: 100%;
   height: 100%;
 }
+/* ========================= 
+Accessibility helpers 
+ ARIA : Accessible Rich Internet Applications
+ https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA
+/* ========================= */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

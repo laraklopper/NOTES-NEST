@@ -1,0 +1,67 @@
+
+/* FormSetup.css */
+#formHeadingBlock{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#formHeading{
+     font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    text-decoration: underline;
+    letter-spacing: 2px;
+    margin: 0px;
+    display: flex;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 0px;
+    text-transform: uppercase;
+}
+.inputDiv{
+  margin: 0px;
+  padding: 0px;
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+}
+/* ===============
+BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons
+====================== */
+/* BUTTONS */
+#showPasswrdBtn{
+    width: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Courier Prime", monospace;
+  font-size: 16px;
+   font-weight: 700;
+   text-transform: uppercase;
+   height: 40px;
+   margin: 0px;
+   padding: 0px;
+   border: solid 2px #323A42;
+}
+#clearFormBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 40px;
+    font-family: "Courier Prime", monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #000;
+    margin: 0px;
+    gap: 5px;
+    letter-spacing: 2px;
+    padding: 0px;
+    border: solid 2px #323A42;
+}
+#showPasswrdBtn:hover,
+#clearFormBtn:hover{
+    color: #E8F0F6;
+    background

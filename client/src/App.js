@@ -66,7 +66,9 @@ export default function App() {
             </>
           ):(
             <>
-              <Route path='/' element={<Login/>}/>
+              <Route path='/' element={<Login
+                userData={userData}
+              />}/>
               <Route path='/reg' element={<Register/>}/>
             </>
           )}

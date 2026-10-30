@@ -1,0 +1,15 @@
+#loginForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+#loginStack1,
+#loginStack2{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
