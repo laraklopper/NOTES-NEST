@@ -9,8 +9,12 @@ export default function ProtectedUserRoute(//Export default ProtectedUserRoute.j
         currentUser
     }
 ) {
+     // If no user is logged in,
+  // redirect to the login(landing) page.
     if (!currentUser) {
         return <Navigate to={'/'}/>
     }
+        // If a user is logged in,
+  // render the protected content.
     return children
 }
