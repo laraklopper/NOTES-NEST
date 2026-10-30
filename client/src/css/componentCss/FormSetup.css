@@ -27,11 +27,20 @@
   gap: 5px;
   align-items: baseline;
 }
+
+.input{
+    display: flex;
+    justify-content: center;
+    width: 200px;
+    border-radius: 5px;
+    height: 40px;
+    text-align: center;
+}
 /* ===============
 BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons
 ====================== */
 /* BUTTONS */
-#showPasswrdBtn{
+#showPswdBtn{
     width: 200px;
     display: flex;
     justify-content: center;

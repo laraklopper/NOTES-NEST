@@ -3,8 +3,10 @@
     flex-direction: column;
     align-items: center;
     margin: 0px;
-    padding: 0px;
-    width: 100%;
+    padding: 10px;
+    width: 500px;
+    background-color: #A8AEB3;
+    gap: 10px;
 }
 #loginStack1,
 #loginStack2{
@@ -12,4 +14,56 @@
     margin: 0px;
     padding: 0px;
     display: flex;
+}
+#loginFormInput{
+    width: 80%;
+    margin: 0px;
+    padding: 5px;
+     background-color: #BFBFBF;
+}
+#loginBlock1{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    gap: 5px;
+}
+#loginPswdBlock1,
+#loginPswdBlock2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    gap: 5px;
+}
+.loginLabel{
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 1px;
+  padding: 0px;
+}
+#pswdInputDiv{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#loginBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    font-family: "Roboto Mono", monospace;
+    width: 180px;
+    height: 40px;
+    font-size: 18px;
+    letter-spacing: 2px;
+    font-weight: 700;
+
 }

@@ -5,7 +5,7 @@ import MainHeader from '../components/MainHeader'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import LoginForm from '../components/LoginForm';
-export default function Login({userData}) {
+export default function Login({userData, setUserData}) {
   return (
     <div>
         <MainHeader mainHeading={'LOGIN'}/>
@@ -17,6 +17,7 @@ export default function Login({userData}) {
             <div id='loginDiv'>
                 <LoginForm
                     userData={userData}
+                    setUserData={setUserData}
                 />
             </div>
         </Col>
