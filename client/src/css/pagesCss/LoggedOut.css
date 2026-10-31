@@ -5,7 +5,7 @@
     width: 100%;
     margin: 0px;
     padding: 0px;
-    background-color: goldenrod;
+    background-color: #946E26;
 }
 #loginPanal{
     width: 100%;
@@ -24,5 +24,41 @@
     align-items: center;
     width: 100;
     margin: 0px;
+    padding: 0px;
+}
+#regisSection{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: #946E26;
+}
+#registrationBlock{
+    display: flex;
+    flex-direction: column;
+     width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#registrationCol1,
+#registrationCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#registrationCol{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+#registrationPanal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin:0px;
     padding: 0px;
 }
