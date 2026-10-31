@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import MainHeader from '../components/MainHeader'
 import '../css/pagesCss/LoggedOut.css'
 import '../css/pagesCss/PageSetup.css';
@@ -7,6 +7,22 @@ import Col from 'react-bootstrap/Col';
 import RegistrationForm from '../components/RegistrationForm';
 
 export default function Register() {
+  const [newUserData, setNewUserData] = useState({
+        username: '',
+    fullName: {
+      firstName: '',
+      lastName: ''
+    },
+    contactDetails: {
+      email: '',
+      phoneNumber: '',
+    },
+    defaultSourceLang: '',
+    defaultTargetLang: '',
+    dateOfBirth: '',
+    password: '',
+    admin: false
+  })
   return (
     <div id='pageContainer'>
         <MainHeader mainHeading={'REGISTRATION'}/>

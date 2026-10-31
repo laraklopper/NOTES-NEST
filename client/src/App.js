@@ -25,6 +25,8 @@ export default function App() {
       email: '',
       phoneNumber: '',
     },
+    defaultSourceLang: '',
+    defaultTargetLang: '',
     dateOfBirth: '',
     password: '',
     admin: false
