@@ -5,9 +5,13 @@ import MainHeader from '../components/MainHeader'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import LoginForm from '../components/LoginForm';
-export default function Login({userData, setUserData}) {
+export default function Login(
+    {//PROPS PASSED FROM PARENT COMPONENT
+        userData, 
+        setUserData,
+    }) {
   return (
-    <div>
+    <div id='pageContainer'>
         <MainHeader mainHeading={'LOGIN'}/>
         <section id='loginSection'>
         <div id='loginPanal'>
