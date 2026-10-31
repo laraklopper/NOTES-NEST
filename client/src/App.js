@@ -13,7 +13,7 @@ import NotePad from './pages/NotePad';
 
 
 export default function App() {
-  const [users, setUsers] = useState([])
+  // const [users, setUsers] = useState([])
   const [currentUser, setCurrentUser] = useState(null)
   const [userData, setUserData] = useState({
     username: '',
@@ -69,6 +69,9 @@ export default function App() {
               <Route path='/' element={<Login
                 userData={userData}
                 setUserData={setUserData}
+                setError={setError}
+                setLoggedIn={setLoggedIn}
+                setCurrentUser={setCurrentUser}
               />}/>
               <Route path='/reg' element={<Register/>}/>
             </>
