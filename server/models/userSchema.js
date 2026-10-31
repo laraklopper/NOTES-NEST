@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const {languageData} = require('../util/langaugeData')
 //============REGULAR EXPRESSIONS=============
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;// Regular expression for validating email formats
 const phoneRegex = /^(\+27|0)\d{2}[ ]?\d{3}[ ]?\d{4}$/;// Regular expression for validating South African phone numbers
@@ -15,6 +15,15 @@ function normalizePhoneSA(phone) {
     }
     return p;
 }
+
+
+/* Valid language codes, derived from the Langbly language list rather than
+written out again here, so the enums stay correct when that list changes.
+
+A source language may also be "auto", which asks the provider to detect it.
+A target language may not: there is nothing to detect on the way out. */
+const LANGUAGE_CODES = languageData.map((lang) => lang.code);
+const SOURCE_LANGUAGE_CODES = ['auto', ...LANGUAGE_CODES];
 
 //Define user schema
 const userSchema = new mongoose.Schema({
@@ -71,6 +80,34 @@ const userSchema = new mongoose.Schema({
             },
         },
     },
+    // =========NESTED DEFAULT LANGUAGES OBJECT=======
+    defaultLanguages: {
+        // Field for Default Source Langauge
+        defaultSourceLanguage:{
+            type: String,
+            default: 'auto',
+            required: false,
+            trim: true,
+            set: (v) => (v === ''? undefined: v),
+            enum: {
+                values: SOURCE_LANGUAGE_CODES,
+                 message: '{VALUE} is not a language the translation provider supports',
+            }
+        },
+        // Field for Default Target Langauge
+        defaultTargetLanguage: {
+                type: String,
+                default: "fr",
+                required: false,
+                trim: true,
+                set: (v) => (v === '' ? undefined : v),
+                enum: {
+                    values: LANGUAGE_CODES,
+                    message: '{VALUE} is not a language the translation provider supports',
+                },
+                },
+        },
+    
      /*Field for Date of Birth
      minimum age 13 years, minimum admin age 21 years*/
     dateOfBirth: {
@@ -100,10 +137,19 @@ const userSchema = new mongoose.Schema({
         required: [true, 'User password is required'],
         minlength: [8, 'Password must be at least 8 characters long'],
         maxlength: [1024, 'Password cannot exceed 1024 characters'],
-        select: false
+        select: false,
     },
+    adminDataConsent: {
+        type: Boolean,
+        required: [true, 'Consent for admin users to see your details is required'],
+        validate: {
+            validator: (v) => v === true,
+            message: 'You must consent to admin users seeing your details to register'
+        }
+    },
+
     // Optional admin field
-    admin: {// admin field to indicate if the user has administrative privileges
+    admin:{// admin field to indicate if the user has administrative privileges
         type:Boolean,
         default: false,
     }
