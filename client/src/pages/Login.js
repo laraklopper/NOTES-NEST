@@ -1,3 +1,4 @@
+//Login.js
 import React, { useCallback, useState } from 'react'
 import '../css/pagesCss/LoggedOut.css'
 import '../css/pagesCss/PageSetup.css'
@@ -5,18 +6,20 @@ import MainHeader from '../components/MainHeader'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import LoginForm from '../components/LoginForm';
+
+//============MAIN LOGIN COMPONENT===========
 export default function Login(
     {//PROPS PASSED FROM PARENT COMPONENT (App.js)
         userData, 
         setUserData,
         setError,
-        loggedIn,
         setLoggedIn,
         setCurrentUser
     }) {
-        const [loading, setLoading] = useState(false)
+        //=============STATE VARIABLES=============
+        const [loading, setLoading] = useState(false);// State Used to disable the button and show loading text.
 
-    
+    //================REQUESTS/CALLBACKS====================
         const submitLogin = useCallback(async () => {
             try {
                 setError(null)
@@ -71,7 +74,6 @@ export default function Login(
         <Col id='loginCol2'/>
       </Row>
         </div>
-            
         </section>
     </div>
   )

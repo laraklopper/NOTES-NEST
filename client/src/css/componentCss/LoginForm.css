@@ -5,9 +5,12 @@
     margin: 0px;
     padding: 10px;
     width: 500px;
-    background-color: #A8AEB3;
+    background-color: #5F6061;
     gap: 10px;
 }
+/* FORM INPUT LAYOUT */
+
+/* BOOTSTRAP LAYOUT */
 #loginStack1,
 #loginStack2{
     width: 100%;
