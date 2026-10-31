@@ -35,7 +35,10 @@ export default function Register() {
               <Col id='registrationCol1'/>
               <Col md={10} xs={12} id='registrationCol'>
                 <div id='registrationPanal'>
-                  <RegistrationForm/>
+                  <RegistrationForm
+                    newUserData={newUserData}
+                    setNewUserData={setNewUserData}
+                  />
                 </div>
               </Col>
               <Col id='registrationCol2'/>

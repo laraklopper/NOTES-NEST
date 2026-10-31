@@ -4,7 +4,157 @@
     align-items: center;
     margin: 0px;
     padding: 10px;
-    width: 500px;
+   width: 100%;
     background-color: #5F6061;
     gap: 10px;
+}
+.regisLabel{
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 1px;
+  padding: 0px;
+}
+#registrationInput{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+     background-color: #BFBFBF;
+     margin: 0px;
+     padding: 10px 5px;
+    gap: 10px;
+}
+/* GROUP 1 */
+#regisGroup1{
+    display: flex;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #999999;
+    gap: 0px;
+    border: #323A42 solid 2px;
+    border-radius: 5px;
+}
+#regisGroup1 > legend{
+        float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+}
+
+/* STACK 1: */
+#regisUsernameBlock{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+#regisFullNameBlock{
+    display: flex;
+    align-items: baseline;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+}
+#regisDateOfBirthBlock{
+      display: flex;
+    align-items: baseline;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+}
+/* GROUP 2 */
+#regisGroup2{
+    display: flex;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #999999;
+    gap: 0px;
+    border: #323A42 solid 2px;
+    border-radius: 5px;
+}
+#regisGroup2 > legend{
+        float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+}
+#regisPhoneBlock,
+#regisEmailBlock{
+     display: flex;
+    align-items: baseline;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+}
+/* STACK 2: */
+/* GROUP 3 */
+#regisGroup3{
+    display: flex;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #999999;
+    gap: 0px;
+    border: #323A42 solid 2px;
+    border-radius: 5px;
+}
+#regisGroup3 > legend{
+        float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+}
+/* GROUP 4 */
+#regisGroup4{
+    display: flex;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #999999;
+    gap: 0px;
+    border: #323A42 solid 2px;
+    border-radius: 5px;
+}
+#regisGroup4 > legend{
+        float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+}
+
+#regisPasswordBlock{
+    display: flex;
+    align-items: center;
+}
+#registerBtn{
+        width: 180px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+
 }
