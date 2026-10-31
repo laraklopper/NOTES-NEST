@@ -21,7 +21,10 @@ export default function Register() {
     defaultTargetLang: '',
     dateOfBirth: '',
     password: '',
-    admin: false
+    admin: false,
+     /* Consent for admin users to see this account's details. Starts false so
+    the checkbox is unticked, and registration is refused until it is given. */
+    adminDataConsent: false
   })
   return (
     <div id='pageContainer'>
