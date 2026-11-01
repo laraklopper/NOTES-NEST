@@ -80,6 +80,26 @@ const userSchema = new mongoose.Schema({
             },
         },
     },
+         /*Field for Date of Birth
+     minimum age 13 years, minimum admin age 21 years*/
+    dateOfBirth: {
+        type: Date,// specify data type as date
+        required: [true, 'Date of birth is required'],
+        // Date of Birth validation
+        validate: {
+            validator: function (value) {
+                if (!value || value > new Date()) return false;             
+                const today = new Date();
+                let age = today.getFullYear() - value.getFullYear();
+                const m = today.getMonth() - value.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < value.getDate())) {
+                    age--;
+                }
+                return age >= 13;
+            },
+            message: 'User must be at least 13 years old',
+        },
+    },
     // =========NESTED DEFAULT LANGUAGES OBJECT=======
     defaultLanguages: {
         // Field for Default Source Langauge
@@ -106,26 +126,17 @@ const userSchema = new mongoose.Schema({
                     message: '{VALUE} is not a language the translation provider supports',
                 },
                 },
-        },
-    
-     /*Field for Date of Birth
-     minimum age 13 years, minimum admin age 21 years*/
-    dateOfBirth: {
-        type: Date,// specify data type as date
-        required: [true, 'Date of birth is required'],
-        // Date of Birth validation
-        validate: {
-            validator: function (value) {
-                if (!value || value > new Date()) return false;             
-                const today = new Date();
-                let age = today.getFullYear() - value.getFullYear();
-                const m = today.getMonth() - value.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < value.getDate())) {
-                    age--;
-                }
-                return age >= 13;
+        // Field for Default note language
+        defaultNoteLanguage: {
+            type: String,
+            default: "en",
+            required: false,
+            trim: true,
+            set: (v) => (v === '' ? undefined : v),
+            enum: {
+                values: LANGUAGE_CODES,
+                message: '{VALUE} is not a language the translation provider supports',
             },
-            message: 'User must be at least 13 years old',
         },
     },
      /*Password field
@@ -147,7 +158,6 @@ const userSchema = new mongoose.Schema({
             message: 'You must consent to admin users seeing your details to register'
         }
     },
-
     // Optional admin field
     admin:{// admin field to indicate if the user has administrative privileges
         type:Boolean,
