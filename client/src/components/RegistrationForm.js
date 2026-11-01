@@ -218,8 +218,12 @@ export default function RegistrationForm(
     </Stack>
     {/* ====STACK 5=========== */}
      <Stack direction="horizontal" gap={3}>
+     {/* Admins can list every account through /user/fetchUsers, so the
+            account is only created once this consent is given. `required` stops
+            an unchecked box in the browser; the route rejects it as well, since
+            a request sent outside the form never sees that check. */}
       <div className="p-2">
-        
+      
       </div>
       <div className="p-2 ms-auto">Second item</div>
       <div className="p-2">Third item</div>
