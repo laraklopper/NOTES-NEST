@@ -23,7 +23,7 @@ export default function Login(
         const submitLogin = useCallback(async () => {
             try {
                 setError(null)
-                const response = await fetch(`http://localStorage:3001/auth/login`,{
+                const response = await fetch(`/auth/login`,{
                     method: 'POST',
                     mode: 'cors',
                     headers: {

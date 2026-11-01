@@ -6,10 +6,13 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import { Asterisk, Eye, EyeOff } from 'lucide-react';
 import { languageData } from '../util/languageData';
+import { emptyNewUser } from '../pages/Register';
 export default function RegistrationForm(
-  {//PROPS PASSED FROM PARENT COMPONENT (Registration.js)
+  {//PROPS PASSED FROM PARENT COMPONENT (Register.js)
   newUserData,
-  setNewUserData
+  setNewUserData,
+  submitRegistration,
+  loading
 }) {
   //==================STATE VARIABLES=================
   const [showPassword, setShowPassword] = useState(false)// State to toggle password visibility
@@ -39,34 +42,26 @@ export default function RegistrationForm(
         const { checked } = event.target;
         setNewUserData((prev) => ({
             ...prev,
-            isAdmin: checked
+            adminDataConsent: checked
         }));
     };
+
+    // Function to handle form submission
+    const handleRegister = (event) => {
+      event.preventDefault()
+      submitRegistration();
+    }
 
     //Function to clear form
     const clearForm = () => {
       const confirmClear = window.confirm('Are you sure you want to clear the form? All entered data will be lost.');
       if(!confirmClear) return;
-      setNewUserData({
-        username: '',
-        fullName: {
-          firstName: '',
-          lastName: ''
-        },
-        dateOfBirth: '',
-        email: '',
-        phone: '',
-        defaultSourceLang: '',
-        defaultTargetLang: '',
-        defaultNoteLang: '',
-        password: '',
-        isAdmin: false
-      });
+      setNewUserData(emptyNewUser);
     }
 
     //==================JSX RENDERING=================
   return (
-    <form id='registrationForm' method='POST'>
+    <form id='registrationForm' method='POST' onSubmit={handleRegister} aria-labelledby='formTitle'>
       <p className='visually-hidden' id='formTitle'>REGISTRATION FORM</p>
       <div id='formHeadingBlock'>
         <h3 id='formHeading'>SIGN UP</h3>
@@ -86,6 +81,12 @@ export default function RegistrationForm(
             id='regisUsername'
             placeholder='USERNAME'
             required
+            type='text'
+            autoComplete='username'
+            minLength={3}
+            maxLength={30}
+            pattern='[a-zA-Z0-9_]+'
+            title='Letters, numbers and underscores only'
             name='username'
             value={newUserData.username}
             onChange={handleInputChange}
@@ -130,6 +131,7 @@ export default function RegistrationForm(
             placeholder='LAST NAME'
             id='regisLastName'
               className='input'
+              required
               name='fullName.lastName'
               value={newUserData.fullName.lastName}
               onChange={handleInputChange}
@@ -147,7 +149,7 @@ export default function RegistrationForm(
     {/* STACK 3 */}
           <Stack direction="horizontal" gap={3} id='regisStack3'>
         <div className="p-2" id='regisDateOfBirthBlock'>
-        <label className='regisLabel'>DATE OF BIRTH</label>
+        <label className='regisLabel' htmlFor='regisDOB'>DATE OF BIRTH</label>
         <div className='inputDiv'>
           <input
             type='date'
@@ -175,7 +177,7 @@ export default function RegistrationForm(
           {/* STACK 4 */}
            <Stack gap={3} id='regisStack4'>
       <div className="p-2" id='regisEmailBlock'>
-        <label className='regisLabel'>EMAIL:</label>
+        <label className='regisLabel' htmlFor='emailRegis'>EMAIL:</label>
         <div className='inputDiv'>
           <input
             className='input'
@@ -187,24 +189,23 @@ export default function RegistrationForm(
             name='contactDetails.email'
             value={newUserData.contactDetails.email}
             onChange={handleInputChange}
-
-
             />
             <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/>
         </div>
       </div>
-      {/* CONTACT NUMBER: value={newUserData.contactDetails.phone} */}
+      {/* CONTACT NUMBER: value={newUserData.contactDetails.contactNumber} */}
       <div className="p-2" id='regisPhoneBlock'>
            <label className='regisLabel' htmlFor='regisPhone'>CONTACT NUMBER:</label>
         <div className='inputDiv'>
           <input
-          type='text'
+          type='tel'
             className='input'
             id='regisPhone'
             required
-            placeholder='CONTACT NUMBER'
-            name='contactDetails.phone'
-            value={newUserData.contactDetails.phone}
+            autoComplete='tel'
+            placeholder='082 123 4567'
+            name='contactDetails.contactNumber'
+            value={newUserData.contactDetails.contactNumber}
             onChange={handleInputChange}
           />
            <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/>
@@ -226,7 +227,7 @@ export default function RegistrationForm(
         aria-label='Default Source Language Selection'
         aria-required='false'
         >
-          <option>SELECT</option>
+          <option value=''>SELECT</option>
           {languageData.map((lang) => (
             <option key={lang.code} value={lang.code}>
               {lang.name  }
@@ -236,8 +237,17 @@ export default function RegistrationForm(
       </div>
       <div className="p-2" id='regisTargetLangBlock'>
         <label className='regisLabel' htmlFor='regisTargetLangInput'>DEFAULT TARGET LANGAUGE:</label>
-        <select className='input' onChange={handleInputChange} name='defaultTargetLang' value={newUserData.defaultTargetLang}>
-          <option>SELECT</option>
+        <select
+          className='input'
+          id='regisTargetLangInput'
+          onChange={handleInputChange}
+          name='defaultTargetLang'
+          value={newUserData.defaultTargetLang}
+          // ARIA ATTRIBUTES:
+          aria-label='Default Target Language Selection'
+          aria-required='false'
+          >
+          <option value=''>SELECT</option>
           {languageData.map((lang) => (
             <option key={lang.code} value={lang.code}>
               {lang.name  }
@@ -257,7 +267,7 @@ export default function RegistrationForm(
           aria-label='Default Notes Language Selection'
           aria-required='false'
           >
-          <option>SELECT</option>
+          <option value=''>SELECT</option>
           {languageData.map((lang) => (
             <option key={lang.code} value={lang.code}>
               {lang.name}
@@ -277,12 +287,14 @@ export default function RegistrationForm(
          <div className='inputDiv'>
           <input
           className='input'
+          id='registrationPassword'
           placeholder='PASSWORD'
             type={showPassword ? 'text' : 'password'}
-            onClick={handleInputChange}
+            onChange={handleInputChange}
             name='password'
-            value={newUserData.value}
+            value={newUserData.password}
             required
+            minLength={8}
             autoComplete='new-password'
             // ARIA ATTRIBUTES:
             aria-required='true'
@@ -333,7 +345,7 @@ export default function RegistrationForm(
             type="checkbox" 
             id='adminConsentMsg' 
             name='adminConsentMsg' 
-            value={newUserData.adminDataConsent}
+            checked={newUserData.adminDataConsent}
             required
             onChange={handleAdminConsentChange}
             // ARIA ATTRIBUTES:
@@ -362,14 +374,16 @@ export default function RegistrationForm(
         variant='light'
         type='submit'
         id='registerBtn'
+        disabled={loading}
         >
-          REGISTER
+          {loading ? 'REGISTERING...' : 'REGISTER'}
         </Button>
       </div>
       <div className="vr" />
       <div className="p-2">
         <Button
         variant='danger'
+        type='button'
         id='clearFormBtn'
         onClick={clearForm}
         >
