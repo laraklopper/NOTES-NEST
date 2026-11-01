@@ -223,9 +223,25 @@ export default function RegistrationForm(
             an unchecked box in the browser; the route rejects it as well, since
             a request sent outside the form never sees that check. */}
       <div className="p-2">
-      
+         <label className='regisLabel' htmlFor='adminConsentMsg'>I CONSENT TO ALLOW ADMIN USERS KNOWING MY DETAILS</label>
+         <div id='adminConsentCheckboxDiv'>
+          <input 
+            type="checkbox" 
+            id='adminConsentMsg' 
+            // name='adminConsentMsg' 
+            // value={newUserData.adminDataConsent}
+            required
+            onChange={handleInputChange}
+            // ARIA ATTRIBUTES:
+            aria-required='true'
+            aria-checked={newUserData.adminDataConsent}
+            aria-label='Admin Consent Checkbox'
+            />
+
+         </div>
       </div>
-      <div className="p-2 ms-auto">Second item</div>
+      <div className="p-2 ms-auto">
+      </div>
       <div className="p-2">Third item</div>
     </Stack>
         </fieldset>
