@@ -36,8 +36,13 @@ export default function MainHeader(
       <div className="p-2">
         <nav id='navigation'>
             <ul id='mainNavbar'>
+            {/* Landing Page */}
                 <li className='linkItem'>
-                    <NavLink to='/' className='refLink'>LOGIN</NavLink>
+                    <NavLink to='/' className='refLink'>DASHBOARD</NavLink>
+                </li>
+                {/* Access login and registration pages using react-router-hashlink in the MainHeader.js */}
+                <li className='linkItem'>
+                    <NavLink to='/login' className='refLink'>LOGIN</NavLink>
                 </li>
                 <li>
                     <NavLink to='/reg' className='refLink'>REGISTRATION</NavLink>

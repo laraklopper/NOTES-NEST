@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col';
 import { Bug} from 'lucide-react';
 import { Routes , Route} from 'react-router-dom';
 import ProtectedUserRoute from './protectedRoutes/ProtectedUserRoute';
-import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import NotePad from './pages/NotePad';
@@ -57,8 +57,9 @@ export default function App() {
             <>
               <Route path='/' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                  <Dashboard currentUser={currentUser}/>
+                  <Home/>
                 </ProtectedUserRoute>
+           
               }/>
               <Route path='/notepad' element={
                 <ProtectedUserRoute currentUser={currentUser}>
