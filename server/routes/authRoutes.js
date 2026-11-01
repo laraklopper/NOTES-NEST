@@ -3,6 +3,7 @@ const express = require('express');
 const User = require('../models/UserSchema');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { hashPassword, isDevelopment } = require('./middleware');// Import the password hashing middleware and development flag
 const router = express.Router()
 
 // Extract environmental variables (with safe fallbacks for local dev)
@@ -62,8 +63,14 @@ router.post('/login', async (req, res) => {
                 });
         }
 
-        // Compare the submitted password against the stored bcrypt hash
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        /* Compare the submitted password against the stored bcrypt hash.
+        During development hashPassword leaves passwords as plaintext, so a stored
+        value that is not a bcrypt hash is compared directly; accounts hashed
+        before that still log in through bcrypt */
+        const isHashed = /^\$2[aby]\$/.test(user.password);
+        const isPasswordValid = isDevelopment && !isHashed
+            ? password === user.password
+            : await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             console.error('[ERROR: authRoutes.js, /login] Incorrect password'); // Log the error
             return res.status(401).json({// Return a 401 Unauthorized response
@@ -111,7 +118,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Send a POST request to the /auth/register route
-router.post('/register', async (req, res) => {
+router.post('/register', hashPassword, async (req, res) => {
     try {
         const {
             username,
@@ -166,11 +173,11 @@ router.post('/register', async (req, res) => {
             },
             dateOfBirth,
             defaultLanguages,
-            password,// Hashed by the userSchema pre-save hook
+            password,// Hashed by the hashPassword middleware (plaintext during development)
             adminDataConsent
         });
 
-        await newUser.save();// Validate, hash the password and save the user
+        await newUser.save();// Validate and save the user
 
         // Log a successful registration to the server console for debugging and auditing purposes
         console.log('[INFO: authRoutes.js, /register] User registered:',

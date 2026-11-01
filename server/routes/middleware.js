@@ -4,13 +4,17 @@ file using the dotenv package*/
 require('dotenv').config();
 // Import Required modules and packages
 const jwt = require('jsonwebtoken');// Import the JSON Web Token (JWT) library
-const bcrypt = require('bcrypt');// Import the bcrypt library
+const bcrypt = require('bcryptjs');// Import the bcrypt library
 const User = require('../models/UserSchema');// Import the User model
 
 const secretKey = process.env.JWT_SECRET_KEY || 'secretKey';
 
 // Industry standard, balances security and performance
 const SALT_ROUNDS = 10; // Number of hashing rounds
+
+/* Passwords are stored as plaintext during development and hashed everywhere else.
+Matches ensureJwtSecret.js: an unset NODE_ENV counts as development */
+const isDevelopment = (process.env.NODE_ENV || 'development').toLowerCase() === 'development';
 
 
 /*=============================
@@ -68,8 +72,14 @@ JWT VERIFICATION MIDDLEWARE
 PASSWORD VALIDATION MIDDLEWARE
 =========================*/
 /*Middleware to hash password before registration or password changes
- * Expects req.body.password to be present Not used during development*/
+ * Expects req.body.password to be present. Skipped during development,
+ * so passwords are saved as plaintext*/
 const hashPassword = async (req, res, next) => {
+    // Conditional rendering to leave the password as plaintext during development
+    if (isDevelopment) {
+        console.warn('[WARN: middleware.js, hashPassword] Development mode: password not hashed');// Log a warning message in the console for debugging purposes
+        return next();// Call the next middleware or route handler
+    }
     try {
         const {password, newPassword} = req.body || {};// Extract the password and newPassword from the request body
         //Conditional rendering for password hashing
@@ -268,6 +278,7 @@ const checkAdmin = async (req, res, next) => {
 };
 
 module.exports = {
+    isDevelopment,// Export the development flag so login compares passwords the same way
     checkJwtToken,// Export the JWT verification middleware
     hashPassword,// Export the password hashing middleware
     checkPassword,// Export the password validation middleware
