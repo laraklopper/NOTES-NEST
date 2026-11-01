@@ -49,7 +49,7 @@ export default function MainHeader(//Export default MainHeader function componen
             Current Date:
         </p>
             <span className='headClockSpan'>
-                <Calendar size={20} fontWeight={900} color='#3D0F13' aria-hidden='true'/>
+                <Calendar size={28} fontWeight={900} color='#3D0F13' aria-hidden='true'/>
                 <h5 className='clockListItem'>{dateDisplay(date)}</h5>
             </span>
         </ListGroup.Item>
@@ -59,22 +59,21 @@ export default function MainHeader(//Export default MainHeader function componen
             Current Time:
         </p>
             <span className='headClockSpan'>
-                <Clock8 size={20} fontWeight={900} color='#3D0F13' aria-hidden='true'/>
+                <Clock8 size={28} fontWeight={900} color='#3D0F13' aria-hidden='true'/>
                 <h5 className='clockListItem'>{timeDisplay(date)}</h5>
             </span>
         </ListGroup.Item>
-        <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
       </ListGroup>
     </Card>
       </div>
-      <div className="p-2 ms-auto">Second item</div>
-      <div className="p-2">Third item</div>
+      <div className="p-2 ms-auto"/>
+      <div className="p-2"/>
     </Stack>
             </Col>
         </Row>
          <Row id='headerRow2'>
         <Col id='headingCol1'/>
-        <Col xs={5} id='headingCol'>
+        <Col md={10} id='headingCol'>
             <div id='pageHeadingBlock'>
             <span id='pageHeadingSpan'>
                 <h1 id='appHeading'>NOTE NEST</h1>
