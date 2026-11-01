@@ -5,7 +5,8 @@
     margin: 0px;
     padding: 10px;
    width: 100%;
-    background-color: #5F6061;
+    background-color: #777d83;
+    border: #323A42 solid 2px;
     gap: 10px;
 }
 .regisLabel{
@@ -118,6 +119,15 @@
      font-weight: 700;
      letter-spacing: 2px;
 }
+#regisSourceLangBlock,
+#regisTargetLangBlock,
+#regisNotesLangBlock{
+    display: flex;
+    align-items: baseline;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+}
 /* GROUP 4 */
 #regisGroup4{
     display: flex;
@@ -165,5 +175,21 @@
     align-items: center;
     gap: 10px;
     margin: 0px;
+    padding: 0px;
+}
+#regisFormBtnGroup{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    width: 100%;
+    padding: 0px;
+}
+#regisFormBtnStack{
+    display: flex;
+    justify-content: center;
+    Align-items: baseline;
+    gap: 10px;
+    margin: 0px;
+    width: 100%;
     padding: 0px;
 }

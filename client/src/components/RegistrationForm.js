@@ -114,6 +114,11 @@ export default function RegistrationForm(
               placeholder='FIRST NAME'
                 name='fullName.firstName'
                 value={newUserData.fullName.firstName}
+                onChange={handleInputChange}
+                // ARIA ATTRIBUTES:
+                aria-required='true'
+                aria-label='First Name Input'
+                aria-describedby='firstNameError'
             />
             <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/>
           </div>
@@ -127,6 +132,10 @@ export default function RegistrationForm(
               className='input'
               name='fullName.lastName'
               value={newUserData.fullName.lastName}
+              onChange={handleInputChange}
+              aria-required='true'
+              aria-label='Last Name Input'
+              aria-describedby='lastNameError'
             />
             <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/>
           </div>
@@ -236,7 +245,7 @@ export default function RegistrationForm(
           ))}
         </select>
       </div>
-      <div className="p-2" id='regisNoteLangBlock'>
+      <div className="p-2" id='regisNotesLangBlock'>
         <label className='regisLabel' htmlFor='regisNoteLangInput'>DEFAULT NOTES LANGAUGE:</label>
         <select 
           className='input' 
@@ -274,6 +283,11 @@ export default function RegistrationForm(
             name='password'
             value={newUserData.value}
             required
+            autoComplete='new-password'
+            // ARIA ATTRIBUTES:
+            aria-required='true'
+            aria-label='Password Input'
+            aria-describedby='passwordError'
           />
           {/* SHOW/HIDE PASSWORD BUTTON */}
                             <Button
@@ -327,7 +341,7 @@ export default function RegistrationForm(
             aria-checked={newUserData.adminDataConsent}
             aria-label='Admin Consent Checkbox'
             />
-
+            <small><Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
          </div>
       </div>
       <div className="p-2 ms-auto"/>
