@@ -2,13 +2,18 @@ import React from 'react'
 import '../css/componentCss/Header.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Stack from 'react-bootstrap/Stack';
-import { NavLink } from 'react-router-dom';
+// import Stack from 'react-bootstrap/Stack';
+import { NavLink, useLocation } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 export default function MainHeader(
     {
         mainHeading
     }
 ) {
+    const { pathname } = useLocation()
+    //==================
+    // HashLink doesn't add an active class like NavLink does, so set it from the current path
+    const linkClass = (path) => pathname === path ? 'refLink active' : 'refLink'
     //==================
   return (
     <header id='mainHeader'>
@@ -28,31 +33,31 @@ export default function MainHeader(
         <Col id='headingCol2'/>
       </Row>
         <Row id='headerRow3'>
-            <Col id='mainNavCol'>
-                <Stack direction="horizontal" gap={3} id='mainNavStack'>
-      <div className="p-2"/>
-      <div className="p-2 ms-auto"/>
-      <div className="vr" />
-      <div className="p-2">
+    
+              <Col/>
+        <Col xs={6} id='mainNavCol'>
+             <div className="p-2">
         <nav id='navigation'>
             <ul id='mainNavbar'>
             {/* Landing Page */}
                 <li className='linkItem'>
                     <NavLink to='/' className='refLink'>DASHBOARD</NavLink>
                 </li>
-                {/* Access login and registration pages using react-router-hashlink in the MainHeader.js */}
+                {/* Login and registration pages - HashLink scrolls to the top of the header on navigation */}
                 <li className='linkItem'>
-                    <NavLink to='/login' className='refLink'>LOGIN</NavLink>
+                    <HashLink smooth to='/login#mainHeader' className={linkClass('/login')}>LOGIN</HashLink>
                 </li>
-                <li>
-                    <NavLink to='/reg' className='refLink'>REGISTRATION</NavLink>
+                <li className='linkItem'>
+                    <HashLink smooth to='/reg#mainHeader' className={linkClass('/reg')}>REGISTRATION</HashLink>
                 </li>
 
             </ul>
         </nav>
       </div>
-    </Stack>
-            </Col>
+        </Col>
+        <Col/>
+              
+         
         </Row>
     </header>
   )
