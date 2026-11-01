@@ -168,7 +168,7 @@ export default function RegistrationForm(
       </div>
     </Stack>
         </fieldset>
-        {/* GROUP 4: PASSWORD */}
+        {/* GROUP 4: PASSWORD and ADMIN CONSENT */}
         <fieldset id='regisGroup4'>
           <legend>Password</legend>
           {/* STACK 4 */}
@@ -216,8 +216,9 @@ export default function RegistrationForm(
       {/* <div className="p-2 ms-auto">Second item</div> */}
       {/* <div className="p-2">Third item</div> */}
     </Stack>
+    {/* ====STACK 5=========== */}
         </fieldset>
-
+       
       </div>
       <div id='regisFormBtnGroup'>
             <Stack direction="horizontal" gap={3} id='regisFormBtnStack'>
