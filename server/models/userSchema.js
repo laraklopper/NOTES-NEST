@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const {languageData} = require('../util/langaugeData')
 //============REGULAR EXPRESSIONS=============
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;// Regular expression for validating email formats
@@ -179,8 +180,8 @@ userSchema.virtual('fullNameString').get(function () {
 
 // Virtual to generate a contact details string
 userSchema.virtual('contactDetailsString').get(function () {
-    const { email = '', phone = '' } = this.contactDetails;
-    return `Email: ${email}, Phone: ${phone}`;
+    const { email = '', contactNumber = '' } = this.contactDetails;
+    return `Email: ${email}, Phone: ${contactNumber}`;
 });
 
 // ============ NORMALIZATION HOOK ==============
@@ -193,9 +194,17 @@ userSchema.pre('validate', function (next) {
     if (this.contactDetails?.email) {
         this.contactDetails.email = String(this.contactDetails.email).trim().toLowerCase();
     }
-    if (this.contactDetails?.phone) {
-        this.contactDetails.phone = normalizePhoneSA(this.contactDetails.phone);
-    }   
+    if (this.contactDetails?.contactNumber) {
+        this.contactDetails.contactNumber = normalizePhoneSA(this.contactDetails.contactNumber);
+    }
+});
+
+// ============ PASSWORD HASHING HOOK ==============
+// Validation runs before pre('save') hooks, so the password length rules
+// are checked against the plaintext before it is replaced by the hash.
+userSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;// Skip re-hashing when the password has not changed
+    this.password = await bcrypt.hash(this.password, 12);// Hash with a cost factor of 12
 });
 
 

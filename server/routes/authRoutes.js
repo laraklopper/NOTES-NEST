@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const User = require('../models/userSchema')
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router()
 
@@ -48,7 +48,8 @@ router.post('/login', async (req, res) => {
         }
 
         //Find the user by username and include the password field
-        const user = await User.findOne({ username: username.trim() })
+        // Usernames are stored lowercase (see the userSchema pre-validate hook)
+        const user = await User.findOne({ username: username.trim().toLowerCase() })
             .select('+password')//Include the password
             .exec();//Execute the query
 
@@ -70,12 +71,6 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // /* PLAINTEXT COMPARISON EQUIVALENT: used during development/
-          if (password !== user.password) {
-            console.error('[ERROR: authRoutes.js, /login] Incorrect password');
-            return res.status(401).json({ message: 'Invalid credentials' });
-          }
-        //  the actual comparison uses bcrypt.compare() against the stored hash instead. 
         const isAdmin = user.admin === true;// Determine whether the logged-in user is an administrator
         
         // Generate a JSON Web Token (JWT) for the authenticated user
@@ -111,6 +106,102 @@ router.post('/login', async (req, res) => {
 
     } catch (error) {
         console.error('[ERROR: authRoutes.js, /login] Login Failed:', error.message);// Log an error message in the console for debugging purposes
+        res.status(500).json({ success: false, message: 'Internal Server Error' });// Send a 500 Internal Server Error status code with a message
+    }
+});
+
+// Send a POST request to the /auth/register route
+router.post('/register', async (req, res) => {
+    try {
+        const {
+            username,
+            fullName = {},
+            contactDetails = {},
+            dateOfBirth,
+            defaultSourceLang,
+            defaultTargetLang,
+            defaultNoteLang,
+            password,
+            adminDataConsent
+        } = req.body || {};// Extract the registration fields from the request body
+
+        // Reject non-string values (e.g. { "$gt": "" }) so req.body cannot be used to inject Mongo query operators
+        const requiredStrings = [
+            username,
+            fullName.firstName,
+            fullName.lastName,
+            contactDetails.email,
+            contactDetails.contactNumber,
+            dateOfBirth,
+            password
+        ];
+        if (requiredStrings.some((value) => typeof value !== 'string' || !value.trim())) {
+            console.error('[ERROR: authRoutes.js, /register] Missing or invalid required fields');// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Please fill in all required fields' });// Send a 400 (Bad Request) status code with a JSON message
+        }
+
+        // The form blocks an unticked box, but a request sent outside the form never sees that check
+        if (adminDataConsent !== true) {
+            console.error('[ERROR: authRoutes.js, /register] Admin data consent not given');
+            return res.status(400).json({ message: 'You must consent to admin users seeing your details to register' });
+        }
+
+        // Only include the language preferences that were chosen, so the schema defaults apply to the rest
+        const defaultLanguages = {};
+        if (typeof defaultSourceLang === 'string' && defaultSourceLang) defaultLanguages.defaultSourceLanguage = defaultSourceLang;
+        if (typeof defaultTargetLang === 'string' && defaultTargetLang) defaultLanguages.defaultTargetLanguage = defaultTargetLang;
+        if (typeof defaultNoteLang === 'string' && defaultNoteLang) defaultLanguages.defaultNoteLanguage = defaultNoteLang;
+
+        /* Build the user from named fields only, never from req.body directly,
+        so a client cannot register itself as an admin by sending { admin: true } */
+        const newUser = new User({
+            username,
+            fullName: {
+                firstName: fullName.firstName,
+                lastName: fullName.lastName
+            },
+            contactDetails: {
+                email: contactDetails.email,
+                contactNumber: contactDetails.contactNumber
+            },
+            dateOfBirth,
+            defaultLanguages,
+            password,// Hashed by the userSchema pre-save hook
+            adminDataConsent
+        });
+
+        await newUser.save();// Validate, hash the password and save the user
+
+        // Log a successful registration to the server console for debugging and auditing purposes
+        console.log('[INFO: authRoutes.js, /register] User registered:',
+            {
+                userId: newUser._id,
+                username: newUser.username
+            }
+        );
+
+        return res.status(201).json({// Send a 201 (Created) status code with a JSON message
+            message: 'Registration successful. Please log in.',
+            userId: newUser._id
+        });
+
+    } catch (error) {
+        // Mongoose schema validation failed: send the first validation message back to the client
+        if (error.name === 'ValidationError') {
+            const firstMessage = Object.values(error.errors)[0]?.message;
+            console.error('[ERROR: authRoutes.js, /register] Validation failed:', error.message);
+            return res.status(400).json({ message: firstMessage || 'Invalid registration details' });
+        }
+        // Duplicate key on a unique field (username or contact number)
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern || {})[0] || '';
+            const message = field.includes('contactNumber')
+                ? 'That contact number is already registered'
+                : 'That username is already taken';
+            console.error('[ERROR: authRoutes.js, /register] Duplicate field:', field);
+            return res.status(409).json({ message });// Send a 409 (Conflict) status code with a JSON message
+        }
+        console.error('[ERROR: authRoutes.js, /register] Registration Failed:', error.message);// Log an error message in the console for debugging purposes
         res.status(500).json({ success: false, message: 'Internal Server Error' });// Send a 500 Internal Server Error status code with a message
     }
 });

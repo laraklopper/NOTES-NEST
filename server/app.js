@@ -14,6 +14,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const connectDB = require('./config/connect')
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();// Create an Express application
 
@@ -35,6 +36,7 @@ app.use(helmet())
 
 // =======ROUTES===========
 // Prefix all route modules with their base path.
+app.use('/auth', authRoutes);// /auth/login, /auth/register
 
 // ================== MONGOOSE CONFIG ==================
 /* Disable strict populate to prevent errors when populating 
