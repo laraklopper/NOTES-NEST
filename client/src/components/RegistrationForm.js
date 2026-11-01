@@ -217,6 +217,13 @@ export default function RegistrationForm(
       {/* <div className="p-2">Third item</div> */}
     </Stack>
     {/* ====STACK 5=========== */}
+     <Stack direction="horizontal" gap={3}>
+      <div className="p-2">
+        
+      </div>
+      <div className="p-2 ms-auto">Second item</div>
+      <div className="p-2">Third item</div>
+    </Stack>
         </fieldset>
        
       </div>
