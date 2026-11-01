@@ -10,9 +10,7 @@ import Stack from 'react-bootstrap/Stack';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 // IMPORT REACT-ROUTER-DOM COMPONENTS FOR NAVIGATION
-import { NavLink, useLocation } from 'react-router-dom';
-// IMPORT REACT-ROUTER-DOM HASHLINK FOR SCROLLING TO ANCHORS
-import { HashLink } from 'react-router-hash-link';
+import { NavLink } from 'react-router-dom';
 // IMPORT UTILITY FUNCTIONS FOR DATE AND TIME FORMATTING
 import { dateDisplay, timeDisplay } from '../util/dateFunctions';
 // IMPORT ICONS FROM LUCIDE-REACT
@@ -28,10 +26,6 @@ export default function MainHeader(//Export default MainHeader function componen
     //======STATE VARIABLES======
     const [date, setDate] = useState(new Date());
     //===========================
-    const { pathname } = useLocation()
-    //==================
-    // HashLink doesn't add an active class like NavLink does, so set it from the current path
-    const linkClass = (path) => pathname === path ? 'refLink active' : 'refLink'
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -100,12 +94,12 @@ export default function MainHeader(//Export default MainHeader function componen
                 <li className='linkItem'>
                     <NavLink to='/' className='refLink'>DASHBOARD</NavLink>
                 </li>
-                {/* Login and registration pages - HashLink scrolls to the top of the header on navigation */}
+                {/* Login and registration pages */}
                 <li className='linkItem'>
-                    <HashLink smooth to='/login#mainHeader' className={linkClass('/login')}>LOGIN</HashLink>
+                    <NavLink to='/login' className='refLink'>LOGIN</NavLink>
                 </li>
                 <li className='linkItem'>
-                    <HashLink smooth to='/reg#mainHeader' className={linkClass('/reg')}>REGISTRATION</HashLink>
+                    <NavLink to='/reg' className='refLink'>REGISTRATION</NavLink>
                 </li>
 
             </ul>
