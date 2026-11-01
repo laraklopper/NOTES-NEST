@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema({
             },
         },
          //Field for phone number
-        phone: {
+        contactNumber: {
             type: String,
             required: [true, 'Phone number is required'],
             unique: true,
@@ -80,6 +80,34 @@ const userSchema = new mongoose.Schema({
             },
         },
     },
+    // =========NESTED DEFAULT LANGUAGES OBJECT=======
+    defaultLanguages: {
+        // Field for Default Source Langauge
+        defaultSourceLanguage:{
+            type: String,
+            default: 'auto',
+            required: false,
+            trim: true,
+            set: (v) => (v === ''? undefined: v),
+            enum: {
+                values: SOURCE_LANGUAGE_CODES,
+                 message: '{VALUE} is not a language the translation provider supports',
+            }
+        },
+        // Field for Default Target Langauge
+        defaultTargetLanguage: {
+                type: String,
+                default: "fr",
+                required: false,
+                trim: true,
+                set: (v) => (v === '' ? undefined : v),
+                enum: {
+                    values: LANGUAGE_CODES,
+                    message: '{VALUE} is not a language the translation provider supports',
+                },
+                },
+        },
+    
      /*Field for Date of Birth
      minimum age 13 years, minimum admin age 21 years*/
     dateOfBirth: {

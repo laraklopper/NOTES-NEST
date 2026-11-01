@@ -145,11 +145,30 @@ export default function RegistrationForm({
       </div>
     </Stack>
         </fieldset>
-        {/* GROUP 3: PASSWORD */}
+        {/* GROUP 3: Optional loguage Preferences */}
         <fieldset id='regisGroup3'>
+        <legend>Language Preferences</legend>
+        {/* STACK 3 */}
+         <Stack gap={3}>
+      <div className="p-2">
+        <label className='regisLabel' htmlFor='regisSourceLangInput'>DEFAULT SOURCE LANGAUGE:</label>
+        <select className='input'>
+          <option>SELECT</option>
+        </select>
+      </div>
+      <div className="p-2">
+        <label className='regisLabel' htmlFor='regisSourceLangInput'>DEFAULT SOURCE LANGAUGE:</label>
+        <select className='input'>
+          <option>SELECT</option>
+        </select>
+      </div>
+    </Stack>
+        </fieldset>
+        {/* GROUP 4: PASSWORD */}
+        <fieldset id='regisGroup4'>
           <legend>Password</legend>
-          {/* STACK 3 */}
-             <Stack direction="horizontal" gap={3} id='regisStack3'>
+          {/* STACK 4 */}
+             <Stack direction="horizontal" gap={3} id='regisStack4'>
       <div className="p-2" id='regisPasswordBlock'>
          <label className='regisLabel' htmlFor='registrationPassword'>PASSWORD:</label>
          <div className='inputDiv'>
