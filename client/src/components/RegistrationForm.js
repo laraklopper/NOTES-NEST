@@ -1,3 +1,4 @@
+// RegistrationForm.js
 import React, { useState } from 'react'
 import '../css/componentCss/FormSetup.css'
 import '../css/componentCss/RegistrationForm.css'
@@ -89,7 +90,7 @@ export default function RegistrationForm({
       </div>
       <div className="p-2" id='regisDateOfBirthBlock'>
         <label className='regisLabel'>DATE OF BIRTH</label>
-        <div>
+        <div className='inputDiv'>
           <input
             type='date'
             required
@@ -99,6 +100,7 @@ export default function RegistrationForm({
             value={newUserData.dateOfBirth}
             onChange={handleInputChange}
           />
+          <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/>
         </div>
       </div>
     </Stack>
