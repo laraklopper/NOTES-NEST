@@ -6,11 +6,13 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import { Asterisk, Eye, EyeOff } from 'lucide-react';
 
-export default function RegistrationForm({
+export default function RegistrationForm(
+  {//PROPS PASSED FROM PARENT COMPONENT (Registration.js)
   newUserData,
   setNewUserData
 }) {
-  const [showPassword, setShowPassword] = useState(false)
+  //==================STATE VARIABLES=================
+  const [showPassword, setShowPassword] = useState(false)// State to toggle password visibility
 
       const handleInputChange = (event) => {
         const { name, value } = event.target;// Get the input name and value from the changed field
