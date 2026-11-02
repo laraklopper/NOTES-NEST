@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/Home.css'
+import '../css/componentCss/Tabs.css'
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Header from '../components/Header'
