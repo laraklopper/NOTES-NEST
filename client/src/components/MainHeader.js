@@ -39,7 +39,7 @@ export default function MainHeader(//Export default MainHeader function componen
     <header id='mainHeader'>
         <Row id='headerRow1'>
             <Col id='headingCol1'>
-                <Stack direction="horizontal" gap={3}>
+                <Stack direction="horizontal" gap={3} id='headerStack1'>
       <div className="p-2" id='headerTimeBlock'>
         <Card id='headerTimeCard'>
       <ListGroup variant="flush" id='headerTimeList'>
@@ -75,7 +75,7 @@ export default function MainHeader(//Export default MainHeader function componen
         <Col id='headingCol1'/>
         <Col md={10} id='headingCol'>
             <div id='pageHeadingBlock'>
-            <span id='pageHeadingSpan'>
+            <span id='pageHeadingSpan' >
                 <h1 id='appHeading'>NOTE NEST</h1>
                 <h2 id='pageHeading'>{mainHeading}</h2>
             </span>
@@ -84,12 +84,13 @@ export default function MainHeader(//Export default MainHeader function componen
         <Col id='headingCol2'/>
       </Row>
         <Row id='headerRow3'>
-              <Col/>
-        <Col xs={6} id='mainNavCol'>
-             <div className="p-2">
-        <nav id='navigation'>
-            <ul id='mainNavbar'>
-          
+              <Col id='headerNavCol'>
+                 <Stack direction="horizontal" gap={3} id='headerStack2'>
+      <div className="p-2">First item</div>
+      <div className="p-2 ms-auto">Second item</div>
+      <div className="p-2">
+         <nav id='navigation'>
+            <ul id='mainNavbar'>    
                 {/* Login and registration pages */}
                 <li className='linkItem'>
                     <NavLink to='/' className='refLink'>LOGIN</NavLink>
@@ -101,9 +102,8 @@ export default function MainHeader(//Export default MainHeader function componen
             </ul>
         </nav>
       </div>
-        </Col>
-        <Col/>
-        
+    </Stack>
+                </Col>
         </Row>
     </header>
   )
