@@ -1,7 +1,12 @@
 import React from 'react'
 import '../css/pagesCss/PageSetup.css'
-export default function Home() {
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+export default function Home({currentUser}) {
   return (
-    <div>Home</div>
+    <div>
+      <Header heading={'HOME'} currentUser={currentUser} />
+      <Footer/>
+    </div>
   )
 }

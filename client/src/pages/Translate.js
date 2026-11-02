@@ -1,9 +1,13 @@
 import React from 'react'
 import '../css/pagesCss/Translate.css'
 import '../css/pagesCss/PageSetup.css'
-
-export default function Translate() {
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+export default function Translate({currentUser}) {
   return (
-    <div>Translate</div>
+    <div>
+      <Header heading={'TRANSLATE'} currentUser={currentUser} />
+      <Footer/>
+    </div>
   )
 }
