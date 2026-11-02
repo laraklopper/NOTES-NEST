@@ -1,9 +1,7 @@
 //noteSchema.js
 const mongoose = require('mongoose');
 const sanitizeHtml = require('sanitize-html');
-const { languageCodeRegex } = require('../util/schemaUtil');
-
-const THIRTY_DAYS_IN_SECONDS = 60 * 60 * 24 * 30; // trash retention period
+const { languageCodeRegex, THIRTY_DAYS_IN_SECONDS } = require('../util/schemaUtil');
 
 const ALLOWED_HTML = { // what the TipTap editor is allowed to store
   allowedTags: ['p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'ul', 'ol', 'li',
