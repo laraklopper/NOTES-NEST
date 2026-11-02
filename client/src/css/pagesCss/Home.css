@@ -7,3 +7,48 @@
     padding: 0px;
     background-color: #946E26;
 }
+#userProfilePanal{
+    width: 100%;
+    padding: 10px;
+}
+#userProfile{
+     background-color: #b7bdc4;
+}
+#userProfileBody{
+        display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    align-items: baseline;
+}
+#userProfileHeading{
+      font-family: "Roboto", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+
+}
+#userProfileBlock1,
+#userProfileBlock5{
+    display: flex;
+    align-items: baseline;
+}
+#userProfileBlock2,
+#userProfileBlock3,
+#userProfileBlock4{
+    display: flex;
+    gap: 10px;
+}
+#userProfileBlock6{
+    display: flex;
+    align-items: baseline;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+}
+.userDataSpan{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}

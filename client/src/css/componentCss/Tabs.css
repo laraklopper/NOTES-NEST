@@ -3,8 +3,16 @@
     margin: 0px;
     display: flex;
     padding: 0px;
+        flex-direction: column;
+    align-items: center;
 }
 #homePageTabs{
     width: 100%;
 }
-
+.tab-content{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+}
