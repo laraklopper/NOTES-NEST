@@ -1,4 +1,5 @@
 import React from 'react'
+import '../css/pagesCss/Notes.css'
 import '../css/pagesCss/PageSetup.css'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
