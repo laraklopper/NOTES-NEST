@@ -12,3 +12,22 @@ Footer.js
     background-color: #B78830;
     gap: 10px;
 }
+#footerRow1{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+#logoutBtn{
+    width: 200px;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    height: 40px;
+    font-family: "Roboto Mono", monospace;
+    letter-spacing:2px ;
+}
+
