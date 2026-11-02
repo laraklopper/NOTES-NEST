@@ -1,6 +1,6 @@
 //translationSchema.js
 const mongoose = require('mongoose');
-const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../utils/validators');
+const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../util/schemaUtil');
 
 const translationSchema = new mongoose.Schema(
   {
