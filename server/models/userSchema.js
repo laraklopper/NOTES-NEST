@@ -1,25 +1,8 @@
 const mongoose = require('mongoose');
 const {languageData} = require('../util/langaugeData')
-//============REGULAR EXPRESSIONS=============
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;// Regular expression for validating email formats
-const phoneRegex = /^(\+27|0)\d{2}[ ]?\d{3}[ ]?\d{4}$/;// Regular expression for validating South African phone numbers
-
-// Normalize SA phone to a consistent format for uniqueness
-function normalizePhoneSA(phone) {
-    if (!phone) return phone;
-
-    let p = String(phone).trim().replace(/\s+/g, '');// Remove all spaces
-
-    if (p.startsWith('0')) {
-        p = '+27' + p.slice(1);
-    }
-    return p;
-}
-
-
+const {emailRegex, phoneRegex, normalizePhoneSA} = require('../util/schemaUtil')
 /* Valid language codes, derived from the Langbly language list rather than
 written out again here, so the enums stay correct when that list changes.
-
 A source language may also be "auto", which asks the provider to detect it.
 A target language may not: there is nothing to detect on the way out. */
 const LANGUAGE_CODES = languageData.map((lang) => lang.code);

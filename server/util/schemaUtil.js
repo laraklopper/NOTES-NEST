@@ -1,7 +1,24 @@
 // Shared validation rules — reuse these in express-validator and on the client so rules never drift apart
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // basic email format
-const phoneRegex = /^(\+27|0)[6-8][0-9]{8}$/; // SA mobile: 0821234567 or +27821234567
+// =======REGULAR EXPRESSIONS=================
+/*Basic email format: Regular expression for validating email formats*/
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+/*Regular expression for validating South African phone numbers
+SA mobile: 0821234567 or +27821234567*/
+const phoneRegex = /^(\+27|0)[6-8][0-9]{8}$/;
+
+// Normalize SA phone to a consistent format for uniqueness
+export function normalizePhoneSA(phone) {
+    if (!phone) return phone;
+
+    let p = String(phone).trim().replace(/\s+/g, '');// Remove all spaces
+
+    if (p.startsWith('0')) {
+        p = '+27' + p.slice(1);
+    }
+    return p;
+}
+
 const languageCodeRegex = /^[a-z]{2,3}(-[A-Za-z]{2,4})?$/; // language codes from Langbly, e.g. en, af, zu, zh-CN
 const hexColourRegex = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/; // #1F4E79 or #fff
 
