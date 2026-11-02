@@ -146,15 +146,16 @@ Every route in [API_ENDPOINT_PLAN.md](API_ENDPOINT_PLAN.md) and where the client
 | `dateOfBirth` | date | Yes | Valid date in the past; user must be at least 13 |
 | `contactDetails.email` | email | Yes | Matches `emailRegex`; stored lowercase |
 | `contactDetails.contactNumber` | tel | Yes | Matches `phoneRegex` (SA format, e.g. `0821234567` or `+27821234567`); unique (**409** if taken) |
-| `defaultLanguages.defaultSourceLanguage` | select | No | Language code or `auto`; default `auto` |
-| `defaultLanguages.defaultTargetLanguage` | select | No | Language code; default `fr`; should differ from source |
-| `defaultLanguages.defaultNoteLanguage` | select | No | Language code; default `en` |
+| `defaultSourceLang` | select | No | Language code or `auto`; default `auto` |
+| `defaultTargetLang` | select | No | Language code; default `fr`; should differ from source |
+| `defaultNoteLang` | select | No | Language code; default `en` |
 | `password` | password | Yes | Minimum 8 characters |
 | `confirmPassword` | password | Yes | Must match `password` — **client-side only, never sent to the API** |
 | `adminDataConsent` | checkbox | Yes | Must be checked (`true`) — consent for admins to see the user's details |
 
 **Behaviour**
 - Language dropdowns use [languageData.js](../client/src/util/languageData.js) (`/api/languages` needs a login).
+- The language fields are sent flat (`defaultSourceLang`, `defaultTargetLang`, `defaultNoteLang`); the server stores them as `defaultLanguages.defaultSourceLanguage`, `defaultTargetLanguage` and `defaultNoteLanguage`. Blank selects are left out so the schema defaults apply.
 - `admin` is **not** on this form — it can only be set later through `/auth/setAdmin`.
 - Show field-level errors from the server's 400 response next to each input.
 - On success: set `currentUser`, redirect to `/` (Home).
@@ -176,11 +177,12 @@ All profile forms are on [Home.js](../client/src/pages/Home.js) — `/`.
 | `fullName.lastName` | text | Yes | Trimmed; 3–50 characters |
 | `contactDetails.email` | email | Yes | Matches `emailRegex` |
 | `contactDetails.contactNumber` | tel | Yes | Matches `phoneRegex` (SA format); unique (**409**) |
-| `defaultLanguages.defaultSourceLanguage` | select | No | Code from `GET /api/languages` or `auto` |
-| `defaultLanguages.defaultTargetLanguage` | select | No | Code from `GET /api/languages`; should differ from source |
-| `defaultLanguages.defaultNoteLanguage` | select | No | Code from `GET /api/languages`; default `en` |
+| `defaultSourceLang` | select | No | Code from `GET /api/languages` or `auto` |
+| `defaultTargetLang` | select | No | Code from `GET /api/languages`; should differ from source |
+| `defaultNoteLang` | select | No | Code from `GET /api/languages`; default `en` |
 
 **Behaviour**
+- Language fields use the same flat names as the registration form; pre-fill them from `defaultLanguages.*` in the `GET /user/me` response.
 - Pre-fill all fields from `GET /user/me`. Current details are used as placeholders (if a field has no data, e.g. it was optional at registration, use the same placeholder as the registration form).
 - Only send fields that changed.
 - `dateOfBirth`, `password`, `adminDataConsent` and `admin` are **not** editable here.
