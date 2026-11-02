@@ -14,36 +14,47 @@
 #userProfile{
      background-color: #b7bdc4;
 }
+#userProfileHeader{
+    border-bottom: 1px solid #8a9199;
+}
 #userProfileBody{
-        display: flex;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px;
     margin: 0px;
-    padding: 0px;
+    padding: 10px;
     width: 100%;
-    align-items: baseline;
+}
+/* The two stacks share the width equally and drop below each other on small screens */
+#profileStack1,
+#profileStack2{
+    flex: 1 1 300px;
 }
 #userProfileHeading{
-      font-family: "Roboto", sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-
-}
-#userProfileBlock1,
-#userProfileBlock5{
-    display: flex;
-    align-items: baseline;
-}
-#userProfileBlock2,
-#userProfileBlock3,
-#userProfileBlock4{
-    display: flex;
-    gap: 10px;
-}
-#userProfileBlock6{
-    display: flex;
-    align-items: baseline;
-    flex-direction: column;
     margin: 0px;
-    padding: 0px;
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+/* Each block: heading label on top, values listed underneath */
+.userProfileBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+.userProfileHeadingLabel{
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #8a9199;
+    width: 100%;
+}
+.userDataDiv{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 10px;
 }
 .userDataSpan{
     display: flex;
@@ -51,4 +62,12 @@
     gap: 10px;
     margin: 0px;
     padding: 0px;
+}
+.userProfileLabel{
+    font-weight: 600;
+    white-space: nowrap;
+}
+.userProfileValue{
+    margin: 0px;
+    word-break: break-word;
 }
