@@ -20,13 +20,12 @@ ROUTE||FILE|  PURPOSE | ACCESS |
 
 | ROUTE| FILE| PURPOSE | ACCESS |
 |-------|-------|--------|-----|
-| `/`| [Home.js](../client/src/pages/Home.js)| Landing page if LoggedIn, Application Description | Private |
-| `/profile` | []
-| NotePad.js | 
+| `/`| [Home.js](../client/src/pages/Home.js)| Landing page if LoggedIn, Application Description, user profile and editProfile & editPassword forms | Private |
+| '/npte| NotePad.js | 
 | Notes.js|
 | Translate.js |
 | Trash.js |
-||
+| Users.js| 
 ## COMPONENTS
 
 | COMPONENT FILE | DESCRIPTION| PAGE/COMPONENT | loggedIn State *`(App.js)`* |
