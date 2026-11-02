@@ -82,14 +82,14 @@ export default function Home(
                         <div className="p-2 ms-auto">
                           <Button
                           variant='warning'
-                          id='toggleEditProfileToggleBtn'
+                          id='editProfileToggleBtn'
                           >
                             EDIT PROFILE
                           </Button>
                         </div>
                         <div className="p-2">
                           <Button variant='warning'
-                          id='toggleEditPasswordToggleBtn'
+                          id='editPasswordToggleBtn'
                           >
                             EDIT PASSWORD
                           </Button>

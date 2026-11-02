@@ -2,12 +2,46 @@
     width: 100%;
     margin: 0px;
     display: flex;
-    padding: 0px;
+    padding: 10px;
         flex-direction: column;
     align-items: center;
+    background-color: silver;
 }
 #homePageTabs{
+        display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
     width: 100%;
+    background-color: gray;
+}
+.nav-tabs .nav-link {
+    color: #000;
+    text-transform: uppercase;
+     height: 40px;
+    font-family: "Roboto Mono", monospace;
+    letter-spacing:2px ;
+    font-weight: 700;
+}
+.nav-link{
+    width: 200px;
+    color: #000;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+
+.nav-link > .active{
+        width: 100%;
+    margin: 0px;
+    padding: 0px;
+   text-decoration: underline;
+    display: flex;
+    justify-content: center;
 }
 .tab-content{
     width: 100%;

@@ -71,3 +71,21 @@
     margin: 0px;
     word-break: break-word;
 }
+#editProfileToggleBtn,
+#editPasswordToggleBtn{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    letter-spacing: 2px;
+    font-weight: 700;
+    width: 200px;
+    height: 40px;
+    font-family: "Roboto Mono", monospace;
+    color: #000;
+    border: #323A42 solid 2px;
+}
+#editProfileToggleBtn:hover,
+#editPasswordToggleBtn:hover{
+       color: #E8F0F6;
+    background-color: #323A42;
+}
