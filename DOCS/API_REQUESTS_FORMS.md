@@ -1,13 +1,23 @@
 # API REQUESTS AND FORMS
 
-Client-side requests and forms for the 32 routes in [API_ENDPOINT_PLAN.md](API_ENDPOINT_PLAN.md).
-
 ## TABLE OF CONTENTS
 1. [REQUESTS SUMMARY](#1-requests-summary)
+    - [1.1. DEFAULT API'S](#11-default-apis)
+    - [1.2. FORM API REQUESTS](#12-form-api-requests)
+    - [1.3. BUTTON API REQUESTS](#13-button-api-requests)
+    - [1.4. ROUTE COVERAGE](#14-route-coverage)
 2. [FORMS](#2-forms)
+    - [2.1. PUBLIC FORMS](#21-public-forms)
+    - [2.2. PROFILE FORMS](#22-profile-forms)
+    - [2.3. NOTE FORMS](#23-note-forms)
+    - [2.4. TAG FORMS](#24-tag-forms)
+    - [2.5. TRANSLATION FORMS](#25-translation-forms)
+    - [2.6. EXPORT FORMS](#26-export-forms)
 3. [ERROR HANDLING](#3-error-handling)
 
 ## 1. REQUESTS SUMMARY
+
+Client-side requests and forms for the 32 routes in [API_ENDPOINT_PLAN.md](API_ENDPOINT_PLAN.md).
 
 ### 1.1. DEFAULT API'S
 
