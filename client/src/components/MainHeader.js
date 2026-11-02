@@ -89,13 +89,10 @@ export default function MainHeader(//Export default MainHeader function componen
              <div className="p-2">
         <nav id='navigation'>
             <ul id='mainNavbar'>
-            {/* Landing Page */}
-                <li className='linkItem'>
-                    <NavLink to='/' className='refLink'>DASHBOARD</NavLink>
-                </li>
+          
                 {/* Login and registration pages */}
                 <li className='linkItem'>
-                    <NavLink to='/login' className='refLink'>LOGIN</NavLink>
+                    <NavLink to='/' className='refLink'>LOGIN</NavLink>
                 </li>
                 <li className='linkItem'>
                     <NavLink to='/reg' className='refLink'>REGISTRATION</NavLink>
