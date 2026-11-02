@@ -1,3 +1,14 @@
 /* Footer.css
 Footer.js
 */
+/* FOOTER LoggedIn=true */
+#pageFooter {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px 0px;
+    padding: 10px 0px;
+    background-color: #B78830;
+    gap: 10px;
+}
