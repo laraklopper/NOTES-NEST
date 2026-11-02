@@ -10,6 +10,7 @@ const SOURCE_LANGUAGE_CODES = ['auto', ...LANGUAGE_CODES];
 
 //Define user schema
 const userSchema = new mongoose.Schema({
+    //Field for username
     username: {
         type: String,
         required: true,
