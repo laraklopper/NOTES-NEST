@@ -32,6 +32,7 @@ export default function Header({
         <nav id='navigation'>
             <ul id='navbar'>
       <Stack gap={3} id='navBarStack'>
+      {/* NAVBAR BLOCK 1: HomePage, NotePad, Notes */}
              {currentUser && (
                 <div className="p-2" id='navBlock1'>
                     <li className='linkItem'>
@@ -40,20 +41,24 @@ export default function Header({
                     <li className='linkItem'>
                         <NavLink to='/notepad' className='refLink'>NOTE PAD</NavLink>
                     </li>
+                    <li className='linkItem'>
+                        <NavLink to='/notes' className='refLink'>NOTES</NavLink>
+                    </li>
                 </div>
 
              )}
+             {/* NAVBAR BLOCK 2: Translate, Trash */}
              {currentUser && (
                 <div className="p-2" id='navBlock2'>
                     <li className='linkItem'>
-                        <NavLink to='/notes'>NOTES</NavLink>
+                        <NavLink to='/translate' className='refLink'>TRANSLATE</NavLink>
                     </li>
                     <li className='linkItem'>
                         <NavLink to='/trash' className='refLink'>TRASH</NavLink>
                     </li>
-
                 </div>
              )}
+             {/* (Admin only)NAVBAR BLOCK 3: Users */}
              {currentUser?.admin && (
                 <div className="p-2" id='navBlock3'>
                     <li className='linkItem'>
