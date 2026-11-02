@@ -2,11 +2,11 @@ import React from 'react'
 import '../css/pagesCss/PageSetup.css'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-export default function Notes({currentUser}) {
+export default function Notes({currentUser ,logout}) {
   return (
     <div>
       <Header heading={'NOTES'} currentUser={currentUser} />
-      <Footer/>
+      <Footer logout={logout}/>
     </div>
   )
 }

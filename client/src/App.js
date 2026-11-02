@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import './App.css'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -17,7 +17,7 @@ import Trash from './pages/Trash';
 import Users from './pages/Users';
 
 export default function App() {
-  // const [users, setUsers] = useState([])
+  const [users, setUsers] = useState([])
   const [currentUser, setCurrentUser] = useState(null)
   const [userData, setUserData] = useState({
     username: '',
@@ -40,6 +40,70 @@ export default function App() {
   const [error, setError] = useState(null)
 
   const navigate = useNavigate();
+
+ useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+
+       if (!token) return
+
+       const response = await fetch('http://localhost:3000/users/me', {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch current user');
+        }
+        const me = await response.json();
+        setCurrentUser(me);
+        setLoggedIn(true);
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+        setCurrentUser(null);
+        setLoggedIn(false);
+      }
+    }
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return
+
+        const response = await fetch('http://localhost:3000/fetchUsers', {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        const data = await response.json();
+        setUsers(users);
+         if (Array.isArray(data)) {
+          setUsers(data);
+          setError(null);
+        } else {
+          throw new Error('Unexpected users response format');
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setError('Failed to fetch users');
+      }
+    }
+    fetchCurrentUser();
+    fetchUsers();
+      
+  },[setCurrentUser, setLoggedIn, setError, setUsers, users]);
+
+
 
   const logout = useCallback(() => {
     localStorage.removeItem('username');
@@ -72,13 +136,13 @@ export default function App() {
             <>
               <Route path='/' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                  <Home/>
+                  <Home currentUser={currentUser} logout={logout}/>
                 </ProtectedUserRoute>
            
               }/>
               <Route path='/notepad' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                  <NotePad/>
+                  <NotePad currentUser={currentUser} logout={logout}/>
                 </ProtectedUserRoute>
               }/>
               <Route path='/notes' element={
@@ -88,17 +152,17 @@ export default function App() {
               }/>
               <Route path='/translate' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                <Translate/>
+                <Translate currentUser={currentUser} logout={logout}/>
                 </ProtectedUserRoute>
               }/> 
               <Route path='/trash' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                  <Trash/>
+                  <Trash currentUser={currentUser} logout={logout}/>
                 </ProtectedUserRoute>
               }/>
               <Route path='/users' element={
                 <ProtectedAdminRoute currentUser={currentUser}>
-                  <Users/>
+                  <Users currentUser={currentUser} logout={logout}/>
                 </ProtectedAdminRoute>
               }/>
             </>
