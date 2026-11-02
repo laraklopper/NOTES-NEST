@@ -18,12 +18,12 @@ Requests that run by default after login, page load or npm start (no user action
 | 1 | GET | [userRoutes.js](../server/routes/userRoutes.js) | [App.js](../client/src/App.js), [Home.js](../client/src/pages/Home.js) | `/user/me` | Protected |
 | 2 | GET | [userRoutes.js](../server/routes/userRoutes.js) | [App.js](../client/src/App.js) → [Users.js](../client/src/pages/Users.js) | `/user/fetchUsers` | Admin |
 | 3 | GET | [languageRoutes.js](../server/routes/languageRoutes.js) | [Register.js](../client/src/pages/Register.js), [Home.js](../client/src/pages/Home.js), [NotePad.js](../client/src/pages/NotePad.js), [Translate.js](../client/src/pages/Translate.js) | `/api/languages` | Protected |
-| 4 | GET | [notesRoutes.js](../server/routes/notesRoutes.js) | [Notes.js](../client/src/pages/Notes.js), [Translate.js](../client/src/pages/Translate.js) | `/notes` | Protected |
-| 5 | GET | [notesRoutes.js](../server/routes/notesRoutes.js) | [NotePad.js](../client/src/pages/NotePad.js) (editing an existing note) | `/notes/:id` | Protected |
-| 6 | GET | [notesRoutes.js](../server/routes/notesRoutes.js) | [Trash.js](../client/src/pages/Trash.js) | `/notes/trash` | Protected |
+| 4 | GET | [noteRoutes.js](../server/routes/noteRoutes.js) | [Notes.js](../client/src/pages/Notes.js), [Translate.js](../client/src/pages/Translate.js) | `/notes` | Protected |
+| 5 | GET | [noteRoutes.js](../server/routes/noteRoutes.js) | [NotePad.js](../client/src/pages/NotePad.js) (editing an existing note) | `/notes/:id` | Protected |
+| 6 | GET | [noteRoutes.js](../server/routes/noteRoutes.js) | [Trash.js](../client/src/pages/Trash.js) | `/notes/trash` | Protected |
 | 7 | GET | [notebookRoutes.js](../server/routes/notebookRoutes.js) | [Notes.js](../client/src/pages/Notes.js), [NotePad.js](../client/src/pages/NotePad.js) | `/notebooks` | Protected |
 | 8 | GET | [tagRoutes.js](../server/routes/tagRoutes.js) | [Notes.js](../client/src/pages/Notes.js), [NotePad.js](../client/src/pages/NotePad.js) | `/tags` | Protected |
-| 9 | GET | [translateRoutes.js](../server/routes/translateRoutes.js) | [Translate.js](../client/src/pages/Translate.js) | `/translation/fetch` | Protected |
+| 9 | GET | [translationRoutes.js](../server/routes/translationRoutes.js) | [Translate.js](../client/src/pages/Translate.js) | `/translation/fetch` | Protected |
 
 Notes:
 - `/user/fetchUsers` only runs when `currentUser.admin` is `true`.

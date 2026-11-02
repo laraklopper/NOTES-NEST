@@ -5,7 +5,8 @@ require('dotenv').config();
 // Import Required modules and packages
 const jwt = require('jsonwebtoken');// Import the JSON Web Token (JWT) library
 const bcrypt = require('bcryptjs');// Import the bcrypt library
-const User = require('../models/UserSchema');// Import the User model
+const User = require('../models/userSchema');// Import the User model (filename is case-sensitive on Linux)
+const { ADMIN_MIN_AGE } = require('../util/schemaUtil');// Minimum age for admin users
 
 const secretKey = process.env.JWT_SECRET_KEY || 'secretKey';
 
@@ -157,14 +158,11 @@ All users must be 13 or older; admin users must be 21 or older*/
 const checkAge = (req, res, next) => {
     console.log('[DEBUG: formMiddleware.js checkAge] Middleware triggered');// Log message in the console for debugging purposes
     try {
-        const { dateOfBirth, admin, role } = req.body || {};// Extract the date of birth, admin flag and role from the request body
+        const { dateOfBirth, admin } = req.body || {};// Extract the date of birth and admin flag from the request body
         console.log('[DEBUG: formMiddleware.js checkAge] Received date of birth:', dateOfBirth);// Log message in the console for debugging purposes
 
-        /* The registration form sends the account type as `role` ('user' or
-        'admin'), matching the schema field; the older `admin` boolean is still
-        accepted so any caller using it keeps working. Read from both, or an
-        admin signup is only ever held to the 13+ limit. */
-        const isAdminSignup = admin === true || role === 'admin';
+        // `admin` matches the userSchema field; when true the admin age limit applies
+        const isAdminSignup = admin === true;
 
         // Conditional rendering to check if the date of birth is provided in the request body
         if (!dateOfBirth) {
@@ -199,7 +197,7 @@ const checkAge = (req, res, next) => {
             );
 
         // Determine the minimum required age
-        const MIN_AGE = isAdminSignup ? 18 : 13; // Admins must be 18+, regular users must be 13+
+        const MIN_AGE = isAdminSignup ? ADMIN_MIN_AGE : 13; // Admins must be 21+, regular users must be 13+
         const accountType = isAdminSignup ? 'an admin' : 'a user';// Wording used in the message below
         // Block registration if user is below the minimum age
         if (years < MIN_AGE) {
@@ -242,7 +240,7 @@ const checkAdmin = async (req, res, next) => {
         }
 
         /* Only the two fields this check and its logging need are loaded. */
-        const user = await User.findById(userId).select('username role').exec();
+        const user = await User.findById(userId).select('username admin').exec();
 
         /* Conditional rendering to check the user on the token still exists */
         if (!user) {
@@ -254,7 +252,7 @@ const checkAdmin = async (req, res, next) => {
         }
 
         /* Conditional rendering to check the account holds admin rights. */
-        if (user.role !== 'admin') {
+        if (user.admin !== true) {
             console.warn(`[WARN: middleware.js, checkAdmin] ${user.username} is not an admin`);// Log a warning message in the console for debugging purposes
             return res.status(403).json({// Respond with a 403 (Forbidden) status code and an error message
                 success: false,//Success status

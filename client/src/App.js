@@ -41,47 +41,53 @@ export default function App() {
 
   const navigate = useNavigate();
 
-  // Restore the session saved by Login.js so a page refresh doesn't log the user out
-  useEffect(() => {
-    try {
-      const token = localStorage.getItem('token');
-      const savedUser = JSON.parse(localStorage.getItem('currentUser'));
-      if (!token || !savedUser) return
-
-      // Drop the session if the JWT has expired
-      const { exp } = JSON.parse(atob(token.split('.')[1]));
-      if (exp && exp * 1000 < Date.now()) {
-        throw new Error('Token expired');
-      }
-      setCurrentUser(savedUser);
-      setLoggedIn(true);
-    } catch (error) {
-      console.error('Error restoring session:', error);
-      localStorage.removeItem('username');
-      localStorage.removeItem('loggedIn');
-      localStorage.removeItem('token');
-      localStorage.removeItem('currentUser');
-      setCurrentUser(null);
-      setLoggedIn(false);
-    }
+  // Forget the saved user and return to the logged-out state
+  const clearSession = useCallback(() => {
+    localStorage.removeItem('currentUser');
+    setCurrentUser(null);
+    setLoggedIn(false);
+    setUsers([]);
   }, []);
+
+  /* Restore the session saved by Login.js so a page refresh doesn't log the user out.
+  The JWT is in an HTTP-only cookie the client can't read, so GET /user/me checks it is still valid */
+  useEffect(() => {
+    let savedUser = null;
+    try {
+      savedUser = JSON.parse(localStorage.getItem('currentUser'));
+    } catch (error) {
+      console.error('Error reading saved user:', error);
+    }
+    if (!savedUser) return
+
+    setCurrentUser(savedUser);// Show the logged-in pages straight away while the cookie is checked
+    setLoggedIn(true);
+
+    const verifySession = async () => {
+      try {
+        const response = await fetch('/user/me', { method: 'GET' });
+        if (!response.ok) {
+          throw new Error('Session expired');
+        }
+        const user = await response.json();
+        const freshUser = { userId: user._id, fullName: user.fullName, admin: user.admin === true };
+        localStorage.setItem('currentUser', JSON.stringify(freshUser));
+        setCurrentUser(freshUser);// Pick up changes made since login, e.g. admin status
+      } catch (error) {
+        console.error('Error restoring session:', error);
+        clearSession();
+      }
+    }
+    verifySession();
+  }, [clearSession]);
 
   // Only admins can see the users list
   useEffect(() => {
     if (!currentUser?.admin) return
     const fetchUsers = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return
-
-        const response = await fetch('/fetchUsers', {
-          method: 'GET',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        // The browser sends the JWT cookie with the request
+        const response = await fetch('/user/fetchUsers', { method: 'GET' });
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }
@@ -102,16 +108,15 @@ export default function App() {
 
 
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentUser');
-    setCurrentUser(null);
-    setLoggedIn(false);
-    setUsers([]);
+  const logout = useCallback(async () => {
+    try {
+      await fetch('/auth/logout', { method: 'POST' });// Server clears the JWT cookie
+    } catch (error) {
+      console.error('Error logging out:', error);// Still log out locally
+    }
+    clearSession();
     navigate('/');// The login page lives at '/' when logged out
-  }, [navigate]);
+  }, [clearSession, navigate]);
   return (
     <>
     <Container id='appContainer' role='main'>

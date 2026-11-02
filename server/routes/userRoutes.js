@@ -3,8 +3,10 @@
 file using the dotenv package*/
 require('dotenv').config()
 const express = require('express');// Import the Express.js library
+const mongoose = require('mongoose');// Used to validate ObjectIds
+const User = require('../models/userSchema');// Import the User model
 const router = express.Router();// Create a new router object using Express.js
-const { checkJwtToken} = require('./middleware');// Import the JWT verification and admin check middleware functions
+const { checkJwtToken, checkAdmin } = require('./middleware');// Import the JWT verification and admin check middleware functions
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/
@@ -73,7 +75,7 @@ router.get('/fetchUser/:id', checkJwtToken, async (req, res) => {
         }
 
         // Conditional rendering to check the account is not an admin account
-        if (user.role === 'admin') {
+        if (user.admin === true) {
             console.warn(`[WARN: userRoutes.js, GET /fetchUser/:id] Refused to return admin account: ${id}`);//Log a warning message in the console for debugging purposes
             return res.status(403).json({ message: 'Admin accounts cannot be viewed.' });// Return a 403 (Forbidden) status code with a message
         }
@@ -85,3 +87,5 @@ router.get('/fetchUser/:id', checkJwtToken, async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
+
+module.exports = router;

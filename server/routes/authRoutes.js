@@ -1,9 +1,9 @@
 require('dotenv').config()
 const express = require('express');
-const User = require('../models/UserSchema');
+const User = require('../models/userSchema');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { hashPassword, isDevelopment } = require('./middleware');// Import the password hashing middleware and development flag
+const { hashPassword, isDevelopment, checkJwtToken } = require('./middleware');// Import the password hashing and JWT middleware and development flag
 const router = express.Router()
 
 // Extract environmental variables (with safe fallbacks for local dev)
@@ -27,6 +27,14 @@ else if (!rawExpiration) {
 else if (!rawAlgorithm) {
     console.warn('[WARNING: userRoute.js] Missing jwt algorithm, using fallback algorithm.'); // Log a warning message in the console for debugging purposes
 }
+
+// Settings shared by setting and clearing the JWT cookie (clearCookie needs the same ones to match)
+const cookieOptions = {
+    httpOnly: true,// Not readable from client-side JavaScript
+    secure: !isDevelopment,// HTTPS only outside development
+    sameSite: 'strict',// Not sent on cross-site requests
+    path: '/'
+};
 //=============ROUTES================
 /*──────────────────────────── POST ROUTES ──────────────────────────────
     POST: Used to create a new resource/submit data to the database
@@ -102,9 +110,15 @@ router.post('/login', async (req, res) => {
         );
 
         
-       // Return the JWT token and user information to the client
-        return res.status(200).json({// Send a 200 OK status code with the JWT token and user details
-            token: jwtToken,         // Authentication token
+        // Send the token as an HTTP-only cookie so client-side scripts can never read it
+        const { exp } = jwt.decode(jwtToken);// Expiry (in seconds) that jwt.sign set from expirationTime
+        res.cookie('token', jwtToken, {
+            ...cookieOptions,
+            expires: new Date(exp * 1000)// Cookie expires with the token
+        });
+
+       // Return the user information to the client (the token stays in the cookie)
+        return res.status(200).json({// Send a 200 OK status code with the user details
             userId: user._id,        // User's unique ID
             fullName: user.fullName, // User's full name
             isAdmin,                 // Indicates whether the user is an administrator
@@ -211,6 +225,13 @@ router.post('/register', hashPassword, async (req, res) => {
         console.error('[ERROR: authRoutes.js, /register] Registration Failed:', error.message);// Log an error message in the console for debugging purposes
         res.status(500).json({ success: false, message: 'Internal Server Error' });// Send a 500 Internal Server Error status code with a message
     }
+});
+
+// Send a POST request to the /auth/logout route
+router.post('/logout', checkJwtToken, (req, res) => {
+    res.clearCookie('token', cookieOptions);// Remove the JWT cookie
+    console.log('[INFO: authRoutes.js, /logout] User logged out:', { userId: req.user.id });
+    return res.status(200).json({ message: 'Logged out' });// Send a 200 OK status code with a JSON message
 });
 
 module.exports = router;

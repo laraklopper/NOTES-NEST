@@ -43,9 +43,7 @@ export default function Login(
                  if (response.ok) {
                     // 'admin' matches the field name Header and ProtectedAdminRoute check
                     const user = { userId: data.userId, fullName: data.fullName, admin: data.isAdmin === true };
-                    localStorage.setItem('username', userData.username)
-                    localStorage.setItem('loggedIn', 'true')
-                    localStorage.setItem('token', data.token)
+                    // The JWT is in an HTTP-only cookie set by the server, so only the user details are saved here
                     localStorage.setItem('currentUser', JSON.stringify(user))
                     setCurrentUser(user);
                     setLoggedIn(true)

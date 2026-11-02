@@ -55,7 +55,7 @@ export default function Register(
       const data = await response.json().catch(() => ({}));
       if (response.ok) {
         setNewUserData(emptyNewUser)
-        navigate('/login')// Send the new user to the login page
+        navigate('/')// Send the new user to the login page (lives at '/' when logged out)
       } else {
         setError(data.message || 'Registration failed. Please try again')
       }

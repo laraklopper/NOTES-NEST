@@ -13,8 +13,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');// Reads the JWT cookie into req.cookies
 const connectDB = require('./config/connect')
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();// Create an Express application
 
@@ -31,12 +33,14 @@ if (!port) {
 // =======GLOBAL MIDDLEWARE===============
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(cookieParser())
 app.use(cors())
 app.use(helmet())
 
 // =======ROUTES===========
 // Prefix all route modules with their base path.
-app.use('/auth', authRoutes);// /auth/login, /auth/register
+app.use('/auth', authRoutes);// /auth/login, /auth/register, /auth/logout
+app.use('/user', userRoutes);// /user/me, /user/fetchUsers
 
 // ================== MONGOOSE CONFIG ==================
 /* Disable strict populate to prevent errors when populating 
