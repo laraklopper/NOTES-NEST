@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Bug} from 'lucide-react';
-import { Routes , Route} from 'react-router-dom';
+import { Routes , Route, useNavigate} from 'react-router-dom';
 import ProtectedUserRoute from './protectedRoutes/ProtectedUserRoute';
 import ProtectedAdminRoute from './protectedRoutes/ProtectedAdminRoute';
 import Home from './pages/Home';
@@ -38,9 +38,20 @@ export default function App() {
   })
   const [loggedIn, setLoggedIn] = useState(false)
   const [error, setError] = useState(null)
+
+  const navigate = useNavigate();
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('token');
+    setCurrentUser(null);
+    setLoggedIn(false);
+    navigate('/login');
+  }, [navigate]);
   return (
     <>
-    <Container>
+    <Container id='appContainer' role='main'>
          <Row id='globalErrorRow'>
          <Col xs={0} md id='errorCol1'/>
         <Col xs={12} md={8} id='globalErrorCol'>
