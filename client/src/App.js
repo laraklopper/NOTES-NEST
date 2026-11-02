@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col';
 import { Bug} from 'lucide-react';
 import { Routes , Route} from 'react-router-dom';
 import ProtectedUserRoute from './protectedRoutes/ProtectedUserRoute';
+import ProtectedAdminRoute from './protectedRoutes/ProtectedAdminRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -13,7 +14,7 @@ import NotePad from './pages/NotePad';
 import Notes from './pages/Notes';
 import Translate from './pages/Translate';
 import Trash from './pages/Trash';
-
+import Users from './pages/Users';
 
 export default function App() {
   // const [users, setUsers] = useState([])
@@ -83,6 +84,11 @@ export default function App() {
                 <ProtectedUserRoute currentUser={currentUser}>
                   <Trash/>
                 </ProtectedUserRoute>
+              }/>
+              <Route path='/users' element={
+                <ProtectedAdminRoute currentUser={currentUser}>
+                  <Users/>
+                </ProtectedAdminRoute>
               }/>
             </>
           ):(
