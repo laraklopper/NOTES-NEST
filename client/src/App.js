@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Bug} from 'lucide-react';
-import { Routes , Route, useNavigate} from 'react-router-dom';
+import { Routes , Route, Navigate, useNavigate} from 'react-router-dom';
 import ProtectedUserRoute from './protectedRoutes/ProtectedUserRoute';
 import ProtectedAdminRoute from './protectedRoutes/ProtectedAdminRoute';
 import Home from './pages/Home';
@@ -41,40 +41,40 @@ export default function App() {
 
   const navigate = useNavigate();
 
- useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const token = localStorage.getItem('token');
+  // Restore the session saved by Login.js so a page refresh doesn't log the user out
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem('token');
+      const savedUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!token || !savedUser) return
 
-       if (!token) return
-
-       const response = await fetch('http://localhost:3000/users/me', {
-          method: 'GET',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch current user');
-        }
-        const me = await response.json();
-        setCurrentUser(me);
-        setLoggedIn(true);
-      } catch (error) {
-        console.error('Error fetching current user:', error);
-        setCurrentUser(null);
-        setLoggedIn(false);
+      // Drop the session if the JWT has expired
+      const { exp } = JSON.parse(atob(token.split('.')[1]));
+      if (exp && exp * 1000 < Date.now()) {
+        throw new Error('Token expired');
       }
+      setCurrentUser(savedUser);
+      setLoggedIn(true);
+    } catch (error) {
+      console.error('Error restoring session:', error);
+      localStorage.removeItem('username');
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('token');
+      localStorage.removeItem('currentUser');
+      setCurrentUser(null);
+      setLoggedIn(false);
     }
+  }, []);
+
+  // Only admins can see the users list
+  useEffect(() => {
+    if (!currentUser?.admin) return
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) return
 
-        const response = await fetch('http://localhost:3000/fetchUsers', {
+        const response = await fetch('/fetchUsers', {
           method: 'GET',
           mode: 'cors',
           headers: {
@@ -86,7 +86,6 @@ export default function App() {
           throw new Error('Failed to fetch users');
         }
         const data = await response.json();
-        setUsers(users);
          if (Array.isArray(data)) {
           setUsers(data);
           setError(null);
@@ -98,10 +97,8 @@ export default function App() {
         setError('Failed to fetch users');
       }
     }
-    fetchCurrentUser();
     fetchUsers();
-      
-  },[setCurrentUser, setLoggedIn, setError, setUsers, users]);
+  }, [currentUser]);
 
 
 
@@ -109,9 +106,11 @@ export default function App() {
     localStorage.removeItem('username');
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
     setCurrentUser(null);
     setLoggedIn(false);
-    navigate('/login');
+    setUsers([]);
+    navigate('/');// The login page lives at '/' when logged out
   }, [navigate]);
   return (
     <>
@@ -162,9 +161,10 @@ export default function App() {
               }/>
               <Route path='/users' element={
                 <ProtectedAdminRoute currentUser={currentUser}>
-                  <Users currentUser={currentUser} logout={logout}/>
+                  <Users currentUser={currentUser} users={users} logout={logout}/>
                 </ProtectedAdminRoute>
               }/>
+              <Route path='*' element={<Navigate to='/' replace/>}/>
             </>
           ):(
             <>
@@ -177,6 +177,7 @@ export default function App() {
                 setCurrentUser={setCurrentUser}
               />}/>
               <Route path='/reg' element={<Register setError={setError}/>}/>
+              <Route path='*' element={<Navigate to='/' replace/>}/>
             </>
           )}
         </Routes>

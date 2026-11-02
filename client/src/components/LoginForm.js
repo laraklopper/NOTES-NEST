@@ -8,7 +8,8 @@ import { Bug, Eye, EyeOff } from 'lucide-react';
 export default function LoginForm({
   userData, 
   setUserData,
-submitLogin
+  submitLogin,
+  loading
 }) {
   const [showPswd, setShowPswd] = useState(false)
   const [usernameMsg, setUsernameMsg] = useState(false)// State to control display of username help message
@@ -23,7 +24,7 @@ submitLogin
     [userData.username]
   )
   const passwordEmpty = useMemo(
-    () => !String (userData.password || '').trim,
+    () => !String(userData.password || '').trim(),
     [userData.password]
   )
 
@@ -84,13 +85,13 @@ submitLogin
           // ARIA ATTRIBUTES:
           aria-label='Login Username Input'
           aria-required='true'
-          aria-invalid={usernameEmpty ? 'true' : 'false'}
+          aria-invalid={showUsernameError ? 'true' : 'false'}
           aria-describedby={[
             usernameMsg ? usernameHelpId: null,
-            usernameEmpty ? usernameErrorId: null,
+            showUsernameError ? usernameErrorId : null,
           ]
           .filter(Boolean)
-          .join('')
+          .join(' ')
           }
         />
       </div>
@@ -108,7 +109,7 @@ submitLogin
     {/* ========STACK 2============== */}
      <Stack gap={3} id='loginStack2'>
       <div className="p-2" id='loginPswdBlock1'>
-        <label className='loginLabel'>PASSWORD:</label>
+        <label className='loginLabel' htmlFor='loginPasswordInput'>PASSWORD:</label>
         <div id='pswdInputDiv'>
           <input
           type={showPswd ? 'text': 'password'}
@@ -118,6 +119,7 @@ submitLogin
             placeholder='PASSWORD'
             inputMode='text'
             name='password'
+            autoComplete='current-password'
             value={userData.password}
             onChange={handleLoginInput}
             onFocus={() => setShowPswdMsg(true)}
@@ -128,10 +130,10 @@ submitLogin
             //ARIA ATTRIBUTES:
             aria-label='password'
                             aria-required="true"
-                            aria-invalid={passwordEmpty ? 'true' : 'false'}
+                            aria-invalid={showPasswordError ? 'true' : 'false'}
                             aria-describedby={[
                                 showPswdMsg ? passwordHelpId : null,
-                                passwordEmpty ? passwordErrorId : null,
+                                showPasswordError ? passwordErrorId : null,
                             ]
                                 .filter(Boolean)
               .join(' ')}
@@ -191,9 +193,11 @@ submitLogin
           id='loginBtn'
           variant='light'
           type='submit'
+          disabled={loading}
           // ARIA ATTRIBUTES
+          aria-busy={loading}
           >
-            LOGIN
+            {loading ? 'LOGGING IN...' : 'LOGIN'}
           </Button>
         </div>
     </form>

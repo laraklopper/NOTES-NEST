@@ -1,5 +1,6 @@
 //Login.js
 import React, { useCallback, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import '../css/pagesCss/LoggedOut.css'
 import '../css/pagesCss/PageSetup.css'
 import MainHeader from '../components/MainHeader'
@@ -18,10 +19,13 @@ export default function Login(
     }) {
         //=============STATE VARIABLES=============
         const [loading, setLoading] = useState(false);// State Used to disable the button and show loading text.
+        const navigate = useNavigate();
 
     //================REQUESTS/CALLBACKS====================
         const submitLogin = useCallback(async () => {
+            if (loading) return // Ignore repeat submits while a request is in flight
             try {
+                setLoading(true)
                 setError(null)
                 const response = await fetch(`/auth/login`,{
                     method: 'POST',
@@ -37,23 +41,28 @@ export default function Login(
 
                  const data = await response.json().catch(() => ({}));
                  if (response.ok) {
+                    // 'admin' matches the field name Header and ProtectedAdminRoute check
+                    const user = { userId: data.userId, fullName: data.fullName, admin: data.isAdmin === true };
                     localStorage.setItem('username', userData.username)
-                    localStorage.setItem('loggedIn', true)
+                    localStorage.setItem('loggedIn', 'true')
                     localStorage.setItem('token', data.token)
-                    setCurrentUser({ userId: data.userId, fullName: data.fullName, isAdmin: data.isAdmin });
+                    localStorage.setItem('currentUser', JSON.stringify(user))
+                    setCurrentUser(user);
+                    setLoggedIn(true)
+                    setUserData((prev) => ({ ...prev, password: '' }))// Don't keep the password in state after login
                     setError(null)
+                    navigate('/')// Redirect to the Home page
                  } else {
                     setError(data.message || 'Login failed. Please try again')
                  }
-                 setLoading('false')
             } catch (error) {
                 setError('An error occurred during login. Please try again.');
                 console.error('Login error:', error);
-                setLoggedIn('false')
+                setLoggedIn(false)
             }finally{
                 setLoading(false)
             }
-        },[setCurrentUser, setLoading, userData, setError, setLoggedIn])
+        },[loading, setCurrentUser, userData, setUserData, setError, setLoggedIn, navigate])
         //===========JSX RENDERING===========
   return (
     <div id='pageContainer'>
@@ -68,6 +77,7 @@ export default function Login(
                     userData={userData}
                     submitLogin={submitLogin}
                     setUserData={setUserData}
+                    loading={loading}
                 />
             </div>
         </Col>

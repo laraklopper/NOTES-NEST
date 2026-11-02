@@ -13,7 +13,7 @@ export default function Home(
     currentUser, 
     logout
   }) {
-    const [key, setKey] = useState('Home')
+    const [key, setKey] = useState('home')
 
     //======JSX RENDERING========
   return (
