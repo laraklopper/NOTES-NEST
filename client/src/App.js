@@ -10,6 +10,9 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import NotePad from './pages/NotePad';
+import Notes from './pages/Notes';
+import Translate from './pages/Translate';
+import Trash from './pages/Trash';
 
 
 export default function App() {
@@ -64,6 +67,21 @@ export default function App() {
               <Route path='/notepad' element={
                 <ProtectedUserRoute currentUser={currentUser}>
                   <NotePad/>
+                </ProtectedUserRoute>
+              }/>
+              <Route path='/notes' element={
+                <ProtectedUserRoute currentUser={currentUser}>
+                  <Notes/>
+                </ProtectedUserRoute>
+              }/>
+              <Route path='/translate' element={
+                <ProtectedUserRoute currentUser={currentUser}>
+                <Translate/>
+                </ProtectedUserRoute>
+              }/> 
+              <Route path='/trash' element={
+                <ProtectedUserRoute currentUser={currentUser}>
+                  <Trash/>
                 </ProtectedUserRoute>
               }/>
             </>
