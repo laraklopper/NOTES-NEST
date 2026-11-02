@@ -1,4 +1,5 @@
 import React from 'react'
+import '../css/componentCss/Header.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -18,7 +19,7 @@ export default function Header({
         <Col id='headingCol1'/>
         <Col xs={5} id='headingCol'>
             <div id='pageHeadingBlock'>
-            <span>
+            <span id='pageHeadingSpan' >
                 <h1 id='appHeading'>NOTE NEST</h1>
                 <h2 id='pageHeading'>{heading}</h2>
             </span>
@@ -28,7 +29,7 @@ export default function Header({
       </Row>
       <Row id='headerRow3'>
          <Col id='navCol1'/>
-        <Col xs={6} id='navCol'>
+        <Col xs={12} md={8} id='navCol'>
         <nav id='navigation'>
             <ul id='navbar'>
       <Stack gap={3} id='navBarStack'>

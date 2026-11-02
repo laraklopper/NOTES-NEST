@@ -146,7 +146,7 @@ export default function App() {
               }/>
               <Route path='/notes' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                  <Notes/>
+                  <Notes currentUser={currentUser} logout={logout}/>
                 </ProtectedUserRoute>
               }/>
               <Route path='/translate' element={

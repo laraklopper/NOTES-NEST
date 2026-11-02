@@ -12,7 +12,7 @@ export default function Notes(
     logout
   }) {
   return (
-    <div>
+    <div id='pageContainer'>
       <Header heading={'NOTES'} currentUser={currentUser} />
       <Footer logout={logout}/>
     </div>

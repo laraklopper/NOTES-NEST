@@ -1,4 +1,5 @@
-#mainHeader{
+#mainHeader,
+#pageHeader{
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -36,13 +37,35 @@
     margin: 0px;
     padding: 0px;
 }
-#mainNavbar{
+#navBarStack{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    align-items: center;
+}
+#navBlock1,
+#navBlock2{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+#mainNavbar,
+#navbar{
       display: flex;
     margin: 0px;
     padding: 0px;
     gap: 10px;
     align-items: center;
     list-style-type: none;
+}
+#navCol1,
+#navCol,
+#navCol2{
+    margin: 0px;
+    padding: 0px;
 }
 .refLink{
     display: flex;
@@ -119,4 +142,19 @@
     padding: 0px;
     font-weight: 700;
     background-color: transparent;
+}
+/* HEADING */
+#appHeading{
+    font-family: "Roboto", sans-serif;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin: 0px;
+    padding: 0px;
+}
+#pageHeading{
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 0px;
+    padding: 0px;
 }
