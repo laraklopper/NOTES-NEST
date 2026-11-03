@@ -15,7 +15,9 @@
      background-color: #b7bdc4;
 }
 #userProfileHeader{
-    border-bottom: 1px solid #8a9199;
+    border-bottom: 2px solid #000;
+    margin: 0px;
+    padding: 0px;
 }
 #userProfileBody{
     display: flex;
