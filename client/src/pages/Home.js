@@ -26,6 +26,7 @@ export default function Home(
     const [profile, setProfile] = useState(null)// Full user record for the profile tab
     const [editUser, setEditUser] = useState(false)
     const [editPassword, setEditPassword] = useState(false)
+    const [profileLoading, setProfileLoading] = useState(false)// Disables the edit profile buttons while the update is saving
 
     /* currentUser only holds userId, fullName and admin,
     so fetch the full profile from the server */
@@ -55,9 +56,37 @@ export default function Home(
     const user = profile || currentUser || {};
 
     //========EDIT USER REQUEST===============
-    const editUserProfile = useCallback(async () => {
-      
-    },[])
+    /* Sends only the changed fields (built by EditProfile.js).
+    Returns true on success so the form knows to clear itself */
+    const editUserProfile = useCallback(async (changes) => {
+      setError?.(null)
+      setProfileLoading(true)
+      try {
+        // The browser sends the JWT cookie with the request
+        const response = await fetch('/user/editProfile', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(changes)
+        })
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          setError?.(data.message || 'Failed to update profile.')
+          return false
+        }
+        setProfile(data.user)// Show the saved details in the profile panel
+        setEditUser(false)// Close the form
+        alert('Profile updated successfully.')
+        return true
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        setError?.('An error occurred while updating your profile.')
+        return false
+      } finally {
+        setProfileLoading(false)
+      }
+    },[setError])
 
 
     //======JSX RENDERING========
@@ -97,7 +126,11 @@ export default function Home(
                       <Col id='editProfileCol1'/>
                         <Col id='editProfileCol' xs={12} md={10}>
                           <div id='editProfilePanal'>
-                            <EditProfile/>
+                            <EditProfile
+                              user={user}
+                              editUserProfile={editUserProfile}
+                              loading={profileLoading}
+                            />
                           </div>
                         </Col>
                         <Col id='editProfileCol2'/>

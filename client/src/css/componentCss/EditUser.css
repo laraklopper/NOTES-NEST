@@ -142,7 +142,8 @@ LAYOUT
 }
 
 #newPasswordBlock1,
-#newPasswordBlock2{
+#newPasswordBlock2,
+#newPasswordBlock3{
        display: flex;
     flex-direction: column;
     align-items: center;

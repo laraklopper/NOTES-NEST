@@ -13,6 +13,7 @@ export default function EditPassword(
 ) {
     const [currentPassword, setCurrentPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
+    const [confirmNewPassword, setConfirmNewPassword] = useState('')// Client-side only, never sent to the API
     const [showCurrentPswd, setShowCurrentPswd] = useState(false)
      // Controls whether the new password is displayed as plain text (true) or hidden behind dots/asterisks (false)
     const [showNewPswd, setShowNewPswd] = useState(false)
@@ -29,7 +30,7 @@ export default function EditPassword(
         [currentPassword]
     )
     const newPswdEmpty = useMemo(() => 
-        !String(newPassword || '').trim, 
+        !String(newPassword || '').trim(),
         [newPassword]
     )
 
@@ -50,6 +51,7 @@ export default function EditPassword(
         if (!confirmReset) return;
         setCurrentPassword('')
         setNewPassword('')
+        setConfirmNewPassword('')
     },[])
 
     const editPassword = useCallback(async(e) => {
@@ -78,20 +80,18 @@ export default function EditPassword(
                 alert(msg);// Alert user of error
                 return;// Exit the function early
             }
-            const token = localStorage.getItem('token');// Retrieve JWT token from local storage
-            //Conditional rendering to check if token exists
-            if (!token) {
-                const msg = 'User is not authenticated. Please log in again.';// Error message for missing token
+            // Conditional rendering to check the new password was typed the same way twice
+            if (newPassword !== confirmNewPassword) {
+                const msg = 'New passwords do not match.';// Error message
                 setError?.(msg);// Set the error state to display the error in the UI
                 alert(msg);// Alert user of error
                 return;// Exit the function early
             }
-            const response = await fetch (`http://localhost:3001/users/editPassword`, {
+            // The browser sends the HTTP-only JWT cookie with the request
+            const response = await fetch('/user/editPassword', {
                 method: 'PATCH',
-                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',// Specify the Content-Type in the request payload
-                    'Authorization': `Bearer ${token}`,// Attach JWT token for authorization
                 },
                 body: JSON.stringify({// Convert the password data to a JSON string
                     currentPassword,
@@ -109,6 +109,8 @@ export default function EditPassword(
             // Clear form fields directly — avoids the window.confirm in resetForm
             setCurrentPassword('');
             setNewPassword('');
+            setConfirmNewPassword('');
+            setTouched({ currentPassword: false, newPassword: false });// Don't show "required" errors on the emptied fields
             setError?.(null);//Clear any previous error messages
             console.log('[SUCCESS: EditPasswordForm.js] Password successfully changed');// Log success message to console for debugging
             setLoading(false);// Set loading to false after successful response
@@ -121,7 +123,7 @@ export default function EditPassword(
         }finally{
             setLoading(false)
         }
-    },[setError, currentPassword, newPassword, isStrongPassword])
+    },[setError, currentPassword, newPassword, confirmNewPassword, isStrongPassword])
      // ========= IDs USED BY aria-labelledby / aria-describedby =========
 const formTitleId = 'editPasswordFormTitle';
 const passwordHelpId = 'EditChangePasswordHelp'
@@ -165,7 +167,7 @@ const newPasswordErrorId = 'newPasswordError'
                     currentPswdEmpty ? currentPasswordErrorId : null,
                 ]
                     .filter(Boolean)
-                    .join('')
+                    .join(' ')
                 }
 
             />
@@ -238,7 +240,7 @@ const newPasswordErrorId = 'newPasswordError'
                     newPswdEmpty ? newPasswordErrorId: null,
                 ]
                 .filter(Boolean)
-                .join('')
+                .join(' ')
                 }
             />
             <small><Asterisk color='#C22419' fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
@@ -278,7 +280,36 @@ const newPasswordErrorId = 'newPasswordError'
             <p>NEW PASSWORD IS REQUIRED</p>
         </span>
       </div>
-      )}  
+      )}
+      {/* CONFIRM NEW PASSWORD: uses the same show/hide toggle as the new password */}
+      <div className="p-2" id='newPasswordBlock3'>
+        <label className='editUserLabel' htmlFor='confirmNewPasswordInput'>CONFIRM NEW PASSWORD</label>
+        <div className='inputDiv'>
+            <input
+                className='input'
+                id='confirmNewPasswordInput'
+                type={showNewPswd ? 'text' : 'password'}
+                required
+                autoComplete='new-password'
+                placeholder='CONFIRM NEW PASSWORD'
+                name='confirmNewPassword'
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                // ARIA ATTRIBUTES:
+                aria-required='true'
+                aria-invalid={confirmNewPassword && confirmNewPassword !== newPassword ? 'true' : 'false'}
+            />
+            <small><Asterisk color='#C22419' fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+        </div>
+      </div>
+      {confirmNewPassword && confirmNewPassword !== newPassword && (
+        <div className="p-2">
+        <span>
+            <Bug aria-hidden='true' focusable='false'/>
+            <p>PASSWORDS DO NOT MATCH</p>
+        </span>
+      </div>
+      )}
     </Stack>
     </fieldset>
         {/* Password Message */}
