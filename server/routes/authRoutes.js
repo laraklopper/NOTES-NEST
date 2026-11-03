@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { hashPassword, isDevelopment, checkJwtToken } = require('./middleware');// Import the password hashing and JWT middleware and development flag
 const router = express.Router()
+const {ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS, calculateAge, hashResetToken } = require('../util/userUtil')
 
 // Extract environmental variables (with safe fallbacks for local dev)
 const rawSecretKey = process.env.JWT_SECRET_KEY;// JWT secret key
@@ -36,6 +37,16 @@ const cookieOptions = {
     path: '/'
 };
 //=============ROUTES================
+// Use Plaintext passwords for development
+/*──────────────────────────── HELPERS ──────────────────────────────*/
+// Sign a JWT for the given user document
+const signToken = (user) => {
+    return jwt.sign(
+        { userId: user._id, email: user.email, admin: user.admin },
+        secretKey,
+        { expiresIn: expirationTime, algorithm: jwtAlgorithm }
+    );
+}
 /*──────────────────────────── POST ROUTES ──────────────────────────────
     POST: Used to create a new resource/submit data to the database
  ─────────────────────────────────────────────────────────────────────────*/
@@ -234,4 +245,79 @@ router.post('/logout', checkJwtToken, (req, res) => {
     return res.status(200).json({ message: 'Logged out' });// Send a 200 OK status code with a JSON message
 });
 
+/*──────────────────────────── PATCH ROUTES ──────────────────────────────
+    PATCH: Used to partially update an existing resource
+ ─────────────────────────────────────────────────────────────────────────*/
+//Route to upgrade the logged in user to admin
+//Send a PATCH request to the /auth/setAdmin endpoint
+router.patch('/setAdmin', checkJwtToken, async (req, res) => {
+    try {
+         const user = await User.findById(req.user?.userId).exec();
+          if (!user) {
+            console.error('[ERROR: authRoutes.js, /setAdmin] User not found');
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (user.admin === true) {
+            console.error('[ERROR: authRoutes.js, /setAdmin] User is already an admin:', user.username);
+            return res.status(409).json({ message: 'User is already an admin' });
+        }
+         if (calculateAge(user.dateOfBirth) < ADMIN_MIN_AGE) {
+            console.error('[ERROR: authRoutes.js, /setAdmin] User is under the admin age requirement:', user.username);
+            return res.status(403).json({ message: `You must be at least ${ADMIN_MIN_AGE} years old to register as an admin.` });
+        }
+
+        // Users can only register as admin after a specific time as a user
+        if (Date.now() - new Date(user.createdAt).getTime() < ADMIN_MIN_ACCOUNT_AGE_MS) {
+            console.error('[ERROR: authRoutes.js, /setAdmin] Account is too new:', user.username);
+            return res.status(403).json({ message: 'Your account is too new to register as an admin.' });
+        }
+        user.admin = true;
+        await user.save()
+
+         // Sign a new token so the admin claim is up to date
+        const token = signToken(user);
+        const userObj = user.toObject();
+        delete userObj.password;// Never send the password back to the client
+
+        console.log('[SUCCESS: authRoutes.js, /setAdmin] User registered as admin:', user.username);
+        return res.status(200).json({ message: 'Admin registration successful', token, user: userObj });
+    } catch (error) {
+        console.error('[ERROR: authRoutes.js, /setAdmin]', error.message);
+        return res.status(500).json({ message: 'Internal Server Error' })
+    }
+})
+
+//Route to remove admin status from the logged in user
+//Send a PATCH request to the /auth/clearAdmin endpoint
+router.patch('/clearAdmin', checkJwtToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user?.userId).exec();
+        if (!user) {
+            console.error('[ERROR: authRoutes.js, /clearAdmin] User not found');
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (user.admin !== true) {
+            console.error('[ERROR: authRoutes.js, /clearAdmin] User is not an admin:', user.username);
+            return res.status(409).json({ message: 'User is not an admin' });
+        }
+
+        user.admin = false;
+        await user.save();
+
+        // Sign a new token so the admin claim is up to date
+        const token = signToken(user);
+        const userObj = user.toObject();
+        delete userObj.password;// Never send the password back to the client
+
+        console.log('[SUCCESS: authRoutes.js, /clearAdmin] Admin status removed:', user.username);
+        return res.status(200).json({ message: 'Admin status removed', token, user: userObj });
+
+    } catch (error) {
+        console.error('[ERROR: authRoutes.js, /clearAdmin]', error.message);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+})
+
+
+//======EXPORT THE ROUTER===========
 module.exports = router;
