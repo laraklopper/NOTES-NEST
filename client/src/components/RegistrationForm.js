@@ -4,9 +4,13 @@ import '../css/componentCss/FormSetup.css'
 import '../css/componentCss/RegistrationForm.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+// IMPORT ICONS FROM LUCIDE REACT
 import { Asterisk, Eye, EyeOff } from 'lucide-react';
+// IMPORT UTILITY FUNCTIONS
 import { languageData } from '../util/languageData';
 import { emptyNewUser } from '../pages/Register';
+
+//RegistrationForm Function component
 export default function RegistrationForm(
   {//PROPS PASSED FROM PARENT COMPONENT (Register.js)
   newUserData,

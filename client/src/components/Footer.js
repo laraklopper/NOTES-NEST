@@ -4,9 +4,14 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+// IMPORT ICONS FROM LUCIDE REACT
 import { LogOut } from 'lucide-react';
 
-export default function Footer({logout}) {
+export default function Footer(
+  {//PROPS PASSED FROM PARENT COMPONENT
+    logout
+  }) {
+    //============================================
   return (
     <footer id='pageFooter'>
         <Row id='footerRow1'>
