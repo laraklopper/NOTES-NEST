@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+import { LogOut } from 'lucide-react';
 
 export default function Footer({logout}) {
   return (
@@ -15,7 +16,7 @@ export default function Footer({logout}) {
       <div className="p-2 ms-auto"/>
       <div className="p-2">
         <Button variant="warning" id='logoutBtn' onClick={logout} type='button'>
-          LOGOUT
+          LOGOUT <LogOut aria-hidden='true' focusable='false'/>
         </Button>
       </div>
     </Stack> 

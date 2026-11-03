@@ -12,11 +12,18 @@ Footer.js
     background-color: #B78830;
     gap: 10px;
 }
-#footerRow1{
+#footerRow1,
+#footerRow2{
     width: 100%;
     margin: 0px;
     padding: 0px;
     display: flex;
+}
+#copyrightText{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    font-family: "Open Sans", sans-serif;
 }
 #logoutBtn{
     width: 200px;
@@ -29,5 +36,10 @@ Footer.js
     height: 40px;
     font-family: "Roboto Mono", monospace;
     letter-spacing:2px ;
+    border: solid #323A42 2px;
+    gap: 5px;
 }
-
+#logoutBtn:hover{
+     background-color: #323A42;
+     color: #E8F0F6;
+}

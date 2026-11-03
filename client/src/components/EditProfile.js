@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import '../css/componentCss/EditUser.css'
 import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
+import Button from 'react-bootstrap/Button';
+import languageData from '../util/languageData';
 
 
 export default function EditProfile(
@@ -11,13 +13,14 @@ export default function EditProfile(
   return (
     <form id='editProfileForm'>
       <div id='formHeadingBlock'>
-        <div>
-          <h3>EDIT PROFILE</h3>
-        </div>
+          <h3 id='formHeading'>EDIT PROFILE</h3>
+        
       </div>
       <div id='editProfileInput'>
+      {/* GROUP 1 */}
         <fieldset id='editProfileGroup1'>
           <legend>USERNAME AND FULLNAME</legend>
+          {/* STACK 1 */}
           <Stack gap={3}>
       <div className="p-2" id='editProfileBlock1'>
         <label className='editUserLabel'>USERNAME:</label>
@@ -58,11 +61,12 @@ export default function EditProfile(
         </div>
       </div>
     </Stack>
-
         </fieldset>
+        {/* GROUP 2 */}
         <fieldset id='editProfileGroup2'>
           <legend>Contact Details</legend>
-              <Stack direction="horizontal" gap={3}>
+          {/* STACK 2 */}
+              <Stack direction="horizontal" gap={3} id=''>
       <div className="p-2">
         <div className='inputDiv'>
         <label className='editUserLabel'>EMAIL:</label>
@@ -101,16 +105,102 @@ export default function EditProfile(
         </fieldset>
         <fieldset id='editProfileGroup3'>
         <legend>Default Language options</legend>
-          <Stack gap={3}>
-      <div className="p-2">
-        <label>SOURCE LANGUAGE:</label>
+        {/* STACK 3 */}
+          <Stack gap={3} id='editProfileStack3'>
+      <div className="p-2" id='editProfileLangBlock1'>
+        <label className='editUserLabel'>EDIT SOURCE LANGUAGE:</label>
+        <div className='inputDiv'>
+          <select
+          className='input'
+          // id=''
+          // name=''
+          // value={}
+          // onChange={}
+          >
+          <option value={''} className='input'>SELECT</option>
+          {languageData.map((lang) => (
+            <option 
+            className='input'
+            key={lang.code} value={lang.code}>
+              {lang.name}
+            </option>
+          ))}
+          </select>
+        </div>
       </div>
-      <div className="p-2">Second item</div>
-      <div className="p-2">Third item</div>
+      <div className="p-2" id='editProfileLangBlock2'>
+        <label className='editUserLabel'>EDIT TARGET LANGUAGE:</label>
+          <div className='inputDiv'>
+          <select 
+          className='input'
+          value={''}>
+          <option value={''}>SELECT</option>
+            {languageData.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.name}
+            </option>
+          ))}
+          </select>
+        
+        </div>
+      </div>
+      <div className="p-2" id='editProfileLangBlock1'>
+      <label className='editUserLabel'>EDIT NOTES LANGUAGE:</label>
+        <div className='inputDiv'>
+          <select 
+          className='input'
+          value={''}>
+          <option value={''}>SELECT</option>
+            {languageData.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.name}
+            </option>
+          ))}
+          </select>
+        </div>
+      </div>
     </Stack>
-
         </fieldset>
       </div>
+          <Stack direction="horizontal" gap={3}>
+        {/* ADMIN CONSENT CHECKBOX:
+        Only required field for edit profile form*/}
+         <div className="p-2" id='editProfileAdminConsentBlock'>
+        <label className='editUserLabel' id='editAdminConsentLabel' htmlFor='adminEditConsent'>I CONSENT TO ALLOW ADMIN USERS KNOWING MY DETAILS</label>
+        <input
+          type='checkbox'
+          id='adminEditConsent'
+          required
+          // name=''
+          // value={}
+          // onChange={}
+          // ARIA ATTRIBUTES
+          aria-required='true'
+          />
+    </div>
+      <div className="p-2 ms-auto">
+        <Button
+         variant='warning'
+         id='editProfileBtn'
+         type='submit'
+        >
+        UPDATE PROFILE
+        </Button>
+      </div>
+      <div className="vr" />
+      <div className="p-2">
+        <Button
+        variant='danger'
+        id='clearFormBtn'
+        type='button'
+        // onClick={}
+        // ARIA ATTRIBUTES:
+        >
+          CLEAR FORM
+        </Button>
+      </div>
+    </Stack>
+
     </form>
   )
 }

@@ -28,6 +28,7 @@ LAYOUT
 #editProfileInput{
     width: 90%;
     overflow-y: scroll;
+    gap: 10px;
 }
 /* EDIT PROFILE FORM */
 /* GROUP 1: USERNAME + FULLNAME */
@@ -36,6 +37,8 @@ LAYOUT
     background: #D6D6D6;
     margin: 0px;
     padding: 10px;
+     border: #323A42 solid 2px;
+    border-radius: 5px;
 }
 #editProfileBlock1,
 #editProfileBlock2{
@@ -52,6 +55,8 @@ LAYOUT
     background: #D6D6D6;
     margin: 0px;
     padding: 10px;
+     border: #323A42 solid 2px;
+    border-radius: 5px;
 }
 /* GROUP 3 */
 #editProfileGroup3{
@@ -59,8 +64,18 @@ LAYOUT
     background: #D6D6D6;
     margin: 0px;
     padding: 10px;
+     border: #323A42 solid 2px;
+    border-radius: 5px;
 }
 
+#editProfileLangBlock1,
+#editProfileLangBlock2,
+#editProfileLangBlock3{
+    display: flex;
+    align-items: baseline;
+    margin: 0px;
+}
+/* <fieldset> legend */
 #editProfileGroup1 >legend,
 #editProfileGroup2  >legend,
 #editProfileGroup3  >legend{
@@ -74,6 +89,21 @@ LAYOUT
      letter-spacing: 2px;
      text-transform: uppercase;
 }
+
+/* STACK 4: BUTTONS AND ADMIN CONSENT BLOCK */
+#editProfileAdminConsentBlock{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+
+#editAdminConsentLabel{
+    color: #a93028; 
+    font-weight: 800;
+    text-decoration: underline;
+}
 /* EDIT PASSWORD FORM */
 /* GROUP 1 */
 #editPasswordGroup1{
@@ -82,7 +112,8 @@ LAYOUT
     margin: 0px;
     padding: 10px;
 }
-#editPasswordGroup1 > legend{
+#editPasswordGroup1 > legend,
+#editPasswordGroup2 > legend{
     float: none;
     width: auto;
     font-size: 14px;
@@ -109,16 +140,7 @@ LAYOUT
     margin: 0px;
     padding: 10px;
 }
-#editPasswordGroup2 > legend{
-    float: none;
-    width: auto;
-    font-size: 14px;
-    margin: 0px;
-    padding: 0px 5px;
-     font-family: "Roboto Condensed", sans-serif;
-     font-weight: 700;
-     letter-spacing: 2px;
-}
+
 #newPasswordBlock1,
 #newPasswordBlock2{
        display: flex;
@@ -139,6 +161,7 @@ LAYOUT
     padding: 0px;
 }
 #editPswdBtn,
+#editProfileBtn,
 #showNewPswdBtn,
 #showCurrentPswdBtn{
     display: flex;
@@ -153,7 +176,9 @@ LAYOUT
     font-weight: 700;
     color: #000;
     border: #323A42 solid 2px;
+    font-size: 16px;
 }
+#editProfileBtn:hover,
 #editPswdBtn:hover,
 #showNewPswdBtn:hover,
 #showCurrentPswdBtn:hover{
