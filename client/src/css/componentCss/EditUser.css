@@ -1,0 +1,63 @@
+#editPasswordForm{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+#editPasswordInput{
+    margin: 0px;
+    width: 80%;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #BFBFBF;
+}
+#currentPasswordBlock1,
+#currentPasswordBlock2{
+        display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+}
+#newPasswordBlock1,
+#newPasswordBlock2{
+       display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+}
+#editPasswordGroup1{
+    width: 100%;
+    background: #D6D6D6;
+    margin: 0px;
+    padding: 10px;
+}
+#editPasswordGroup1 > legend{
+    float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+}
+#editPasswordGroup2{
+    width: 100%;
+    background: #D6D6D6;
+    margin: 0px;
+    padding: 10px;
+}
+#editPasswordGroup2 > legend{
+    float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+}

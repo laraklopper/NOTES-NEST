@@ -1,5 +1,8 @@
 #userProfile{
      background-color: #b7bdc4;
+     width: 100%;
+     margin: 0px;
+     padding: 5px;
 }
 #userProfileHeader{
     border-bottom: 2px solid #000;

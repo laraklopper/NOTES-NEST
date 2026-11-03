@@ -20,6 +20,7 @@ import EditPassword from '../components/EditPassword';
 export default function Home(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
+    setError,
     logout
   }) {
     const [key, setKey] = useState('home')
@@ -83,6 +84,7 @@ export default function Home(
             <Tab eventKey="profile" title="Profile">
               {/* user profile */}
               <div id='userProfilePanal'>
+                <div>
                 <Row id='userProfileRow'>
                   <Col id='userProfileCol'>
                     <div id='userProfile'>
@@ -200,6 +202,9 @@ export default function Home(
                     </div>
                   </Col>
                 </Row>
+
+                </div>
+                
                 <div id='editUserDataPanal'>
                   {editUser && (
                     <div id='editProfileBlock'>
@@ -218,7 +223,7 @@ export default function Home(
                         <Col id='editPasswordCol1'/>
                         <Col xs={6} id='editPasswordCol'>
                           <div id='editPasswordPanal'>
-                            <EditPassword/>
+                            <EditPassword setError={setError}/>
                           </div>
                         </Col>
                         <Col id='editPasswordCol2'/>
