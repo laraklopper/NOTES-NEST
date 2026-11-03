@@ -1,19 +1,24 @@
 //Home.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useState, useEffect, useCallback } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/Home.css'
 import '../css/componentCss/Profile.css'
 import '../css/componentCss/Tabs.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+// IMPORT CUSTOM COMPONENTS
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Profile from '../components/Profile';
 import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
 import AdminRegisForm from '../components/AdminRegisForm'
+// IMPORT UTILITY FUNCTIONS
 const {ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 
 //====MAIN HOME FUNCTION COMPONENT========
