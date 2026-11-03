@@ -143,6 +143,8 @@ const userId = currentUser?._id
                       editPassword={editPassword}
                       toggleEditUser={toggleEditUser}
                       toggleEditPassword={toggleEditPassword}
+                      setCurrentUser={setCurrentUser}
+                      setError={setError}
                     />
                   </Col>
                 </Row>
@@ -193,6 +195,7 @@ const userId = currentUser?._id
                             exitAdminForm={exitAdminForm}
                             setError={setError}
                             setCurrentUser={setCurrentUser}
+                          
 
                             />
                           </div>

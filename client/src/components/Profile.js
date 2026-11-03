@@ -1,5 +1,5 @@
 //Profile.js
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import '../css/componentCss/Profile.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
@@ -11,8 +11,11 @@ export default function Profile(
     editUser,
     editPassword,
     toggleEditUser,
-    toggleEditPassword
+    toggleEditPassword,
+    setCurrentUser,
+    setError
   }) {
+    const [clearingAdmin, setClearingAdmin] = useState(false)
     const notProvided = 'Not provided';
     const firstName = user.fullName?.firstName || notProvided;
     const lastName = user.fullName?.lastName || notProvided;
@@ -26,6 +29,38 @@ export default function Profile(
     const dateOfBirth = user.dateOfBirth
       ? new Date(user.dateOfBirth).toLocaleDateString()
       : notProvided;
+
+
+      const clearAdminStatus = useCallback(async () => {
+        setClearingAdmin(true)
+        try {
+          // Send request to /auth/clearAdmin endpoint
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3001/auth/clearAdmin', {
+        method: 'PATCH',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      })
+      const data = await response.json().catch(() => ({}));
+       if (!response.ok) throw new Error(data?.message || 'Failed to remove admin status');
+      // Save the new token (contains the updated admin claim) and update the current user
+      localStorage.setItem('token', data.token)
+      // Do not display AdminRegisForm.js (Dashboard.js) again
+      localStorage.setItem(`adminFormDismissed_${data.user?._id}`, 'true')
+      setCurrentUser?.(data.user)
+      setError?.(null)
+      console.log('[SUCCESS: Profile.js] Admin status removed');
+        } catch (error) {
+           console.error('[ERROR: Profile.js] Error removing admin status:', error.message);
+      setError?.(`Error removing admin status: ${error.message}`)
+        }finally{
+          setClearingAdmin(false)
+        }
+        
+      },[setError,setCurrentUser ])
     //======JSX RENDERING========
   return (
     <div id='userProfile'>
@@ -138,8 +173,18 @@ export default function Profile(
               <p className='userProfileValue'>{user.admin ? 'YES' : 'NO'}</p>
             </span>
             {user.admin && (
-              <Button variant='danger'>
-                DELETE ADMIN STATUS
+              <Button 
+                variant='danger' 
+                type='button'
+                onClick={clearAdminStatus}
+                id='deleteAdminBtn'
+                disabled={clearingAdmin}
+                // ARIA ATTRIBUTES:
+                aria-label={clearingAdmin ? 'REMOVING...' : 'DELETE ADMIN STATUS'}
+              aria-busy={clearingAdmin}
+              aria-disabled={clearingAdmin}
+                >
+                {clearingAdmin ? 'REMOVING...' : 'DELETE ADMIN STATUS'}
               </Button>
             )}
           </div>
