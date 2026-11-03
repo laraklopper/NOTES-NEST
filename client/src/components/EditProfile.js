@@ -7,14 +7,23 @@ import languageData from '../util/languageData';
 
 
 export default function EditProfile(
-  // {setError}
+  editProfile
 ) {
   const [contactMsg, setContactMsg] = useState(false)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    editProfile()
+  }
+  
+  const handleInputChange = (event) => {
+
+  }
+  //====================================
   return (
-    <form id='editProfileForm'>
+    <form id='editProfileForm' onSubmit={handleSubmit} method='PATCH'>
       <div id='formHeadingBlock'>
-          <h3 id='formHeading'>EDIT PROFILE</h3>
-        
+          <h3 id='formHeading'>EDIT PROFILE</h3>    
       </div>
       <div id='editProfileInput'>
       {/* GROUP 1 */}
