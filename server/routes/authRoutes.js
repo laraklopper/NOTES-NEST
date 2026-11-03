@@ -1,3 +1,12 @@
+//authRoutes.js
+/*auth endpoints : mounted at /users by app.js
+POST: /login - submit user login
+POST: /register - submit registration to add a new user
+PATCH: /setAdmin - upgrade user to admin (21+ and user for 1 day during development)
+PATCH: /clearAdmin - remove admin status from the user
+All passwords are saved in Plaintext for development,
+auth/login auth/register routes do not require a <Bearer> header for user authorization/
+*/
 require('dotenv').config()
 const express = require('express');
 const User = require('../models/userSchema');
