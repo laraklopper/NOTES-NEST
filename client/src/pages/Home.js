@@ -84,7 +84,7 @@ export default function Home(
             <Tab eventKey="profile" title="Profile">
               {/* user profile */}
               <div id='userProfilePanal'>
-                <div>
+                <div id='userProfileDisplay'>
                 <Row id='userProfileRow'>
                   <Col id='userProfileCol'>
                     <div id='userProfile'>
@@ -207,9 +207,7 @@ export default function Home(
                     </div>
                   </Col>
                 </Row>
-
                 </div>
-                
                 <div id='editUserDataPanal'>
                   {editUser && (
                     <div id='editProfileBlock'>
