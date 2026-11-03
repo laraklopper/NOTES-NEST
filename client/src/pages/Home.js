@@ -100,6 +100,11 @@ export default function Home(
                           id='editProfileToggleBtn'
                           type='button'
                           onClick={toggleEditUser}
+                          //ARIA ATTRIBUTES:
+                          aria-label={editUser ? 'Hide Form': 'Edit Profile'}
+                          aria-pressed={editUser}
+                          aria-expanded={editUser}
+                          aria-controls='editProfileBlock'
                           >
                           {editUser ? 'Hide Form': 'Edit Profile'}
                           </Button>
@@ -113,7 +118,7 @@ export default function Home(
                           aria-label={editPassword ? 'Hide Form': 'Edit Password'}
                           aria-expanded={editPassword}
                           aria-pressed={editPassword}
-                          aria-controls=''
+                          aria-controls='editPasswordBlock'
                           >
                             {editPassword ? 'Hide Form': 'Edit Password'}
                           </Button>
@@ -209,11 +214,13 @@ export default function Home(
                   {editUser && (
                     <div id='editProfileBlock'>
                       <Row id='editProfileRow'>
-                        <Col id='editProfileCol'>
+                      <Col id='editProfileCol1'/>
+                        <Col id='editProfileCol' xs={12} md={10}>
                           <div id='editProfilePanal'>
                             <EditProfile/>
                           </div>
                         </Col>
+                        <Col id='editProfileCol2'/>
                       </Row>
                     </div>
                   )}
