@@ -84,6 +84,24 @@
     padding: 0px;
     display: flex;
 }
+#editProfileCol1,
+#editProfileCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#editProfileCol{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#editProfilePanal{
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+}
 /* ============================== */
 #editProfileToggleBtn,
 #editPasswordToggleBtn{

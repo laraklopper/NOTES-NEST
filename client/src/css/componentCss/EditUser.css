@@ -1,3 +1,4 @@
+#editProfileForm,
 #editPasswordForm{
     display: flex;
     flex-direction: column;
@@ -8,6 +9,13 @@
     background-color: #777d83;
     gap: 10px;
 }
+#editProfileForm{
+    width: 100%;
+}
+/* =============
+LAYOUT
+==========*/
+#editProfileInput,
 #editPasswordInput{
     margin: 0px;
     width: 80%;
@@ -17,6 +25,56 @@
     align-items: center;
     background-color: #BFBFBF;
 }
+#editProfileInput{
+    width: 90%;
+    overflow-y: scroll;
+}
+/* EDIT PROFILE FORM */
+/* GROUP 1: USERNAME + FULLNAME */
+#editProfileGroup1{
+    width: 100%;
+    background: #D6D6D6;
+    margin: 0px;
+    padding: 10px;
+}
+#editProfileBlock1,
+#editProfileBlock2{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* GROUP 2 */
+#editProfileGroup2{
+    width: 100%;
+    background: #D6D6D6;
+    margin: 0px;
+    padding: 10px;
+}
+/* GROUP 3 */
+#editProfileGroup3{
+    width: 100%;
+    background: #D6D6D6;
+    margin: 0px;
+    padding: 10px;
+}
+
+#editProfileGroup1 >legend,
+#editProfileGroup2  >legend,
+#editProfileGroup3  >legend{
+      float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+     text-transform: uppercase;
+}
+/* EDIT PASSWORD FORM */
 /* GROUP 1 */
 #editPasswordGroup1{
     width: 100%;
