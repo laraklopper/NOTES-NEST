@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/Home.css'
+import '../css/componentCss/profile.css'
 import '../css/componentCss/Tabs.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -11,6 +12,8 @@ import Tabs from 'react-bootstrap/Tabs';
 import Button from 'react-bootstrap/Button';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import EditProfile from '../components/EditProfile';
+import EditPassword from '../components/EditPassword';
 
 
 //====MAIN HOME FUNCTION COMPONENT========
@@ -105,6 +108,10 @@ export default function Home(
                           id='editPasswordToggleBtn'
                           type='button'
                           onClick={toggleEditPassword}
+                          aria-label={editPassword ? 'Hide Form': 'Edit Password'}
+                          aria-expanded={editPassword}
+                          aria-pressed={editPassword}
+                          aria-controls=''
                           >
                             {editPassword ? 'Hide Form': 'Edit Password'}
                           </Button>
@@ -193,8 +200,31 @@ export default function Home(
                     </div>
                   </Col>
                 </Row>
-                <div>
-                  
+                <div id='editUserDataPanal'>
+                  {editUser && (
+                    <div id='editProfileBlock'>
+                      <Row id='editProfileRow'>
+                        <Col id='editProfileCol'>
+                          <div id='editProfilePanal'>
+                            <EditProfile/>
+                          </div>
+                        </Col>
+                      </Row>
+                    </div>
+                  )}
+                  {editPassword && (
+                    <div id='editPasswordBlock'>
+                      <Row id='editPasswordRow'>
+                        <Col id='editPasswordCol1'/>
+                        <Col xs={6} id='editPasswordCol'>
+                          <div id='editPasswordPanal'>
+                            <EditPassword/>
+                          </div>
+                        </Col>
+                        <Col id='editPasswordCol2'/>
+                      </Row>
+                    </div>
+                  )}
                 </div>
               </div>
             </Tab>

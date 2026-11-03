@@ -1,0 +1,103 @@
+#userProfile{
+     background-color: #b7bdc4;
+}
+#userProfileHeader{
+    border-bottom: 2px solid #000;
+    margin: 0px;
+    padding: 0px;
+}
+#userProfileBody{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px;
+    margin: 0px;
+    padding: 10px;
+    width: 100%;
+}
+/* The two stacks share the width equally and drop below each other on small screens */
+#profileStack1,
+#profileStack2{
+    flex: 1 1 300px;
+}
+#userProfileHeading{
+    margin: 0px;
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+/* Each block: heading label on top, values listed underneath */
+.userProfileBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+.userProfileHeadingLabel{
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #8a9199;
+    width: 100%;
+}
+.userDataDiv{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 10px;
+}
+.userDataSpan{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+.userProfileLabel{
+    font-weight: 600;
+    white-space: nowrap;
+}
+.userProfileValue{
+    margin: 0px;
+    word-break: break-word;
+}
+#editUserDataPanal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#editProfileBlock,
+#editPasswordBlock{
+    display: flex;
+    
+    width: 100%;
+}
+#editProfileRow,
+#editPasswordRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+/* ============================== */
+#editProfileToggleBtn,
+#editPasswordToggleBtn{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    letter-spacing: 2px;
+    font-weight: 700;
+    width: 200px;
+    height: 40px;
+    text-transform: uppercase;
+    font-family: "Roboto Mono", monospace;
+    color: #000;
+    border: #323A42 solid 2px;
+}
+#editProfileToggleBtn:hover,
+#editPasswordToggleBtn:hover{
+       color: #E8F0F6;
+    background-color: #323A42;
+}
