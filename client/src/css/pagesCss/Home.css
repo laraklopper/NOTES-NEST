@@ -80,6 +80,7 @@
     font-weight: 700;
     width: 200px;
     height: 40px;
+    text-transform: uppercase;
     font-family: "Roboto Mono", monospace;
     color: #000;
     border: #323A42 solid 2px;

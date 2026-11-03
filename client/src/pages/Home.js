@@ -1,5 +1,5 @@
 //Home.js
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/Home.css'
 import '../css/componentCss/Tabs.css'
@@ -21,6 +21,8 @@ export default function Home(
   }) {
     const [key, setKey] = useState('home')
     const [profile, setProfile] = useState(null)// Full user record for the profile tab
+    const [editUser, setEditUser] = useState(false)
+    const [editPassword, setEditPassword] = useState(false)
 
     /* currentUser only holds userId, fullName and admin,
     so fetch the full profile from the server */
@@ -39,6 +41,14 @@ export default function Home(
       fetchProfile();
     }, [currentUser?.userId]);
 
+    const toggleEditUser = useCallback(() => {
+      setEditUser(prev => (!prev))
+      setEditPassword(false)
+    },[])
+    const toggleEditPassword = useCallback(() => {
+      setEditPassword(prev => (!prev))
+      setEditUser(false)
+    },[])
     const user = profile || currentUser || {};
     const notProvided = 'Not provided';
     const firstName = user.fullName?.firstName || notProvided;
@@ -83,15 +93,20 @@ export default function Home(
                           <Button
                           variant='warning'
                           id='editProfileToggleBtn'
+                          type='button'
+                          onClick={toggleEditUser}
                           >
-                            EDIT PROFILE
+                          {editUser ? 'Hide Form': 'Edit Profile'}
                           </Button>
                         </div>
                         <div className="p-2">
-                          <Button variant='warning'
+                          <Button 
+                          variant='warning'
                           id='editPasswordToggleBtn'
+                          type='button'
+                          onClick={toggleEditPassword}
                           >
-                            EDIT PASSWORD
+                            {editPassword ? 'Hide Form': 'Edit Password'}
                           </Button>
                         </div>
                       </Stack>
@@ -178,6 +193,9 @@ export default function Home(
                     </div>
                   </Col>
                 </Row>
+                <div>
+                  
+                </div>
               </div>
             </Tab>
           </Tabs>
