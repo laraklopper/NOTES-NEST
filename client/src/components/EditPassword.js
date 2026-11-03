@@ -214,6 +214,7 @@ const newPasswordErrorId = 'newPasswordError'
         <legend>NEW PASSWORD</legend>
          {/* ========EDIT PASSWORD STACK 2=============== */}
 <Stack gap={3} id='editPasswordStack2'>
+{/* NEW PASSWORD value={newPassword} */}
       <div className="p-2" id='newPasswordBlock1'>
         <label className='editUserLabel'>NEW PASSWORD</label>
         <div className='inputDiv'>
@@ -246,6 +247,7 @@ const newPasswordErrorId = 'newPasswordError'
             <small><Asterisk color='#C22419' fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
         </div>
       </div>
+      {/* SHOW NEW PASSWORD BUTTON */}
       <div className="p-2" id='newPasswordBlock2'>
         <Button
             variant='warning'
