@@ -69,12 +69,12 @@
     align-items: center;
     width: 100%;
     margin: 0px;
-    padding: 0px;
+    padding: 10px 0px;
 }
 #editProfileBlock,
 #editPasswordBlock{
     display: flex;
-    
+    padding: 10px;
     width: 100%;
 }
 #editProfileRow,

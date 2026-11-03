@@ -33,8 +33,8 @@ export default function EditPassword(
         [newPassword]
     )
 
-    const currentPswdError = touched.currentPassword && currentPswdEmpty;
-    const newPswdError = touched.newPassword && newPswdEmpty;
+    const showCurrentPswdError = touched.currentPassword && currentPswdEmpty;
+    const showNewPswdError = touched.newPassword && newPswdEmpty;
 
      //=============================================
     const isStrongPassword =useCallback((pwd)=> {
@@ -124,6 +124,10 @@ export default function EditPassword(
     },[setError, currentPassword, newPassword, isStrongPassword])
      // ========= IDs USED BY aria-labelledby / aria-describedby =========
 const formTitleId = 'editPasswordFormTitle';
+const passwordHelpId = 'EditChangePasswordHelp'
+const currentPasswordErrorId = 'currentPasswordError'
+const newPasswordErrorId = 'newPasswordError'
+
     //================JSX RENDERING===========
   return (
     <form id='editPasswordForm' onSubmit={editPassword} method='PATCH' aria-labelledby={formTitleId}>
@@ -135,7 +139,7 @@ const formTitleId = 'editPasswordFormTitle';
         {/* GROUP 1: CURRENT PASSOWORD */}
         <fieldset id='editPasswordGroup1'>
         <legend>Current password</legend>
-   <Stack gap={3}>
+   <Stack gap={3} id='editPasswordStack1'>
       <div className="p-2" id='currentPasswordBlock1'>
         <label className='editUserLabel'>CURRENT PASSWORD:</label>
         <div className='inputDiv'>
@@ -143,11 +147,27 @@ const formTitleId = 'editPasswordFormTitle';
                 className='input'
                 id='currentPasswordInput'
                 type={showCurrentPswd ? 'text' : 'password'}
+                placeholder='CURRENT PASSWORD'
+                required
                 name='currentPassword'
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 onFocus={() => setPasswordMsg(true)}
-                onBlur={() => setPasswordMsg(false)}
+                onBlur={() => {
+                        setPasswordMsg(false)
+                        setTouched((prev)=> ({...prev, currentPassword: true}))}}
+                // ARIA ATTRIBUTES:
+                aria-required='true'
+                aria-label='Current PasswordInput'
+                aria-invalid={currentPswdEmpty ? 'true': 'false'}
+                aria-describedby={[
+                    passwordMsg ? passwordHelpId : null,
+                    currentPswdEmpty ? currentPasswordErrorId : null,
+                ]
+                    .filter(Boolean)
+                    .join('')
+                }
+
             />
              <small><Asterisk color='#C22419' fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
         </div>
@@ -177,10 +197,17 @@ const formTitleId = 'editPasswordFormTitle';
             </Button>
       </div>
       {/* Error Message */}
-      {/* <div className="p-2"></div> */}
+      {showCurrentPswdError && (
+        <div className="p-2">
+             <span>
+                <Bug aria-hidden='true' focusable='false'/>
+                <p>CURRENT PASSWORD IS REQUIRED</p>
+            </span>
+        </div>
+      )}
     </Stack>
         </fieldset>
-         
+         {/* GROUP 2: NEW PASSWORD */}
     <fieldset id='editPasswordGroup2'>
         <legend>NEW PASSWORD</legend>
          {/* ========EDIT PASSWORD STACK 2=============== */}
@@ -192,11 +219,27 @@ const formTitleId = 'editPasswordFormTitle';
                 className='input'
                 id='newPasswordInput'
                 type={showNewPswd ? 'text' : 'password'}
+                required
+                placeholder='NEW PASSWOED'
                 name='newPassword'
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 onFocus={() => setPasswordMsg(true)}
-                onBlur={() => setPasswordMsg(false)}
+                onBlur={() => {
+                    setPasswordMsg(false)
+                    setTouched((prev) => ({...prev, newPassword: true}))
+                }}
+                // ARIA ATTRIBUTES:
+                aria-label='newPasswordInput'
+                aria-required='true'
+                aria-invalid={newPswdEmpty ? 'true': 'false'}
+                aria-describedby={[
+                    passwordMsg ? passwordHelpId : null,
+                    newPswdEmpty ? newPasswordErrorId: null,
+                ]
+                .filter(Boolean)
+                .join('')
+                }
             />
             <small><Asterisk color='#C22419' fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
         </div>
@@ -228,12 +271,14 @@ const formTitleId = 'editPasswordFormTitle';
       {/* Error message 
       Show message if input is touched
       */}
-      <div className="p-2">
+      {showNewPswdError && (
+        <div className="p-2">
         <span>
             <Bug aria-hidden='true' focusable='false'/>
             <p>NEW PASSWORD IS REQUIRED</p>
         </span>
       </div>
+      )}  
     </Stack>
     </fieldset>
         {/* Password Message */}
@@ -247,13 +292,32 @@ const formTitleId = 'editPasswordFormTitle';
         </div>
         {/* =====EDIT PASSWORD STACK 3============= */}
        <Stack gap={3} id='editPasswordStack3'>
-        <div className="p-2" id='requiredInfo'>
-                    {/* Legend explaining what the asterisk icons mean throughout the form */}
-                    <small className='required'>
-                        <Asterisk color='#C22419' fontWeight={700} size={12} aria-hidden='true' focusable='false' /> Indicates required information
+        <div className="p-2" id='editPswdBlock1'>
+        <span className='requiredInfoSpan'>
+        <small className='required'>
+                        <Asterisk color='#C22419' fontWeight={700} size={12} aria-hidden='true' focusable='false' /> 
                     </small>
+            <p>Indicates required information</p>
+        </span>
+                    {/* Legend explaining what the asterisk icons mean throughout the form */}
+                    
                 </div>
-      <div className="p-2">
+                 <div className="p-2" id='editPswdBlock2'>
+                    <Button
+                    variant='light'
+                    id='editPswdBtn'
+                    type='submit'
+                    disabled={loading}
+                    // ARIA ATTRIBUTES:
+                    role='button'
+                    aria-label={loading ? 'Saving…' : 'EDIT PASSWORD'}
+                    aria-disabled={loading}
+                    >
+                    {loading ? 'Saving...': 'EDIT PASSWORD'}
+
+                    </Button>
+                 </div>
+      <div className="p-2" id='editPswdBlock3'>
         <Button
             variant='danger'
             type='button'

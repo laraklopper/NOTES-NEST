@@ -12,9 +12,11 @@
     padding: 0px;
 }
 #editPasswordPanal{
+    display: flex;
+    justify-content: center;
     width: 100%;
     margin: 0px;
-    padding: 0px;
+    padding: 10px;
       background-color: #9E9E9E;
 
 }

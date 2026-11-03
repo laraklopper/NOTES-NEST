@@ -1,34 +1,23 @@
 #editPasswordForm{
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 85%;
     align-items: center;
     margin: 0px;
-    padding: 0px;
+    padding: 10px 0px;
+    background-color: #777d83;
+    gap: 10px;
 }
 #editPasswordInput{
     margin: 0px;
     width: 80%;
-    padding: 0px;
+    padding: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: #BFBFBF;
 }
-#currentPasswordBlock1,
-#currentPasswordBlock2{
-        display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0px;
-}
-#newPasswordBlock1,
-#newPasswordBlock2{
-       display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0px;
-}
+/* GROUP 1 */
 #editPasswordGroup1{
     width: 100%;
     background: #D6D6D6;
@@ -44,7 +33,18 @@
      font-family: "Roboto Condensed", sans-serif;
      font-weight: 700;
      letter-spacing: 2px;
+     text-transform: uppercase;
 }
+#currentPasswordBlock1,
+#currentPasswordBlock2{
+        display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    gap: 5px;
+}
+
+/* GROUP 2 */
 #editPasswordGroup2{
     width: 100%;
     background: #D6D6D6;
@@ -60,4 +60,52 @@
      font-family: "Roboto Condensed", sans-serif;
      font-weight: 700;
      letter-spacing: 2px;
+}
+#newPasswordBlock1,
+#newPasswordBlock2{
+       display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    gap: 5px;
+}
+/* =====END OF INPUT========= */
+
+/* EDITPASSWORDSTACK3 */
+#editPswdBlock1,
+#editPswdBlock2,
+#editPswdBlock3{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#editPswdBtn,
+#showNewPswdBtn,
+#showCurrentPswdBtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    width: 200px;
+    height: 40px;
+    text-transform: uppercase;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    color: #000;
+    border: #323A42 solid 2px;
+}
+#editPswdBtn:hover,
+#showNewPswdBtn:hover,
+#showCurrentPswdBtn:hover{
+    background-color: #323A42;
+     color: #E8F0F6;
+}
+
+.editUserLabel{
+     font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    margin: 0px;
+    padding: 0px;
 }
