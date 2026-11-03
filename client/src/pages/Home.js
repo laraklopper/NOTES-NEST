@@ -13,12 +13,14 @@ import Footer from '../components/Footer'
 import Profile from '../components/Profile';
 import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
-
+import AdminRegisForm from '../components/AdminRegisForm'
+const {ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 
 //====MAIN HOME FUNCTION COMPONENT========
 export default function Home(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
+    setCurrentUser,
     setError,
     logout
   }) {
@@ -27,7 +29,16 @@ export default function Home(
     const [editUser, setEditUser] = useState(false)
     const [editPassword, setEditPassword] = useState(false)
     const [profileLoading, setProfileLoading] = useState(false)// Disables the edit profile buttons while the update is saving
-
+const userId = currentUser?._id
+    const dismissKey = `adminFormDismissed_${userId}`
+    // Id of the user who closed the form during this visit (re-renders the page)
+    const [dismissedForId, setDismissedForId] = useState(null)
+    /* Read localStorage on every render rather than once on mount, so the saved
+    choice is picked up once the user's details have loaded */
+    const adminFormDismissed = Boolean(userId) && (
+      dismissedForId === userId ||
+      localStorage.getItem(dismissKey) === 'true'
+    )
     /* currentUser only holds userId, fullName and admin,
     so fetch the full profile from the server */
     useEffect(() => {
@@ -55,6 +66,23 @@ export default function Home(
     },[])
     const user = profile || currentUser || {};
 
+    // Hide the form and remember the choice so it is not displayed again
+  const exitAdminForm = useCallback(() => {
+    localStorage.setItem(dismissKey, 'true')
+    setDismissedForId(userId)
+  },[dismissKey, userId])
+    /* Function to display/render AdminRegisForm.js if user is not an admin user
+    and matches the age requirement of 21 years and has been a user for 3 months 
+    (1 day during development) */
+    const showAdminForm = Boolean(
+      currentUser &&
+      !currentUser.admin &&
+      !adminFormDismissed &&
+      currentUser.dateOfBirth &&
+      calculateAge(currentUser.dateOfBirth) >= ADMIN_MIN_AGE &&
+      currentUser.createdAt && 
+      Date.now() - new Date(currentUser.createdAt).getTime() >= ADMIN_MIN_ACCOUNT_AGE_MS
+    )
     //========EDIT USER REQUEST===============
     /* Sends only the changed fields (built by EditProfile.js).
     Returns true on success so the form knows to clear itself */
@@ -120,6 +148,7 @@ export default function Home(
                 </Row>
                 </div>
                 <div id='editUserDataPanal'>
+                {/* TOGGLE EDITPROFILE FORM */}
                   {editUser && (
                     <div id='editProfileBlock'>
                       <Row id='editProfileRow'>
@@ -137,6 +166,7 @@ export default function Home(
                       </Row>
                     </div>
                   )}
+                  {/* TOGGLE EDIT PASSWORD FORM */}
                   {editPassword && (
                     <div id='editPasswordBlock'>
                       <Row id='editPasswordRow'>
@@ -150,7 +180,28 @@ export default function Home(
                       </Row>
                     </div>
                   )}
+                   {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not 
+                   an admin user  and matches the age requirement of 21 years and has 
+                   been a user for 3 months (1 day during development) */}
+                  {showAdminForm && (
+                    <div>
+                      <Row>
+                        <Col id='adminFormCol1'/>
+                        <Col id='adminFormCol' xs={12} md={10}>
+                          <div>
+                            <AdminRegisForm
+                            exitAdminForm={exitAdminForm}
+                            setError={setError}
+                            setCurrentUser={setCurrentUser}
+
+                            />
+                          </div>
+                        </Col>
+                      </Row>
+                    </div>
+                  )}
                 </div>
+                
               </div>
             </Tab>
           </Tabs>
