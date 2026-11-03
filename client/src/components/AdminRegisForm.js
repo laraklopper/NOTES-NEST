@@ -1,8 +1,11 @@
+// AdminRegisForm.js
 import React, { useCallback, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/RegistrationForm.css'
 import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+// IMPORT ICONS FROM LUCIDE REACT
 import { ShieldUser, X } from 'lucide-react';
 const {ADMIN_STATUS} = require('../util/userFunc')
 

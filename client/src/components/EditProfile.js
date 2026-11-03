@@ -5,6 +5,7 @@ import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import languageData from '../util/languageData';
+// IMPORT ICONS FROM LUCIDE REACT
 import { RotateCcw } from 'lucide-react';
 
 /* Empty form values, shared by the initial state and the CLEAR FORM button.
