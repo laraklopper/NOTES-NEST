@@ -77,6 +77,7 @@ export default function NotePadForm() {
           <textarea
             className='notesTextArea'
             id='noteTextInput'
+            placeholder='NOTE TEXT'
             // name=''
             // value={}
             // onChange={}
