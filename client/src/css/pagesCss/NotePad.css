@@ -37,11 +37,7 @@
     margin: 0px;
     padding: 0px;
 }
-#notePadInput{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
+
 #toggleNotePadBtn{
     display: flex;
     justify-content: center;

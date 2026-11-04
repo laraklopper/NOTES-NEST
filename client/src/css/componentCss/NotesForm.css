@@ -13,6 +13,14 @@
   letter-spacing: 1px;
   padding: 0px;
 }
+/* ===================
+LAYOUT
+============*/
+#notePadInput{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
 /* GROUP 1 */
 #notePadGroup1{
     display: flex;
@@ -87,6 +95,10 @@
 
     display: flex;
     align-items: baseline;
+}
+#notePadBlock3{
+  display: flex;
+  align-items: baseline; 
 }
 #noteTextBlock{
     display: flex;

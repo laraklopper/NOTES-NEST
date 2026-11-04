@@ -29,12 +29,13 @@ export default function NotePadForm() {
           <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
         </div>
       </div>
-      <div className="p-2 ms-auto"/>
-      <div className="p-2" id='notePadBlock2' hidden>
-        <label className='notePadLabel'>USERNAME:</label>
+      {/* Hidden Readonly input */}
+      <div className="p-2 ms-auto" id='notePadBlock2'>
+        <label className='notePadLabel' >USERNAME:</label>
         <div className='inputDiv'>
           <input
             className='input'
+            id='noteUsername'
             readOnly
             // placeholder=''//currentUser.username
             name='username'
@@ -42,6 +43,25 @@ export default function NotePadForm() {
             />
             <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
 
+        </div>
+      </div>
+      <div className="p-2" id='notePadBlock3'>
+        <label className='notePadLabel' htmlFor='newNoteDate' hidden>DATE:</label>
+        <div className='inputDiv'>
+        <input
+          className='input'
+          id='newNoteDate'
+          required
+          readOnly
+          placeholder=''
+          type='date'
+          // name=''
+          // value={}
+          // ARIA ATTRIBUTES:
+          aria-required='true'
+          aria-readonly='true'
+        />
+        <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
         </div>
       </div>
     </Stack>
@@ -55,6 +75,10 @@ export default function NotePadForm() {
        
           <textarea
             className='notesTextArea'
+            id='noteTextInput'
+            // name=''
+            // value={}
+            // onChange={}
           />
            <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
       </div>
@@ -79,6 +103,7 @@ export default function NotePadForm() {
           className='input'
           // name=''
           // value={}
+          // onChange={}
 
           >
             <option>SELECT</option>
@@ -93,6 +118,8 @@ export default function NotePadForm() {
           <label className='notePadLabel'>IS PINNED:</label>
           <input
             type='checkBox'
+            // name=''
+            // value={}
           />
         </div>
       </div>
