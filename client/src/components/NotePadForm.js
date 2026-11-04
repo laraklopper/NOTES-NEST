@@ -3,6 +3,7 @@ import '../css/componentCss/NotesForm.css'
 import Stack from 'react-bootstrap/Stack';
 import { Asterisk, RotateCcw, Save } from 'lucide-react';
 import Button from 'react-bootstrap/Button';
+import languageData from '../util/languageData';
 // NotePadForm component 
 /*Form to create a new note
 POST request*/
@@ -89,8 +90,16 @@ export default function NotePadForm() {
         <div className='inputDiv'>
           <select
           className='input'
+          // name=''
+          // value={}
+          // onChange={}
           >
             <option>SELECT</option>
+            {languageData.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.name}
+              </option>
+            ))}
           </select>
           <Button
           variant="outline-secondary"
@@ -135,7 +144,7 @@ export default function NotePadForm() {
       <div className="p-2 ms-auto">
       
       </div>
-      <div className="p-2">
+      <div className="p-2" id='notePadBtnBlock'>
          <Button
         variant='light'
         type='submit'

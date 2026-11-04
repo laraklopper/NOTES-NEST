@@ -155,21 +155,7 @@
     display: flex;
     align-items: center;
 }
-#registerBtn{
-        width: 180px;
-    height: 40px;
-    color: #000;
-    font-weight: 700;
-    font-family: "Roboto Mono", monospace;
-    display: flex;
-    justify-content: center;
-    margin: 0px;
-    padding: 0px;
-    color: #000;
-    align-items: center;
-    border: solid 2px #323A42;
 
-}
 #regisAdminConsentBlock{
     display: flex;
     align-items: center;
@@ -192,4 +178,23 @@
     margin: 0px;
     width: 100%;
     padding: 0px;
+}
+#registerBtn{
+        width: 180px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+
+}
+#registerBtn:hover{
+    color: #E8F0F6;
+    background:#323A42
 }
