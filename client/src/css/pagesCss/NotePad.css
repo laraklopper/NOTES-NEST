@@ -1,0 +1,59 @@
+#notePadSection{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0px;
+        padding: 10px 0px;
+    gap: 10px;
+    background-color: #946E26;
+}
+#notePadBlock{
+    width: 100%;
+}
+#toggleNotPadRow{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleNotPadCol{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+}
+#toggleNotPadCol1,
+#toggleNotPadCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#notePadPanal{
+    padding: 10px;
+    margin: 0px;
+    width: 100%;
+}
+#notePadRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#notePadInput{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+#toggleNotePadBtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 2px;
+    width: 180px;
+    height: 40px;
+    font-family: "Roboto Mono", monospace;
+    border: solid 2px #323A42;
+    color: #000;
+}
