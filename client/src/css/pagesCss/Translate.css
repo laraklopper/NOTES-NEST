@@ -39,3 +39,24 @@
     padding: 0px;
     width: 100%;
 }
+#langaugeListPanal{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#languageListCol{
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+#langaugeListRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#languageListCol1,
+#languageListCol2{
+    margin: 0px;
+    padding: 0px;
+}

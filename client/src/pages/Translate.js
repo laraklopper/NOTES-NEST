@@ -9,6 +9,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
+import LanguageList from '../components/LanguageList';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, logout}) {
@@ -19,7 +20,7 @@ export default function Translate(
         <section id='translateSec1'>
           <div id='translateSectionPanal'>
              <Tabs
-      id="controlled-tab-example"
+      id="translateTabs"
       activeKey={key}
       onSelect={(k) => setKey(k)}
       className="mb-3"
@@ -37,14 +38,21 @@ export default function Translate(
       </Row>
         </div>
       </Tab>
-      <Tab eventKey="TRANSLATIONS LIST" title="translations">
+      <Tab eventKey="translations" title="translations">
         <div>
           {/* TRANSLATIONS LIST */}
         </div>
       </Tab>
-      <Tab eventKey="LANGUAGES LIST" title="Contact">
-        <div>
+      <Tab eventKey="languages" title="LANGUAGES">
+        <div id='langaugeListPanal'>
           {/* Langauges */}
+          <Row id='langaugeListRow'>
+            <Col id='languageListCol1'/>
+            <Col xs={12} md={8} id='languageListCol'>
+              <LanguageList/>
+            </Col>
+            <Col id='languageListCol2'/>
+          </Row>
         </div>
       </Tab>
     </Tabs>
