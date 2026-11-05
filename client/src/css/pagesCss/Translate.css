@@ -1,0 +1,41 @@
+#translateSec1{
+     display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: #946E26;
+}
+#translatorDiv{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#translatorRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#translatorCol{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#translatorPanal{
+     display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#translateSectionPanal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}

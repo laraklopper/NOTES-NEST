@@ -1,0 +1,130 @@
+#translatorDiv{
+    width: 100%;
+    display: flex;
+    padding: 10px;
+    margin: 0px;
+    flex-direction: column;
+    align-items: center;
+}
+#translatorForm{
+      display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 10px;
+   width: 100%;
+    background-color: #777d83;
+    border: #323A42 solid 2px;
+    gap: 10px;
+}
+/* LAYOUT */
+#translatorInputDetails{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#translateInputStack{
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    margin: 0px;
+    padding: 0px
+}
+#languageSelectBlock{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+}
+#targetLangSelectdiv{
+    justify-content: flex-end;
+}
+#selectSourceLangBlock{
+    justify-content: flex-start;
+}
+#swapLanguageBtn{
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+#copyTranslationBtn{
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: solid 2px #323A42;
+    text-transform: uppercase;
+    color: #000;
+    font-family: "Fira Mono", monospace;
+    font-weight: 700;
+    display: flex;
+    letter-spacing: 1px;
+    align-items: center;
+    gap: 5px;
+    margin: 0px 10px 0px 0px;
+}
+#translateBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 40px;
+    font-family: "Fira Mono", monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #000;
+    margin: 0px;
+    padding: 0px;
+    border: solid 2px #323A42;
+}
+#translateBtn:hover:not(:disabled){
+    color: #E8F0F6;
+    background-color: #323A42;
+}
+.languageSelectDiv{
+         display: flex;
+    justify-content: center;
+
+    width: 100%;
+        align-items: center;
+    margin: 0px;
+    gap: 10px;
+}
+#translatedInputDiv{
+    display: flex;
+justify-content: space-between;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    gap: 5px;
+}
+#sourceTextBlock,
+#translatedTextBlock{
+    width: 480px;
+    margin: 0px;
+    padding: 0px;
+}
+#sourceText,
+#translatedText{
+    height: 200px;
+    white-space: pre-wrap;
+    resize: vertical;
+      font-family: "Fira Mono", monospace;
+    overflow-y: scroll;
+    border: solid 2px #323A42;
+}
+#translateBtnBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+}
