@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../css/componentCss/NotesForm.css'
+import NoteEditor from './NoteEditor';
 import Stack from 'react-bootstrap/Stack';
 import { Asterisk, RotateCcw, Save } from 'lucide-react';
 import Button from 'react-bootstrap/Button';
@@ -8,6 +9,8 @@ import languageData from '../util/languageData';
 /*Form to create a new note
 POST request*/
 export default function NotePadForm() {
+  const [content, setContent] = useState(''); // TipTap HTML, sent as `content` on save
+
   return (
     <form id='notePadForm'>
       <div id='formHeadingBlock'>
@@ -73,15 +76,8 @@ export default function NotePadForm() {
           <Stack direction="horizontal" gap={3} id='notePadStack2'>
       <div className="p-2" id='noteTextBlock'>
           <label className='notePadLabel'>NOTE:</label>
-       
-          <textarea
-            className='notesTextArea'
-            id='noteTextInput'
-            placeholder='NOTE TEXT'
-            // name=''
-            // value={}
-            // onChange={}
-          />
+
+          <NoteEditor content={content} onChange={setContent} />
            <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
       </div>
       <div className="p-2 ms-auto"/>

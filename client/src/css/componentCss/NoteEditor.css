@@ -1,0 +1,91 @@
+/* ===================
+NOTE EDITOR (TipTap)
+============*/
+.noteEditor{
+    display: flex;
+    flex-direction: column;
+    width: 650px;
+    gap: 5px;
+}
+.noteEditorToolbar{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px;
+    padding: 3px;
+    background-color: #E8F0F6;
+    border: #323A42 solid 2px;
+    border-radius: 5px;
+}
+.noteEditorBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin: 0px;
+    padding: 0px;
+    color: #323A42;
+    background: transparent;
+    border: solid 1px transparent;
+    border-radius: 3px;
+}
+.noteEditorBtn:hover:not(:disabled){
+    border-color: #323A42;
+}
+.noteEditorBtn.isActive{
+    color: #E8F0F6;
+    background: #323A42;
+}
+.noteEditorBtn:disabled{
+    opacity: 0.4;
+}
+/* Editable area */
+.noteEditor .ProseMirror{
+    background-color: #fff;
+    padding: 8px 10px;
+    overflow-y: auto;
+    outline: none;
+}
+.noteEditor .ProseMirror:focus-visible{
+    box-shadow: 0 0 0 3px rgba(50, 58, 66, 0.4);
+}
+.noteEditor .ProseMirror p{
+    margin: 0px 0px 5px;
+}
+.noteEditor .ProseMirror blockquote{
+    border-left: #323A42 solid 3px;
+    padding-left: 10px;
+    margin: 5px 0px;
+}
+.noteEditor .ProseMirror pre{
+    background: #323A42;
+    color: #E8F0F6;
+    padding: 8px;
+    border-radius: 5px;
+}
+/* Placeholder shown while the editor is empty */
+.noteEditor .ProseMirror p.is-editor-empty:first-child::before{
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    color: #777d83;
+    pointer-events: none;
+}
+/* Checklists */
+.noteEditor ul[data-type="taskList"]{
+    list-style: none;
+    padding-left: 0px;
+}
+.noteEditor ul[data-type="taskList"] li{
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+.noteEditor ul[data-type="taskList"] li > div{
+    flex: 1;
+}
+.noteEditor ul[data-type="taskList"] li[data-checked="true"] > div{
+    text-decoration: line-through;
+    color: #777d83;
+}
