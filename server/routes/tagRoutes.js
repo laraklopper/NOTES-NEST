@@ -10,6 +10,16 @@ const Tag = require('../models/tagSchema');// Import the Tag model
 const { checkJwtToken } = require('./middleware');// Import the JWT middleware
 const router = express.Router()
 
+/*──────────────────────────── GET ROUTES ─────────────────────────────────────
+   GET: READ — Used to fetch information from the provider and the database
+────────────────────────────────────────────────────────────────────────────────*/
+router.get('/fetchTags', checkJwtToken, async (req, res) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+})
 /*──────────────────────────── POST ROUTES ──────────────────────────────
     POST: CREATE — Used to submit new data to the database
  ─────────────────────────────────────────────────────────────────────────*/
