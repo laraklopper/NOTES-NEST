@@ -1,3 +1,4 @@
+//NotePadForm.js
 import React, { useState } from 'react'
 import '../css/componentCss/NotesForm.css'
 import NoteEditor from './NoteEditor';
@@ -8,16 +9,20 @@ import languageData from '../util/languageData';
 // NotePadForm component 
 /*Form to create a new note
 POST request*/
-export default function NotePadForm() {
+export default function NotePadForm({addNote}) {
   const [content, setContent] = useState(''); // TipTap HTML, sent as `content` on save
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    addNote()
+  }
   return (
-    <form id='notePadForm'>
+    <form id='notePadForm' method='POST' onSubmit={handleSubmit}>
       <div id='formHeadingBlock'>
         <h3 id='formHeading'>CREATE NEW NOTE</h3>
       </div>
       <div id='notePadInput'>
-     
+     {/* GROUP 1 */}
 <fieldset id='notePadGroup1'>
           <legend>TITLE</legend>
           {/* STACK ONE */}
@@ -76,7 +81,6 @@ export default function NotePadForm() {
           <Stack direction="horizontal" gap={3} id='notePadStack2'>
       <div className="p-2" id='noteTextBlock'>
           <label className='notePadLabel'>NOTE:</label>
-
           <NoteEditor content={content} onChange={setContent} />
            <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
       </div>
@@ -110,7 +114,7 @@ export default function NotePadForm() {
           // name=''
           // value={}
           // onChange={}
-
+          // ARIA ATTRIBUTES:
           >
             <option>SELECT</option>
           </select>
