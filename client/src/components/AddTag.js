@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import '../css/componentCss/AddNotebook.css'
 import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
@@ -8,6 +8,17 @@ import Button from 'react-bootstrap/Button';
 /*Form to create a new tag
 POST request*/
 export default function AddTag() {
+
+  const addTag = useCallback(async (params) => {
+    try {
+      const response = await fetch('http://localhost:3001/tags/addTag',{
+        method: 'POST',
+        mode: 'cors'
+      })
+    } catch (error) {
+      
+    }
+  },[])
   return (
     <form id='addTagForm' method='POST'>
       <div id='formHeadingBlock'>
