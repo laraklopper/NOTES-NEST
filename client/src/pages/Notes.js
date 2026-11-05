@@ -1,9 +1,11 @@
 //Note.js
-import React from 'react'
+import React, { useState } from 'react'
 import '../css/pagesCss/Notes.css'
 import '../css/pagesCss/PageSetup.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
@@ -13,10 +15,30 @@ export default function Notes(
     currentUser, 
     logout
   }) {
+    const [key, setKey] = useState('notes')
   return (
     <div id='pageContainer'>
       <Header heading={'NOTES'} currentUser={currentUser} />
-      <section>
+      <section id='notesSection1'>
+        <div id='notesTabPanal'>
+           <Tabs
+      id="notesTabs"
+      activeKey={key}
+      onSelect={(k) => setKey(k)}
+      className="mb-3"
+    >
+      <Tab eventKey="notes" title="NOTES">
+        <div></div>
+      </Tab>
+      <Tab eventKey="profile" title="ARCHIVE">
+        Tab content for Profile
+      </Tab>
+      <Tab eventKey="contact" title="NOTEBOOKS">
+        {/* Notebook list */}
+        {/* tags list */}
+      </Tab>
+    </Tabs>
+        </div>
 
       </section>
       <Footer logout={logout}/>
