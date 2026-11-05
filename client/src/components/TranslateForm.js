@@ -340,9 +340,7 @@ export default function TranslateForm(
             <select className='input'>
                  {/* SET TO DEFAULT TARGET/SOURCE LANGUAGE OR auto-detect if none */}
                 <option>SELECT</option>
-
             </select>
-
         </div>
         {sourceLang === 'auto' && (
             <div id='detectedLanguageBlock'>
@@ -405,6 +403,8 @@ export default function TranslateForm(
                                          type='button'
                                             variant='outline-secondary'
                                             size='sm'
+                                            onClick={handleCopy}
+                                            disabled={!translatedText}
                                         >
                                            {copied ? (
                                             <>Copied <Check/></>
@@ -413,11 +413,7 @@ export default function TranslateForm(
                                            )}
                                         </Button>
                                     </div>
-
                                 </div>
-
-
-
             </div>
         </div>
       </div>
@@ -449,12 +445,8 @@ export default function TranslateForm(
                             {loading ? 'Translating…' : 'Translate'}
                         </Button>
                     </div>
-
     </Stack>
-
-
         </div>
-    
     </form>
     {/* RESULT + SAVE */}
             <Stack gap={3} id='saveTranslationStack'>
@@ -476,13 +468,11 @@ export default function TranslateForm(
                             <>{saving ? 'Saving…' : 'Save History'} <Save size={16} aria-hidden='true' focusable='false' /></>
                         )}
                     </Button>
-
                     {/* SAVE STATUS MESSAGE */}
                     <p id='saveTranslationNote' aria-live='polite'>
                         {saved ? 'This translation is in your history.' : ''}
                     </p>
                 </div>
-
                 {/* SAVE ERROR MESSAGE */}
                 {saveError && (
                     <div className='p-2' id='saveErrorBlock' role='alert' aria-live='assertive'>
@@ -493,6 +483,5 @@ export default function TranslateForm(
                 )}
             </Stack>
     </div>
-   
   )
 }
