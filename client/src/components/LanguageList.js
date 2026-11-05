@@ -3,8 +3,8 @@ import languageData from '../util/languageData'
 
 export default function LanguageList() {
   return (
-    <div>
-        <table>
+    <div id='languageList'>
+        <table id='languageTable'>
             <thead>
                 <tr>
                     <th colSpan={2} aria-colspan={2}>AVAILABLE LANGUAGES</th>
@@ -22,6 +22,11 @@ export default function LanguageList() {
                     </tr>
                 ))}
             </tbody>
+            <tfoot>
+                <tr>
+                    <td>API LANGUAGES</td>
+                </tr>
+            </tfoot>
         </table>
     </div>
   )
