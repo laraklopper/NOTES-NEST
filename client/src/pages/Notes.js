@@ -8,6 +8,7 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import NotesList from '../components/NotesList';
 
 //====MAIN NOTES FUNCTION COMPONENT========
 export default function Notes(
@@ -28,7 +29,15 @@ export default function Notes(
       className="mb-3"
     >
       <Tab eventKey="notes" title="NOTES">
-        <div></div>
+        <div>
+          <Row id='notesListRow'>
+        <Col id='notesListCol'>
+          <div>
+            <NotesList/>
+          </div>
+        </Col>
+      </Row>
+        </div>
       </Tab>
       <Tab eventKey="profile" title="ARCHIVE">
         Tab content for Profile

@@ -1,10 +1,11 @@
 /* Tabs.css
 - Home.js
 - NotePad.js
-- 
+- Notes.js
 - Translate.js
 */
 #tabPanal,
+#notesTabPanal,
 #notepadFormsPanal,
 #translateSectionPanal{
     width: 100%;
@@ -16,6 +17,7 @@
     background-color: silver;
 }
 #notePadTabs,
+#notesTabs,
 #translateTabs,
 #homePageTabs{
         display: flex;
