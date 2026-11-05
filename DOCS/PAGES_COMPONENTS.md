@@ -35,3 +35,9 @@ ROUTE||FILE|  PURPOSE | ACCESS |
 | RegistrationForm.js | Form for user registration | Form for user registration | |*loggedIn === false* |
 
 
+### FORM COMPONENTS
+
+|COMPONENT NAME | PURPOSE | FILE | ENDPOINT(IF APPLICABLE) | METHOD(IF APPLICABLE)|
+|----------|----------|-------|
+| [LoginForm.js](../client/src/components/LoginForm.js) | Form for user login | |`/login`| **POST**| 
+|RegistrationForm.js | Form for user registration || |*loggedIn === false* |
