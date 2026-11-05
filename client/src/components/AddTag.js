@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useState } from 'react'
 import '../css/componentCss/AddNotebook.css'
 import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
@@ -7,20 +7,32 @@ import Button from 'react-bootstrap/Button';
 // AddTag component
 /*Form to create a new tag
 POST request*/
-export default function AddTag() {
+export default function AddTag(
+  {//PROPS PASSED FROM PARENT COMPONENT (NotePad.js)
+    addTag,
+    loading
+  }) {
+  const [name, setName] = useState('')
 
-  const addTag = useCallback(async (params) => {
-    try {
-      const response = await fetch('http://localhost:3001/tags/addTag',{
-        method: 'POST',
-        mode: 'cors'
-      })
-    } catch (error) {
-      
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    // Conditional rendering to check the name is not only spaces (required only checks for empty)
+    if (!name.trim()) {
+      alert('Please enter a tag name.')
+      return
     }
-  },[])
+    const success = await addTag(name.trim())
+    if (success) setName('')
+  }
+
+  //Function to clear form
+  const clearForm = () => {
+    const confirmClear = window.confirm('Are you sure you want to clear the form?');
+    if (!confirmClear) return;
+    setName('')
+  }
   return (
-    <form id='addTagForm' method='POST'>
+    <form id='addTagForm' method='POST' onSubmit={handleSubmit}>
       <div id='formHeadingBlock'>
         <h3 id='formHeading'>CREATE NEW TAG</h3>
       </div>
@@ -32,12 +44,13 @@ export default function AddTag() {
                 <input
                   className='input'
                   id='tagNameInput'
+                  type='text'
                   placeholder='TAG NAME'
                   required
                   maxLength={30}
-                  // name='name'
-                  // value={}
-                  // onChange={}
+                  name='name'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   // ARIA ATTRIBUTES:
                   aria-required='true'
                 />
@@ -54,18 +67,22 @@ export default function AddTag() {
             variant='light'
             type='submit'
             id='saveTagBtn'
+            disabled={loading}
             // ARIA ATTRIBUTES
+            aria-label='SAVE TAG'
           >
-            SAVE <Save fontWeight={700} aria-hidden='true' focusable='false'/>
+            {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false'/>
           </Button>
           <Button
             variant='danger'
             id='clearFormBtn'
             type='button'
-            // onClick={}
+            onClick={clearForm}
+            disabled={loading}
             // ARIA ATTRIBUTES:
+            aria-label='RESET FORM'
           >
-            <RotateCcw/> RESET
+            <RotateCcw aria-hidden='true' focusable='false'/> RESET
           </Button>
         </div>
     </Stack>

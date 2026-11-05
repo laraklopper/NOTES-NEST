@@ -22,6 +22,7 @@ export default function NotePad(
       const [key, setKey] = useState('notepad')
       const [profile, setProfile] = useState(null)
       const [noteLoading, setNoteLoading] = useState(false)
+      const [tagLoading, setTagLoading] = useState(false)
 
       /* currentUser only holds userId, fullName and admin, so fetch the
       profile for the username and default note language shown on the form */
@@ -68,6 +69,37 @@ export default function NotePad(
           return false
         } finally {
           setNoteLoading(false)
+        }
+      },[setError])
+
+      //========ADD TAG REQUEST===============
+      /* Sends the tag name from AddTag.js.
+      Returns true on success so the form knows to clear itself */
+      const addTag = useCallback(async (name) => {
+        setError?.(null)
+        setTagLoading(true)
+        try {
+          // The browser sends the JWT cookie with the request
+          const response = await fetch('/tag/addTag', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name })
+          })
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            setError?.(data.message || 'Failed to save tag.')
+            return false
+          }
+          alert(`Tag "${data.tag?.name || name}" saved successfully.`)
+          return true
+        } catch (error) {
+          console.error('Error adding new tag:', error);
+          setError?.('An error occurred while saving your tag.')
+          return false
+        } finally {
+          setTagLoading(false)
         }
       },[setError])
 
@@ -119,7 +151,7 @@ export default function NotePad(
             <Col/>
             <Col xs={5}>
               <div id='addTagPanal'>
-                <AddTag/>
+                <AddTag addTag={addTag} loading={tagLoading}/>
               </div>
             </Col>
             <Col/>
