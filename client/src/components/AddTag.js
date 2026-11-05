@@ -14,7 +14,6 @@ export default function AddTag() {
         <h3 id='formHeading'>CREATE NEW TAG</h3>
       </div>
       <div id='tagInput'>
-      
            <Stack gap={3} id='tagStack1'>
       <div className="p-2" id='tagBlock1'>
               <label className='notePadLabel' htmlFor='tagNameInput'>NAME:</label>
