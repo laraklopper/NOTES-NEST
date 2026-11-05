@@ -146,7 +146,7 @@ export default function App() {
               }/>
               <Route path='/notepad' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                  <NotePad currentUser={currentUser} logout={logout}/>
+                  <NotePad currentUser={currentUser} logout={logout} setError={setError}/>
                 </ProtectedUserRoute>
               }/>
               <Route path='/notes' element={

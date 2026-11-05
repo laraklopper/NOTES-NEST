@@ -1,5 +1,5 @@
 //NotePad.js
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/NotePad.css'
 import Row from 'react-bootstrap/Row';
@@ -14,10 +14,22 @@ import AddNoteBook from '../components/AddNoteBook';
 import AddTag from '../components/AddTag';
 export default function NotePad(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
-    currentUser, logout}) {
+    currentUser, 
+    setError,
+    logout
+  
+  }) {
       const [key, setKey] = useState('notepad')
 
 
+      const addNote = useCallback(async () => {
+        try {
+          const token = localStorage.getItem('token')
+          const response = await fetch()
+        } catch (error) {
+          
+        }
+      },[])
 
   return (
     <div id='pageContainer'>
