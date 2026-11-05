@@ -17,7 +17,7 @@ const cookieParser = require('cookie-parser');// Reads the JWT cookie into req.c
 const connectDB = require('./config/connect')
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-
+const noteRoutes = require('./routes/noteRoutes')
 const app = express();// Create an Express application
 
 // Extract enviromental variables
@@ -41,7 +41,7 @@ app.use(helmet())
 // Prefix all route modules with their base path.
 app.use('/auth', authRoutes);// /auth/login, /auth/register, /auth/logout
 app.use('/user', userRoutes);// /user/me, /user/fetchUsers
-
+app.use('/notes', noteRoutes)
 // ================== MONGOOSE CONFIG ==================
 /* Disable strict populate to prevent errors when populating 
 paths that are conditionally defined*/
