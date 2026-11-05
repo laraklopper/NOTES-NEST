@@ -86,8 +86,8 @@ export default function MainHeader(//Export default MainHeader function componen
         <Row id='headerRow3'>
               <Col id='headerNavCol'>
                  <Stack direction="horizontal" gap={3} id='headerStack2'>
-      <div className="p-2">First item</div>
-      <div className="p-2 ms-auto">Second item</div>
+      <div className="p-2"/>
+      <div className="p-2 ms-auto"/>
       <div className="p-2">
          <nav id='navigation'>
             <ul id='mainNavbar'>    
