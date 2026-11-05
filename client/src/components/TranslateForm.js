@@ -4,6 +4,7 @@ import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import { ArrowLeftRight, RotateCw, Bug, Check, Save, Copy } from 'lucide-react';
+import LanguageSelector from './LanguageSelector';
 const {FALLBACK_LANGUAGES, FALLBACK_SOURCE_LANG, FALLBACK_TARGET_LANG, MIN_DETECT_CHARS, DETECT_DEBOUNCE_MS, MAX_LENGTH} = require('../util/languageFunc')
 export default function TranslateForm(
     {currentUser}
@@ -310,14 +311,14 @@ export default function TranslateForm(
       <div className="p-2" id='languageSelectBlock'>
       {/* SET TO DEFAULT TARGET/SOURCE LANGUAGE OR auto-detect if none */}
         <div className='languageSelectDiv' id='selectSourceLangBlock'>
-        <label className='translateLabel' hidden>SOURCE LANGUAGE</label>
-            <select
-            className='input'
-            >
-            {/* SET TO DEFAULT TARGET/SOURCE LANGUAGE OR auto-detect if none */}
-                <option>SELECT</option>
-            </select>
-            {/* DETECTED SOURCE LANGUAGE */}
+        <LanguageSelector
+        id='sourceLang'
+        label={'Source Language'}
+        languages={languages}
+        value={sourceLang}
+        onChange={handleSourceLangChange}
+        allowAuto
+        disabled={loading}/>
         </div>
         <div id='swapLangDiv'>
             <Button
@@ -337,11 +338,17 @@ export default function TranslateForm(
         <div className='languageSelectDiv' id='targetLangSelectdiv'>
           <label className='translateLabel' hidden>TARGET LANGUGE</label>
           {/* SET TO DEFAULT TARGET/SOURCE LANGUAGE OR auto-detect if none */}
-            <select className='input'>
-                 {/* SET TO DEFAULT TARGET/SOURCE LANGUAGE OR auto-detect if none */}
-                <option>SELECT</option>
-            </select>
+            <LanguageSelector
+                 id='targetLang'
+                label='Target language'
+                languages={languages}
+                value={targetLang}
+                onChange={handleTargetLangChange}
+                disabled={loading}
+            
+            />
         </div>
+            {/* DETECTED SOURCE LANGUAGE */}
         {sourceLang === 'auto' && (
             <div id='detectedLanguageBlock'>
                                 <p id='detectedLanguageNote' aria-live='polite'>

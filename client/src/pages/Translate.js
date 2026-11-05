@@ -29,7 +29,9 @@ export default function Translate(
            <Row id='translatorRow'>
         <Col  xs={12} md={12} id='translatorCol'>
           <div id='translatorPanal'>
-            <TranslateForm/>
+            <TranslateForm
+              currentUser={currentUser}
+            />
           </div>
         </Col>
       </Row>

@@ -32,6 +32,7 @@
     padding: 0px
 }
 #languageSelectBlock{
+        border-bottom: solid;
     display: flex;
     width: 100%;
     margin: 0px;
