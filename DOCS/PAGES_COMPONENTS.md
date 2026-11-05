@@ -42,3 +42,4 @@ ROUTE||FILE|  PURPOSE | ACCESS |
 |----------     |----------|-------                 |---------------------|
 | [LoginForm.js](../client/src/components/LoginForm.js) | Form for user login |`/login`| **POST**| 
 |[RegistrationForm.js](../client/src/components/RegistrationForm.js) | Form for user registration |`/reg`| **POST** |
+|[AdminRegisForm.js](../client/src/components/AdminRegisForm.js)|||**PATCH**|
