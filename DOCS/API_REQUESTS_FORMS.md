@@ -81,7 +81,10 @@ Notes:
 
 ### 1.4. ROUTE COVERAGE
 
-Every route in [API_ENDPOINT_PLAN.md](API_ENDPOINT_PLAN.md) and where the client uses it (D = default request, F = form, B = button).
+Every route in [API_ENDPOINT_PLAN.md](API_ENDPOINT_PLAN.md) and where the client uses it 
+- D = default request, 
+- F = form, 
+- B = button
 
 | # | Method | Endpoint | Used by |
 |---|--------|----------|---------|

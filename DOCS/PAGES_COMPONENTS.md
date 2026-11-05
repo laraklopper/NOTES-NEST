@@ -36,8 +36,9 @@ ROUTE||FILE|  PURPOSE | ACCESS |
 
 
 ### FORM COMPONENTS
+[API_REQUEST_FORMS](../DOCS/API_REQUESTS_FORMS.md)
 
-|COMPONENT NAME | PURPOSE | FILE | ENDPOINT(IF APPLICABLE) | METHOD(IF APPLICABLE)|
-|----------|----------|-------|
-| [LoginForm.js](../client/src/components/LoginForm.js) | Form for user login | |`/login`| **POST**| 
-|RegistrationForm.js | Form for user registration || |*loggedIn === false* |
+|COMPONENT NAME | PURPOSE | ENDPOINT(IF APPLICABLE) | METHOD(IF APPLICABLE)|
+|----------     |----------|-------                 |---------------------|
+| [LoginForm.js](../client/src/components/LoginForm.js) | Form for user login |`/login`| **POST**| 
+|[RegistrationForm.js](../client/src/components/RegistrationForm.js) | Form for user registration |`/reg`| **POST** |
