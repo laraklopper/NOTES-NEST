@@ -1,5 +1,5 @@
 //NotePad.js
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/NotePad.css'
 import Row from 'react-bootstrap/Row';
@@ -20,28 +20,56 @@ export default function NotePad(
   
   }) {
       const [key, setKey] = useState('notepad')
+      const [profile, setProfile] = useState(null)
+      const [noteLoading, setNoteLoading] = useState(false)
 
+      /* currentUser only holds userId, fullName and admin, so fetch the
+      profile for the username and default note language shown on the form */
+      useEffect(() => {
+        const fetchProfile = async () => {
+          try {
+            const response = await fetch('/user/me', { method: 'GET' });
+            if (!response.ok) {
+              throw new Error('Failed to fetch profile');
+            }
+            setProfile(await response.json());
+          } catch (error) {
+            console.error('Error fetching profile:', error);
+          }
+        }
+        fetchProfile();
+      }, [currentUser?.userId]);
 
-      //Function to add/create a new note
-      const addNote = useCallback(async () => {
+      //========ADD NOTE REQUEST===============
+      /* Sends the note built by NotePadForm.js.
+      Returns true on success so the form knows to clear itself */
+      const addNote = useCallback(async (note) => {
+        setError?.(null)
+        setNoteLoading(true)
         try {
-          const token = localStorage.getItem('token')
-          const response = await fetch(`http://localhost:3001/notes/addNote`, {
+          // The browser sends the JWT cookie with the request
+          const response = await fetch('/notes/addNote', {
             method: 'POST',
-            mode: 'cors',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
             },
-            body: JSON.stringify({
-              // payload
-            })
+            body: JSON.stringify(note)
           })
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            setError?.(data.message || 'Failed to save note.')
+            return false
+          }
+          alert('Note saved successfully.')
+          return true
         } catch (error) {
-          // console.error('Error adding new note');
-          
+          console.error('Error adding new note:', error);
+          setError?.('An error occurred while saving your note.')
+          return false
+        } finally {
+          setNoteLoading(false)
         }
-      },[])
+      },[setError])
 
   return (
     <div id='pageContainer'>
@@ -61,7 +89,12 @@ export default function NotePad(
           <Row id='notePadRow'>
             <Col id='notePadCol'>
               <div id='notePadPanal'>
-                <NotePadForm/>
+                <NotePadForm
+                  addNote={addNote}
+                  loading={noteLoading}
+                  username={profile?.username}
+                  defaultLanguage={profile?.defaultLanguages?.defaultNoteLanguage}
+                />
               </div>
             </Col>
           </Row>

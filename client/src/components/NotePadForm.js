@@ -6,15 +6,70 @@ import Stack from 'react-bootstrap/Stack';
 import { Asterisk, RotateCcw, Save } from 'lucide-react';
 import Button from 'react-bootstrap/Button';
 import languageData from '../util/languageData';
-// NotePadForm component 
+import { TODAY } from '../util/dateFunctions';
+
+/* Empty form values, shared by the initial state and the RESET button.
+The note text (content) is kept in its own state because NoteEditor manages it */
+const emptyNoteForm = {
+  title: '',
+  language: '',// '' falls back to the user's default note language
+  notebook: '',// '' means "No notebook"
+  tags: '',// Comma separated tag names, e.g. "work, ideas"
+  isPinned: false
+}
+
+// NotePadForm component
 /*Form to create a new note
 POST request*/
-export default function NotePadForm({addNote}) {
+export default function NotePadForm(
+  {//PROPS PASSED FROM PARENT COMPONENT (NotePad.js)
+    addNote,
+    loading,
+    username = '',
+    defaultLanguage = '',
+    notebooks = []
+  }) {
+  const [formData, setFormData] = useState(emptyNoteForm)
   const [content, setContent] = useState(''); // TipTap HTML, sent as `content` on save
+  const [editorKey, setEditorKey] = useState(0)// Changing the key remounts NoteEditor so it clears
 
-  const handleSubmit = (e) => {
+  const handleInputChange = (event) => {
+    const { name, value, type, checked } = event.target;// Get the input name and value from the changed field
+    setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
+  }
+
+  const resetForm = () => {
+    setFormData(emptyNoteForm)
+    setContent('')
+    setEditorKey((prev) => prev + 1)
+  }
+
+  // Build the request body in the shape POST /notes/addNote expects
+  const buildNote = () => ({
+    title: formData.title.trim(),
+    content,
+    language: formData.language || defaultLanguage,
+    notebook: formData.notebook || null,
+    tags: formData.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+    isPinned: formData.isPinned
+  })
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    addNote()
+    // Conditional rendering to check the note has text, as the editor is not a native input
+    if (!content.trim()) {
+      alert('Please enter the note text before saving.')
+      return
+    }
+    const success = await addNote(buildNote())
+    if (success) resetForm()
+  }
+
+  //Function to clear form
+  const clearForm = () => {
+    const confirmClear = window.confirm('Are you sure you want to clear the form?');
+    if (!confirmClear) return;
+    resetForm()
   }
   return (
     <form id='notePadForm' method='POST' onSubmit={handleSubmit}>
@@ -28,27 +83,37 @@ export default function NotePadForm({addNote}) {
           {/* STACK ONE */}
           <Stack direction="horizontal" gap={3} id='notePadStack1'>
       <div className="p-2" id='notePadBlock1'>
-      <label className='notePadLabel'>TITLE:</label>
+      <label className='notePadLabel' htmlFor='noteTitleInput'>TITLE:</label>
         <div className='inputDiv'>
           <input
             className='input'
             id='noteTitleInput'
+            type='text'
+            required
+            maxLength={200}
             placeholder='TITLE'
+            name='title'
+            value={formData.title}
+            onChange={handleInputChange}
+            // ARIA ATTRIBUTES:
+            aria-required='true'
           />
           <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
         </div>
       </div>
       {/* Hidden Readonly input */}
       <div className="p-2 ms-auto" id='notePadBlock2'>
-        <label className='notePadLabel' >USERNAME:</label>
+        <label className='notePadLabel' htmlFor='noteUsername'>USERNAME:</label>
         <div className='inputDiv'>
           <input
             className='input'
             id='noteUsername'
             readOnly
-            // placeholder=''//currentUser.username
+            placeholder='USERNAME'
             name='username'
-            // value={}
+            value={username}
+            // ARIA ATTRIBUTES:
+            aria-readonly='true'
             />
             <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
 
@@ -64,8 +129,8 @@ export default function NotePadForm({addNote}) {
           readOnly
           placeholder=''
           type='date'
-          // name=''
-          // value={}
+          // The server sets createdAt, so this only shows the date the note is made
+          value={TODAY}
           // ARIA ATTRIBUTES:
           aria-required='true'
           aria-readonly='true'
@@ -81,21 +146,25 @@ export default function NotePadForm({addNote}) {
           <Stack direction="horizontal" gap={3} id='notePadStack2'>
       <div className="p-2" id='noteTextBlock'>
           <label className='notePadLabel'>NOTE:</label>
-          <NoteEditor content={content} onChange={setContent} />
+          <NoteEditor key={editorKey} content={content} onChange={setContent} />
            <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
       </div>
       <div className="p-2 ms-auto"/>
       <div className="vr" />
       <div className="p-2">
-       <label className='notePadLabel'>LANGAUGE:</label>
+       <label className='notePadLabel' htmlFor='noteLanguageInput'>LANGAUGE:</label>
         <div className='inputDiv'>
           <select
           className='input'
-          // name=''
-          // value={}
-          // onChange={}
+          id='noteLanguageInput'
+          required
+          name='language'
+          value={formData.language || defaultLanguage}
+          onChange={handleInputChange}
+          // ARIA ATTRIBUTES:
+          aria-required='true'
           >
-            <option>SELECT</option>
+            <option value=''>SELECT</option>
             {languageData.map((lang) => (
               <option key={lang.code} value={lang.code}>
                 {lang.name}
@@ -108,28 +177,43 @@ export default function NotePadForm({addNote}) {
           <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
         </div>
         <div className='noteInputDiv'>
-          <label className='notePadLabel'>NOTE BOOK:</label>
+          <label className='notePadLabel' htmlFor='noteNotebookInput'>NOTE BOOK:</label>
           <select
           className='input'
-          // name=''
-          // value={}
-          // onChange={}
-          // ARIA ATTRIBUTES:
+          id='noteNotebookInput'
+          name='notebook'
+          value={formData.notebook}
+          onChange={handleInputChange}
           >
-            <option>SELECT</option>
+            <option value=''>SELECT</option>
+            {notebooks.map((notebook) => (
+              <option key={notebook._id} value={notebook._id}>
+                {notebook.name}
+              </option>
+            ))}
           </select>
         </div>
         <div className='noteInputDiv'>
-          <label className='notePadLabel'>TAG:</label>
+          <label className='notePadLabel' htmlFor='noteTagsInput'>TAG:</label>
           <input
-          className='input'/>
+          className='input'
+          id='noteTagsInput'
+          type='text'
+          placeholder='TAG, TAG'
+          title='Separate tags with commas'
+          name='tags'
+          value={formData.tags}
+          onChange={handleInputChange}
+          />
         </div>
         <div id='checkBoxInputDiv'>
-          <label className='notePadLabel'>IS PINNED:</label>
+          <label className='notePadLabel' htmlFor='notePinnedInput'>IS PINNED:</label>
           <input
-            type='checkBox'
-            // name=''
-            // value={}
+            type='checkbox'
+            id='notePinnedInput'
+            name='isPinned'
+            checked={formData.isPinned}
+            onChange={handleInputChange}
           />
         </div>
       </div>
@@ -143,29 +227,33 @@ export default function NotePadForm({addNote}) {
         </p>
       </div>
       <div className="p-2 ms-auto">
-      
+
       </div>
       <div className="p-2" id='notePadBtnBlock'>
          <Button
         variant='light'
         type='submit'
         id='saveNoteBtn'
+        disabled={loading}
         // ARIA ATTRIBUTES
+        aria-label='SAVE NOTE'
         >
-          SAVE <Save fontWeight={700}/>
+          {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false'/>
         </Button>
        <Button
        variant='danger'
        id='clearFormBtn'
-      //  onClick={}
+       onClick={clearForm}
+       disabled={loading}
       type='button'
       // ARIA ATTRIBUTES:
+      aria-label='RESET FORM'
        >
-        <RotateCcw/> RESET
+        <RotateCcw aria-hidden='true' focusable='false'/> RESET
        </Button>
       </div>
     </Stack>
-      
+
     </form>
   )
 }
