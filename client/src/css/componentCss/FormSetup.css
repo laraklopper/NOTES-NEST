@@ -85,4 +85,17 @@ BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons
 #showPasswrdBtn:hover,
 #clearFormBtn:hover{
     color: #E8F0F6;
-    background:#323A42}
+    background:#323A42;
+}
+.reqInfo{
+    margin: 0px;
+    padding: 0px;
+     font-family: "Open Sans", sans-serif;
+}
+.reqInfoSpan{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}

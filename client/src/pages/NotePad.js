@@ -47,7 +47,7 @@ export default function NotePad(
         <div id='addNoteBookDiv'>
           <Row id='addNoteBookRow'>
             <Col id='addNoteBookCol1'/>
-            <Col xs={12} md={8} id='addNoteBookCol'>
+            <Col xs={5} id='addNoteBookCol'>
               <div id='addNoteBookPanal'>
                 <AddNoteBook/>
               </div>

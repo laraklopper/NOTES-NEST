@@ -43,4 +43,58 @@ and AddTag.js
      font-weight: 700;
      letter-spacing: 2px;
 }
+#requiredInputBlock{
+    display: flex;
+    justify-content: center;
+    text-transform: uppercase;
+}
+#noteBookBlock1,
+#noteBookBlock2{
+        display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+}
+#noteBookBtnBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+}
+#saveNoteBookBtn,
+#saveTagBtn{
+    width: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Roboto Mono", monospace;
+  font-size: 16px;
+   font-weight: 700;
+   text-transform: uppercase;
+   height: 40px;
+   margin: 0px;
+   padding: 0px;
+   border: solid 2px #323A42;
+   gap: 5px;
+}
+
+#saveTagBtn:hover,
+#saveNoteBookBtn:hover{
+    color: #E8F0F6;
+    background:#323A42;
+}
+
+
 /* ADD TAG: AddTag.js */
+#addTagForm{
+    width: 100%;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+      background-color: #777d83;
+    border: #323A42 solid 2px;
+}

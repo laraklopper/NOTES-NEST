@@ -46,56 +46,46 @@ export default function AddNoteBook() {
                   // name='colour'
                   // value={}
                   // onChange={}
+                //   ARIA ATTRIBUTES:
+                aria-required='false'
                 />
               </div>
             </div>
-      <div className="p-2">Third item</div>
     </Stack>
-          <Stack direction="horizontal" gap={3} id='noteBookStack1'>
-            
-            <div className="p-2 ms-auto" id='noteBookBlock2'>
-              <label className='notePadLabel' htmlFor='noteBookColourInput'>COLOUR:</label>
-              <div className='inputDiv'>
-                <input
-                  className='input'
-                  id='noteBookColourInput'
-                  type='color'
-                  defaultValue='#1F4E79'
-                  // name='colour'
-                  // value={}
-                  // onChange={}
-                />
-              </div>
-            </div>
-          </Stack>
         </fieldset>
       </div>
-      <Stack direction="horizontal" gap={3}>
-        <div className="p-2">
-          <p className='infoMsg' aria-live='polite' aria-hidden='true'>
-            <small><Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /> Indicates required information</small>
-          </p>
+      <Stack gap={3} id='addNotebookBtnStack'>
+        <div className="p-2" id='requiredInputBlock'>
+            <span className='reqInfoSpan'>
+            <small><Asterisk color="#C22419" fontWeight={700} size={14} aria-hidden='true' focusable='false' /> </small>
+            <p className='reqInfo'>Indicates required information</p>
+            </span>
         </div>
-        <div className="p-2 ms-auto"/>
-        <div className="p-2" id='noteBookBtnBlock'>
+       <div className="p-2" id='noteBookBtnBlock'>
           <Button
             variant='light'
             type='submit'
             id='saveNoteBookBtn'
             // ARIA ATTRIBUTES
+            role='button'
           >
-            SAVE <Save fontWeight={700}/>
+            SAVE <Save fontWeight={700} aria-hidden='true' focusable='false'/>
           </Button>
           <Button
             variant='danger'
-            id='clearNoteBookFormBtn'
+            id='clearFormBtn'
             type='button'
             // onClick={}
             // ARIA ATTRIBUTES:
           >
-            <RotateCcw/> RESET
+            <RotateCcw aria-hidden='true' focusable='false'/> RESET
           </Button>
         </div>
+    </Stack>
+      <Stack gap={3} >
+      
+        <div className="p-2 ms-auto"/>
+       
       </Stack>
     </form>
   )
