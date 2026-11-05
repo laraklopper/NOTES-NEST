@@ -22,11 +22,23 @@ export default function NotePad(
       const [key, setKey] = useState('notepad')
 
 
+      //Function to add/create a new note
       const addNote = useCallback(async () => {
         try {
           const token = localStorage.getItem('token')
-          const response = await fetch()
+          const response = await fetch(`http://localhost:3001/notes/addNote`, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              // payload
+            })
+          })
         } catch (error) {
+          // console.error('Error adding new note');
           
         }
       },[])
@@ -39,7 +51,7 @@ export default function NotePad(
       >
       <div id='notepadFormsPanal'>
           <Tabs
-      id="controlled-tab-example"
+      id="notePadTabs"
       activeKey={key}
       onSelect={(k) => setKey(k)}
       className="mb-3"
