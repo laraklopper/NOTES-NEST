@@ -1,5 +1,6 @@
 import React from 'react'
-import '../css/componentCss/NotesForm.css'
+import '../css/componentCss/AddNotebook.css'
+import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
 import { Asterisk, RotateCcw, Save } from 'lucide-react';
 import Button from 'react-bootstrap/Button';
@@ -8,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 POST request*/
 export default function AddTag() {
   return (
-    <form id='addTagForm'>
+    <form id='addTagForm' method='POST'>
       <div id='formHeadingBlock'>
         <h3 id='formHeading'>CREATE NEW TAG</h3>
       </div>
