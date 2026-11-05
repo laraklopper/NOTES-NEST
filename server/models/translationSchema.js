@@ -13,7 +13,7 @@ const translationSchema = new mongoose.Schema(
     note: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Note',
-      required: [true, 'Note is required'], // controller checks it belongs to the user and is not archived
+      default: null, // null for free text typed into the translate form; when set, the controller checks it belongs to the user and is not archived
       index: true // fetch translations for one note
     },
     sourceText: {

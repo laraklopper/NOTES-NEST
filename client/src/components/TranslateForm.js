@@ -47,8 +47,9 @@ export default function TranslateForm(
     const detectedFor = useRef({ text: '', result: null })
 
     const remainingChars = MAX_LENGTH - sourceText.length;
-    // Only a translation the server has resolved can be saved
-    const canSave = Boolean(lastTranslation) && !loading;
+    /* Only a translation the server has resolved can be saved, and only once,
+    so pressing the button again does not store a duplicate. */
+    const canSave = Boolean(lastTranslation) && !loading && !saved;
      /* Clears the save feedback, called wherever the result on screen stops
     matching what was last saved. */
     const resetSaveState = useCallback(() => {
@@ -72,10 +73,9 @@ export default function TranslateForm(
 
         const fetchLangauges = async () => {
             try {
-                 //Send a GET request to the /language/translate/v2/languages endpoint
-                const response = await fetch(`http://localhost:3001/language/translate/v2/languages`, {
+                 //Send a GET request to the /api/language/translate/v2/languages endpoint (proxied to the server)
+                const response = await fetch(`/api/language/translate/v2/languages`, {
                     method: 'GET',//HTTP request method
-                    mode: 'cors',//Enable CORS for Cross-Origin Resource Sharing
                     credentials: 'include',// Send the HTTP-only auth cookie
                     headers: {
                         'Content-Type': 'application/json',// Specify the Content-Type in the request payload as JSON
@@ -119,9 +119,8 @@ export default function TranslateForm(
         const timer = setTimeout(async () => {
             setDetecting(true);
             try {
-                const response = await fetch(`http://localhost:3001/language/translate/v2/detect`, {
+                const response = await fetch(`/api/language/translate/v2/detect`, {
                     method: 'POST',
-                    mode: 'cors',
                     credentials: 'include',// Send the HTTP-only auth cookie
                     headers: {
                         'Content-Type': 'application/json',
@@ -218,9 +217,8 @@ export default function TranslateForm(
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`http://localhost:3001/language/translate/v2`, {
+            const response = await fetch(`/api/language/translate/v2`, {
                 method: 'POST',
-                mode: 'cors',
                 credentials: 'include',// Send the HTTP-only auth cookie
                 headers: {
                     'Content-Type': 'application/json',
@@ -236,15 +234,13 @@ export default function TranslateForm(
             setTranslatedText(data.translatedText);
 
             /* Keep what the server resolved, so saving stores the same
-            languages the text was translated with and can hand back the id of
-            the row the translate request already wrote. */
+            languages the text was translated with (the detected source when
+            the selector reads "auto"). */
             setLastTranslation({
-                translationId: data.translationId,
                 sourceText,
                 translatedText: data.translatedText,
                 sourceLanguage: data.sourceLanguage,
                 targetLanguage: data.targetLanguage,
-                provider: data.provider,
             });
             resetSaveState();
 
@@ -281,9 +277,8 @@ export default function TranslateForm(
         setSaved(false);
         setSaveError('');
         try {
-            const response = await fetch(`http://localhost:3001/language/translate/save`, {
+            const response = await fetch(`/translation/save`, {
                 method: 'POST',
-                mode: 'cors',
                 credentials: 'include',// Send the HTTP-only auth cookie
                 headers:{
                     'Content-Type': 'application/json',
@@ -401,24 +396,29 @@ export default function TranslateForm(
                                 {/* Translation result value={translatedText} */}
                                 <div id='translatedTextBlock'>
                                     <label htmlFor='translatedText' className='translateLabel visually-hidden'>Translation result</label>
+                                    <Button
+                                        type='button'
+                                        variant='outline-secondary'
+                                        size='sm'
+                                        id='copyTranslationBtn'
+                                        onClick={handleCopy}
+                                        disabled={!translatedText}
+                                        // ARIA ATTRIBUTES
+                                        aria-label={copied ? 'Translation copied' : 'Copy translation'}
+                                    >
+                                        {copied ? (
+                                            <>Copied <Check size={16} aria-hidden='true' focusable='false' /></>
+                                        ) : (
+                                            <>Copy <Copy size={16} aria-hidden='true' focusable='false' /></>
+                                        )}
+                                    </Button>
+                                    {/* Read-only preview: nothing is saved until SAVE HISTORY is pressed */}
                                     <div
                                         id='translatedText'
-                                        className='formControl bg-light'
+                                        className='form-control bg-light'
                                         aria-live='polite'
                                     >
-                                        <Button
-                                         type='button'
-                                            variant='outline-secondary'
-                                            size='sm'
-                                            onClick={handleCopy}
-                                            disabled={!translatedText}
-                                        >
-                                           {copied ? (
-                                            <>Copied <Check/></>
-                                           ):(
-                                            <>Copy <Copy/></>
-                                           )}
-                                        </Button>
+                                        {loading ? 'Translating…' : translatedText}
                                     </div>
                                 </div>
             </div>
@@ -452,6 +452,14 @@ export default function TranslateForm(
                             {loading ? 'Translating…' : 'Translate'}
                         </Button>
                     </div>
+                    {/* TRANSLATE ERROR MESSAGE */}
+                    {error && (
+                        <div className='p-2' id='translateErrorBlock' role='alert' aria-live='assertive'>
+                            <p className='translateErrorMessage'>
+                                <Bug size={20} fontWeight={900} aria-hidden='true' focusable='false' />{error}
+                            </p>
+                        </div>
+                    )}
     </Stack>
         </div>
     </form>

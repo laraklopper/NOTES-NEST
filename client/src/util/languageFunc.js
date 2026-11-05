@@ -23,8 +23,9 @@ the source language. A detection costs the server a provider call, so the wait
 is long enough that typing a sentence asks for one, not one per word. */
 export const DETECT_DEBOUNCE_MS = 900;
 /* Below this there is too little to go on for the answer to mean anything, so
-the request is not worth making. */
-export const MIN_DETECT_CHARS = 4;
+the request is not worth making. Langbly answers "und" (undetermined) for
+anything shorter than 20 characters. */
+export const MIN_DETECT_CHARS = 20;
 /* The language pair used only when the signed-in account has no saved
 preference, and while GET /user/me is still in flight. 'auto' asks the server to
 detect the source language. */

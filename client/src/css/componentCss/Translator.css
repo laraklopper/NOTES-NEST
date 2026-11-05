@@ -112,6 +112,13 @@ justify-content: space-between;
     margin: 0px;
     padding: 0px;
 }
+/* Anchors the absolutely positioned copy button to the result box */
+#translatedTextBlock{
+    position: relative;
+}
+#translatedText{
+    padding-top: 44px;/* Keeps the text clear of the copy button */
+}
 #sourceText,
 #translatedText{
     height: 200px;
