@@ -10,31 +10,22 @@
 #notePadBlock{
     width: 100%;
 }
-#toggleNotPadRow{
+#addTagDiv{
     display: flex;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-#toggleNotPadCol{
-    display: flex;
-    margin: 0px;
-    padding: 0px;
-    justify-content: center;
-}
-#toggleNotPadCol1,
-#toggleNotPadCol2{
+    flex-direction: column;
     margin: 0px;
     padding: 0px;
 }
 #notePadPanal,
-#addNoteBookPanal{
+#addNoteBookPanal,
+#addTagPanal{
     padding: 10px;
     margin: 0px;
     width: 100%;
 }
 #notePadRow,
-#addNoteBookRow{
+#addNoteBookRow,
+#addTagRow{
     width: 100%;
     margin: 0px;
     padding: 0px;

@@ -98,3 +98,15 @@ and AddTag.js
       background-color: #777d83;
     border: #323A42 solid 2px;
 }
+#tagBlock1{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#tagBtnBlock{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+}

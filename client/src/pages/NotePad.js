@@ -57,13 +57,15 @@ export default function NotePad(
         </div>
       </Tab>
       <Tab eventKey="contact" title="TAGS">
-        <div>
-          <Row>
-            <Col>
-              <div>
+        <div id='addTagDiv'>
+          <Row id='addTagRow'>
+            <Col/>
+            <Col xs={5}>
+              <div id='addTagPanal'>
                 <AddTag/>
               </div>
             </Col>
+            <Col/>
           </Row>
         </div>
       </Tab>
