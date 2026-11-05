@@ -2,6 +2,8 @@
 import React from 'react'
 import '../css/pagesCss/Notes.css'
 import '../css/pagesCss/PageSetup.css'
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
@@ -14,6 +16,9 @@ export default function Notes(
   return (
     <div id='pageContainer'>
       <Header heading={'NOTES'} currentUser={currentUser} />
+      <section>
+
+      </section>
       <Footer logout={logout}/>
     </div>
   )
