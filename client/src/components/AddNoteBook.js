@@ -16,8 +16,8 @@ export default function AddNoteBook() {
       <div id='noteBookInput'>
         <fieldset id='noteBookGroup1'>
           <legend>NOTEBOOK DETAILS</legend>
-          <Stack direction="horizontal" gap={3} id='noteBookStack1'>
-            <div className="p-2" id='noteBookBlock1'>
+           <Stack gap={3} id='noteBookStack1'>
+    <div className="p-2" id='noteBookBlock1'>
               <label className='notePadLabel' htmlFor='noteBookNameInput'>NAME:</label>
               <div className='inputDiv'>
                 <input
@@ -35,6 +35,24 @@ export default function AddNoteBook() {
                 <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
               </div>
             </div>
+       <div className="p-2" id='noteBookBlock2'>
+              <label className='notePadLabel' htmlFor='noteBookColourInput'>COLOUR:</label>
+              <div className='inputDiv'>
+                <input
+                  className='input'
+                  id='noteBookColourInput'
+                  type='color'
+                  defaultValue='#1F4E79'
+                  // name='colour'
+                  // value={}
+                  // onChange={}
+                />
+              </div>
+            </div>
+      <div className="p-2">Third item</div>
+    </Stack>
+          <Stack direction="horizontal" gap={3} id='noteBookStack1'>
+            
             <div className="p-2 ms-auto" id='noteBookBlock2'>
               <label className='notePadLabel' htmlFor='noteBookColourInput'>COLOUR:</label>
               <div className='inputDiv'>

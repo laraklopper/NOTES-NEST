@@ -44,13 +44,15 @@ export default function NotePad(
         </div>
       </Tab>
       <Tab eventKey="notebook" title="NOTEBOOK">
-        <div>
-          <Row>
-            <Col>
+        <div id='addNoteBookDiv'>
+          <Row id='addNoteBookRow'>
+            <Col id='addNoteBookCol1'/>
+            <Col xs={12} md={8} id='addNoteBookCol'>
               <div id='addNoteBookPanal'>
                 <AddNoteBook/>
               </div>
             </Col>
+            <Col id='addNoteBookCol2'/>
           </Row>
         </div>
       </Tab>

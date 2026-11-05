@@ -27,17 +27,34 @@
     margin: 0px;
     padding: 0px;
 }
-#notePadPanal{
+#notePadPanal,
+#addNoteBookPanal{
     padding: 10px;
     margin: 0px;
     width: 100%;
 }
-#notePadRow{
+#notePadRow,
+#addNoteBookRow{
     width: 100%;
     margin: 0px;
     padding: 0px;
 }
-
+#addNoteBookCol1,
+#addNoteBookCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#addNoteBookCol{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+}
+#addNoteBookDiv{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
 #toggleNotePadBtn{
     display: flex;
     justify-content: center;
