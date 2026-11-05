@@ -15,7 +15,7 @@ import AddTag from '../components/AddTag';
 export default function NotePad(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, logout}) {
-      const [key, setKey] = useState('home')
+      const [key, setKey] = useState('notepad')
 
 
 
@@ -25,7 +25,7 @@ export default function NotePad(
       <section
       id='notePadSection'
       >
-      <div>
+      <div id='notepadFormsPanal'>
           <Tabs
       id="controlled-tab-example"
       activeKey={key}

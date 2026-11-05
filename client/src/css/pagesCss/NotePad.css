@@ -16,6 +16,11 @@
     margin: 0px;
     padding: 0px;
 }
+#notepadFormsPanal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 #notePadPanal,
 #addNoteBookPanal,
 #addTagPanal{
