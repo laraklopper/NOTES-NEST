@@ -8,6 +8,15 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router()
 
-router.get('/tr')
+router.get('/language/translate/v2/languages', async (req, res) => {
+    
+})
 
+router.post('/language/translate/v2', async (req, res) => {
+    
+})
+
+router.post('/language/translate/v2/detect', async (req, res) => {
+    
+})
 module.exports = router
