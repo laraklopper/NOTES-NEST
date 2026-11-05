@@ -10,7 +10,8 @@ POST request*/
 export default function AddTag(
   {//PROPS PASSED FROM PARENT COMPONENT (NotePad.js)
     addTag,
-    loading
+    loading,
+    tags = []
   }) {
   const [name, setName] = useState('')
 
@@ -84,6 +85,20 @@ export default function AddTag(
           >
             <RotateCcw aria-hidden='true' focusable='false'/> RESET
           </Button>
+        </div>
+      <div className="p-2" id='tagListBlock'>
+          <h4 id='tagListHeading'>YOUR TAGS</h4>
+          {tags.length === 0 ? (
+            <p className='infoMsg'>You have no tags yet.</p>
+          ) : (
+            <ul id='tagList'>
+              {tags.map((tag) => (
+                <li key={tag._id} className='tagListItem'>
+                  {tag.name} ({tag.noteCount})
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
     </Stack>
     </div>

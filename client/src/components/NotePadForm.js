@@ -27,7 +27,8 @@ export default function NotePadForm(
     loading,
     username = '',
     defaultLanguage = '',
-    notebooks = []
+    notebooks = [],
+    tags = []// The user's existing tags from GET /tag/fetchTags
   }) {
   const [formData, setFormData] = useState(emptyNoteForm)
   const [content, setContent] = useState(''); // TipTap HTML, sent as `content` on save
@@ -36,6 +37,16 @@ export default function NotePadForm(
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;// Get the input name and value from the changed field
     setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
+  }
+
+  // Tag names currently in the TAG input, lowercased to match how the server stores them
+  const selectedTagNames = formData.tags.split(',').map((tag) => tag.trim().toLowerCase()).filter(Boolean)
+
+  // Adds an existing tag picked from the dropdown to the comma separated TAG input
+  const handleTagSelect = (event) => {
+    const name = event.target.value;
+    if (!name || selectedTagNames.includes(name)) return;
+    setFormData((prev) => ({ ...prev, tags: [...selectedTagNames, name].join(', ') }))
   }
 
   const resetForm = () => {
@@ -207,6 +218,24 @@ export default function NotePadForm(
           value={formData.tags}
           onChange={handleInputChange}
           />
+          <select
+          className='input'
+          id='noteTagSelect'
+          value=''// Always shows "ADD TAG"; picking a tag appends it to the input above
+          onChange={handleTagSelect}
+          disabled={tags.length === 0}
+          // ARIA ATTRIBUTES:
+          aria-label='ADD AN EXISTING TAG'
+          >
+            <option value=''>ADD TAG</option>
+            {tags
+              .filter((tag) => !selectedTagNames.includes(tag.name))
+              .map((tag) => (
+                <option key={tag._id} value={tag.name}>
+                  {tag.name}
+                </option>
+              ))}
+          </select>
         </div>
         <div id='checkBoxInputDiv'>
           <label className='notePadLabel' htmlFor='notePinnedInput'>IS PINNED:</label>

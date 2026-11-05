@@ -23,6 +23,7 @@ export default function NotePad(
       const [profile, setProfile] = useState(null)
       const [noteLoading, setNoteLoading] = useState(false)
       const [tagLoading, setTagLoading] = useState(false)
+      const [tags, setTags] = useState([])
 
       /* currentUser only holds userId, fullName and admin, so fetch the
       profile for the username and default note language shown on the form */
@@ -40,6 +41,26 @@ export default function NotePad(
         }
         fetchProfile();
       }, [currentUser?.userId]);
+
+      //========FETCH TAGS REQUEST===============
+      /* Fetches the user's tags (with note counts) for the TAGS tab */
+      const fetchTags = useCallback(async () => {
+        try {
+          // The browser sends the JWT cookie with the request
+          const response = await fetch('/tag/fetchTags', { method: 'GET' });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch tags');
+          }
+          setTags(data.tags || []);
+        } catch (error) {
+          console.error('Error fetching tags:', error);
+        }
+      }, [])
+
+      useEffect(() => {
+        fetchTags();
+      }, [fetchTags, currentUser?.userId]);
 
       //========ADD NOTE REQUEST===============
       /* Sends the note built by NotePadForm.js.
@@ -93,6 +114,7 @@ export default function NotePad(
             return false
           }
           alert(`Tag "${data.tag?.name || name}" saved successfully.`)
+          fetchTags()// Refresh the tag list so the new tag shows up
           return true
         } catch (error) {
           console.error('Error adding new tag:', error);
@@ -101,7 +123,7 @@ export default function NotePad(
         } finally {
           setTagLoading(false)
         }
-      },[setError])
+      },[setError, fetchTags])
 
   return (
     <div id='pageContainer'>
@@ -126,6 +148,7 @@ export default function NotePad(
                   loading={noteLoading}
                   username={profile?.username}
                   defaultLanguage={profile?.defaultLanguages?.defaultNoteLanguage}
+                  tags={tags}
                 />
               </div>
             </Col>
@@ -151,7 +174,7 @@ export default function NotePad(
             <Col/>
             <Col xs={5}>
               <div id='addTagPanal'>
-                <AddTag addTag={addTag} loading={tagLoading}/>
+                <AddTag addTag={addTag} loading={tagLoading} tags={tags}/>
               </div>
             </Col>
             <Col/>
