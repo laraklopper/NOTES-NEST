@@ -37,11 +37,15 @@ export default function Translate(
       </Row>
         </div>
       </Tab>
-      <Tab eventKey="profile" title="Profile">
-        Tab content for Profile
+      <Tab eventKey="TRANSLATIONS LIST" title="translations">
+        <div>
+          {/* TRANSLATIONS LIST */}
+        </div>
       </Tab>
-      <Tab eventKey="contact" title="Contact" disabled>
-        Tab content for Contact
+      <Tab eventKey="LANGUAGES LIST" title="Contact">
+        <div>
+          {/* Langauges */}
+        </div>
       </Tab>
     </Tabs>
           </div>
