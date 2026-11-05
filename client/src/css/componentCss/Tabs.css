@@ -5,6 +5,7 @@
 - Translate.js
 */
 #tabPanal,
+#notepadFormsPanal,
 #translateSectionPanal{
     width: 100%;
     margin: 0px;
@@ -14,6 +15,7 @@
     align-items: center;
     background-color: silver;
 }
+#notePadTabs,
 #translateTabs,
 #homePageTabs{
         display: flex;
