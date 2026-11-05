@@ -19,6 +19,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const noteRoutes = require('./routes/noteRoutes')
 const tagRoutes = require('./routes/tagRoutes')
+const apiRoutes = require('./routes/apiRoutes')
 const app = express();// Create an Express application
 
 // Extract enviromental variables
@@ -44,6 +45,7 @@ app.use('/auth', authRoutes);// /auth/login, /auth/register, /auth/logout
 app.use('/user', userRoutes);// /user/me, /user/fetchUsers
 app.use('/notes', noteRoutes)
 app.use('/tag', tagRoutes)
+app.use('/api', apiRoutes)
 // ================== MONGOOSE CONFIG ==================
 /* Disable strict populate to prevent errors when populating 
 paths that are conditionally defined*/
