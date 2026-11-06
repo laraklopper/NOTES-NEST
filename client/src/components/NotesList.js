@@ -53,7 +53,7 @@ export default function NotesList() {
             </tbody>
         </table>
     </div>
-    <div id='notePag'>
+    <div id='notePanal'>
         <div>
             <Stack direction="horizontal" gap={3}>
       <div className="p-2">
@@ -93,7 +93,9 @@ export default function NotesList() {
                     {/* CONTENT */}
                 </p>
                 {/* COPY CONTENT BUTTON */}
-                <Button><Copy/>COPY</Button>
+                <Button
+                    variant='light'
+                ><Copy/>COPY</Button>
             </div>
         </div>
       </div>
