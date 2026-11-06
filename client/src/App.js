@@ -35,8 +35,6 @@ export default function App() {
     password: '',
     admin: false
   })
-  const [notes, setNotes] = useState([])
-  const [note, setNote] = ('')
   const [loggedIn, setLoggedIn] = useState(false)
   const [error, setError] = useState(null)
 
@@ -106,44 +104,6 @@ export default function App() {
     }
     fetchUsers();
   }, [currentUser]);
-
-  const fetchNotes = useCallback(async () => {
-    try {
-      const token = localStorage.getItem('token')
-      if (!token) return
-      const response = await fetch('http://localhost:3001/notes/fetchNotes',{
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-
-        }
-      })
-      const fetchedNotes = await response.json()
-    } catch (error) {
-      
-    }
-  },[])
-
-  //Function to fetch a single Note
-  const fetchNote = useCallback(async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if(!token) return
-      const response = await fetch('http://localhost:3001/notes/:id', {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      const data = await response.json()
-    } catch (error) {
-      
-    }
-  })
 
 
 
