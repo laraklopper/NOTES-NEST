@@ -19,6 +19,11 @@ router.get('/fetchNotes', async (req, res) => {
 /*──────────────────────────── PATCH ROUTES ───────────────────────────────────
    PATCH: UPDATE — Used to partially update information in the database
 ────────────────────────────────────────────────────────────────────────────────*/
+//Route to send a PATCH request to the /archive/:id endpoint
+// Move a note to the archive list
+router.patch('/:id', async (req, res) => {
+    
+})
  //Route to send a PATCH request to the /archive/:id/restore endpoint
 router.patch('/:id/restore', async (req, res) => {
     
