@@ -1,91 +1,135 @@
-/* ===================
-NOTE EDITOR (TipTap)
-============*/
-.noteEditor{
+#updateNoteForm{
+        width: 100%;
+    margin: 0px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    width: 650px;
-    gap: 5px;
-}
-.noteEditorToolbar{
-    display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 3px;
-    padding: 3px;
-    background-color: #E8F0F6;
+    background-color: #777d83;
+    gap: 10px;
+}
+/* LAYOUT */
+
+#editNoteInput{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 10px 5px;
+    width: 100%;
+    background-color: #BFBFBF;
+    display: flex;
+    overflow-y: scroll;
+}
+#editNoteGroup1 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #999999;
+    gap: 0px;
     border: #323A42 solid 2px;
     border-radius: 5px;
 }
-.noteEditorBtn{
+#editNoteGroup1 > legend{
+        float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+}
+/* STACK 1: */
+#editNoteStack1{
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
+    align-items: flex-start;
     margin: 0px;
     padding: 0px;
-    color: #323A42;
-    background: transparent;
-    border: solid 1px transparent;
-    border-radius: 3px;
+    width: 100%;
 }
-.noteEditorBtn:hover:not(:disabled){
-    border-color: #323A42;
-}
-.noteEditorBtn.isActive{
-    color: #E8F0F6;
-    background: #323A42;
-}
-.noteEditorBtn:disabled{
-    opacity: 0.4;
-}
-/* Editable area */
-.noteEditor .ProseMirror{
-    background-color: #fff;
-    padding: 8px 10px;
-    overflow-y: auto;
-    outline: none;
-}
-.noteEditor .ProseMirror:focus-visible{
-    box-shadow: 0 0 0 3px rgba(50, 58, 66, 0.4);
-}
-.noteEditor .ProseMirror p{
-    margin: 0px 0px 5px;
-}
-.noteEditor .ProseMirror blockquote{
-    border-left: #323A42 solid 3px;
-    padding-left: 10px;
-    margin: 5px 0px;
-}
-.noteEditor .ProseMirror pre{
-    background: #323A42;
-    color: #E8F0F6;
-    padding: 8px;
-    border-radius: 5px;
-}
-/* Placeholder shown while the editor is empty */
-.noteEditor .ProseMirror p.is-editor-empty:first-child::before{
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    color: #777d83;
-    pointer-events: none;
-}
-/* Checklists */
-.noteEditor ul[data-type="taskList"]{
-    list-style: none;
-    padding-left: 0px;
-}
-.noteEditor ul[data-type="taskList"] li{
+#editTitleBlock{
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    margin: 0px;
+    padding: 0px;
 }
-.noteEditor ul[data-type="taskList"] li > div{
-    flex: 1;
+/* GROUP 2 */
+#editNoteGroup2{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #999999;
+    gap: 0px;
+    border: #323A42 solid 2px;
+    border-radius: 5px;
 }
-.noteEditor ul[data-type="taskList"] li[data-checked="true"] > div{
-    text-decoration: line-through;
-    color: #777d83;
+#editNoteGroup2 > legend{
+        float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+}
+/* STACK 2 */
+#editNoteStack2{
+    display: flex;
+    align-items: flex-start;
+    margin: 0px;
+    padding: 0px;
+}
+#editNoteTextBlock{
+    display: flex;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+
+#editNoteDetailsBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0px;
+}
+/* ======END OF INPUT========== */
+.editNoteLabel{
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 1px;
+  padding: 0px;
+}
+/* STACK 3 */
+#editNoteBtnStack{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    align-items: center;
+}
+/* BUTTON */
+#submitEditNoteBtn{
+         width: 180px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+}
+#submitEditNoteBtn:hover{
+    color: #E8F0F6;
+    background:#323A42
 }

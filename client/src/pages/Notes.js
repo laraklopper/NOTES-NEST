@@ -9,6 +9,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import NotesList from '../components/NotesList';
+import EditNoteForm from '../components/EditNoteForm';
 
 //====MAIN NOTES FUNCTION COMPONENT========
 export default function Notes(
@@ -19,10 +20,6 @@ export default function Notes(
   }) {
     const [key, setKey] = useState('notes')
     const [editNote, setEditNote] = useState(false)
-    const [editNoteData, setEditNoteData] = useState({
-
-    })
-
     const [notes, setNotes] = useState([])// The user's active notes from GET /notes/fetchNotes
     const [notesLoading, setNotesLoading] = useState(false)
 
@@ -48,23 +45,7 @@ export default function Notes(
       }
      }, [setError])
 
-     const updateNote = useCallback(async () => {
-      try {
-        const token = localStorage.getItem('token')
-        const response = await fetch(`http://localhost:3001/notes/:id`,{
-          method: 'PATCH',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization' :`Bearer ${token}`
-          },
-          body: JSON.stringify()
-        })
-      } catch (error) {
-        setError()
-      }
-     },[])
-
+   
      
   return (
     <div id='pageContainer'>
@@ -81,7 +62,7 @@ export default function Notes(
         <div id='notesListDiv'>
           <Row>
             <Col>
-              {/* Filter notes col */}
+              {/* Filter notes*/}
             </Col>
           </Row>
           <Row id='notesListRow'>
@@ -99,12 +80,16 @@ export default function Notes(
           </div>
         </Col>
       </Row>
+      {/* TOGGLE EDIT NOTE FORM */}
       {editNote && (
         <div id='editNoteBlock'>
-          <Row>
-            <Col>
-              <div>
-                {/* EDIT NOTE FORM */}
+          <Row id='editNoteRow'>
+            <Col id='editNoteCol'>
+              <div id='editNotePanal'>
+                <EditNoteForm
+                  setError={setError}
+                  currentUser={currentUser}
+                />
               </div>
             </Col>
           </Row>

@@ -23,3 +23,26 @@
 #notesList{
     width: 100%;
 }
+#editNoteBlock{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    width: 100%;
+}
+#editNotePanal{
+        width: 100%;
+    margin: 0px;
+    padding: 5px;
+}
+#editNoteRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#editNoteCol{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
