@@ -53,8 +53,11 @@ export default function NotesList(
 
                     </td>
                     <td>
-                        <div>
-                            <Button>
+                        <div id='tableBtnDiv'>
+                            <Button
+                            variant='light'
+                            id='viewNoteBtn'
+                            >
                                 VIEW
                             </Button>
                         </div>
@@ -75,6 +78,7 @@ export default function NotesList(
       <div className="p-2 ms-auto">
         <Button
         variant='warning'
+        id='editNoteBtn'
         >
             EDIT NOTE
         </Button>
@@ -85,7 +89,7 @@ export default function NotesList(
         variant='warning'
         id='closePanalBtn'
         >
-          <X />  CLOSE
+          <X aria-hidden='true' focusable='false' />  CLOSE
         </Button>
       </div>
     </Stack>
