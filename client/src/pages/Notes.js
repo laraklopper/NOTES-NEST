@@ -1,5 +1,5 @@
 //Note.js
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import '../css/pagesCss/Notes.css'
 import '../css/pagesCss/PageSetup.css'
 import Row from 'react-bootstrap/Row';
@@ -19,8 +19,28 @@ export default function Notes(
   }) {
     const [key, setKey] = useState('notes')
     const [editNote, setEditNote] = useState(false)
+    const [editNoteData, setEditNoteData] = useState({
+
+    })
 
      const toggleEditNote = () => setEditNote ((prev) => !prev)
+
+     const updateNote = useCallback(async () => {
+      try {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`http://localhost:3001/notes/:id`,{
+          method: 'PATCH',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization' :`Bearer ${token}`
+          },
+          body: JSON.stringify()
+        })
+      } catch (error) {
+        setError()
+      }
+     },[])
   return (
     <div id='pageContainer'>
       <Header heading={'NOTES'} currentUser={currentUser} />
