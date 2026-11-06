@@ -9,8 +9,8 @@ export default function NotesList() {
     <div id='notesListWrapper'>
         <table id='notesListTable'>
             <thead>
-            <tr>
-                <th colSpan={7}>USERNAME NOTES</th>
+            <tr id='mainThRow'>
+                <th id='tableMainHead' colSpan={7}>USERNAME NOTES</th>
             </tr>
             <tr>
             {/* index */}
@@ -20,9 +20,9 @@ export default function NotesList() {
                 <th>NOTE BOOK</th>
                 <th>TAGS</th>
                 <th>DATE ADDED</th>
-                <th>
+                <td>
                     {/* view note button */}
-                </th>
+                </td>
             </tr>
             </thead>
             <tbody>
@@ -41,6 +41,9 @@ export default function NotesList() {
                     </td>
                     <td>
                         {/* TAGS */}
+                    </td>
+                    <td>
+
                     </td>
                     <td>
                         <div>

@@ -1,0 +1,41 @@
+#notesList{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#notesListTable{
+        width: 100%;
+    margin: 0px;
+    padding: 0px;
+    border: solid 2px #404040;
+}
+#mainThRow{
+    width: 100%;
+    text-align: center;
+    margin: 0px;
+    padding: 10px  0px;
+}
+#tableMainHead{
+    width: 100%;
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+}
+tbody, td, tfoot, th, thead, tr {
+    border-color: inherit;
+    border: solid 1.5px;
+   
+}
+thead th{
+    text-align: center;
+}
+tbody{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+tbody, td, tfoot, th, thead, tr {
+    border-color: inherit;
+    border-style: solid;
+
+}
