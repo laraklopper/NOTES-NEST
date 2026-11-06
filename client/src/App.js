@@ -126,6 +126,7 @@ export default function App() {
     }
   },[])
 
+  //Function to fetch a single Note
   const fetchNote = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');

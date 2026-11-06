@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import '../css/componentCss/NotesList.css'
 import '../css/componentCss/DetailsPanals.css'
 import Button from 'react-bootstrap/Button';
@@ -10,11 +10,15 @@ export default function NotesList(
         currentUser,
         editNote,
         toggleEditNote,
-        setError
+        setError,
+        fetchNotes
     }
 ) {
     const [selectedNote, setSelectedNote] = useState()//Note currently selected in the details panal
 
+    useEffect(() => {
+        fetchNotes()
+    },[fetchNotes])
     //Function to archive a note
     const archiveNote = useCallback(async () => {
        try {
