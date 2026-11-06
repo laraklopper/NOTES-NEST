@@ -115,9 +115,10 @@ export default function NotePadForm(
         </div>
       </div>
       {/* Hidden Readonly input */}
-      <div className="p-2 ms-auto" id='notePadBlock2' hidden>
+      <div className="p-2 ms-auto" id='notePadBlock2'>
+        
+        <div className='inputDiv' hidden>
         <label className='notePadLabel' htmlFor='noteUsername'>USERNAME:</label>
-        <div className='inputDiv'>
           <input
             className='input'
             id='noteUsername'
