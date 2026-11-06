@@ -12,14 +12,24 @@
     margin: 0px;
     padding: 0px;
 }
+#trashCol{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: grid;
+}
 #trashTableWrapper{
     width: 100%;
     margin: 0px;
     padding: 0px;
     display: flex;
+    justify-content:center;
 }
 #trashTable{
-    width: 100%;
+    width: 90%;
+    margin: 0px;
+    padding: 0px;
+    overflow-y: scroll;
 }
 #trashTable thead tr:nth-child(even) { background: #fff; }
 #trashTable thead tr:nth-child(odd) { background: #d1d1d4; }
@@ -29,5 +39,34 @@
 
 #trashTable tfoot{
     text-align: center;
-    border: #000 solid;
+    border: #000 solid 1px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-decoration: underline;
+    font-family: "Roboto Mono", monospace;
+}
+#trashTableBtns{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0px;
+    padding: 5px;
+    align-items: center;
+  
+    width: 200px;
+}
+#restoreNoteBtn,
+#permanentDeleteBtn{
+           width: 150px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
 }

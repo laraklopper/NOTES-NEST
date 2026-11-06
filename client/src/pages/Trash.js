@@ -13,28 +13,55 @@ import { ArchiveRestore, TrashIcon } from 'lucide-react';
 //====MAIN TRASH FUNCTION COMPONENT========
 export default function Trash(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
-    currentUser, logout}) {
+    currentUser, 
+    logout, 
+    setError
+  }) {
 
       const restore = useCallback(async () => {
         try {
            const token = localStorage.getItem('token')
           if(!token) return
           const response = await fetch('http://localhost:3001/notes/:id/restore',{
-            method: ''
+            method: 'PATCH',
+            mode:'cors',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
           })
+
+          const data = await response.json()
         } catch (error) {
-          
+          setError()
         }
-      })
+      },[setError])
+      
       const deleteNote = useCallback(async () => {
         try {
           const token = localStorage.getItem('token')
           if(!token) return
-          const response = await fetch('http://localhost:3001/notes/')
+          const response = await fetch('http://localhost:3001/notes/:id/permanent',{
+            method: 'DELETE',
+            mode: 'cors',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
+
         } catch (error) {
-          
+          // setError()
         }
       },[])
+
+      const handleDelete = () => {
+          const confirmDelete = window.confirm(
+            `Are you sure you want to permenantly delete the note? 
+            This is irreversable`
+        )
+        if (!confirmDelete) return;
+        deleteNote()
+      }
+      //================JSX RENDERING==================
   return (
     <div id='pageContainer'>
     <Header heading={'TRASH'} currentUser={currentUser} />
@@ -70,6 +97,7 @@ export default function Trash(
                   <Button
                   variant='light'
                   id='restoreNoteBtn'
+                  onClick={restore}
                   >
                     RESTORE <ArchiveRestore/>
                   </Button>
@@ -77,6 +105,7 @@ export default function Trash(
                     id='permanentDeleteBtn'
                     variant='danger'
                     type='button'
+                    onClick={handleDelete}
                     >DELETE
                       <TrashIcon/>
                     </Button>
