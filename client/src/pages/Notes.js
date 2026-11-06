@@ -29,18 +29,33 @@ export default function Notes(
       className="mb-3"
     >
       <Tab eventKey="notes" title="NOTES">
-        <div>
+        <div id='notesListDiv'>
+          <Row>
+            <Col>
+              {/* Filter notes col */}
+            </Col>
+          </Row>
           <Row id='notesListRow'>
         <Col id='notesListCol'>
-          <div>
-            <NotesList/>
+          <div id='notesListPanal'>
+            <NotesList
+              currentUser={currentUser}
+            />
           </div>
         </Col>
       </Row>
         </div>
       </Tab>
-      <Tab eventKey="profile" title="ARCHIVE">
-        Tab content for Profile
+      <Tab eventKey="archive" title="ARCHIVE">
+        <div>
+          <Row>
+            <Col>
+              <div>
+                {/* ARCHIVE LIST */}
+              </div>
+            </Col>
+          </Row>
+        </div>
       </Tab>
       <Tab eventKey="contact" title="NOTEBOOKS">
         {/* Notebook list */}
