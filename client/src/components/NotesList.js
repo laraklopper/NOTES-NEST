@@ -1,85 +1,144 @@
+//NotesList.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/NotesList.css'
 import '../css/componentCss/DetailsPanals.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack'
-import { ArchiveArrowDownIcon, Copy, Edit3Icon, Trash2, X } from 'lucide-react';
-import {Link} from 'react-router-dom';
+// IMPORT UTILITY FUNCTIONS
+import { dateDisplay, timeDisplay } from '../util/dateFunctions';
+import { languageName } from '../util/languageFunc';
+// IMPORT ICONS FROM LUCIDE-REACT
+import { ArchiveArrowDownIcon, Copy, Edit3Icon, Pin, Trash2, X } from 'lucide-react';
+
+// Date and time a note was created, e.g. "06/11/2026 14:05:09"
+const formatTimestamp = (dateString) => {
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return 'Invalid date'
+    return `${dateDisplay(date)} ${timeDisplay(date)}`
+}
+
+// Comma separated tag names for the table, e.g. "work, ideas"
+const tagNames = (tags = []) => tags.map((tag) => tag?.name).filter(Boolean).join(', ')
+
+// NotesList component
+/* Table of the user's active notes, with a details panel for the selected note
+GET /notes/fetchNotes (via fetchNotes), PATCH /archive/:id, DELETE /notes/delete/:id */
 export default function NotesList(
-    {
+    {//PROPS PASSED FROM PARENT COMPONENT (Notes.js)
         currentUser,
         editNote,
         toggleEditNote,
         setError,
+        notes = [],
+        loading = false,
         fetchNotes
     }
 ) {
-    const [selectedNote, setSelectedNote] = useState()//Note currently selected in the details panal
+    const [selectedId, setSelectedId] = useState(null)// Id of the note shown in the details panal
+    const [actionLoading, setActionLoading] = useState(false)// True while an archive/trash request is running
+
+    /* The selected note is looked up from the list (rather than stored as a copy)
+    so it always shows the latest data after fetchNotes runs */
+    const selectedIndex = notes.findIndex((note) => note._id === selectedId)
+    const selectedNote = selectedIndex === -1 ? null : notes[selectedIndex]
 
     useEffect(() => {
-        fetchNotes()
+        fetchNotes?.()
     },[fetchNotes])
-    //Function to archive a note
-    const archiveNote = useCallback(async () => {
-       try {
-        const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:3001/archive/:id', {
-            method: 'PATCH',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization' :`Bearer &{token}`
-            },
-            body: JSON.stringify()
-        })
-       } catch (error) {
-        
-       } 
-    },[])
 
-    //Async reques Function to move a note to trash
-    const moveToTrash = useCallback(async () => {
+    // Close the details panal (and the edit form that belongs to it)
+    const closePanal = useCallback(() => {
+        setSelectedId(null)
+        if (editNote) toggleEditNote?.()
+    }, [editNote, toggleEditNote])
+
+    /* Shared request runner for the archive and trash buttons.
+    Refreshes the list and closes the panal on success */
+    const runNoteAction = useCallback(async (url, method, fallbackMessage) => {
+        setError?.(null)
+        setActionLoading(true)
         try {
-        const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:3001/notes/delete/:id', {
-            method: 'PATCH',
-            mode: 'cors',
-            headers: {
-                'Authorization':`Bearer ${token}`,
+            // The browser sends the JWT cookie with the request
+            const response = await fetch(url, { method })
+            const data = await response.json().catch(() => ({}))
+            if (!response.ok) {
+                setError?.(data.message || fallbackMessage)
+                return false
             }
-        })
-
-        if (!response.ok) {
-            throw new Error()
-        }
-        alert('Note successfully moved to trash')
+            closePanal()
+            await fetchNotes?.()// Refresh the list so the note disappears from it
+            return true
         } catch (error) {
-            // console.error();
-            setError()
-            alert('Error moving note to trash')
+            console.error(fallbackMessage, error)
+            setError?.(fallbackMessage)
+            return false
+        } finally {
+            setActionLoading(false)
         }
-    },[setError])
-   
-    //Function to move item
-    const handleDelete = () => {
-        const confirmDelete= window.confirm(
-            'Are you sure you want to move the item to trash'
+    }, [setError, closePanal, fetchNotes])
+
+    //========ARCHIVE NOTE REQUEST===============
+    const archiveNote = useCallback(async (id) => {
+        const success = await runNoteAction(`/archive/${id}`, 'PATCH', 'Error archiving note.')
+        if (success) alert('Note successfully archived')
+    }, [runNoteAction])
+
+    //========MOVE NOTE TO TRASH REQUEST===============
+    const moveToTrash = useCallback(async (id) => {
+        const success = await runNoteAction(`/notes/delete/${id}`, 'DELETE', 'Error moving note to trash.')
+        if (success) alert('Note successfully moved to trash')
+    }, [runNoteAction])
+
+    // Ask before archiving the selected note
+    const handleArchive = () => {
+        if (!selectedNote) return
+        const confirmArchive = window.confirm(
+            `Are you sure you want to archive "${selectedNote.title}"?`
         )
-        if(!confirmDelete) return;
-        moveToTrash?.()
+        if (!confirmArchive) return;
+        archiveNote(selectedNote._id)
     }
 
+    // Ask before moving the selected note to trash
+    const handleDelete = () => {
+        if (!selectedNote) return
+        const confirmDelete = window.confirm(
+            `Are you sure you want to move "${selectedNote.title}" to trash?`
+        )
+        if (!confirmDelete) return;
+        moveToTrash(selectedNote._id)
+    }
 
+    // Copy the note text (without HTML tags) to the clipboard
+    const handleCopy = async () => {
+        if (!selectedNote) return
+        try {
+            await navigator.clipboard.writeText(selectedNote.plainText || '')
+            alert('Note copied to clipboard')
+        } catch (error) {
+            console.error('Error copying note:', error)
+            setError?.('Could not copy the note to the clipboard.')
+        }
+    }
+
+    const tableHeading = currentUser?.fullName?.firstName
+        ? `${currentUser.fullName.firstName.toUpperCase()}'S NOTES`
+        : 'MY NOTES'
+
+    //=======================JSX RENDERING=======================================
   return (
     <div id='notesList'>
     <div id='notesListWrapper'>
         <table id='notesListTable'>
             <thead>
             <tr id='mainThRow'>
-                <th id='tableMainHead' colSpan={7}>USERNAME NOTES</th>
+                <th id='tableMainHead' colSpan={7}>{tableHeading}</th>
             </tr>
             <tr>
-            {/* index */}
                 <th>#</th>
                 <th>TITLE</th>
                 <th>LANGUAGE</th>
@@ -92,47 +151,55 @@ export default function NotesList(
             </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        {/* Index */}
-                    </td>
-                    <td>
-                        {/* title */}
-                    </td>
-                    <td>
-                        {/* Language */}
-                    </td>
-                    <td>
-                        {/* NOTE BOOK */}
-                    </td>
-                    <td>
-                        {/* TAGS */}
-                    </td>
-                    <td>
-                        {/* Date added */}
-                        {/* TIME STAMP */}
-                    </td>
-                    <td>
-                        <div id='tableBtnDiv'>
-                            <Button
-                            variant='light'
-                            id='viewNoteBtn'
-                            >
-                                VIEW
-                            </Button>
-                        </div>
-                    </td>
-                </tr>
+                {loading && notes.length === 0 ? (
+                    <tr>
+                        <td colSpan={7}>LOADING NOTES...</td>
+                    </tr>
+                ) : notes.length === 0 ? (
+                    <tr>
+                        <td colSpan={7}>NO NOTES YET</td>
+                    </tr>
+                ) : (
+                    notes.map((note, index) => (
+                        <tr key={note._id}>
+                            <td>{index + 1}</td>
+                            <td>
+                                {note.isPinned && (
+                                    <Pin size={14} aria-label='Pinned' />
+                                )} {note.title}
+                            </td>
+                            <td>{languageName(note.language)}</td>
+                            <td>{note.notebook?.name || '-'}</td>
+                            <td>{tagNames(note.tags) || '-'}</td>
+                            <td>{formatTimestamp(note.createdAt)}</td>
+                            <td>
+                                <div id='tableBtnDiv'>
+                                    <Button
+                                    variant='light'
+                                    className='viewNoteBtn'
+                                    type='button'
+                                    onClick={() => setSelectedId(note._id)}
+                                    // ARIA ATTRIBUTES:
+                                    aria-label={`View note ${note.title}`}
+                                    aria-pressed={note._id === selectedId}
+                                    >
+                                        VIEW
+                                    </Button>
+                                </div>
+                            </td>
+                        </tr>
+                    ))
+                )}
             </tbody>
         </table>
     </div>
     {/* SELECTED NOTE PANAL */}
+    {selectedNote && (
     <div id='notePanal'>
             <Stack direction="horizontal" gap={3} id='notePanalHead'>
       <div className="p-2">
       <span id='panalHeadSpan'>
-    {/* index  title */}
-      <h4 className='panalHeading'># TITLE</h4>
+      <h4 className='panalHeading'>#{selectedIndex + 1} {selectedNote.title}</h4>
       </span>
       </div>
       <div className="p-2 ms-auto">
@@ -150,7 +217,7 @@ export default function NotesList(
                 </>
             ): (
                 <>
-                    <Edit3Icon/> 
+                    <Edit3Icon/>
                     EDIT NOTE
                 </>
             )}
@@ -161,6 +228,10 @@ export default function NotesList(
         <Button
         variant='warning'
         id='closePanalBtn'
+        type='button'
+        onClick={closePanal}
+        // ARIA ATTRIBUTES:
+        aria-label='Close note details'
         >
           <X aria-hidden='true' focusable='false' />  CLOSE
         </Button>
@@ -173,10 +244,13 @@ export default function NotesList(
         <div id='noteContentDiv'>
             <span className='dataSpan'>
                 <p className='dataLabel'>CONTENT:</p>
-                 <p id='noteContentPara' className='detailValue'>
-                    {/* CONTENT */}
-                    content
-                </p>
+                {/* Content is TipTap HTML, sanitised by noteSchema before it is saved.
+                A div is used because the HTML contains its own <p> tags */}
+                 <div
+                    id='noteContentPara'
+                    className='detailValue'
+                    dangerouslySetInnerHTML={{ __html: selectedNote.content }}
+                 />
             </span>
                  <div id='copyNoteDiv'>
                 {/* COPY CONTENT BUTTON */}
@@ -184,8 +258,9 @@ export default function NotesList(
                     variant='light'
                     id='copyContentBtn'
                     type='button'
-                    // onClick={}
+                    onClick={handleCopy}
                     // ARIA ATTRIBUTES:
+                    aria-label='Copy note text'
                 ><Copy aria-hidden='true' focusable='false'/>COPY</Button>
             </div>
         </div>
@@ -193,45 +268,54 @@ export default function NotesList(
         <div className="p-2">
         <span className='dataSpan'>
             <p className='dataLabel'>LANGUAGE:</p>
+            <p className='dataValue'>{languageName(selectedNote.language)}</p>
         </span>
       </div>
-    </Stack>      
+    </Stack>
     {/* STACK 2: */}
              <Stack gap={3} id='notePanalStack2'>
                 <div className="p-2">
         <span className='dataSpan'>
             <p className='dataLabel'>DATE ADDED:</p>
-            <p className='dataValue'>{/* DATE CREATED(TIME STAMP) */}</p>
+            <p className='dataValue'>{formatTimestamp(selectedNote.createdAt)}</p>
         </span>
     </div>
       <div className="p-2" id='noteBookBlock'>
         {/* Notebook */}
         <span className='dataSpan'>
             <p className='dataLabel'>NOTE BOOK:</p>
-            <p className='dataValue'>{/* NoteBook name */}</p>
+            <p className='dataValue'>{selectedNote.notebook?.name || 'No notebook'}</p>
         </span>
       </div>
       <div className="p-2" id='noteTagGroup'>
 {/* Tags */}
 <p className='dataLabel'>TAGS:</p>
         <ul className='tagList'>
-            <li className='tagListItem'></li>
+            {selectedNote.tags?.length ? (
+                selectedNote.tags.map((tag) => (
+                    <li className='tagListItem' key={tag._id}>{tag.name}</li>
+                ))
+            ) : (
+                <li className='tagListItem'>No tags</li>
+            )}
         </ul>
       </div>
     </Stack>
         </div>
     <Stack direction="horizontal" gap={3} id='panalFooter'>
       <div className="p-2">
-        {/* Link to translateForm */}
-        <Link className='refLink'>TRANSLATE</Link>
+        {/* Link to translateForm; the note id is passed in the route state */}
+        <Link className='refLink' to='/translate' state={{ noteId: selectedNote._id }}>TRANSLATE</Link>
       </div>
       <div className="p-2 ms-auto">
         <Button
         variant='warning'
         id='archiveNoteBtn'
         type='button'
-        // onClick={}
+        onClick={handleArchive}
+        disabled={actionLoading}
         // ARIA ATTRIBUTES
+        aria-label='Archive note'
         >
            <ArchiveArrowDownIcon aria-hidden='true' focusable='false'/> ARCHIVE
         </Button>
@@ -243,6 +327,7 @@ export default function NotesList(
         id='trashNoteBtn'
         type='button'
         onClick={handleDelete}
+        disabled={actionLoading}
         // ARIA ATTRIBUTES:
         aria-label='Move to trash'
         >
@@ -251,6 +336,7 @@ export default function NotesList(
       </div>
     </Stack>
     </div>
+    )}
    </div>
   )
 }

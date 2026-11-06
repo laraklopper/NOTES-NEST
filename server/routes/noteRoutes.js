@@ -23,10 +23,29 @@ const router = express.Router()
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the provider and the database
 ────────────────────────────────────────────────────────────────────────────────*/
-// Route to send a GET request to the /notes/fetchNotes endpoint
-//Fetch and list all notes for the specific user
-router.get('/fetchNotes', async (req, res) => {
-    
+/* Fields sent back for every note in a list or details panel, with the notebook
+and tags swapped from ids to the names (and colour) the NotesList table shows */
+const populateNote = (query) => query
+    .select('-__v')
+    .populate('notebook', 'name colour')
+    .populate('tags', 'name');
+
+/* GET: /notes/fetchNotes : Lists the signed-in user's active notes (not archived,
+not in the trash), pinned notes first and then the most recently updated */
+router.get('/fetchNotes', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+
+        const notes = await populateNote(
+            Note.find({ user: userId, isArchived: false, deletedAt: null })
+        ).sort({ isPinned: -1, updatedAt: -1 }).lean();// Matches the { user, isPinned, updatedAt } index
+
+        console.log(`[SUCCESS: noteRoutes.js, GET /fetchNotes] Fetched ${notes.length} notes`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ notes });// Send a 200 (OK) status code with the notes
+    } catch (error) {
+        console.error('[ERROR: noteRoutes.js, GET /fetchNotes]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
 })
 // Route to send a GET request to the /notes/trash endpoint
 //List trashed notes - (declare route before /:id)
@@ -144,8 +163,37 @@ router.patch('/:id/restore', async (req, res) => {
  ────────────────────────────────────────────────────────────────────────────────*/
 //Route to send a DELETE request to the /notes/:id endpoint
 //DELETE request to move item to trash
-router.delete('/delete/:id', async (req, res) => {
-    
+/* DELETE: /notes/delete/:id : Soft deletes one of the signed-in user's notes by
+setting deletedAt. The TTL index on deletedAt (noteSchema) purges it after 30 days */
+router.delete('/delete/:id', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the note ID from the URL
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: noteRoutes.js, DELETE /delete/:id] Invalid note id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid note id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only a note the user owns and that is not already in the trash can be moved there
+        const note = await Note.findOneAndUpdate(
+            { _id: id, user: userId, deletedAt: null },
+            { $set: { deletedAt: new Date(), isPinned: false } }
+        ).select('_id title');
+
+        // Conditional rendering to check the note was found
+        if (!note) {
+            console.error(`[ERROR: noteRoutes.js, DELETE /delete/:id] Note not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Note not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: noteRoutes.js, DELETE /delete/:id] Note moved to trash: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Note moved to trash', note });// Send a 200 (OK) status code with a message
+    } catch (error) {
+        console.error('[ERROR: noteRoutes.js, DELETE /delete/:id]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
 })
  //Route to send a DELETE request to the /notes/:id/permanent endpoint
 //DELETE - Permanently delete a note and its translations

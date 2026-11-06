@@ -102,7 +102,7 @@ tbody tr td {
     margin: 0px;
     padding: 0px;
 }
-#viewNoteBtn,
+.viewNoteBtn,
 #copyContentBtn{
      width: 100px;
     height: 40px;
@@ -118,7 +118,7 @@ tbody tr td {
     border: solid 2px #323A42;
     gap: 5px;
 }
-#viewNoteBtn:hover,
+.viewNoteBtn:hover,
 #copyContentBtn:hover{
     background-color: #323A42;
     color: #E8F0F6;
