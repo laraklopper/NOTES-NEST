@@ -22,7 +22,25 @@ padding: 0px 0px 0px 0px;
   width: 100%;
   height: 100%;
 }
-
+#globalErrorBlock{
+      display: flex;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+    width: 100%;
+}
+#globalErrorBlock span{
+      display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+#errorMessage{
+  margin: 0px;
+  padding: 0px;
+  font-family: "Open Sans", sans-serif;
+}
 /* ========================= 
 Accessibility helpers 
  ARIA : Accessible Rich Internet Applications

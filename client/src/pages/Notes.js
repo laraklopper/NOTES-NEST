@@ -17,6 +17,9 @@ export default function Notes(
     logout
   }) {
     const [key, setKey] = useState('notes')
+    const [editNote, setEditNote] = useState(false)
+
+     const toggleEditNote = () => setEditNote ((prev) => !prev)
   return (
     <div id='pageContainer'>
       <Header heading={'NOTES'} currentUser={currentUser} />
@@ -40,10 +43,23 @@ export default function Notes(
           <div id='notesListPanal'>
             <NotesList
               currentUser={currentUser}
+              editNote={editNote}
+              toggleEditNote={toggleEditNote}
             />
           </div>
         </Col>
       </Row>
+      {editNote && (
+        <div id='editNoteBlock'>
+          <Row>
+            <Col>
+              <div>
+                {/* EDIT NOTE FORM */}
+              </div>
+            </Col>
+          </Row>
+        </div>
+      )}
         </div>
       </Tab>
       <Tab eventKey="archive" title="ARCHIVE">

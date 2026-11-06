@@ -3,14 +3,21 @@ import '../css/componentCss/NotesList.css'
 import '../css/componentCss/DetailsPanals.css'
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack'
-import { ArchiveArrowDownIcon, Copy, Trash2, X } from 'lucide-react';
+import { ArchiveArrowDownIcon, Copy, Edit3Icon, Trash2, X } from 'lucide-react';
 import {Link} from 'react-router-dom';
 export default function NotesList(
     {
-        currentUser
+        currentUser,
+        editNote,
+        toggleEditNote
     }
 ) {
     const [selectedNote, setSelectedNote] = useState()//Note currently selected in the details panal
+    
+
+   
+
+
   return (
     <div id='notesList'>
     <div id='notesListWrapper'>
@@ -80,8 +87,21 @@ export default function NotesList(
         <Button
         variant='warning'
         id='editNoteBtn'
+        type='button'
+        onClick={toggleEditNote}
+        // ARIA ATTRIBUTES:
+        aria-label={editNote ? 'Hide Form': 'Edit Note'}
         >
-            EDIT NOTE
+            {editNote ? (
+                <>
+                   <X/> HIDE FORM
+                </>
+            ): (
+                <>
+                    <Edit3Icon/> 
+                    EDIT NOTE
+                </>
+            )}
         </Button>
       </div>
       <div className="vr" style={{width: '2px'}} />
