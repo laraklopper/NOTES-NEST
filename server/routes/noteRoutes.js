@@ -4,7 +4,7 @@ GET- /fetchNotes - fethc and list all notes for the specific user
 GET - /:id - Get a single note by id
 GET - /trash - List trashed notes - (declare route before /:id)
 POST - /addNote - Create a note (tags sent as names; missing tags are created)
-PATCH - /notes/:id - Update title, content, languages, tags, pin or archive
+PATCH - /notes/:id - Update title, content, language, notebook, tags or pin (archive is PATCH /archive/:id)
 PATCH - /notes/:id/restore - Restore from trash
 DELETE - /notes/delete/:id - Soft delete (move to trash)
 DELETE - `/notes/:id/permanent` - Permanently delete a note and its translations
@@ -18,6 +18,36 @@ const Tag = require('../models/tagSchema');// Import the Tag model
 const User = require('../models/userSchema');// Import the User model
 const { checkJwtToken } = require('./middleware');// Import the JWT middleware
 const router = express.Router()
+
+/*──────────────────────────── SHARED HELPERS ─────────────────────────────────
+   Used by both POST /addNote and PATCH /:id
+────────────────────────────────────────────────────────────────────────────────*/
+/* Checks a notebook id from the request belongs to the user.
+Returns null when it is fine, otherwise { status, message } to send back */
+const checkNotebook = async (userId, notebook) => {
+    if (!mongoose.Types.ObjectId.isValid(notebook)) {
+        return { status: 400, message: 'Invalid notebook id' };
+    }
+    const ownNotebook = await Notebook.exists({ _id: notebook, user: userId });
+    if (!ownNotebook) {
+        return { status: 404, message: 'That notebook no longer exists' };
+    }
+    return null;
+}
+
+/* Tag names are stored lowercase (see tagSchema), so normalise them
+and drop blanks and duplicates before looking them up */
+const normaliseTagNames = (tags) => [...new Set(tags.map((tag) => tag.trim().toLowerCase()).filter(Boolean))];
+
+// Find each tag by name, creating the ones the user does not have yet, and return their ids
+const findOrCreateTagIds = async (userId, tagNames) => {
+    const tagDocs = await Promise.all(tagNames.map((name) => Tag.findOneAndUpdate(
+        { user: userId, name },
+        { $setOnInsert: { user: userId, name } },
+        { upsert: true, returnDocument: 'after', runValidators: true }
+    ).exec()));
+    return tagDocs.map((tag) => tag._id);
+}
 
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
@@ -91,31 +121,20 @@ router.post('/addNote', checkJwtToken, async (req, res) => {
         // Conditional rendering to check the notebook exists and belongs to the user
         let notebookId = null;// null means "No notebook"
         if (notebook) {
-            if (!mongoose.Types.ObjectId.isValid(notebook)) {
-                console.error(`[ERROR: noteRoutes.js, POST /addNote] Invalid notebook id: ${notebook}`);// Log an error message in the console for debugging purposes
-                return res.status(400).json({ message: 'Invalid notebook id' });// Return a 400 (Bad Request) status code with a message
-            }
-            const ownNotebook = await Notebook.exists({ _id: notebook, user: userId });
-            if (!ownNotebook) {
-                console.error(`[ERROR: noteRoutes.js, POST /addNote] Notebook not found: ${notebook}`);// Log an error message in the console for debugging purposes
-                return res.status(404).json({ message: 'That notebook no longer exists' });// Return a 404 (Not Found) status code with a message
+            const notebookError = await checkNotebook(userId, notebook);
+            if (notebookError) {
+                console.error(`[ERROR: noteRoutes.js, POST /addNote] ${notebookError.message}: ${notebook}`);// Log an error message in the console for debugging purposes
+                return res.status(notebookError.status).json({ message: notebookError.message });// Return a 400 (Bad Request) or 404 (Not Found) status code with a message
             }
             notebookId = notebook;
         }
 
-        /* Tag names are stored lowercase (see tagSchema), so normalise them here
-        and drop blanks and duplicates before looking them up */
-        const tagNames = [...new Set(tags.map((tag) => tag.trim().toLowerCase()).filter(Boolean))];
+        const tagNames = normaliseTagNames(tags);
         if (tagNames.some((name) => name.length > 30)) {
             console.error('[ERROR: noteRoutes.js, POST /addNote] Tag name too long');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Tag names cannot exceed 30 characters' });// Return a 400 (Bad Request) status code with a message
         }
-        // Find each tag, creating the ones the user does not have yet
-        const tagDocs = await Promise.all(tagNames.map((name) => Tag.findOneAndUpdate(
-            { user: userId, name },
-            { $setOnInsert: { user: userId, name } },
-            { upsert: true, returnDocument: 'after', runValidators: true }
-        ).exec()));
+        const tagIds = await findOrCreateTagIds(userId, tagNames);// Find each tag, creating the ones the user does not have yet
 
         const newNote = await Note.create({// Validate and save the note (content is sanitised by the noteSchema hook)
             user: userId,
@@ -123,7 +142,7 @@ router.post('/addNote', checkJwtToken, async (req, res) => {
             title: title?.trim() || undefined,// Leave blank titles to the schema default ("Untitled")
             content,
             language: noteLanguage,
-            tags: tagDocs.map((tag) => tag._id),
+            tags: tagIds,
             isPinned: isPinned === true
         });
 
@@ -147,11 +166,114 @@ router.post('/addNote', checkJwtToken, async (req, res) => {
 /*──────────────────────────── PATCH ROUTES ───────────────────────────────────
    PATCH: UPDATE — Used to partially update information in the database
 ────────────────────────────────────────────────────────────────────────────────*/
- //Route to send a PATCH request to the /notes:id endpoint
-// PATCH route to Update title, content, languages, tags, pin or archive
-router.patch('/:id', async (req, res) => {
-    
-} )
+/* PATCH: /notes/:id : Updates one of the signed-in user's active notes from the
+EditNoteForm on the Notes page. Only the fields sent in the body are changed.
+Tags are sent as names; any the user does not have yet are created.
+(Archiving has its own route: PATCH /archive/:id) */
+router.patch('/:id', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the note ID from the URL
+        const { title, content, language, notebook, tags, isPinned } = req.body || {};// Extract the note fields from the request body
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: noteRoutes.js, PATCH /:id] Invalid note id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid note id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Conditional rendering to check the sent fields have the right types (strings only, so they cannot inject query operators)
+        if ((title !== undefined && typeof title !== 'string') ||
+            (content !== undefined && typeof content !== 'string') ||
+            (language !== undefined && typeof language !== 'string') ||
+            (notebook !== undefined && notebook !== null && typeof notebook !== 'string') ||
+            (isPinned !== undefined && typeof isPinned !== 'boolean') ||
+            (tags !== undefined && (!Array.isArray(tags) || tags.some((tag) => typeof tag !== 'string')))) {
+            console.error('[ERROR: noteRoutes.js, PATCH /:id] Invalid field types');// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid note details' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Build the update from only the fields that were sent
+        const updates = {};
+
+        if (title !== undefined) {
+            updates.title = title.trim() || 'Untitled';// A cleared title falls back to the schema default
+        }
+
+        if (content !== undefined) {
+            // Conditional rendering to check the note text is not being emptied
+            if (!content.trim()) {
+                console.error('[ERROR: noteRoutes.js, PATCH /:id] Note text is required');// Log an error message in the console for debugging purposes
+                return res.status(400).json({ message: 'Note text is required' });// Return a 400 (Bad Request) status code with a message
+            }
+            updates.content = content;// Sanitised and copied to plainText by the noteSchema findOneAndUpdate hook
+        }
+
+        if (language !== undefined) {
+            // Conditional rendering to check the language is not being emptied
+            if (!language.trim()) {
+                console.error('[ERROR: noteRoutes.js, PATCH /:id] Note language is required');// Log an error message in the console for debugging purposes
+                return res.status(400).json({ message: 'Note language is required' });// Return a 400 (Bad Request) status code with a message
+            }
+            updates.language = language.trim();// Format is checked by the schema's languageCodeRegex
+        }
+
+        if (notebook !== undefined) {
+            // '' or null means "No notebook"
+            if (notebook) {
+                const notebookError = await checkNotebook(userId, notebook);
+                if (notebookError) {
+                    console.error(`[ERROR: noteRoutes.js, PATCH /:id] ${notebookError.message}: ${notebook}`);// Log an error message in the console for debugging purposes
+                    return res.status(notebookError.status).json({ message: notebookError.message });// Return a 400 (Bad Request) or 404 (Not Found) status code with a message
+                }
+            }
+            updates.notebook = notebook || null;
+        }
+
+        if (tags !== undefined) {
+            const tagNames = normaliseTagNames(tags);
+            if (tagNames.some((name) => name.length > 30)) {
+                console.error('[ERROR: noteRoutes.js, PATCH /:id] Tag name too long');// Log an error message in the console for debugging purposes
+                return res.status(400).json({ message: 'Tag names cannot exceed 30 characters' });// Return a 400 (Bad Request) status code with a message
+            }
+            updates.tags = await findOrCreateTagIds(userId, tagNames);// Find each tag, creating the ones the user does not have yet
+        }
+
+        if (isPinned !== undefined) {
+            updates.isPinned = isPinned;
+        }
+
+        // Conditional rendering to check there is something to update
+        if (Object.keys(updates).length === 0) {
+            console.error('[ERROR: noteRoutes.js, PATCH /:id] No fields to update');// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'No changes were sent' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only an active note the user owns can be edited (not archived or in the trash)
+        const note = await populateNote(Note.findOneAndUpdate(
+            { _id: id, user: userId, isArchived: false, deletedAt: null },
+            { $set: updates }
+        ));// The schema hook validates the update and returns the updated note
+
+        // Conditional rendering to check the note was found
+        if (!note) {
+            console.error(`[ERROR: noteRoutes.js, PATCH /:id] Note not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Note not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: noteRoutes.js, PATCH /:id] Note updated: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Note updated successfully', note });// Send a 200 (OK) status code with the updated note
+    } catch (error) {
+        // Mongoose schema validation failed: send the first validation message back to the client
+        if (error.name === 'ValidationError') {
+            const firstMessage = Object.values(error.errors)[0]?.message;
+            console.error('[ERROR: noteRoutes.js, PATCH /:id] Validation failed:', error.message);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: firstMessage || 'Invalid note details' });// Return a 400 (Bad Request) status code with a message
+        }
+        console.error('[ERROR: noteRoutes.js, PATCH /:id]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
  //Route to send a PATCH request to the /notes/:id/restore endpoint
 // PATCH request to restore a note from trash
 router.patch('/:id/restore', async (req, res) => {

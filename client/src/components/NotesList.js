@@ -35,10 +35,11 @@ export default function NotesList(
         setError,
         notes = [],
         loading = false,
-        fetchNotes
+        fetchNotes,
+        selectedId,// Id of the note shown in the details panal (state lives in Notes.js so EditNoteForm can use it)
+        setSelectedId
     }
 ) {
-    const [selectedId, setSelectedId] = useState(null)// Id of the note shown in the details panal
     const [actionLoading, setActionLoading] = useState(false)// True while an archive/trash request is running
 
     /* The selected note is looked up from the list (rather than stored as a copy)
@@ -54,7 +55,7 @@ export default function NotesList(
     const closePanal = useCallback(() => {
         setSelectedId(null)
         if (editNote) toggleEditNote?.()
-    }, [editNote, toggleEditNote])
+    }, [editNote, toggleEditNote, setSelectedId])
 
     /* Shared request runner for the archive and trash buttons.
     Refreshes the list and closes the panal on success */
