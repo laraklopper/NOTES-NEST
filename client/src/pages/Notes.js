@@ -1,23 +1,28 @@
 //Note.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/pagesCss/Notes.css'
 import '../css/pagesCss/PageSetup.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+//IMPORT CUSTOM COMPONENTS
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import NotesList from '../components/NotesList';
 import EditNoteForm from '../components/EditNoteForm';
 
 //====MAIN NOTES FUNCTION COMPONENT========
-export default function Notes(
+export default function Notes(//Export the default Notes.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, 
     logout,
     setError
   }) {
+    //==========STATE VARIABLES=================
     const [key, setKey] = useState('notes')
     const [editNote, setEditNote] = useState(false)
     const [notes, setNotes] = useState([])// The user's active notes from GET /notes/fetchNotes

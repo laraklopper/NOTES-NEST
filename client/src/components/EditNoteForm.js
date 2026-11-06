@@ -75,8 +75,9 @@ export default function EditNoteForm({setError, currentUser}) {
     }
     //======================JSX RENDERING=========================
   return (
-    <form id='updateNoteForm' method='PATCH' onSubmit={handleSubmit} aria-labelledby={formTitleId}>
+    <form id='updateNoteForm' method='PATCH' onSubmit={handleSubmit} aria-busy={updatingNote} aria-labelledby={formTitleId}>
         <div id='formHeadingBlock'>
+        {/* -------------Screen Reader Heading------------------- */}
             <p className='visually-hidden' id={formTitleId}>EDIT SELECTED NOTE FORM</p>
             <h3 id='formHeading'>EDIT NOTE</h3>
         </div>
