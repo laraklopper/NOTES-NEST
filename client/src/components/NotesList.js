@@ -2,7 +2,7 @@ import React from 'react'
 import '../css/componentCss/NotesList.css'
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack'
-import { Copy } from 'lucide-react';
+import { Copy, X } from 'lucide-react';
 export default function NotesList() {
   return (
     <div id='notesList'>
@@ -56,10 +56,15 @@ export default function NotesList() {
             </tbody>
         </table>
     </div>
+    {/* SELECTED NOTE PANAL */}
     <div id='notePanal'>
-        <div>
-            <Stack direction="horizontal" gap={3}>
+            <Stack direction="horizontal" gap={3} id='notePanalHead'>
       <div className="p-2">
+      <span id='panalHeadSpan'>
+      <h4>#</h4>
+      <h4>TITLE</h4>
+
+      </span>
         {/* index */}
         {/* title */}
       </div>
@@ -74,14 +79,14 @@ export default function NotesList() {
       <div className="p-2">
         <Button
         variant='warning'
+        id='closePanalBtn'
         >
-            CLOSE
+          <X />  CLOSE
         </Button>
       </div>
     </Stack>
-        </div>
+    
         <div id='notePanalBody'>
-            <div>
              <Stack gap={3}>
     <div className="p-2">
         {/* Date added */}
@@ -106,10 +111,7 @@ export default function NotesList() {
       <div className="p-2">
         <Button>TRANSLATOR</Button>
       </div>
-    </Stack>
-
-            </div>
-            <div>
+    </Stack>      
              <Stack gap={3}>
       <div className="p-2">
         <span>
@@ -125,7 +127,7 @@ export default function NotesList() {
       </div>
     </Stack>
 
-            </div>
+           
         </div>
     
     </div>
