@@ -1,8 +1,8 @@
-import { Copy } from 'lucide-react';
 import React from 'react'
+import '../css/componentCss/NotesList.css'
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack'
-
+import { Copy } from 'lucide-react';
 export default function NotesList() {
   return (
     <div id='notesList'>
