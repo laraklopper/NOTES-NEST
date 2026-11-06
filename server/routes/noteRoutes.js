@@ -6,7 +6,7 @@ GET - /trash - List trashed notes - (declare route before /:id)
 POST - /addNote - Create a note (tags sent as names; missing tags are created)
 PATCH - /notes/:id - Update title, content, languages, tags, pin or archive
 PATCH - /notes/:id/restore - Restore from trash
-DELETE - /notes/:id - Soft delete (move to trash)
+DELETE - /notes/delete/:id - Soft delete (move to trash)
 DELETE - `/notes/:id/permanent` - Permanently delete a note and its translations
 */
 require('dotenv').config()
@@ -144,7 +144,7 @@ router.patch('/:id/restore', async (req, res) => {
  ────────────────────────────────────────────────────────────────────────────────*/
 //Route to send a DELETE request to the /notes/:id endpoint
 //DELETE request to move item to trash
-router.delete('/:id', async (req, res) => {
+router.delete('/delete/:id', async (req, res) => {
     
 })
  //Route to send a DELETE request to the /notes/:id/permanent endpoint

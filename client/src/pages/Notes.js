@@ -14,7 +14,8 @@ import NotesList from '../components/NotesList';
 export default function Notes(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, 
-    logout
+    logout,
+    setError
   }) {
     const [key, setKey] = useState('notes')
     const [editNote, setEditNote] = useState(false)
@@ -45,6 +46,7 @@ export default function Notes(
               currentUser={currentUser}
               editNote={editNote}
               toggleEditNote={toggleEditNote}
+              setError={setError}
             />
           </div>
         </Col>

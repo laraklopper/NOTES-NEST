@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import '../css/componentCss/NotesList.css'
 import '../css/componentCss/DetailsPanals.css'
 import Button from 'react-bootstrap/Button';
@@ -9,13 +9,53 @@ export default function NotesList(
     {
         currentUser,
         editNote,
-        toggleEditNote
+        toggleEditNote,
+        setError
     }
 ) {
     const [selectedNote, setSelectedNote] = useState()//Note currently selected in the details panal
-    
 
+    //Function to archive a note
+    const archiveNote = useCallback(async () => {
+       try {
+        const token = localStorage.getItem('token')
+        const response = await fetch('http://localhost:3001/archive/:id', {
+            method: 'PATCH',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' :`Bearer &{token}`
+            },
+            body: JSON.stringify()
+        })
+       } catch (error) {
+        
+       } 
+    },[])
+
+    //Function to move a note to trash
+    const moveToTrash = useCallback(async () => {
+        try {
+        const token = localStorage.getItem('token')
+        const response = await fetch('http://localhost:3001/notes/delete/:id', {
+            method: 'PATCH',
+            mode: 'cors',
+            headers: {
+                'Authorization':`Bearer ${token}`,
+            }
+        })
+
+        if (!response.ok) {
+            throw new Error()
+        }
+        } catch (error) {
+            // console.error();
+            setError()
+            
+        }
+    },[])
    
+
 
 
   return (
