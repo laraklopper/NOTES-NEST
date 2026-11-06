@@ -129,6 +129,7 @@ router.post('/addNote', checkJwtToken, async (req, res) => {
 router.patch('/:id', async (req, res) => {
     
 } )
+
 // PATCH request to restore a note from trash
 router.patch('/:id/restore', async (req, res) => {
     
