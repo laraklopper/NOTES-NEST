@@ -6,12 +6,10 @@ import '../css/componentCss/NotesForm.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
-//IMPORT CUSTOM COMPONENTS
-import NoteEditor from './NoteEditor';
 // IMPORT UTILITY FUNCTIONS
 import languageData from '../util/languageData';
 import { TODAY } from '../util/dateFunctions';
-import { emptyNoteForm } from '../util/notesUtil';
+import { emptyNoteForm, textToHtml } from '../util/notesUtil';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Asterisk, RotateCcw, Save } from 'lucide-react';
 // NotePadForm component
@@ -27,8 +25,6 @@ export default function NotePadForm(
     tags = []// The user's existing tags from GET /tag/fetchTags
   }) {
   const [formData, setFormData] = useState(emptyNoteForm)
-  const [content, setContent] = useState(''); // TipTap HTML, sent as `content` on save
-  const [editorKey, setEditorKey] = useState(0)// Changing the key remounts NoteEditor so it clears
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;// Get the input name and value from the changed field
@@ -47,14 +43,12 @@ export default function NotePadForm(
 
   const resetForm = () => {
     setFormData(emptyNoteForm)
-    setContent('')
-    setEditorKey((prev) => prev + 1)
   }
 
   // Build the request body in the shape POST /notes/addNote expects
   const buildNote = () => ({
     title: formData.title.trim(),
-    content,
+    content: textToHtml(formData.content),// The server stores note content as HTML
     language: formData.language || defaultLanguage,
     notebook: formData.notebook || null,
     tags: formData.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
@@ -63,8 +57,8 @@ export default function NotePadForm(
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // Conditional rendering to check the note has text, as the editor is not a native input
-    if (!content.trim()) {
+    // `required` blocks an empty textarea, but not one that only holds spaces
+    if (!formData.content.trim()) {
       alert('Please enter the note text before saving.')
       return
     }
@@ -155,8 +149,18 @@ export default function NotePadForm(
         <legend>Notes Details</legend>
           <Stack direction="horizontal" gap={3} id='notePadStack2'>
       <div className="p-2" id='noteTextBlock'>
-          <label className='notePadLabel'>NOTE:</label>
-          <NoteEditor key={editorKey} content={content} onChange={setContent} />
+          <label className='notePadLabel' htmlFor='noteTextInput'>NOTE:</label>
+          <textarea
+            className='input notesTextArea'
+            id='noteTextInput'
+            required
+            placeholder='NOTE TEXT'
+            name='content'
+            value={formData.content}
+            onChange={handleInputChange}
+            // ARIA ATTRIBUTES:
+            aria-required='true'
+          />
            <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
       </div>
       <div className="p-2 ms-auto"/>
