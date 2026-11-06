@@ -15,29 +15,39 @@
     flex-direction: column;
 }
 #notesListTable{
-        width: 100%;
+    width: 100%;
     margin: 0px;
     padding: 0px;
     border: solid 2px #404040;
 }
+#notesListTable thead tr:nth-child(even) { background: #fff; }
+#notesListTable thead tr:nth-child(odd) { background: #d1d1d4; }
+#notesListTable tbody tr:nth-child(even) { background: #fff; }
+#notesListTable tbody tr:nth-child(odd) { background: #d1d1d4; }
 #mainThRow{
     width: 100%;
     text-align: center;
     margin: 0px;
     padding: 10px  0px;
+    text-decoration: underline;
+    font-family: "Roboto Mono", monospace;
+    letter-spacing: 2px;
+    font-weight: 800;
+    border: solid 2px #404040;
 }
 #tableMainHead{
     width: 100%;
     text-align: center;
     margin: 0px;
     padding: 0px;
+    border: inherit;
 }
-tbody, td, tfoot, th, thead, tr {
-    border-color: inherit;
-    border: solid 1.5px;
-   
+thead{
+    border: solid 2px #404040;
 }
-thead th{
+
+thead tr th{
+    border: solid 2px #404040;
     text-align: center;
 }
 tbody{
@@ -45,10 +55,8 @@ tbody{
     margin: 0px;
     padding: 0px;
 }
-tbody, td, tfoot, th, thead, tr {
-    border-color: inherit;
-    border-style: solid;
-
+tbody tr td {
+    border: solid 2px #404040;
 }
 #noteTagGroup{
     display: flex;
@@ -65,13 +73,83 @@ tbody, td, tfoot, th, thead, tr {
 #noteContentDiv{
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     margin: 0px;
-    padding: 0px;
+    padding: 5px;
     width: 100%;
+    border: #404040 solid 1px;
+    border-radius: 5px;
+    background-color: #ced4da;;
+    gap: 5px;
 }
 #notePanalStack1,
 #notePanalStack2{
     margin: 0px;
     padding: 0px;
+}
+#noteTags{
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin: 0px;
+    padding: 0px;
+}
+#copyNoteDiv{
+    display: flex;
+    justify-content: flex-end;
+}
+#noteContentPara{
+    text-align: justify;
+    margin: 0px;
+    padding: 0px;
+}
+#viewNoteBtn,
+#copyContentBtn{
+     width: 100px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+    gap: 5px;
+}
+#viewNoteBtn:hover,
+#copyContentBtn:hover{
+    background-color: #323A42;
+    color: #E8F0F6;
+}
+
+#editNoteBtn,
+#archiveNoteBtn,
+#trashNoteBtn,
+#closePanalBtn{
+    width: 150px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+    gap: 5px;
+}
+#editNoteBtn{
+    width: 180px;
+}
+#editNoteBtn:hover,
+#archiveNoteBtn:hover,
+#trashNoteBtn:hover,
+#copyContentBtn:hover,
+#closePanalBtn:hover{
+    color: #E8F0F6;
+    background:#323A42;
 }

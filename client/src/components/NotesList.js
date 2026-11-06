@@ -50,7 +50,8 @@ export default function NotesList(
                         {/* TAGS */}
                     </td>
                     <td>
-
+                        {/* Date added */}
+                        {/* TIME STAMP */}
                     </td>
                     <td>
                         <div id='tableBtnDiv'>
@@ -83,7 +84,7 @@ export default function NotesList(
             EDIT NOTE
         </Button>
       </div>
-      <div className="vr" />
+      <div className="vr" style={{width: '2px'}} />
       <div className="p-2">
         <Button
         variant='warning'
@@ -94,23 +95,25 @@ export default function NotesList(
       </div>
     </Stack>
         <div id='notePanalBody'>
+        {/* STACK 1 */}
              <Stack gap={3} id='notePanalStack1'>
- 
       <div className="p-2" id='noteContentBlock'>
         <div id='noteContentDiv'>
-            <span>
+            <span className='dataSpan'>
                 <p className='dataLabel'>CONTENT:</p>
-                 <p className='noteContentPara'>
+                 <p id='noteContentPara' className='detailValue'>
                     {/* CONTENT */}
+                    content
                 </p>
             </span>
-           
-               
-                 <div>
+                 <div id='copyNoteDiv'>
                 {/* COPY CONTENT BUTTON */}
                 <Button
                     variant='light'
                     id='copyContentBtn'
+                    type='button'
+                    // onClick={}
+                    // ARIA ATTRIBUTES:
                 ><Copy aria-hidden='true' focusable='false'/>COPY</Button>
             </div>
         </div>
@@ -140,7 +143,7 @@ export default function NotesList(
 {/* Tags */}
 <p className='dataLabel'>TAGS:</p>
         <ul className='tagList'>
-            <li></li>
+            <li className='tagListItem'></li>
         </ul>
       </div>
     </Stack>
@@ -161,18 +164,17 @@ export default function NotesList(
            <ArchiveArrowDownIcon aria-hidden='true' focusable='false'/> ARCHIVE
         </Button>
       </div>
-      <div className="vr" />
+      <div className="vr" style={{width: '2px'}}/>
       <div className="p-2">
         <Button
         variant='danger'
         id='trashNoteBtn'
         type='button'
         // onClick={}
-        // ARIA ATTRIBUTES
+        // ARIA ATTRIBUTES:
         >
-            <Trash2/>DELETE
+            <Trash2 aria-hidden='true' focusable='false'/>DELETE
         </Button>
-      
       </div>
     </Stack>
     </div>
