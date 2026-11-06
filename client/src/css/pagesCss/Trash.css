@@ -1,0 +1,33 @@
+#trashSection{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 10px;
+    background-color: #946E26;
+}
+#trashRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#trashTableWrapper{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+#trashTable{
+    width: 100%;
+}
+#trashTable thead tr:nth-child(even) { background: #fff; }
+#trashTable thead tr:nth-child(odd) { background: #d1d1d4; }
+#trashTable tbody tr:nth-child(even) { background: #fff; }
+#trashTable tbody tr:nth-child(odd) { background: #d1d1d4; }
+#trashTable tfoot tr:nth-child(odd) { background: #d1d1d4; }
+
+#trashTable tfoot{
+    text-align: center;
+    border: #000 solid;
+}
