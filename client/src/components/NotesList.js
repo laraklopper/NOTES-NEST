@@ -42,6 +42,13 @@ export default function NotesList() {
                     <td>
                         {/* TAGS */}
                     </td>
+                    <td>
+                        <div>
+                            <Button>
+                                VIEW
+                            </Button>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -86,7 +93,7 @@ export default function NotesList() {
                     {/* CONTENT */}
                 </p>
                 {/* COPY CONTENT BUTTON */}
-                <Button><Copy/></Button>
+                <Button><Copy/>COPY</Button>
             </div>
         </div>
       </div>
