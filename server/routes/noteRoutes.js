@@ -2,6 +2,7 @@
 /*mounted at /notes by app.js
 GET- /fetchNotes - fethc and list all notes for the specific user
 GET - /:id - Get a single note by id
+GET - /trash - List trashed notes - (declare route before /:id)
 POST - /addNote - Create a note (tags sent as names; missing tags are created)
 PATCH - /notes/:id - Update title, content, languages, tags, pin or archive
 PATCH - /notes/:id/restore - Restore from trash
@@ -26,9 +27,11 @@ router.get('/fetchNotes', async (req, res) => {
     
 })
 
-router.get(`/notes/trash`, async (req, res) => {
+router.get(`/trash`, async (req, res) => {
     
 })
+
+/*notes/:id = GET get a single note*/
 /*──────────────────────────── POST ROUTES ──────────────────────────────
     POST: CREATE — Used to submit new data to the database
  ─────────────────────────────────────────────────────────────────────────*/
@@ -119,4 +122,31 @@ router.post('/addNote', checkJwtToken, async (req, res) => {
     }
 })
 
-module.exports = router;
+/*──────────────────────────── PATCH ROUTES ───────────────────────────────────
+   PATCH: UPDATE — Used to partially update information in the database
+────────────────────────────────────────────────────────────────────────────────*/
+// PATCH route to Update title, content, languages, tags, pin or archive
+router.patch('/:id', async (req, res) => {
+    
+} )
+// PATCH request to restore a note from trash
+router.patch('/:id/restore', async (req, res) => {
+    
+})
+
+/*──────────────────────────── DELETE ROUTES ───────────────────────────────────
+    DELETE: Used to remove an item from the database
+ ────────────────────────────────────────────────────────────────────────────────*/
+//DELETE request to move item to trash
+router.delete('/:id', async (req, res) => {
+    
+})
+
+//DELETE - `/notes/:id/permanent` - Permanently delete a note and its translations
+router.delete('/:id/permanent', async (req, res) => {
+    
+})
+
+
+//========EXPORT THE ROUTER============
+module.exports = router;// Export the router to be used in other parts of the application
