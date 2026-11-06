@@ -23,15 +23,18 @@ const router = express.Router()
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the provider and the database
 ────────────────────────────────────────────────────────────────────────────────*/
+// Route to send a GET request to the /notes/fetchNotes endpoint
+//Fetch and list all notes for the specific user
 router.get('/fetchNotes', async (req, res) => {
     
 })
-
+// Route to send a GET request to the /notes/trash endpoint
+//List trashed notes - (declare route before /:id)
 router.get(`/trash`, async (req, res) => {
     
 })
-
-/*notes/:id = GET get a single note*/
+// Route to send a GET request to the /notes/:id endpoint
+/*notes/:id - GET a single note*/
 /*──────────────────────────── POST ROUTES ──────────────────────────────
     POST: CREATE — Used to submit new data to the database
  ─────────────────────────────────────────────────────────────────────────*/
@@ -125,11 +128,12 @@ router.post('/addNote', checkJwtToken, async (req, res) => {
 /*──────────────────────────── PATCH ROUTES ───────────────────────────────────
    PATCH: UPDATE — Used to partially update information in the database
 ────────────────────────────────────────────────────────────────────────────────*/
+ //Route to send a PATCH request to the /notes:id endpoint
 // PATCH route to Update title, content, languages, tags, pin or archive
 router.patch('/:id', async (req, res) => {
     
 } )
-
+ //Route to send a PATCH request to the /notes/:id/restore endpoint
 // PATCH request to restore a note from trash
 router.patch('/:id/restore', async (req, res) => {
     
@@ -138,12 +142,13 @@ router.patch('/:id/restore', async (req, res) => {
 /*──────────────────────────── DELETE ROUTES ───────────────────────────────────
     DELETE: Used to remove an item from the database
  ────────────────────────────────────────────────────────────────────────────────*/
+//Route to send a DELETE request to the /notes/:id endpoint
 //DELETE request to move item to trash
 router.delete('/:id', async (req, res) => {
     
 })
-
-//DELETE - `/notes/:id/permanent` - Permanently delete a note and its translations
+ //Route to send a DELETE request to the /notes/:id/permanent endpoint
+//DELETE - Permanently delete a note and its translations
 router.delete('/:id/permanent', async (req, res) => {
     
 })
