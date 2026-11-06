@@ -1,23 +1,19 @@
 //NotePadForm.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/NotesForm.css'
-import NoteEditor from './NoteEditor';
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
-import { Asterisk, RotateCcw, Save } from 'lucide-react';
 import Button from 'react-bootstrap/Button';
+//IMPORT CUSTOM COMPONENTS
+import NoteEditor from './NoteEditor';
+// IMPORT UTILITY FUNCTIONS
 import languageData from '../util/languageData';
 import { TODAY } from '../util/dateFunctions';
-
-/* Empty form values, shared by the initial state and the RESET button.
-The note text (content) is kept in its own state because NoteEditor manages it */
-const emptyNoteForm = {
-  title: '',
-  language: '',// '' falls back to the user's default note language
-  notebook: '',// '' means "No notebook"
-  tags: '',// Comma separated tag names, e.g. "work, ideas"
-  isPinned: false
-}
-
+import { emptyNoteForm } from '../util/notesUtil';
+// IMPORT ICONS FROM LUCIDE-REACT
+import { Asterisk, RotateCcw, Save } from 'lucide-react';
 // NotePadForm component
 /*Form to create a new note
 POST request*/
