@@ -41,6 +41,8 @@ export default function Notes(
         setError()
       }
      },[])
+
+     
   return (
     <div id='pageContainer'>
       <Header heading={'NOTES'} currentUser={currentUser} />

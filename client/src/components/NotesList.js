@@ -37,7 +37,7 @@ export default function NotesList(
        } 
     },[])
 
-    //Function to move a note to trash
+    //Async reques Function to move a note to trash
     const moveToTrash = useCallback(async () => {
         try {
         const token = localStorage.getItem('token')
@@ -52,14 +52,22 @@ export default function NotesList(
         if (!response.ok) {
             throw new Error()
         }
+        alert('Note successfully moved to trash')
         } catch (error) {
             // console.error();
             setError()
-            
+            alert('Error moving note to trash')
         }
-    },[])
+    },[setError])
    
-
+    //Function to move item
+    const handleDelete = () => {
+        const confirmDelete= window.confirm(
+            'Are you sure you want to move the item to trash'
+        )
+        if(!confirmDelete) return;
+        moveToTrash?.()
+    }
 
 
   return (
@@ -234,8 +242,9 @@ export default function NotesList(
         variant='danger'
         id='trashNoteBtn'
         type='button'
-        // onClick={}
+        onClick={handleDelete}
         // ARIA ATTRIBUTES:
+        aria-label='Move to trash'
         >
             <Trash2 aria-hidden='true' focusable='false'/>DELETE
         </Button>
