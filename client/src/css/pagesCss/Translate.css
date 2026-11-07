@@ -60,3 +60,16 @@
     margin: 0px;
     padding: 0px;
 }
+#languageList,
+#languageTableWrapper{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#languageTable{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    border: solid;
+}
+#languageTable  tfoot tr:nth-child(odd) { background: #BFBFBF; }

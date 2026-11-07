@@ -9,7 +9,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
-import LanguageList from '../components/LanguageList';
+import languageData from '../util/languageData';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, logout}) {
@@ -49,7 +49,34 @@ export default function Translate(
           <Row id='langaugeListRow'>
             <Col id='languageListCol1'/>
             <Col xs={12} md={8} id='languageListCol'>
-              <LanguageList/>
+              <div id='languageList'>
+                <div id='languageTableWrapper'>
+                 <table id='languageTable'>
+                  <thead>
+                    <tr><th colSpan={2} aria-colspan={2}>AVAILABLE LANGUAGES</th></tr>
+                  <tr>
+                    <th>LANGUAGE CODE</th>
+                    <th>LANGUAGE</th>
+                </tr>
+                  </thead>
+                  <tbody>
+                    {languageData.map((language) => (
+                      <tr>
+                        <th>{language.code}</th>
+                        <th>{language.name}</th>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                <tr>
+                    <td>API LANGUAGES</td>
+                </tr>
+            </tfoot>
+                </table>
+
+                </div>
+               
+              </div>
             </Col>
             <Col id='languageListCol2'/>
           </Row>
