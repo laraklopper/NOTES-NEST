@@ -24,6 +24,8 @@ export default function NotePad(
       const [noteLoading, setNoteLoading] = useState(false)
       const [tagLoading, setTagLoading] = useState(false)
       const [tags, setTags] = useState([])
+      const [notebookLoading, setNotebookLoading] = useState(false)
+      const [notebooks, setNotebooks] = useState([])
 
       /* currentUser only holds userId, fullName and admin, so fetch the
       profile for the username and default note language shown on the form */
@@ -62,6 +64,59 @@ export default function NotePad(
         fetchTags();
       }, [fetchTags, currentUser?.userId]);
 
+      //========FETCH NOTEBOOKS REQUEST===============
+      /* Fetches the user's notebooks (with note counts) for the NOTE BOOK
+      select on the NOTE PAD tab and the list on the NOTEBOOK tab */
+      const fetchNotebooks = useCallback(async () => {
+        try {
+          // The browser sends the JWT cookie with the request
+          const response = await fetch('/notebooks', { method: 'GET' });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch notebooks');
+          }
+          setNotebooks(data.notebooks || []);
+        } catch (error) {
+          console.error('Error fetching notebooks:', error);
+        }
+      }, [])
+
+      useEffect(() => {
+        fetchNotebooks();
+      }, [fetchNotebooks, currentUser?.userId]);
+
+      //========ADD NOTEBOOK REQUEST===============
+      /* Sends the name and colour from AddNoteBook.js.
+      Returns true on success so the form knows to clear itself */
+      const addNotebook = useCallback(async (notebook) => {
+        setError?.(null)
+        setNotebookLoading(true)
+        try {
+          // The browser sends the JWT cookie with the request
+          const response = await fetch('/notebooks', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(notebook)
+          })
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            setError?.(data.message || 'Failed to save notebook.')
+            return false
+          }
+          alert(`Notebook "${data.notebook?.name || notebook.name}" saved successfully.`)
+          fetchNotebooks()// Refresh the notebook list so the new notebook shows up
+          return true
+        } catch (error) {
+          console.error('Error adding new notebook:', error);
+          setError?.('An error occurred while saving your notebook.')
+          return false
+        } finally {
+          setNotebookLoading(false)
+        }
+      },[setError, fetchNotebooks])
+
       //========ADD NOTE REQUEST===============
       /* Sends the note built by NotePadForm.js.
       Returns true on success so the form knows to clear itself */
@@ -83,6 +138,7 @@ export default function NotePad(
             return false
           }
           alert('Note saved successfully.')
+          if (note.notebook) fetchNotebooks()// Keep the notebook note counts current
           return true
         } catch (error) {
           console.error('Error adding new note:', error);
@@ -91,7 +147,7 @@ export default function NotePad(
         } finally {
           setNoteLoading(false)
         }
-      },[setError])
+      },[setError, fetchNotebooks])
 
       //========ADD TAG REQUEST===============
       /* Sends the tag name from AddTag.js.
@@ -149,6 +205,7 @@ export default function NotePad(
                   username={profile?.username}
                   defaultLanguage={profile?.defaultLanguages?.defaultNoteLanguage}
                   tags={tags}
+                  notebooks={notebooks}
                 />
               </div>
             </Col>
@@ -161,7 +218,7 @@ export default function NotePad(
             <Col id='addNoteBookCol1'/>
             <Col xs={5} id='addNoteBookCol'>
               <div id='addNoteBookPanal'>
-                <AddNoteBook/>
+                <AddNoteBook addNotebook={addNotebook} loading={notebookLoading} notebooks={notebooks}/>
               </div>
             </Col>
             <Col id='addNoteBookCol2'/>

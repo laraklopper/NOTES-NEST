@@ -25,7 +25,7 @@ export default function EditNoteForm(
         note,// The selected note from GET /notes/fetchNotes
         updateNote,
         loading = false,
-        notebooks = [],// The user's notebooks (no fetch route yet, so only the note's current notebook shows)
+        notebooks = [],// The user's notebooks from GET /notebooks (passed down by Notes.js)
         tags = []// The user's existing tags from GET /tag/fetchTags
     }) {
     // The note's saved values, used to fill the form and to work out what changed

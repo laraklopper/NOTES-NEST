@@ -1,15 +1,46 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../css/componentCss/AddNotebook.css'
 import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
 import { Asterisk, RotateCcw, Save } from 'lucide-react';
 import Button from 'react-bootstrap/Button';
+
+const DEFAULT_COLOUR = '#1F4E79'// Matches the notebookSchema default
 // AddNoteBook component
 /*Form to create a new notebook
 POST request*/
-export default function AddNoteBook() {
+export default function AddNoteBook(
+  {//PROPS PASSED FROM PARENT COMPONENT (NotePad.js)
+    addNotebook,
+    loading,
+    notebooks = []
+  }) {
+  const [name, setName] = useState('')
+  const [colour, setColour] = useState(DEFAULT_COLOUR)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    // Conditional rendering to check the name is not only spaces (required only checks for empty)
+    if (!name.trim()) {
+      alert('Please enter a notebook name.')
+      return
+    }
+    const success = await addNotebook({ name: name.trim(), colour })
+    if (success) {
+      setName('')
+      setColour(DEFAULT_COLOUR)
+    }
+  }
+
+  //Function to clear form
+  const clearForm = () => {
+    const confirmClear = window.confirm('Are you sure you want to clear the form?');
+    if (!confirmClear) return;
+    setName('')
+    setColour(DEFAULT_COLOUR)
+  }
   return (
-    <form id='addNoteBookForm'>
+    <form id='addNoteBookForm' method='POST' onSubmit={handleSubmit}>
       <div id='formHeadingBlock'>
         <h3 id='formHeading'>CREATE NEW NOTEBOOK</h3>
       </div>
@@ -23,12 +54,13 @@ export default function AddNoteBook() {
                 <input
                   className='input'
                   id='noteBookNameInput'
+                  type='text'
                   placeholder='NOTEBOOK NAME'
                   required
                   maxLength={80}
-                  // name='name'
-                  // value={}
-                  // onChange={}
+                  name='name'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   // ARIA ATTRIBUTES:
                   aria-required='true'
                 />
@@ -42,10 +74,9 @@ export default function AddNoteBook() {
                   className='input'
                   id='noteBookColourInput'
                   type='color'
-                  defaultValue='#1F4E79'
-                  // name='colour'
-                  // value={}
-                  // onChange={}
+                  name='colour'
+                  value={colour}
+                  onChange={(e) => setColour(e.target.value)}
                 //   ARIA ATTRIBUTES:
                 aria-required='false'
                 />
@@ -66,27 +97,44 @@ export default function AddNoteBook() {
             variant='light'
             type='submit'
             id='saveNoteBookBtn'
+            disabled={loading}
             // ARIA ATTRIBUTES
-            role='button'
+            aria-label='SAVE NOTEBOOK'
           >
-            SAVE <Save fontWeight={700} aria-hidden='true' focusable='false'/>
+            {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false'/>
           </Button>
           <Button
             variant='danger'
             id='clearFormBtn'
             type='button'
-            // onClick={}
+            onClick={clearForm}
+            disabled={loading}
             // ARIA ATTRIBUTES:
+            aria-label='RESET FORM'
           >
             <RotateCcw aria-hidden='true' focusable='false'/> RESET
           </Button>
         </div>
+        <div className="p-2" id='noteBookListBlock'>
+          <h4 id='noteBookListHeading'>YOUR NOTEBOOKS</h4>
+          {notebooks.length === 0 ? (
+            <p className='infoMsg'>You have no notebooks yet.</p>
+          ) : (
+            <ul id='noteBookList'>
+              {notebooks.map((notebook) => (
+                <li key={notebook._id} className='noteBookListItem'>
+                  <span
+                    className='noteBookSwatch'
+                    style={{ display: 'inline-block', width: '0.8em', height: '0.8em', marginRight: '0.4em', backgroundColor: notebook.colour }}
+                    aria-hidden='true'
+                  />
+                  {notebook.name} ({notebook.noteCount})
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
     </Stack>
-      <Stack gap={3} >
-      
-        <div className="p-2 ms-auto"/>
-       
-      </Stack>
     </form>
   )
 }

@@ -37,6 +37,7 @@ export default function Notes(//Export the default Notes.js function component
     const [notesLoading, setNotesLoading] = useState(false)
     const [updatingNote, setUpdatingNote] = useState(false)// True while PATCH /notes/:id is running
     const [tags, setTags] = useState([])// The user's existing tags from GET /tag/fetchTags
+    const [notebooks, setNotebooks] = useState([])// The user's notebooks from GET /notebooks
 
 
   
@@ -95,6 +96,26 @@ export default function Notes(//Export the default Notes.js function component
       fetchTags();
      }, [fetchTags, currentUser?.userId]);
 
+     //========FETCH NOTEBOOKS REQUEST===============
+     /* Fetches the user's notebooks (with note counts) for the EditNoteForm's NOTEBOOK select */
+     const fetchNotebooks = useCallback(async () => {
+      try {
+        // The browser sends the JWT cookie with the request
+        const response = await fetch('/notebooks', { method: 'GET' });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to fetch notebooks');
+        }
+        setNotebooks(data.notebooks || []);
+      } catch (error) {
+        console.error('Error fetching notebooks:', error);
+      }
+     }, [])
+
+     useEffect(() => {
+      fetchNotebooks();
+     }, [fetchNotebooks, currentUser?.userId]);
+
      //========UPDATE NOTE REQUEST===============
      /* Sends the changes built by EditNoteForm.js to PATCH /notes/:id.
      Returns true on success so the form knows the save worked */
@@ -119,6 +140,7 @@ export default function Notes(//Export the default Notes.js function component
         setNotes((prev) => prev.map((note) => note._id === id ? data.note : note))
         fetchNotes()
         if (changes.tags) fetchTags()
+        if (changes.notebook !== undefined) fetchNotebooks()// Keep the notebook note counts current
         alert('Note successfully updated')
         return true
       } catch (error) {
@@ -128,7 +150,7 @@ export default function Notes(//Export the default Notes.js function component
       } finally {
         setUpdatingNote(false)
       }
-     }, [setError, fetchNotes, fetchTags])
+     }, [setError, fetchNotes, fetchTags, fetchNotebooks])
 
 
   return (
@@ -179,6 +201,7 @@ export default function Notes(//Export the default Notes.js function component
                   updateNote={updateNote}
                   loading={updatingNote}
                   tags={tags}
+                  notebooks={notebooks}
                 />
               </div>
             </Col>
