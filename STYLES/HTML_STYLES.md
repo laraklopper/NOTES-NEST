@@ -216,5 +216,12 @@ footer{
 ## 8. ANIMATIONS
 
 ## 9. ERRORS
+```css
+#941B13
+#8C1A12
+#C22419
+#470D09
+#70150F
+```
 
 ## 10. REFERENCES
