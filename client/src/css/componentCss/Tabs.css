@@ -28,6 +28,9 @@
     width: 100%;
     background-color: gray;
 }
+#notesTabs-tab-archive{
+    width: 250px;
+}
 .nav-tabs .nav-link {
     color: #000;
     text-transform: uppercase;

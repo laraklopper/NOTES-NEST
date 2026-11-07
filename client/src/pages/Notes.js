@@ -193,7 +193,7 @@ export default function Notes(//Export the default Notes.js function component
         {/* tags list */}
       </Tab>
       <Tab eventKey="archive" title="ARCHIVE & TRASH">
-        <div>
+        <div id='archiveTrashPanal'>
          <Row id='toggleNotesRow'>
           <Col id='toggleNotesCol'>
           <Stack gap={2} className="col-md-5 mx-auto" id='toggleNotesStack'>
@@ -216,11 +216,11 @@ export default function Notes(//Export the default Notes.js function component
     </Stack>
           </Col>
         </Row>
-        <div>
+        <div id='listsDiv'>
          {showArchive && (
-          <div>
-              <Row>
-            <Col>
+          <div id='archiveDiv'>
+              <Row id='archiveRow'>
+            <Col id='archiveCol'>
                 {/* ARCHIVE LIST */}
             </Col>
           </Row>

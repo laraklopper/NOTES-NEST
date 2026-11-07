@@ -12,15 +12,21 @@
     margin: 0px;
     padding: 0px;
 }
-#notesListPanal{
+#notesListPanal,
+#archiveTrashPanal{
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0px;
     padding: 0px;
+    gap: 10px;
 }
 #notesList{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
     width: 100%;
 }
 #editNoteBlock{
@@ -45,4 +51,27 @@
     width: 100%;
     margin: 0px;
     padding: 0px;
+}
+#toggleNotesRow{
+    width: 100%;
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+}
+#trashRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#trashCol{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: grid;
+}
+#listsDiv{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+
 }
