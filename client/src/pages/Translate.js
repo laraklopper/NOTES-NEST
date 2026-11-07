@@ -10,6 +10,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
 import languageData from '../util/languageData';
+import { BookA } from 'lucide-react';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, logout}) {
@@ -53,7 +54,7 @@ export default function Translate(
                 <div id='languageTableWrapper'>
                  <table id='languageTable'>
                   <thead>
-                    <tr><th colSpan={2} aria-colspan={2}>AVAILABLE LANGUAGES</th></tr>
+                    <tr><th colSpan={2} aria-colspan={2}>AVAILABLE LANGUAGES<BookA/></th></tr>
                   <tr>
                     <th>LANGUAGE CODE</th>
                     <th>LANGUAGE</th>
@@ -62,14 +63,14 @@ export default function Translate(
                   <tbody>
                     {languageData.map((language) => (
                       <tr>
-                        <th>{language.code}</th>
-                        <th>{language.name}</th>
+                        <td>{language.code}</td>
+                        <td className='languageName'>{language.name}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
                 <tr>
-                    <td>API LANGUAGES</td>
+                  <td colSpan={2}><a href='https://langbly.com/docs/languages/#full-language-reference' className='apiLink' target='blank'>LANGUAGES</a></td>
                 </tr>
             </tfoot>
                 </table>
