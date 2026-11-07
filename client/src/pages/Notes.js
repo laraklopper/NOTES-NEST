@@ -188,6 +188,7 @@ export default function Notes(//Export the default Notes.js function component
         </div>
 
       </section>
+      
       <Footer logout={logout}/>
     </div>
   )

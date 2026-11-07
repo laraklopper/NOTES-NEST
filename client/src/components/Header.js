@@ -45,20 +45,21 @@ export default function Header({
                     <li className='linkItem'>
                         <NavLink to='/notes' className='refLink'>NOTES</NavLink>
                     </li>
-                </div>
-
-             )}
-             {/* NAVBAR BLOCK 2: Translate, Trash */}
-             {currentUser && (
-                <div className="p-2" id='navBlock2'>
                     <li className='linkItem'>
                         <NavLink to='/translate' className='refLink'>TRANSLATE</NavLink>
                     </li>
+                </div>
+
+             )}
+             {/* NAVBAR BLOCK 2: Translate, Trash
+             {currentUser && (
+                <div className="p-2" id='navBlock2'>
+                    
                     <li className='linkItem'>
                         <NavLink to='/trash' className='refLink'>TRASH</NavLink>
                     </li>
                 </div>
-             )}
+             )} */}
              {/* (Admin only)NAVBAR BLOCK 3: Users */}
              {currentUser?.admin && (
                 <div className="p-2" id='navBlock3'>

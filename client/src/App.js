@@ -13,7 +13,7 @@ import Register from './pages/Register';
 import NotePad from './pages/NotePad';
 import Notes from './pages/Notes';
 import Translate from './pages/Translate';
-import Trash from './pages/Trash';
+
 import Users from './pages/Users';
 
 export default function App() {
@@ -158,11 +158,7 @@ export default function App() {
                 <Translate currentUser={currentUser} logout={logout}/>
                 </ProtectedUserRoute>
               }/> 
-              <Route path='/trash' element={
-                <ProtectedUserRoute currentUser={currentUser}>
-                  <Trash currentUser={currentUser} logout={logout}/>
-                </ProtectedUserRoute>
-              }/>
+            
               <Route path='/users' element={
                 <ProtectedAdminRoute currentUser={currentUser}>
                   <Users currentUser={currentUser} users={users} logout={logout}/>
