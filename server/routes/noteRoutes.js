@@ -79,7 +79,7 @@ router.get('/fetchNotes', checkJwtToken, async (req, res) => {
 })
 // Route to send a GET request to the /notes/trash endpoint
 //List trashed notes - (declare route before /:id)
-router.get(`/trash`, async (req, res) => {
+router.get('/trash', checkJwtToken, async (req, res) => {
     
 })
 // Route to send a GET request to the /notes/:id endpoint
@@ -276,7 +276,7 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
 })
  //Route to send a PATCH request to the /notes/:id/restore endpoint
 // PATCH request to restore a note from trash
-router.patch('/:id/restore', async (req, res) => {
+router.patch('/:id/restore', checkJwtToken, async (req, res) => {
     
 })
 
@@ -319,7 +319,7 @@ router.delete('/delete/:id', checkJwtToken, async (req, res) => {
 })
  //Route to send a DELETE request to the /notes/:id/permanent endpoint
 //DELETE - Permanently delete a note and its translations
-router.delete('/:id/permanent', async (req, res) => {
+router.delete('/:id/permanent', checkJwtToken, async (req, res) => {
     
 })
 

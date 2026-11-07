@@ -8,7 +8,10 @@ export const USER_MIN_AGE = 13
 export const ADMIN_STATUS = ['YES', 'NO']
 /* The time the required before the user can 
 register as admin */
-export const ADMIN_MIN_ACCOUNT_AGE_MS = 24 * 60 * 60 * 1000;// User for 1 day during development (3 months in production)
+// Matches ADMIN_MIN_ACCOUNT_AGE_MS in server/util/schemaUtil.js
+export const ADMIN_MIN_ACCOUNT_AGE_MS = process.env.NODE_ENV === 'production'
+  ? 1000 * 60 * 60 * 24 * 90// 3 months (90 days) in production
+  : 1000 * 60 * 60 * 24;// 1 day during development
 
 // ====PASSWORDS==============
 /* True when a password is at least 8 characters and includes at least one

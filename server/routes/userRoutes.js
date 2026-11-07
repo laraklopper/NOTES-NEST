@@ -61,7 +61,7 @@ router.get('/fetchUsers', checkJwtToken, checkAdmin, async (req, res) => {
 
 /* GET : /users/fetchUser/:id Returns one user document, for the details panel 
 on the Users page.*/
-router.get('/fetchUser/:id', checkJwtToken, async (req, res) => {
+router.get('/fetchUser/:id', checkJwtToken, checkAdmin, async (req, res) => {
     try {
         const { id } = req.params;// Extract the user ID from the request parameters
 

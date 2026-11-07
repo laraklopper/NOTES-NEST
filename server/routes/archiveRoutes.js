@@ -16,7 +16,7 @@ const router = express.Router()
    GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/
  //Route to send a PATCH request to the /archive/fetchNotes endpoint
-router.get('/fetchNotes', async (req, res) => {
+router.get('/fetchNotes', checkJwtToken, async (req, res) => {
     
 })
 /*──────────────────────────── PATCH ROUTES ───────────────────────────────────
@@ -57,7 +57,7 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
     }
 })
  //Route to send a PATCH request to the /archive/:id/restore endpoint
-router.patch('/:id/restore', async (req, res) => {
+router.patch('/:id/restore', checkJwtToken, async (req, res) => {
     
 })
 /*──────────────────────────── DELETE ROUTES ───────────────────────────────────
@@ -65,7 +65,7 @@ router.patch('/:id/restore', async (req, res) => {
  ────────────────────────────────────────────────────────────────────────────────*/
  //Route to send a DELETE request to the /archive/:id endpoint
  //Move a archived note to trash
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', checkJwtToken, async (req, res) => {
     
 })
 //========EXPORT THE ROUTER============

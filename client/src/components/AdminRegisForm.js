@@ -17,29 +17,21 @@ export default function AdminRegisForm(
     }) {
     //=====STATE VARIABLES==========
     const [adminStatus, setAdminStatus] = useState('')
-    const [submitting, setSubmitting] = useState('false')
+    const [submitting, setSubmitting] = useState(false)
 
 
     const setAdmin = useCallback(async () => {
        try {
-        const token = localStorage.getItem('token')
-
-        if(!token) return;
-        //Send a PATCH request to the '/auth/setAdmin' endpoint
-        const response = await fetch('http://localhost:3001/auth/setAdmin', {
-            method: 'PATCH',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        })
+        /* Send a PATCH request to the '/auth/setAdmin' endpoint.
+        The browser sends the JWT cookie, and the server re-sets it with the new admin claim */
+        const response = await fetch('/auth/setAdmin', { method: 'PATCH' })
 
          const data = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(data?.message || 'Failed to register as admin');
-      // Save the new token (contains the updated admin claim) and update the current user
-      localStorage.setItem('token', data.token)
-      setCurrentUser?.(data.user)
+      // Update the current user (state and the saved session) so admin-only links appear straight away
+      const user = { userId: data.user.userId, fullName: data.user.fullName, admin: data.user.isAdmin === true }
+      localStorage.setItem('currentUser', JSON.stringify(user))
+      setCurrentUser?.(user)
       setError(null)
       console.log('[SUCCESS: AdminRegisForm.js] User registered as admin');
        } catch (error) {

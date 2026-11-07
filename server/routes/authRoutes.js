@@ -13,8 +13,21 @@ const User = require('../models/userSchema');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { hashPassword, isDevelopment, checkJwtToken } = require('./middleware');// Import the password hashing and JWT middleware and development flag
+const { rateLimit } = require('express-rate-limit');
 const router = express.Router()
-const {ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS, calculateAge, hashResetToken } = require('../util/userUtil')
+const { calculateAge } = require('../util/userUtil')
+
+/* Rate limit for /login and /register, to slow down brute-force and spam attempts.
+Each IP gets 10 requests per 15 minutes; after that the client receives a 429 */
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,// 15 minutes
+    limit: 10,// Requests allowed per IP in each window
+    standardHeaders: 'draft-8',// Send the RateLimit headers so the client can see the limit
+    legacyHeaders: false,// Don't send the older X-RateLimit-* headers
+    message: { message: 'Too many attempts — please wait a few minutes and try again.' }
+});
+// schemaUtil holds the admin rules: 21+, and an account age of 3 months in production (1 day otherwise)
+const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil')
 
 // Extract environmental variables (with safe fallbacks for local dev)
 const rawSecretKey = process.env.JWT_SECRET_KEY;// JWT secret key
@@ -48,19 +61,38 @@ const cookieOptions = {
 //=============ROUTES================
 // Use Plaintext passwords for development
 /*──────────────────────────── HELPERS ──────────────────────────────*/
-// Sign a JWT for the given user document
-const signToken = (user) => {
-    return jwt.sign(
-        { userId: user._id, email: user.email, admin: user.admin },
-        secretKey,
-        { expiresIn: expirationTime, algorithm: jwtAlgorithm }
+/* Sign a JWT for the given user document and send it as the HTTP-only 'token' cookie.
+The payload is { id, isAdmin }, which checkJwtToken and the routes read as req.user.id */
+const setTokenCookie = (res, user) => {
+    const jwtToken = jwt.sign(
+        {
+            id: user._id,// Set the user id in the token payload
+            isAdmin: user.admin === true// Store the user's admin status in the token payload
+        },
+        secretKey,// Use the secret key to sign the token
+        {
+            expiresIn: expirationTime,// Set the token expiration time
+            algorithm: jwtAlgorithm// Set the JWT algorithm
+        }
     );
+    const { exp } = jwt.decode(jwtToken);// Expiry (in seconds) that jwt.sign set from expirationTime
+    res.cookie('token', jwtToken, {
+        ...cookieOptions,
+        expires: new Date(exp * 1000)// Cookie expires with the token
+    });
 }
+
+// The user details sent back by /login, /setAdmin and /clearAdmin (the token stays in the cookie)
+const sessionUser = (user) => ({
+    userId: user._id,// User's unique ID
+    fullName: user.fullName,// User's full name
+    isAdmin: user.admin === true// Indicates whether the user is an administrator
+})
 /*──────────────────────────── POST ROUTES ──────────────────────────────
     POST: Used to create a new resource/submit data to the database
  ─────────────────────────────────────────────────────────────────────────*/
 // Send a POST request to the /auth/login route
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     try {
         const { username, password } = req.body || {};//Extract the usersername and password from the request body
 
@@ -106,21 +138,6 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        const isAdmin = user.admin === true;// Determine whether the logged-in user is an administrator
-        
-        // Generate a JSON Web Token (JWT) for the authenticated user
-        const jwtToken = jwt.sign(
-            {
-                id: user._id,// Set the user id in the token payload
-                isAdmin// Store the user's admin status in the token payload
-            },
-            secretKey,// Use the secret key to sign the token
-            { 
-                expiresIn: expirationTime, // Set the token expiration time
-                algorithm: jwtAlgorithm // Set the JWT algorithm
-            }
-        );
-
         // Log a successful login to the server console for debugging and auditing purposes
         console.log('[INFO: authRoutes.js, /login] User logged in:',
             {
@@ -129,20 +146,11 @@ router.post('/login', async (req, res) => {
             }
         );
 
-        
         // Send the token as an HTTP-only cookie so client-side scripts can never read it
-        const { exp } = jwt.decode(jwtToken);// Expiry (in seconds) that jwt.sign set from expirationTime
-        res.cookie('token', jwtToken, {
-            ...cookieOptions,
-            expires: new Date(exp * 1000)// Cookie expires with the token
-        });
+        setTokenCookie(res, user);
 
        // Return the user information to the client (the token stays in the cookie)
-        return res.status(200).json({// Send a 200 OK status code with the user details
-            userId: user._id,        // User's unique ID
-            fullName: user.fullName, // User's full name
-            isAdmin,                 // Indicates whether the user is an administrator
-        });
+        return res.status(200).json(sessionUser(user));// Send a 200 OK status code with the user details
 
 
     } catch (error) {
@@ -152,7 +160,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Send a POST request to the /auth/register route
-router.post('/register', hashPassword, async (req, res) => {
+router.post('/register', authLimiter, hashPassword, async (req, res) => {
     try {
         const {
             username,
@@ -261,7 +269,7 @@ router.post('/logout', checkJwtToken, (req, res) => {
 //Send a PATCH request to the /auth/setAdmin endpoint
 router.patch('/setAdmin', checkJwtToken, async (req, res) => {
     try {
-         const user = await User.findById(req.user?.userId).exec();
+         const user = await User.findById(req.user?.id).exec();// The token payload carries the user id as `id`
           if (!user) {
             console.error('[ERROR: authRoutes.js, /setAdmin] User not found');
             return res.status(404).json({ message: 'User not found' });
@@ -281,15 +289,13 @@ router.patch('/setAdmin', checkJwtToken, async (req, res) => {
             return res.status(403).json({ message: 'Your account is too new to register as an admin.' });
         }
         user.admin = true;
-        await user.save()
+        await user.save({ validateModifiedOnly: true });// Only validate the changed field, so older accounts can still be upgraded
 
-         // Sign a new token so the admin claim is up to date
-        const token = signToken(user);
-        const userObj = user.toObject();
-        delete userObj.password;// Never send the password back to the client
+        // Re-set the cookie with a new token so the admin claim is up to date
+        setTokenCookie(res, user);
 
         console.log('[SUCCESS: authRoutes.js, /setAdmin] User registered as admin:', user.username);
-        return res.status(200).json({ message: 'Admin registration successful', token, user: userObj });
+        return res.status(200).json({ message: 'Admin registration successful', user: sessionUser(user) });
     } catch (error) {
         console.error('[ERROR: authRoutes.js, /setAdmin]', error.message);
         return res.status(500).json({ message: 'Internal Server Error' })
@@ -300,7 +306,7 @@ router.patch('/setAdmin', checkJwtToken, async (req, res) => {
 //Send a PATCH request to the /auth/clearAdmin endpoint
 router.patch('/clearAdmin', checkJwtToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user?.userId).exec();
+        const user = await User.findById(req.user?.id).exec();// The token payload carries the user id as `id`
         if (!user) {
             console.error('[ERROR: authRoutes.js, /clearAdmin] User not found');
             return res.status(404).json({ message: 'User not found' });
@@ -311,15 +317,13 @@ router.patch('/clearAdmin', checkJwtToken, async (req, res) => {
         }
 
         user.admin = false;
-        await user.save();
+        await user.save({ validateModifiedOnly: true });// Only validate the changed field
 
-        // Sign a new token so the admin claim is up to date
-        const token = signToken(user);
-        const userObj = user.toObject();
-        delete userObj.password;// Never send the password back to the client
+        // Re-set the cookie with a new token so the admin claim is up to date
+        setTokenCookie(res, user);
 
         console.log('[SUCCESS: authRoutes.js, /clearAdmin] Admin status removed:', user.username);
-        return res.status(200).json({ message: 'Admin status removed', token, user: userObj });
+        return res.status(200).json({ message: 'Admin status removed', user: sessionUser(user) });
 
     } catch (error) {
         console.error('[ERROR: authRoutes.js, /clearAdmin]', error.message);

@@ -41,7 +41,7 @@ Requests that run by default after login or page load (no user action needed).
 | 7 | GET | [archiveRoutes.js](../server/routes/archiveRoutes.js) | [Notes.js](../client/src/pages/Notes.js) (ARCHIVE tab) | `/archive/fetchNotes` | Protected | 📝 (server stub) |
 | 8 | GET | [notebookRoutes.js](../server/routes/notebookRoutes.js) | [Notes.js](../client/src/pages/Notes.js), [NotePad.js](../client/src/pages/NotePad.js) | `/notebooks` | Protected | 📝 |
 | 9 | GET | [translationRoutes.js](../server/routes/translationRoutes.js) | [Translate.js](../client/src/pages/Translate.js) (TRANSLATIONS tab) | `/translation/fetch` | Protected | 📝 |
-| 10 | GET | [userRoutes.js](../server/routes/userRoutes.js) | [Users.js](../client/src/pages/Users.js) (details panel, when a user is selected) | `/user/fetchUser/:id` | Protected | 📝 (server done) |
+| 10 | GET | [userRoutes.js](../server/routes/userRoutes.js) | [Users.js](../client/src/pages/Users.js) (details panel, when a user is selected) | `/user/fetchUser/:id` | Admin | 📝 (server done) |
 
 Notes:
 - `App.js` restores `currentUser` from `localStorage` on refresh, then calls `/user/me` to check the cookie is still valid. If it fails, the session is cleared.
@@ -59,7 +59,7 @@ Notes:
 | 2 | Register | `/reg` | [RegistrationForm.js](../client/src/components/RegistrationForm.js) | `/auth/register` | POST | Public | ✅ |
 | 3 | Edit Profile | `/` (Home) | [EditProfile.js](../client/src/components/EditProfile.js) | `/user/editProfile` | PATCH | Protected | ✅ |
 | 4 | Edit Password | `/` (Home) | [EditPassword.js](../client/src/components/EditPassword.js) | `/user/editPassword` | PATCH | Protected | ✅ |
-| 5 | Register as Admin | `/` (Home) | [AdminRegisForm.js](../client/src/components/AdminRegisForm.js) | `/auth/setAdmin` | PATCH | Protected | ⚠️ |
+| 5 | Register as Admin | `/` (Home) | [AdminRegisForm.js](../client/src/components/AdminRegisForm.js) | `/auth/setAdmin` | PATCH | Protected | ✅ |
 | 6 | Create Note | `/notepad` (NOTE PAD tab) | [NotePadForm.js](../client/src/components/NotePadForm.js) | `/notes/addNote` | POST | Protected | ✅ |
 | 7 | Edit Note | `/notes` (below the details panel) | [EditNoteForm.js](../client/src/components/EditNoteForm.js) | `/notes/:id` | PATCH | Protected | ✅ |
 | 8 | Create Tag | `/notepad` (TAGS tab) | [AddTag.js](../client/src/components/AddTag.js) | `/tag/addTag` | POST | Protected | ✅ |
@@ -76,7 +76,7 @@ Notes:
 | # | Action | Page | Component | Endpoint | Method | Access | Status |
 |---|--------|------|-----------|----------|--------|--------|--------|
 | 1 | Log out | All logged-in pages | [Footer.js](../client/src/components/Footer.js) (`logout` from App.js) | `/auth/logout` | POST | Protected | ✅ |
-| 2 | Clear admin (remove admin status) | `/` (Home) | [Profile.js](../client/src/components/Profile.js) | `/auth/clearAdmin` | PATCH | Protected | ⚠️ |
+| 2 | Clear admin (remove admin status) | `/` (Home) | [Profile.js](../client/src/components/Profile.js) | `/auth/clearAdmin` | PATCH | Protected | ✅ |
 | 3 | Archive note | `/notes` | [NotesList.js](../client/src/components/NotesList.js) | `/archive/:id` | PATCH | Protected | ✅ |
 | 4 | Move note to trash | `/notes` | [NotesList.js](../client/src/components/NotesList.js) | `/notes/delete/:id` | DELETE | Protected | ✅ |
 | 5 | Restore note from trash | `/trash` | [Trash.js](../client/src/pages/Trash.js) | `/notes/:id/restore` | PATCH | Protected | ⚠️ (server stub) |
@@ -146,18 +146,13 @@ Every route in [API_ENDPOINT_PLAN.md](API_ENDPOINT_PLAN.md) and where the client
 
 ### 1.5. CLIENT FIXES NEEDED
 
-These components still use the old token-in-`localStorage` approach. Since login now only sets an HTTP-only cookie, `localStorage.getItem('token')` is always `null` and the request never runs.
+[Trash.js](../client/src/pages/Trash.js) still uses the old token-in-`localStorage` approach. Login only sets an HTTP-only cookie, so `localStorage.getItem('token')` is always `null` and the requests never run.
 
 | Component | Request | Problem | Fix |
 |-----------|---------|---------|-----|
-| [AdminRegisForm.js](../client/src/components/AdminRegisForm.js) | `PATCH /auth/setAdmin` | Returns early with no token; uses `http://localhost:3001` and a Bearer header; saves `data.token` to `localStorage` | Use `fetch('/auth/setAdmin', { method: 'PATCH' })`, then update `currentUser` (and the `currentUser` entry in `localStorage`) to `{ userId, fullName, admin: true }` |
-| [Profile.js](../client/src/components/Profile.js) | `PATCH /auth/clearAdmin` | Same as above | Same as above, with `admin: false` |
-| [Trash.js](../client/src/pages/Trash.js) | `PATCH /notes/:id/restore`, `DELETE /notes/:id/permanent` | Same as above, and the URL contains a literal `:id`. The table rows are hard-coded placeholders | Load rows from `GET /notes/trash` and pass each note's `_id` into the URL (e.g. `` `/notes/${id}/restore` ``) |
+| [Trash.js](../client/src/pages/Trash.js) | `PATCH /notes/:id/restore`, `DELETE /notes/:id/permanent` | Returns early with no token; uses `http://localhost:3001` and a Bearer header; the URL contains a literal `:id`; the table rows are hard-coded placeholders | Load rows from `GET /notes/trash` and call `` fetch(`/notes/${id}/restore`, { method: 'PATCH' }) `` and `` fetch(`/notes/${id}/permanent`, { method: 'DELETE' }) ``. The server stubs have to be implemented first |
 
-Also:
-- `AdminRegisForm.js` starts `submitting` as the string `'false'` instead of the boolean `false`.
-- The `/auth/setAdmin` and `/auth/clearAdmin` server routes need fixing too (see the Authentication notes in [API_ENDPOINT_PLAN.md](API_ENDPOINT_PLAN.md#1-authentication--auth)).
-- `Home.js` checks `currentUser.dateOfBirth` and `currentUser.createdAt` to decide whether to show the admin form, but `currentUser` only holds `{ userId, fullName, admin }`. Use the `profile` from `/user/me` instead, otherwise the form never shows.
+Fixed on 2026-11-07: `AdminRegisForm.js` and `Profile.js` now call `/auth/setAdmin` and `/auth/clearAdmin` with relative URLs and the cookie, and update `currentUser` (state and `localStorage`) from the response. `Home.js` now reads `dateOfBirth` and `createdAt` from the `/user/me` profile, so the admin form can appear.
 
 ## 2. FORMS
 
@@ -179,7 +174,7 @@ Also:
 - On success the server returns `{ userId, fullName, isAdmin }`. Login.js saves `{ userId, fullName, admin: isAdmin }` as `currentUser` (state and `localStorage`), sets `loggedIn` to `true`, clears the password from state and redirects to `/` (Home).
 - On failure the server returns **401** *"Invalid credentials"* for both a wrong username and a wrong password, so the form never reveals which was wrong.
 - Repeat submits are ignored while a request is running.
-- Once a rate limit is added to `/auth`, show a friendly message on **429**.
+- `/auth/login` is rate-limited (10 attempts per 15 minutes per IP). The server's **429** message is shown in the error bar.
 
 ---
 
@@ -263,7 +258,7 @@ All profile forms are on [Home.js](../client/src/pages/Home.js) — `/` (Profile
 #### REGISTER AS ADMIN
 
 **Component:** [AdminRegisForm.js](../client/src/components/AdminRegisForm.js)
-**Submits to:** `PATCH /auth/setAdmin` (Protected) — ⚠️ see [1.5](#15-client-fixes-needed)
+**Submits to:** `PATCH /auth/setAdmin` (Protected)
 **Purpose:** Upgrades the logged-in user to admin.
 
 | Field | Input type | Required | Validation |
@@ -273,7 +268,8 @@ All profile forms are on [Home.js](../client/src/pages/Home.js) — `/` (Profile
 **Behaviour**
 - Only shown to users who aren't admins, are 21+ and whose account is at least 3 months old (1 day in development). The server checks this too and returns **403** if they aren't eligible, or **409** if they're already an admin.
 - Shown only once: closing it saves `adminFormDismissed_<userId>` in `localStorage`, so it doesn't appear again.
-- On success: set `currentUser.admin` to `true` so admin-only links (e.g. `/users`) appear straight away.
+- Only shown once the `/user/me` profile has loaded, because `dateOfBirth` and `createdAt` come from it.
+- On success: the server re-sets the cookie and returns `{ message, user: { userId, fullName, isAdmin } }`. The form saves `{ userId, fullName, admin: true }` as `currentUser` (state and `localStorage`) so admin-only links (e.g. `/users`) appear straight away.
 - Removing admin status is a button (`PATCH /auth/clearAdmin`) in [Profile.js](../client/src/components/Profile.js), not a form. See [1.3](#13-button-api-requests).
 
 ---

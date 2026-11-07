@@ -34,23 +34,17 @@ export default function Profile(
       const clearAdminStatus = useCallback(async () => {
         setClearingAdmin(true)
         try {
-          // Send request to /auth/clearAdmin endpoint
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/auth/clearAdmin', {
-        method: 'PATCH',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-      })
+          /* Send request to /auth/clearAdmin endpoint.
+          The browser sends the JWT cookie, and the server re-sets it with the new admin claim */
+      const response = await fetch('/auth/clearAdmin', { method: 'PATCH' })
       const data = await response.json().catch(() => ({}));
        if (!response.ok) throw new Error(data?.message || 'Failed to remove admin status');
-      // Save the new token (contains the updated admin claim) and update the current user
-      localStorage.setItem('token', data.token)
-      // Do not display AdminRegisForm.js (Dashboard.js) again
-      localStorage.setItem(`adminFormDismissed_${data.user?._id}`, 'true')
-      setCurrentUser?.(data.user)
+      // Do not display AdminRegisForm.js (Home.js) again
+      localStorage.setItem(`adminFormDismissed_${data.user?.userId}`, 'true')
+      // Update the current user (state and the saved session) so admin-only links are hidden
+      const user = { userId: data.user.userId, fullName: data.user.fullName, admin: data.user.isAdmin === true }
+      localStorage.setItem('currentUser', JSON.stringify(user))
+      setCurrentUser?.(user)
       setError?.(null)
       console.log('[SUCCESS: Profile.js] Admin status removed');
         } catch (error) {

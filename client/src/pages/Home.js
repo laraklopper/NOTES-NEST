@@ -34,7 +34,7 @@ export default function Home(
     const [editUser, setEditUser] = useState(false)
     const [editPassword, setEditPassword] = useState(false)
     const [profileLoading, setProfileLoading] = useState(false)// Disables the edit profile buttons while the update is saving
-const userId = currentUser?._id
+    const userId = currentUser?.userId// currentUser is { userId, fullName, admin } (see Login.js)
     const dismissKey = `adminFormDismissed_${userId}`
     // Id of the user who closed the form during this visit (re-renders the page)
     const [dismissedForId, setDismissedForId] = useState(null)
@@ -79,14 +79,16 @@ const userId = currentUser?._id
     /* Function to display/render AdminRegisForm.js if user is not an admin user
     and matches the age requirement of 21 years and has been a user for 3 months 
     (1 day during development) */
+    /* dateOfBirth and createdAt are not on currentUser, so they come from the
+    GET /user/me profile; the form stays hidden until the profile has loaded */
     const showAdminForm = Boolean(
       currentUser &&
       !currentUser.admin &&
       !adminFormDismissed &&
-      currentUser.dateOfBirth &&
-      calculateAge(currentUser.dateOfBirth) >= ADMIN_MIN_AGE &&
-      currentUser.createdAt && 
-      Date.now() - new Date(currentUser.createdAt).getTime() >= ADMIN_MIN_ACCOUNT_AGE_MS
+      profile?.dateOfBirth &&
+      calculateAge(profile.dateOfBirth) >= ADMIN_MIN_AGE &&
+      profile?.createdAt &&
+      Date.now() - new Date(profile.createdAt).getTime() >= ADMIN_MIN_ACCOUNT_AGE_MS
     )
     //========EDIT USER REQUEST===============
     /* Sends only the changed fields (built by EditProfile.js).

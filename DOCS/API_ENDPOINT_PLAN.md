@@ -10,7 +10,7 @@ _Last updated: 2026-11-07_
 |--------|---------|
 | ✅ Done | Implemented and working |
 | ⚠️ Fix | Implemented but has a known bug (see the router's notes) |
-| 🚧 Stub | Route is declared but the handler is empty (no auth check, no response yet) |
+| 🚧 Stub | Route is declared with its auth check, but the handler is empty (no response yet) |
 | 📝 Planned | Not in the code yet |
 
 ## Access levels
@@ -30,7 +30,7 @@ Notes:
 
 | Router file | Mounted at | Routes | Status |
 |-------------|-----------|--------|--------|
-| [authRoutes.js](../server/routes/authRoutes.js) | `/auth` | 5 | 3 done, 2 need a fix |
+| [authRoutes.js](../server/routes/authRoutes.js) | `/auth` | 5 | All done |
 | [userRoutes.js](../server/routes/userRoutes.js) | `/user` | 6 | 5 done, 1 planned |
 | [noteRoutes.js](../server/routes/noteRoutes.js) | `/notes` | 8 | 4 done, 3 stubs, 1 planned |
 | [archiveRoutes.js](../server/routes/archiveRoutes.js) | `/archive` | 4 | 1 done, 3 stubs |
@@ -49,19 +49,17 @@ Notes:
 | POST | `/auth/register` | Create an account. Does **not** log the user in; returns `201 { message, userId }` | Public | ✅ |
 | POST | `/auth/login` | Check username and password, set the `token` cookie; returns `{ userId, fullName, isAdmin }` | Public | ✅ |
 | POST | `/auth/logout` | Clear the `token` cookie | Protected | ✅ |
-| PATCH | `/auth/setAdmin` | Make the logged-in user an admin (21+ and account age of 3 months; 1 day in development) | Protected | ⚠️ |
-| PATCH | `/auth/clearAdmin` | Remove admin status from the logged-in user | Protected | ⚠️ |
+| PATCH | `/auth/setAdmin` | Make the logged-in user an admin (21+ and account age of 3 months; 1 day in development) and re-set the `token` cookie | Protected | ✅ |
+| PATCH | `/auth/clearAdmin` | Remove admin status from the logged-in user and re-set the `token` cookie | Protected | ✅ |
 
 Notes:
 - **Register body:** `username`, `fullName.{firstName,lastName}`, `contactDetails.{email,contactNumber}`, `dateOfBirth`, `password`, `adminDataConsent` (must be `true`), and optional flat `defaultSourceLang`, `defaultTargetLang`, `defaultNoteLang`. The user is built from named fields only, so `admin` can't be set here.
 - Login uses the same `401 "Invalid credentials"` for an unknown username and a wrong password, so usernames can't be guessed.
 - Cookie settings: `httpOnly`, `sameSite: 'strict'`, `secure` outside development, and it expires with the token (`JWT_EXPIRATION`, default `12h`).
 - Duplicate username or contact number on register returns **409**.
-- **Fix needed (`setAdmin`, `clearAdmin`):**
-  - Both look the user up with `req.user.userId`, but the login token stores the ID as `id`, so they always return 404. Use `req.user.id`.
-  - Both return a new token in the JSON body (signed with a different payload, `{ userId, email, admin }`) instead of re-setting the cookie. They should re-set the `token` cookie with the same `{ id, isAdmin }` payload as login.
-  - The "already admin" and "not an admin" cases return **409**.
-- `express-rate-limit` is installed but not applied yet. Planned: add it to `/auth` to slow down brute-force attempts.
+- `/login`, `/setAdmin` and `/clearAdmin` all sign the token with the shared `setTokenCookie` helper (payload `{ id, isAdmin }`) and return the same user shape (`sessionUser`). `setAdmin` and `clearAdmin` respond `200 { message, user: { userId, fullName, isAdmin } }`; the token is never sent in the body.
+- `setAdmin` returns **403** if the user is under 21 or the account is too new, and **409** if they're already an admin. `clearAdmin` returns **409** if they're not an admin.
+- `/login` and `/register` are rate-limited (`authLimiter`, `express-rate-limit`): 10 requests per IP per 15 minutes, then **429** *"Too many attempts — please wait a few minutes and try again."*
 
 ## 2. User — `/user`
 
@@ -69,14 +67,13 @@ Notes:
 |--------|----------|-------------|--------|--------|
 | GET | `/user/me` | Get the logged-in user's profile | Protected | ✅ |
 | GET | `/user/fetchUsers` | Get every user, newest first | Admin | ✅ |
-| GET | `/user/fetchUser/:id` | Get one user for the Users page details panel. Returns 403 for admin accounts | Protected | ✅ |
+| GET | `/user/fetchUser/:id` | Get one user for the Users page details panel. Returns 403 for admin accounts | Admin | ✅ |
 | PATCH | `/user/editProfile` | Edit profile details and default languages (only fields sent are changed) | Protected | ✅ |
 | PATCH | `/user/editPassword` | Change password (current password required) | Protected | ✅ |
 | DELETE | `/user/deleteUser/:id` | Delete a user and all their data | Admin | 📝 |
 
 Notes:
 - Responses never include the password field.
-- `/user/fetchUser/:id` only uses `checkJwtToken`. It is meant for the admin-only Users page, so it should probably use `checkAdmin` as well.
 - **editProfile body:** `username`, `fullName.{firstName,lastName}`, `contactDetails.{email,contactNumber}`, `defaultSourceLang`, `defaultTargetLang`, `defaultNoteLang`. Blank or non-string values are ignored. Returns 400 if nothing changed, or if the source and target languages would match. Duplicate username or contact number returns **409**. Responds `{ message, user }`.
 - **editPassword body:** `currentPassword`, `newPassword`. Returns 400 if the new password matches the current one, fails `checkPassword`, or the current password is wrong (400, not 401, so the client doesn't treat it as an expired session).
 
@@ -101,7 +98,7 @@ Notes:
 - Trashed notes are purged automatically 30 days after `deletedAt` (TTL index in `noteSchema`).
 - `/notes/fetchNotes` takes no query parameters yet. Planned filters: `notebook`, `tag`, `search` (text index on `title` and `plainText`), `language`, `page`, `limit`.
 - Declare `/notes/trash` before any `GET /notes/:id` route so Express doesn't treat "trash" as an ID.
-- Add `checkJwtToken` to the stub routes when they're implemented.
+- The stub routes already use `checkJwtToken`, so they return 401 without a login.
 
 ## 4. Archive — `/archive`
 
@@ -115,7 +112,7 @@ Notes:
 Notes:
 - `PATCH /archive/:id` returns 404 if the note doesn't exist, is in the trash, or is already archived.
 - Archived notes can't be edited (`PATCH /notes/:id`) or translated (`POST /translation/save`).
-- Add `checkJwtToken` to the stub routes when they're implemented.
+- The stub routes already use `checkJwtToken`, so they return 401 without a login.
 
 ## 5. Notebooks — `/notebooks` (planned)
 
@@ -210,11 +207,11 @@ Notes:
 | 1 | POST | `/auth/register` | Public | ✅ |
 | 2 | POST | `/auth/login` | Public | ✅ |
 | 3 | POST | `/auth/logout` | Protected | ✅ |
-| 4 | PATCH | `/auth/setAdmin` | Protected | ⚠️ |
-| 5 | PATCH | `/auth/clearAdmin` | Protected | ⚠️ |
+| 4 | PATCH | `/auth/setAdmin` | Protected | ✅ |
+| 5 | PATCH | `/auth/clearAdmin` | Protected | ✅ |
 | 6 | GET | `/user/me` | Protected | ✅ |
 | 7 | GET | `/user/fetchUsers` | Admin | ✅ |
-| 8 | GET | `/user/fetchUser/:id` | Protected | ✅ |
+| 8 | GET | `/user/fetchUser/:id` | Admin | ✅ |
 | 9 | PATCH | `/user/editProfile` | Protected | ✅ |
 | 10 | PATCH | `/user/editPassword` | Protected | ✅ |
 | 11 | DELETE | `/user/deleteUser/:id` | Admin | 📝 |
@@ -245,8 +242,8 @@ Notes:
 | 36 | DELETE | `/translation/delete/:id` | Protected | 📝 |
 | 37 | GET | `/export` | Protected | 📝 |
 
-**Totals by access:** 2 Public · 33 Protected · 2 Admin
-**Totals by status:** 19 Done · 2 Fix · 6 Stub · 10 Planned
+**Totals by access:** 2 Public · 32 Protected · 3 Admin
+**Totals by status:** 21 Done · 6 Stub · 10 Planned
 
 ---
 
@@ -261,6 +258,6 @@ Notes:
 | 403 Forbidden | Logged in but not allowed (non-admin on an admin route, not eligible for admin, or viewing an admin account through `/user/fetchUser/:id`) |
 | 404 Not Found | Resource doesn't exist or belongs to another user |
 | 409 Conflict | Duplicate username, contact number, notebook name or tag; already an admin (`setAdmin`) or not an admin (`clearAdmin`) |
-| 429 Too Many Requests | Langbly quota or rate limit reached (and, once added, the `/auth` rate limit) |
+| 429 Too Many Requests | `/auth/login` or `/auth/register` rate limit hit, or Langbly quota or rate limit reached |
 | 500 Server Error | Unexpected error. Each route catches its own errors; there is no shared error-handler middleware yet |
 | 502 Bad Gateway | Langbly returned an error, timed out, couldn't be reached, or the API key is missing |
