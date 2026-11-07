@@ -8,6 +8,7 @@
   padding: 0px;
 }
 /* Panal */
+#translationPanal,
 #notePanal{
     display: flex;
     flex-direction: column;
@@ -18,8 +19,14 @@
     gap: 5px;
     background-color: #949ca2;
 }
-/* STACK */
 
+#translationPanalBody{
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+}
+/* STACK */
+#translationPanalHead,
 #notePanalHead{
     display: flex;
     align-items: center;
@@ -35,6 +42,10 @@
     padding: 5px 0px;
     align-items: center;
     border-top: solid 1.5px #404040;
+}
+#panalHeadingBlock{
+    display: flex;
+    align-items: baseline;
 }
 #panalHeadSpan{
     display: flex;

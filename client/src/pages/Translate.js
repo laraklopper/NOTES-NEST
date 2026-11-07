@@ -11,6 +11,7 @@ import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
 import languageData from '../util/languageData';
 import { BookA } from 'lucide-react';
+import TranslationsList from '../components/TranslationsList';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, logout}) {
@@ -40,7 +41,12 @@ export default function Translate(
         </div>
       </Tab>
       <Tab eventKey="translations" title="translations">
-        <div>
+        <div id='translationListPanal'>
+          <Row id='translationsListRow'>
+            <Col xs={12} md={12}>
+              <TranslationsList/>
+            </Col>
+          </Row>
           {/* TRANSLATIONS LIST */}
         </div>
       </Tab>

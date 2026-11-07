@@ -1,0 +1,85 @@
+#translationsList{
+    width: 100%;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    padding: 0px;
+    align-items: center;
+}
+
+#archiveTableWrapper,
+#trashTableWrapper,
+#translationsTableWrapper{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content:center;
+}
+
+#translationsTable{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    border: solid;
+    text-align: center;
+    font-family: "Roboto", sans-serif;
+}
+#archiveTable,
+#trashTable{
+    width: 90%;
+    margin: 0px;
+    padding: 0px;
+    overflow-y: scroll;
+    border: solid;
+    text-align: center;
+    font-family: "Roboto", sans-serif;
+}
+#archiveTable, #trashTable thead tr:nth-child(even) { background: #fff; }
+#archiveTable, #trashTable thead tr:nth-child(odd) { background: #d1d1d4; }
+#archiveTable, #trashTable tbody tr:nth-child(even) { background: #fff; }
+#archiveTable, #trashTable tbody tr:nth-child(odd) { background: #93A0AB; }
+#archiveTable, #trashTable  tfoot tr:nth-child(odd) { background: #d1d1d4; }
+#archiveTable tfoot,
+#trashTable tfoot{
+    text-align: center;
+    border: #000 solid 1px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-decoration: underline;
+    font-family: "Roboto Mono", monospace;
+}
+#translationsTable thead tr:nth-child(even) { background: #fff; }
+#translationsTable  thead tr:nth-child(odd) { 
+    background: #212529; 
+    font-weight: 800;
+    color: #f8f9fa;  letter-spacing: 2px; text-decoration: underline; }
+
+#translationsTable tbody tr:nth-child(even) { background: #fff; }
+#translationsTable tbody tr:nth-child(odd) {background: #93A0AB;  }
+
+#translationBtnDiv{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#deleteItemBtn,
+#viewTranslationBtn{
+    width: 120px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    border: solid 2px #323A42;
+    color: #000;
+}
+#deleteItemBtn:hover,
+#viewTranslationBtn:hover{
+    background-color: #323A42;
+    color: #E8F0F6;
+}
