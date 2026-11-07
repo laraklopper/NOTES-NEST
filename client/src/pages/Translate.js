@@ -27,6 +27,7 @@ export default function Translate(
       onSelect={(k) => setKey(k)}
       className="mb-3"
     >
+    {/* TRANSLATE FORM */}
       <Tab eventKey="translator" title="translate">
         <div id='translatorDiv'>
            <Row id='translatorRow'>
@@ -40,6 +41,7 @@ export default function Translate(
       </Row>
         </div>
       </Tab>
+      {/* TRANSLATIONS LIST */}
       <Tab eventKey="translations" title="translations">
         <div id='translationListPanal'>
           <Row id='translationsListRow'>
@@ -49,10 +51,10 @@ export default function Translate(
                 active={key === 'translations'}// Re-fetches each time the tab opens, so newly saved translations show
               />
             </Col>
-          </Row>
-          {/* TRANSLATIONS LIST */}
+          </Row>       
         </div>
       </Tab>
+      {/* API LANGUAGES LIST */}
       <Tab eventKey="languages" title="LANGUAGES">
         <div id='langaugeListPanal'>
           {/* Langauges */}
