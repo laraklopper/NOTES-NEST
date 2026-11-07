@@ -258,8 +258,8 @@ export default function Notes(//Export the default Notes.js function component
               {/* TRASH */}
                 <div id='trashList'>
                   <Trash
-                    currentUser={currentUser}
                     setError={setError}
+                    fetchNotes={fetchNotes}// Refreshes the NOTES tab when a note is restored
                   />
                 </div>
             </Col>

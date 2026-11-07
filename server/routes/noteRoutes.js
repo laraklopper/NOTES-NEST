@@ -16,6 +16,7 @@ const Note = require('../models/noteSchema');// Import the Note model
 const Notebook = require('../models/notebookSchema');// Import the Notebook model
 const Tag = require('../models/tagSchema');// Import the Tag model
 const User = require('../models/userSchema');// Import the User model
+const Translation = require('../models/translationSchema');// Import the Translation model (removed with a permanently deleted note)
 const { checkJwtToken } = require('./middleware');// Import the JWT middleware
 const router = express.Router()
 
@@ -77,10 +78,22 @@ router.get('/fetchNotes', checkJwtToken, async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
-// Route to send a GET request to the /notes/trash endpoint
-//List trashed notes - (declare route before /:id)
+/* GET: /notes/trash : Lists the signed-in user's trashed notes, most recently
+deleted first. Declared before any GET /:id route so "trash" isn't read as an id */
 router.get('/trash', checkJwtToken, async (req, res) => {
-    
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+
+        const notes = await populateNote(
+            Note.find({ user: userId, deletedAt: { $ne: null } })
+        ).sort({ deletedAt: -1 }).lean();
+
+        console.log(`[SUCCESS: noteRoutes.js, GET /trash] Fetched ${notes.length} trashed notes`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ notes });// Send a 200 (OK) status code with the notes
+    } catch (error) {
+        console.error('[ERROR: noteRoutes.js, GET /trash]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
 })
 // Route to send a GET request to the /notes/:id endpoint
 /*notes/:id - GET a single note*/
@@ -274,10 +287,37 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
- //Route to send a PATCH request to the /notes/:id/restore endpoint
-// PATCH request to restore a note from trash
+/* PATCH: /notes/:id/restore : Restores one of the signed-in user's trashed notes
+by clearing deletedAt, which also takes it out of the 30-day TTL purge */
 router.patch('/:id/restore', checkJwtToken, async (req, res) => {
-    
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the note ID from the URL
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: noteRoutes.js, PATCH /:id/restore] Invalid note id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid note id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only a note the user owns that is in the trash can be restored
+        const note = await Note.findOneAndUpdate(
+            { _id: id, user: userId, deletedAt: { $ne: null } },
+            { $set: { deletedAt: null } }
+        ).select('_id title isArchived');
+
+        // Conditional rendering to check the note was found
+        if (!note) {
+            console.error(`[ERROR: noteRoutes.js, PATCH /:id/restore] Trashed note not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Note not found in trash' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: noteRoutes.js, PATCH /:id/restore] Note restored from trash: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Note restored', note });// Send a 200 (OK) status code with a message
+    } catch (error) {
+        console.error('[ERROR: noteRoutes.js, PATCH /:id/restore]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
 })
 
 /*──────────────────────────── DELETE ROUTES ───────────────────────────────────
@@ -317,10 +357,37 @@ router.delete('/delete/:id', checkJwtToken, async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
- //Route to send a DELETE request to the /notes/:id/permanent endpoint
-//DELETE - Permanently delete a note and its translations
+/* DELETE: /notes/:id/permanent : Permanently deletes one of the signed-in user's
+trashed notes and every translation linked to it. Only notes already in the trash
+can be deleted this way, so an active note can't be wiped in one step */
 router.delete('/:id/permanent', checkJwtToken, async (req, res) => {
-    
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the note ID from the URL
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: noteRoutes.js, DELETE /:id/permanent] Invalid note id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid note id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        const note = await Note.findOneAndDelete({ _id: id, user: userId, deletedAt: { $ne: null } }).select('_id title');
+
+        // Conditional rendering to check the note was found
+        if (!note) {
+            console.error(`[ERROR: noteRoutes.js, DELETE /:id/permanent] Trashed note not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Note not found in trash' });// Return a 404 (Not Found) status code with a message
+        }
+
+        // Remove the translations made from this note now that the note is gone
+        const { deletedCount } = await Translation.deleteMany({ note: id, user: userId });
+
+        console.log(`[SUCCESS: noteRoutes.js, DELETE /:id/permanent] Note ${id} deleted with ${deletedCount} translations`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Note permanently deleted', note, deletedTranslations: deletedCount });// Send a 200 (OK) status code with a message
+    } catch (error) {
+        console.error('[ERROR: noteRoutes.js, DELETE /:id/permanent]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
 })
 
 

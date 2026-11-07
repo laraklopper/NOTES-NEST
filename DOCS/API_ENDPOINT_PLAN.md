@@ -32,7 +32,7 @@ Notes:
 |-------------|-----------|--------|--------|
 | [authRoutes.js](../server/routes/authRoutes.js) | `/auth` | 5 | All done |
 | [userRoutes.js](../server/routes/userRoutes.js) | `/user` | 6 | 5 done, 1 planned |
-| [noteRoutes.js](../server/routes/noteRoutes.js) | `/notes` | 8 | 4 done, 3 stubs, 1 planned |
+| [noteRoutes.js](../server/routes/noteRoutes.js) | `/notes` | 8 | 7 done, 1 planned |
 | [archiveRoutes.js](../server/routes/archiveRoutes.js) | `/archive` | 4 | All done |
 | [notebookRoutes.js](../server/routes/notebookRoutes.js) | `/notebooks` (not mounted) | 4 | File is empty; all planned |
 | [tagRoutes.js](../server/routes/tagRoutes.js) | `/tag` | 3 | 2 done, 1 planned |
@@ -82,13 +82,13 @@ Notes:
 | Method | Endpoint | Description | Access | Status |
 |--------|----------|-------------|--------|--------|
 | GET | `/notes/fetchNotes` | List active notes (not archived or trashed), pinned first and then most recently updated. Notebook (`name`, `colour`) and tags (`name`) are populated | Protected | ✅ |
-| GET | `/notes/trash` | List trashed notes | Protected | 🚧 |
+| GET | `/notes/trash` | List trashed notes | Protected | ✅ |
 | GET | `/notes/:id` | Get a single note | Protected | 📝 |
 | POST | `/notes/addNote` | Create a note | Protected | ✅ |
 | PATCH | `/notes/:id` | Update title, content, language, notebook, tags or pin (archiving uses `/archive/:id`) | Protected | ✅ |
-| PATCH | `/notes/:id/restore` | Restore a note from the trash | Protected | 🚧 |
+| PATCH | `/notes/:id/restore` | Restore a note from the trash | Protected | ✅ |
 | DELETE | `/notes/delete/:id` | Soft delete: set `deletedAt` and unpin the note | Protected | ✅ |
-| DELETE | `/notes/:id/permanent` | Permanently delete a note and its translations | Protected | 🚧 |
+| DELETE | `/notes/:id/permanent` | Permanently delete a note and its translations | Protected | ✅ |
 
 Notes:
 - **Body for `addNote` and `PATCH /:id`:** `title`, `content` (HTML, required and not blank), `language`, `notebook` (ID, or `null`/`''` for no notebook), `tags` (array of tag **names**), `isPinned`. Tag names are lowercased and de-duplicated, and any tag the user doesn't have yet is created. A tag name over 30 characters returns 400.
@@ -216,13 +216,13 @@ Notes:
 | 10 | PATCH | `/user/editPassword` | Protected | ✅ |
 | 11 | DELETE | `/user/deleteUser/:id` | Admin | 📝 |
 | 12 | GET | `/notes/fetchNotes` | Protected | ✅ |
-| 13 | GET | `/notes/trash` | Protected | 🚧 |
+| 13 | GET | `/notes/trash` | Protected | ✅ |
 | 14 | GET | `/notes/:id` | Protected | 📝 |
 | 15 | POST | `/notes/addNote` | Protected | ✅ |
 | 16 | PATCH | `/notes/:id` | Protected | ✅ |
-| 17 | PATCH | `/notes/:id/restore` | Protected | 🚧 |
+| 17 | PATCH | `/notes/:id/restore` | Protected | ✅ |
 | 18 | DELETE | `/notes/delete/:id` | Protected | ✅ |
-| 19 | DELETE | `/notes/:id/permanent` | Protected | 🚧 |
+| 19 | DELETE | `/notes/:id/permanent` | Protected | ✅ |
 | 20 | GET | `/archive/fetchNotes` | Protected | ✅ |
 | 21 | PATCH | `/archive/:id` | Protected | ✅ |
 | 22 | PATCH | `/archive/:id/restore` | Protected | ✅ |

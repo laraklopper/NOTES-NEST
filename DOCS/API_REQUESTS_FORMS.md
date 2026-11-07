@@ -37,7 +37,7 @@ Requests that run by default after login or page load (no user action needed).
 | 3 | GET | [apiRoutes.js](../server/routes/apiRoutes.js) | [TranslateForm.js](../client/src/components/TranslateForm.js) | `/api/language/translate/v2/languages` | Protected | ✅ |
 | 4 | GET | [noteRoutes.js](../server/routes/noteRoutes.js) | [Notes.js](../client/src/pages/Notes.js) (called from [NotesList.js](../client/src/components/NotesList.js) on mount) | `/notes/fetchNotes` | Protected | ✅ |
 | 5 | GET | [tagRoutes.js](../server/routes/tagRoutes.js) | [Notes.js](../client/src/pages/Notes.js), [NotePad.js](../client/src/pages/NotePad.js) | `/tag/fetchTags` | Protected | ✅ |
-| 6 | GET | [noteRoutes.js](../server/routes/noteRoutes.js) | [Trash.js](../client/src/pages/Trash.js) | `/notes/trash` | Protected | 📝 (server stub) |
+| 6 | GET | [noteRoutes.js](../server/routes/noteRoutes.js) | [Trash.js](../client/src/components/Trash.js) | `/notes/trash` | Protected | ✅ |
 | 7 | GET | [archiveRoutes.js](../server/routes/archiveRoutes.js) | [ArchivedNotes.js](../client/src/components/ArchivedNotes.js) (ARCHIVE tab) | `/archive/fetchNotes` | Protected | ✅ |
 | 8 | GET | [notebookRoutes.js](../server/routes/notebookRoutes.js) | [Notes.js](../client/src/pages/Notes.js), [NotePad.js](../client/src/pages/NotePad.js) | `/notebooks` | Protected | 📝 |
 | 9 | GET | [translationRoutes.js](../server/routes/translationRoutes.js) | [Translate.js](../client/src/pages/Translate.js) (TRANSLATIONS tab) | `/translation/fetch` | Protected | ✅ |
@@ -79,8 +79,8 @@ Notes:
 | 2 | Clear admin (remove admin status) | `/` (Home) | [Profile.js](../client/src/components/Profile.js) | `/auth/clearAdmin` | PATCH | Protected | ✅ |
 | 3 | Archive note | `/notes` | [NotesList.js](../client/src/components/NotesList.js) | `/archive/:id` | PATCH | Protected | ✅ |
 | 4 | Move note to trash | `/notes` | [NotesList.js](../client/src/components/NotesList.js) | `/notes/delete/:id` | DELETE | Protected | ✅ |
-| 5 | Restore note from trash | `/trash` | [Trash.js](../client/src/pages/Trash.js) | `/notes/:id/restore` | PATCH | Protected | ⚠️ (server stub) |
-| 6 | Permanently delete note | `/trash` | [Trash.js](../client/src/pages/Trash.js) | `/notes/:id/permanent` | DELETE | Protected | ⚠️ (server stub) |
+| 5 | Restore note from trash | `/trash` | [Trash.js](../client/src/components/Trash.js) | `/notes/:id/restore` | PATCH | Protected | ✅ |
+| 6 | Permanently delete note | `/trash` | [Trash.js](../client/src/components/Trash.js) | `/notes/:id/permanent` | DELETE | Protected | ✅ |
 | 7 | Unarchive note | `/notes` (ARCHIVE tab) | [ArchivedNotes.js](../client/src/components/ArchivedNotes.js) | `/archive/:id/restore` | PATCH | Protected | ✅ |
 | 8 | Move archived note to trash | `/notes` (ARCHIVE tab) | [ArchivedNotes.js](../client/src/components/ArchivedNotes.js) | `/archive/:id` | DELETE | Protected | ✅ |
 | 9 | Detect note language | `/notepad`, `/notes` | [NotePadForm.js](../client/src/components/NotePadForm.js), [EditNoteForm.js](../client/src/components/EditNoteForm.js) (DETECT button) | `/api/language/translate/v2/detect` | POST | Protected | 🖼️ |
@@ -146,11 +146,9 @@ Every route in [API_ENDPOINT_PLAN.md](API_ENDPOINT_PLAN.md) and where the client
 
 ### 1.5. CLIENT FIXES NEEDED
 
-[Trash.js](../client/src/pages/Trash.js) still uses the old token-in-`localStorage` approach. Login only sets an HTTP-only cookie, so `localStorage.getItem('token')` is always `null` and the requests never run.
+None outstanding.
 
-| Component | Request | Problem | Fix |
-|-----------|---------|---------|-----|
-| [Trash.js](../client/src/pages/Trash.js) | `PATCH /notes/:id/restore`, `DELETE /notes/:id/permanent` | Returns early with no token; uses `http://localhost:3001` and a Bearer header; the URL contains a literal `:id`; the table rows are hard-coded placeholders | Load rows from `GET /notes/trash` and call `` fetch(`/notes/${id}/restore`, { method: 'PATCH' }) `` and `` fetch(`/notes/${id}/permanent`, { method: 'DELETE' }) ``. The server stubs have to be implemented first |
+Fixed on 2026-11-07: [Trash.js](../client/src/components/Trash.js) no longer uses the token-in-`localStorage` approach; it loads rows from `GET /notes/trash` and calls `/notes/${id}/restore` and `/notes/${id}/permanent` with relative URLs and the cookie.
 
 Fixed on 2026-11-07: `AdminRegisForm.js` and `Profile.js` now call `/auth/setAdmin` and `/auth/clearAdmin` with relative URLs and the cookie, and update `currentUser` (state and `localStorage`) from the response. `Home.js` now reads `dateOfBirth` and `createdAt` from the `/user/me` profile, so the admin form can appear.
 
