@@ -18,6 +18,7 @@ import NotesList from '../components/NotesList';
 import EditNoteForm from '../components/EditNoteForm';
 import Trash from '../components/Trash';
 import ArchivedNotes from '../components/ArchivedNotes';
+import NoteDataLists from '../components/NoteDataLists';
 
 //====MAIN NOTES FUNCTION COMPONENT========
 export default function Notes(//Export the default Notes.js function component
@@ -214,9 +215,13 @@ export default function Notes(//Export the default Notes.js function component
       <Tab eventKey="contact" title="NOTEBOOKS">
         {/* Notebook list */}
         {/* tags list */}
-      </Tab>
-      <Tab eventKey="tags" title="TAGS">
-        {/* tags list */}
+        <div>
+          <Row>
+            <Col>
+              <NoteDataLists/>
+            </Col>
+          </Row>
+        </div>
       </Tab>
       <Tab eventKey="archive" title="ARCHIVE & TRASH">
         <div id='archiveTrashPanal'>

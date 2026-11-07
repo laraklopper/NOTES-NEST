@@ -110,6 +110,23 @@
     padding: 0px;
 
 }
+#notesData{
+    display: flex;
+    align-content: baseline;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+        
+#notesDataListPanal{
+    width: 100%;
+}
+#notesDataRow{
+    width: 100%;
+}
+#notesDataCol{
+    width: 100%;
+}
 #toggleNotesCol{
     display: flex;
     justify-content: center;
