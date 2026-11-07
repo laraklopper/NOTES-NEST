@@ -238,7 +238,10 @@ export default function Notes(//Export the default Notes.js function component
               <Col id='archiveCol1'/>
             <Col id='archiveCol' md={10} xs={12}>
             <div id='archiveList'>
-            <ArchivedNotes/>
+            <ArchivedNotes
+              setError={setError}
+              fetchNotes={fetchNotes}// Refreshes the NOTES tab when a note is restored
+            />
 
             </div>
                 

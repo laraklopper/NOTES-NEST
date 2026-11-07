@@ -33,7 +33,7 @@ Notes:
 | [authRoutes.js](../server/routes/authRoutes.js) | `/auth` | 5 | All done |
 | [userRoutes.js](../server/routes/userRoutes.js) | `/user` | 6 | 5 done, 1 planned |
 | [noteRoutes.js](../server/routes/noteRoutes.js) | `/notes` | 8 | 4 done, 3 stubs, 1 planned |
-| [archiveRoutes.js](../server/routes/archiveRoutes.js) | `/archive` | 4 | 1 done, 3 stubs |
+| [archiveRoutes.js](../server/routes/archiveRoutes.js) | `/archive` | 4 | All done |
 | [notebookRoutes.js](../server/routes/notebookRoutes.js) | `/notebooks` (not mounted) | 4 | File is empty; all planned |
 | [tagRoutes.js](../server/routes/tagRoutes.js) | `/tag` | 3 | 2 done, 1 planned |
 | [apiRoutes.js](../server/routes/apiRoutes.js) | `/api` | 3 | All done |
@@ -104,10 +104,10 @@ Notes:
 
 | Method | Endpoint | Description | Access | Status |
 |--------|----------|-------------|--------|--------|
-| GET | `/archive/fetchNotes` | List archived notes | Protected | 🚧 |
+| GET | `/archive/fetchNotes` | List archived notes | Protected | ✅ |
 | PATCH | `/archive/:id` | Archive an active note (also unpins it) | Protected | ✅ |
-| PATCH | `/archive/:id/restore` | Unarchive: move the note back to the main notes list | Protected | 🚧 |
-| DELETE | `/archive/:id` | Move an archived note to the trash | Protected | 🚧 |
+| PATCH | `/archive/:id/restore` | Unarchive: move the note back to the main notes list | Protected | ✅ |
+| DELETE | `/archive/:id` | Move an archived note to the trash | Protected | ✅ |
 
 Notes:
 - `PATCH /archive/:id` returns 404 if the note doesn't exist, is in the trash, or is already archived.
@@ -223,10 +223,10 @@ Notes:
 | 17 | PATCH | `/notes/:id/restore` | Protected | 🚧 |
 | 18 | DELETE | `/notes/delete/:id` | Protected | ✅ |
 | 19 | DELETE | `/notes/:id/permanent` | Protected | 🚧 |
-| 20 | GET | `/archive/fetchNotes` | Protected | 🚧 |
+| 20 | GET | `/archive/fetchNotes` | Protected | ✅ |
 | 21 | PATCH | `/archive/:id` | Protected | ✅ |
-| 22 | PATCH | `/archive/:id/restore` | Protected | 🚧 |
-| 23 | DELETE | `/archive/:id` | Protected | 🚧 |
+| 22 | PATCH | `/archive/:id/restore` | Protected | ✅ |
+| 23 | DELETE | `/archive/:id` | Protected | ✅ |
 | 24 | GET | `/notebooks` | Protected | 📝 |
 | 25 | POST | `/notebooks` | Protected | 📝 |
 | 26 | PATCH | `/notebooks/:id` | Protected | 📝 |

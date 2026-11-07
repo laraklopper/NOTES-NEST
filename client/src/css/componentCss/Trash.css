@@ -28,16 +28,18 @@
     text-decoration: underline;
     font-family: "Roboto Mono", monospace;
 }
-#archiveTableBtns,
+.archiveTableBtns,
 #trashTableBtns{
     display: flex;
+    justify-content: center;
     gap: 5px;
     margin: 0px;
     padding: 5px;
     align-items: center;
 }
 #restoreNoteBtn,
-#deleteArchiveNoteBtn,
+.restoreNoteBtn,
+.deleteArchiveNoteBtn,
 #permanentDeleteBtn{
            width: 150px;
     height: 40px;

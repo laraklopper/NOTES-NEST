@@ -1,8 +1,9 @@
 //archiveRoutes.js
 /*mounted at '/archive' in app.js
-GET - /archive/fetchNotes - fetchAll archived notes
-PATCH - /archive/:id/restore - restore a note to the main notes list
-DELETE - route to move an archived note to trash?
+GET - /archive/fetchNotes - fetch all of the user's archived notes
+PATCH - /archive/:id - archive an active note
+PATCH - /archive/:id/restore - restore an archived note to the main notes list
+DELETE - /archive/:id - move an archived note to the trash
 */
 require('dotenv').config();
 
@@ -15,9 +16,25 @@ const router = express.Router()
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/
- //Route to send a PATCH request to the /archive/fetchNotes endpoint
+/* GET: /archive/fetchNotes : Lists the signed-in user's archived notes (not in the
+trash), most recently archived first. Notebook and tags are populated like /notes/fetchNotes */
 router.get('/fetchNotes', checkJwtToken, async (req, res) => {
-    
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+
+        const notes = await Note.find({ user: userId, isArchived: true, deletedAt: null })
+            .select('-__v')
+            .populate('notebook', 'name colour')
+            .populate('tags', 'name')
+            .sort({ updatedAt: -1 })// Archiving updates updatedAt, so the latest archived note is first
+            .lean();
+
+        console.log(`[SUCCESS: archiveRoutes.js, GET /fetchNotes] Fetched ${notes.length} archived notes`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ notes });// Send a 200 (OK) status code with the notes
+    } catch (error) {
+        console.error('[ERROR: archiveRoutes.js, GET /fetchNotes]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
 })
 /*──────────────────────────── PATCH ROUTES ───────────────────────────────────
    PATCH: UPDATE — Used to partially update information in the database
@@ -56,17 +73,73 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
- //Route to send a PATCH request to the /archive/:id/restore endpoint
+/* PATCH: /archive/:id/restore : Unarchives one of the signed-in user's archived
+notes, which moves it back to the main notes list */
 router.patch('/:id/restore', checkJwtToken, async (req, res) => {
-    
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the note ID from the URL
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: archiveRoutes.js, PATCH /:id/restore] Invalid note id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid note id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only an archived note the user owns that is not in the trash can be restored
+        const note = await Note.findOneAndUpdate(
+            { _id: id, user: userId, deletedAt: null, isArchived: true },
+            { $set: { isArchived: false } }
+        ).select('_id title');
+
+        // Conditional rendering to check the note was found
+        if (!note) {
+            console.error(`[ERROR: archiveRoutes.js, PATCH /:id/restore] Archived note not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Archived note not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: archiveRoutes.js, PATCH /:id/restore] Note restored from archive: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Note restored', note });// Send a 200 (OK) status code with a message
+    } catch (error) {
+        console.error('[ERROR: archiveRoutes.js, PATCH /:id/restore]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
 })
 /*──────────────────────────── DELETE ROUTES ───────────────────────────────────
     DELETE: Used to remove an item from the database
  ────────────────────────────────────────────────────────────────────────────────*/
- //Route to send a DELETE request to the /archive/:id endpoint
- //Move a archived note to trash
+/* DELETE: /archive/:id : Moves one of the signed-in user's archived notes to the
+trash (soft delete). isArchived is cleared so that restoring it from the trash
+puts it back in the main notes list, the same as any other trashed note */
 router.delete('/:id', checkJwtToken, async (req, res) => {
-    
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the note ID from the URL
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: archiveRoutes.js, DELETE /:id] Invalid note id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid note id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only an archived note the user owns that is not already in the trash can be moved there
+        const note = await Note.findOneAndUpdate(
+            { _id: id, user: userId, deletedAt: null, isArchived: true },
+            { $set: { deletedAt: new Date(), isArchived: false, isPinned: false } }
+        ).select('_id title');
+
+        // Conditional rendering to check the note was found
+        if (!note) {
+            console.error(`[ERROR: archiveRoutes.js, DELETE /:id] Archived note not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Archived note not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: archiveRoutes.js, DELETE /:id] Archived note moved to trash: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Note moved to trash', note });// Send a 200 (OK) status code with a message
+    } catch (error) {
+        console.error('[ERROR: archiveRoutes.js, DELETE /:id]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
 })
 //========EXPORT THE ROUTER============
 module.exports = router;// Export the router to be used in other parts of the application
