@@ -7,13 +7,16 @@ import '../css/pagesCss/PageSetup.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Stack from 'react-bootstrap/Stack';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import Button from 'react-bootstrap/Button';
 //IMPORT CUSTOM COMPONENTS
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import NotesList from '../components/NotesList';
 import EditNoteForm from '../components/EditNoteForm';
+import Trash from '../components/Trash';
 
 //====MAIN NOTES FUNCTION COMPONENT========
 export default function Notes(//Export the default Notes.js function component
@@ -23,18 +26,19 @@ export default function Notes(//Export the default Notes.js function component
     setError
   }) {
     //==========STATE VARIABLES=================
+    /*Navigation state: Tabs and toggle buttons*/
     const [key, setKey] = useState('notes')
     const [editNote, setEditNote] = useState(false)
+    const [showArchive, setShowArchive] = useState(false)
+    const [showTrash, setShowTrash] = useState(false)
+    const [selectedId, setSelectedId] = useState(null)// Id of the note open in the NotesList details panal (and the EditNoteForm)
     const [notes, setNotes] = useState([])// The user's active notes from GET /notes/fetchNotes
     const [notesLoading, setNotesLoading] = useState(false)
-    const [selectedId, setSelectedId] = useState(null)// Id of the note open in the NotesList details panal (and the EditNoteForm)
     const [updatingNote, setUpdatingNote] = useState(false)// True while PATCH /notes/:id is running
     const [tags, setTags] = useState([])// The user's existing tags from GET /tag/fetchTags
 
-     const toggleEditNote = () => setEditNote ((prev) => !prev)
 
-     // The note being edited, looked up from the list so it always has the latest data
-     const selectedNote = notes.find((note) => note._id === selectedId) || null
+  
 
      //========FETCH NOTES REQUEST===============
      /* Fetches the user's active notes (not archived or trashed), pinned first */
@@ -56,6 +60,20 @@ export default function Notes(//Export the default Notes.js function component
       }
      }, [setError])
 
+       //===========EVENT LISTENERS==============
+     const toggleEditNote = () => setEditNote ((prev) => !prev)
+     const toggleArchive = useCallback(() => {
+      setShowArchive((prev) => !prev)
+      setShowTrash(false)
+     },[])
+
+     const toggleTrash = useCallback(() => {
+      setShowTrash((prev) => !prev)
+      setShowArchive(false)
+     },[])
+
+     // The note being edited, looked up from the list so it always has the latest data
+     const selectedNote = notes.find((note) => note._id === selectedId) || null
      //========FETCH TAGS REQUEST===============
      /* Fetches the user's tags for the EditNoteForm's ADD TAG dropdown */
      const fetchTags = useCallback(async () => {
@@ -166,29 +184,76 @@ export default function Notes(//Export the default Notes.js function component
       )}
         </div>
       </Tab>
-      <Tab eventKey="archive" title="ARCHIVE">
-        <div>
-          <Row>
-            <Col>
-              <div>
-                {/* ARCHIVE LIST */}
-              </div>
-            </Col>
-          </Row>
-        </div>
-      </Tab>
+      
       <Tab eventKey="contact" title="NOTEBOOKS">
         {/* Notebook list */}
         {/* tags list */}
       </Tab>
-      <Tab eventKey="contact" title="TAGS">
+      <Tab eventKey="tags" title="TAGS">
         {/* tags list */}
+      </Tab>
+      <Tab eventKey="archive" title="ARCHIVE & TRASH">
+        <div>
+         <Row id='toggleNotesRow'>
+          <Col id='toggleNotesCol'>
+          <Stack gap={2} className="col-md-5 mx-auto" id='toggleNotesStack'>
+      <Button 
+      variant="light"
+      id='toggleArchiveBtn'
+      type='button'
+      >
+        ARCHIVE
+      </Button>
+      <Button 
+      variant="light"
+      id='toggleTrashBtn'
+      type='button'
+      onClick={toggleTrash}
+      // ARIA ATTRIBUTES:
+      >
+        TRASH
+      </Button>
+    </Stack>
+          </Col>
+        </Row>
+        <div>
+         {showArchive && (
+          <div>
+              <Row>
+            <Col>
+                {/* ARCHIVE LIST */}
+            </Col>
+          </Row>
+          </div>
+
+        )}
+        {showTrash && (
+          <div id='trashListPanal'>
+          <Row id='trashRow'>
+            <Col id='trashCol'>
+              {/* TRASH */}
+                <div id='trashList'>
+                  <Trash
+                    currentUser={currentUser}
+                    setError={setError}
+                  />
+                </div>
+            </Col>
+          </Row>
+          </div>
+        )}
+        </div>
+       
+        
+        </div>
       </Tab>
     </Tabs>
         </div>
 
       </section>
-      
+      <section>
+       
+      </section>
       <Footer logout={logout}/>
     </div>
   )
