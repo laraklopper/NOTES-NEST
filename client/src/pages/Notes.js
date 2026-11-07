@@ -181,6 +181,9 @@ export default function Notes(//Export the default Notes.js function component
         {/* Notebook list */}
         {/* tags list */}
       </Tab>
+      <Tab eventKey="contact" title="TAGS">
+        {/* tags list */}
+      </Tab>
     </Tabs>
         </div>
 
