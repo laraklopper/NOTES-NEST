@@ -17,6 +17,7 @@ import Footer from '../components/Footer'
 import NotesList from '../components/NotesList';
 import EditNoteForm from '../components/EditNoteForm';
 import Trash from '../components/Trash';
+import ArchivedNotes from '../components/ArchivedNotes';
 
 //====MAIN NOTES FUNCTION COMPONENT========
 export default function Notes(//Export the default Notes.js function component
@@ -201,6 +202,7 @@ export default function Notes(//Export the default Notes.js function component
       variant="light"
       id='toggleArchiveBtn'
       type='button'
+      onClick={toggleArchive}
       >
         ARCHIVE
       </Button>
@@ -220,12 +222,17 @@ export default function Notes(//Export the default Notes.js function component
          {showArchive && (
           <div id='archiveDiv'>
               <Row id='archiveRow'>
+              <Col id='archiveCol1'/>
             <Col id='archiveCol' md={10} xs={12}>
-                {/* ARCHIVE LIST */}
+            <div id='archiveList'>
+            <ArchivedNotes/>
+
+            </div>
+                
             </Col>
+            <Col id='archiveCol1'/>
           </Row>
           </div>
-
         )}
         {showTrash && (
           <div id='trashListPanal'>

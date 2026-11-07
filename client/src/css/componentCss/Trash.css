@@ -1,13 +1,5 @@
-#trashSection{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin: 0px;
-    padding: 10px;
-    background-color: #946E26;
-}
 
+#archiveTableWrapper,
 #trashTableWrapper{
     width: 100%;
     margin: 0px;
@@ -15,18 +7,19 @@
     display: flex;
     justify-content:center;
 }
+#archiveTable,
 #trashTable{
     width: 90%;
     margin: 0px;
     padding: 0px;
     overflow-y: scroll;
 }
-#trashTable thead tr:nth-child(even) { background: #fff; }
-#trashTable thead tr:nth-child(odd) { background: #d1d1d4; }
-#trashTable tbody tr:nth-child(even) { background: #fff; }
-#trashTable tbody tr:nth-child(odd) { background: #d1d1d4; }
-#trashTable tfoot tr:nth-child(odd) { background: #d1d1d4; }
-
+#archiveTable, #trashTable thead tr:nth-child(even) { background: #fff; }
+#archiveTable, #trashTable thead tr:nth-child(odd) { background: #d1d1d4; }
+#archiveTable, #trashTable tbody tr:nth-child(even) { background: #fff; }
+#archiveTable, #trashTable tbody tr:nth-child(odd) { background: #d1d1d4; }
+#archiveTable, #trashTable  tfoot tr:nth-child(odd) { background: #d1d1d4; }
+#archiveTable tfoot,
 #trashTable tfoot{
     text-align: center;
     border: #000 solid 1px;
@@ -35,17 +28,16 @@
     text-decoration: underline;
     font-family: "Roboto Mono", monospace;
 }
+#archiveTableBtns,
 #trashTableBtns{
     display: flex;
-    flex-direction: column;
     gap: 5px;
     margin: 0px;
     padding: 5px;
     align-items: center;
-  
-    width: 200px;
 }
 #restoreNoteBtn,
+#deleteArchiveNoteBtn,
 #permanentDeleteBtn{
            width: 150px;
     height: 40px;
