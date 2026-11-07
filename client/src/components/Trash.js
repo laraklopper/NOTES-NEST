@@ -12,6 +12,8 @@ export default function Trash(
     setError
   }) {
 
+    
+    //Function to restore note to the main notes list
       const restore = useCallback(async () => {
         try {
            const token = localStorage.getItem('token')
@@ -30,6 +32,7 @@ export default function Trash(
         }
       },[setError])
       
+      //Async function to permanently delete a note
       const deleteNote = useCallback(async () => {
         try {
           const token = localStorage.getItem('token')

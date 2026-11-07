@@ -15,7 +15,7 @@ import TranslationsList from '../components/TranslationsList';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, logout}) {
-      const [key, setKey] = useState('translate')
+      const [key, setKey] = useState('translator')
   return (
     <div>
       <Header heading={'TRANSLATE'} currentUser={currentUser} />
@@ -44,7 +44,10 @@ export default function Translate(
         <div id='translationListPanal'>
           <Row id='translationsListRow'>
             <Col xs={12} md={12}>
-              <TranslationsList/>
+              <TranslationsList
+                currentUser={currentUser}
+                active={key === 'translations'}// Re-fetches each time the tab opens, so newly saved translations show
+              />
             </Col>
           </Row>
           {/* TRANSLATIONS LIST */}
@@ -68,7 +71,7 @@ export default function Translate(
                   </thead>
                   <tbody>
                     {languageData.map((language) => (
-                      <tr>
+                      <tr key={language.code}>
                         <td>{language.code}</td>
                         <td className='languageName'>{language.name}</td>
                       </tr>

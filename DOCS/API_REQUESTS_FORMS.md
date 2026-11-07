@@ -40,7 +40,7 @@ Requests that run by default after login or page load (no user action needed).
 | 6 | GET | [noteRoutes.js](../server/routes/noteRoutes.js) | [Trash.js](../client/src/pages/Trash.js) | `/notes/trash` | Protected | 📝 (server stub) |
 | 7 | GET | [archiveRoutes.js](../server/routes/archiveRoutes.js) | [Notes.js](../client/src/pages/Notes.js) (ARCHIVE tab) | `/archive/fetchNotes` | Protected | 📝 (server stub) |
 | 8 | GET | [notebookRoutes.js](../server/routes/notebookRoutes.js) | [Notes.js](../client/src/pages/Notes.js), [NotePad.js](../client/src/pages/NotePad.js) | `/notebooks` | Protected | 📝 |
-| 9 | GET | [translationRoutes.js](../server/routes/translationRoutes.js) | [Translate.js](../client/src/pages/Translate.js) (TRANSLATIONS tab) | `/translation/fetch` | Protected | 📝 |
+| 9 | GET | [translationRoutes.js](../server/routes/translationRoutes.js) | [Translate.js](../client/src/pages/Translate.js) (TRANSLATIONS tab) | `/translation/fetch` | Protected | ✅ |
 | 10 | GET | [userRoutes.js](../server/routes/userRoutes.js) | [Users.js](../client/src/pages/Users.js) (details panel, when a user is selected) | `/user/fetchUser/:id` | Admin | 📝 (server done) |
 
 Notes:
@@ -86,7 +86,7 @@ Notes:
 | 9 | Detect note language | `/notepad`, `/notes` | [NotePadForm.js](../client/src/components/NotePadForm.js), [EditNoteForm.js](../client/src/components/EditNoteForm.js) (DETECT button) | `/api/language/translate/v2/detect` | POST | Protected | 🖼️ |
 | 10 | Delete notebook | `/notes` (NOTEBOOKS tab) | — | `/notebooks/:id` | DELETE | Protected | 📝 |
 | 11 | Delete tag | `/notes` (NOTEBOOKS tab) | — | `/tag/:id` | DELETE | Protected | 📝 |
-| 12 | Delete translation | `/translate` (translations tab) | — | `/translation/delete/:id` | DELETE | Protected | 📝 |
+| 12 | Delete translation | `/translate` (translations tab) | — | `/translation/delete/:id` | DELETE | Protected | ✅ |
 | 13 | Delete user | `/users` (Admin) | [Users.js](../client/src/pages/Users.js) | `/user/deleteUser/:id` | DELETE | Admin | 📝 |
 
 Notes:

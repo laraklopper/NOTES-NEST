@@ -58,14 +58,14 @@
 #translationsTable tbody tr:nth-child(even) { background: #fff; }
 #translationsTable tbody tr:nth-child(odd) {background: #93A0AB;  }
 
-#translationBtnDiv{
+.translationBtnDiv{
     display: flex;
     justify-content: center;
     margin: 0px;
     padding: 0px;
 }
 #deleteItemBtn,
-#viewTranslationBtn{
+.viewTranslationBtn{
     width: 120px;
     height: 40px;
     display: flex;
@@ -77,9 +77,10 @@
     font-family: "Roboto Mono", monospace;
     border: solid 2px #323A42;
     color: #000;
+    gap: 5px;
 }
 #deleteItemBtn:hover,
-#viewTranslationBtn:hover{
+.viewTranslationBtn:hover{
     background-color: #323A42;
     color: #E8F0F6;
 }

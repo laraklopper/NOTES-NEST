@@ -37,7 +37,7 @@ Notes:
 | [notebookRoutes.js](../server/routes/notebookRoutes.js) | `/notebooks` (not mounted) | 4 | File is empty; all planned |
 | [tagRoutes.js](../server/routes/tagRoutes.js) | `/tag` | 3 | 2 done, 1 planned |
 | [apiRoutes.js](../server/routes/apiRoutes.js) | `/api` | 3 | All done |
-| [translationRoutes.js](../server/routes/translationRoutes.js) | `/translation` | 3 | 1 done, 2 planned |
+| [translationRoutes.js](../server/routes/translationRoutes.js) | `/translation` | 3 | 3 done |
 | [exportRoutes.js](../server/routes/exportRoutes.js) | `/export` (not mounted) | 1 | File is empty; planned |
 
 ---
@@ -175,9 +175,9 @@ Notes:
 
 | Method | Endpoint | Description | Access | Status |
 |--------|----------|-------------|--------|--------|
-| GET | `/translation/fetch` | List saved translations (query: `note`, `targetLanguage`, `page`, `limit`) | Protected | 📝 |
+| GET | `/translation/fetch` | List saved translations (query: `note`, `targetLanguage`, `page`, `limit`) | Protected | ✅ |
 | POST | `/translation/save` | Save a translation | Protected | ✅ |
-| DELETE | `/translation/delete/:id` | Delete a saved translation | Protected | 📝 |
+| DELETE | `/translation/delete/:id` | Delete a saved translation | Protected | ✅ |
 
 Notes:
 - **Save body:** `sourceText`, `translatedText`, `sourceLanguage`, `targetLanguage` (all required), and optional `note` (ID). Responds `201 { message, created: true, translation }`.
@@ -237,9 +237,9 @@ Notes:
 | 31 | GET | `/api/language/translate/v2/languages` | Protected | ✅ |
 | 32 | POST | `/api/language/translate/v2/detect` | Protected | ✅ |
 | 33 | POST | `/api/language/translate/v2` | Protected | ✅ |
-| 34 | GET | `/translation/fetch` | Protected | 📝 |
+| 34 | GET | `/translation/fetch` | Protected | ✅ |
 | 35 | POST | `/translation/save` | Protected | ✅ |
-| 36 | DELETE | `/translation/delete/:id` | Protected | 📝 |
+| 36 | DELETE | `/translation/delete/:id` | Protected | ✅ |
 | 37 | GET | `/export` | Protected | 📝 |
 
 **Totals by access:** 2 Public · 32 Protected · 3 Admin

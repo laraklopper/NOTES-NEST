@@ -49,7 +49,7 @@ app.use('/notes', noteRoutes)
 app.use('/archive', archiveRoutes)
 app.use('/tag', tagRoutes)
 app.use('/api', apiRoutes)// Langbly: /api/language/translate/v2, /detect, /languages
-app.use('/translation', translationRoutes)// /translation/save
+app.use('/translation', translationRoutes)// /translation/fetch, /translation/save, /translation/delete/:id
 // ================== MONGOOSE CONFIG ==================
 /* Disable strict populate to prevent errors when populating 
 paths that are conditionally defined*/
