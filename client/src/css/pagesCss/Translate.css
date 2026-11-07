@@ -64,7 +64,7 @@
 #languageTableWrapper{
     width: 100%;
     margin: 0px;
-    padding: 0px;
+    padding: 10px;
 }
 #languageTable{
     width: 100%;
@@ -76,11 +76,15 @@
     border: solid #383838 2px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 800;
 }
 #languageTable tbody tr td{
     border: solid #383838 2px;
     text-align: center;
+    font-family: "Roboto mono", monospace;
+    font-weight: 600;
+
 }
 .languageName{
     text-transform: uppercase;
