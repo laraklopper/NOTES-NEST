@@ -58,16 +58,31 @@
     margin: 0px;
     padding: 0px;
 }
+#archiveRow,
 #trashRow{
     width: 100%;
     margin: 0px;
     padding: 0px;
 }
-#trashCol{
-    width: 100%;
+#trashCol,
+#archiveCol{
     margin: 0px;
     padding: 0px;
-    display: grid;
+    display: flex;
+    justify-content: center;
+}
+#archiveCol1,
+#archiveCol2
+#trashCol1,
+#trashCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#trashList{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
 }
 #listsDiv{
     width: 100%;

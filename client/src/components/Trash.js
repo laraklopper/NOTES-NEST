@@ -61,14 +61,12 @@ export default function Trash(
         <table id='trashTable'>
           <thead>
             <tr>
-              <th colSpan={7}>TRASH</th>
+              <th colSpan={5}>TRASH</th>
             </tr>
             <tr>
               <th>#</th>
               <th>TITLE</th>
               <th>LANGUAGE</th>
-              <th>TAGS</th>
-              <th>NOTE BOOK</th>
               <th>DATE ADDED</th>
               <th></th>
             </tr>
@@ -78,8 +76,6 @@ export default function Trash(
               <td>#</td>
               <td>TITLE</td>
               <td>Language</td>
-              <td>Tags</td>
-              <td>Note book</td>
               <td>date added</td>
               <td>
               <div id='trashTableBtns'>

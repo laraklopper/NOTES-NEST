@@ -220,7 +220,7 @@ export default function Notes(//Export the default Notes.js function component
          {showArchive && (
           <div id='archiveDiv'>
               <Row id='archiveRow'>
-            <Col id='archiveCol'>
+            <Col id='archiveCol' md={10} xs={12}>
                 {/* ARCHIVE LIST */}
             </Col>
           </Row>
@@ -230,7 +230,8 @@ export default function Notes(//Export the default Notes.js function component
         {showTrash && (
           <div id='trashListPanal'>
           <Row id='trashRow'>
-            <Col id='trashCol'>
+            <Col id='trashCol1'/>
+            <Col id='trashCol' md={10} xs={12}>
               {/* TRASH */}
                 <div id='trashList'>
                   <Trash
@@ -239,6 +240,7 @@ export default function Notes(//Export the default Notes.js function component
                   />
                 </div>
             </Col>
+            <Col id='trashCol2'/>
           </Row>
           </div>
         )}
