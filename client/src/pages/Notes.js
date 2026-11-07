@@ -150,7 +150,8 @@ export default function Notes(//Export the default Notes.js function component
             </Col>
           </Row>
           <Row id='notesListRow'>
-        <Col id='notesListCol'>
+          <Col id='notesListCol1'/>
+        <Col id='notesListCol' md={10} xs={12}>
           <div id='notesListPanal'>
             <NotesList
               currentUser={currentUser}
@@ -165,6 +166,7 @@ export default function Notes(//Export the default Notes.js function component
             />
           </div>
         </Col>
+        <Col id='notesListCol2'/>
       </Row>
       {/* TOGGLE EDIT NOTE FORM */}
       {editNote && selectedNote && (
@@ -196,15 +198,21 @@ export default function Notes(//Export the default Notes.js function component
       <Tab eventKey="archive" title="ARCHIVE & TRASH">
         <div id='archiveTrashPanal'>
          <Row id='toggleNotesRow'>
-          <Col id='toggleNotesCol'>
+         <Col id='toggleNotesCol1'/>
+          <Col xs={5} id='toggleNotesCol'>
           <Stack gap={2} className="col-md-5 mx-auto" id='toggleNotesStack'>
       <Button 
       variant="light"
       id='toggleArchiveBtn'
       type='button'
       onClick={toggleArchive}
+      // ARIA ATTRIBUTES:
+      aria-label={showArchive ? 'HIDE ARCHIVE BUTTON': 'SHOW ARCHIVE BUTTON'}
+      aria-controls='archiveDiv'
+      aria-pressed={showArchive}
+      aria-expanded={showArchive}
       >
-        ARCHIVE
+        {showArchive ? 'HIDE ARCHIVE': 'SHOW ARCHIVE'}
       </Button>
       <Button 
       variant="light"
@@ -212,11 +220,16 @@ export default function Notes(//Export the default Notes.js function component
       type='button'
       onClick={toggleTrash}
       // ARIA ATTRIBUTES:
+      aria-label={showTrash ? 'HIDE TRASH BUTTON' : 'SHOW TRASH BUTTON'}
+      aria-expanded={showTrash}
+      aria-pressed={showTrash}
+      aria-controls='trashListPanal'
       >
-        TRASH
+        {showTrash ? 'HIDE TRASH' : 'SHOW TRASH'}
       </Button>
     </Stack>
           </Col>
+          <Col id='toggleNotesCol2'/>
         </Row>
         <div id='listsDiv'>
          {showArchive && (

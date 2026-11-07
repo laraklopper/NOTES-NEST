@@ -70,6 +70,7 @@
     margin: 0px;
     padding: 0px;
 }
+#notesListCol,
 #trashCol,
 #archiveCol{
     margin: 0px;
@@ -77,12 +78,25 @@
     display: flex;
     justify-content: center;
 }
+#notesListCol1,
+#notesListCol2,
+#toggleNotesCol1,
+#toggleNotesCol2,
 #archiveCol1,
 #archiveCol2
 #trashCol1,
 #trashCol2{
     margin: 0px;
     padding: 0px;
+}
+#toggleNotesStack{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 5px 0px;
+    background-color: darkgrey;
+    border-radius: 5px;
 }
 #trashList{
     display: flex;
@@ -95,4 +109,42 @@
     margin: 0px;
     padding: 0px;
 
+}
+#toggleNotesCol{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleArchiveBtn,
+#toggleTrashBtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    height: 40px;
+    width: 180px;
+    color: #000;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border: solid 2px #323A42;
+}
+#toggleArchiveBtn:hover,
+#toggleTrashBtn:hover{
+     background-color: #323A42;
+    color: #E8F0F6;
+}
+#toggleArchiveBtn:active,
+#toggleTrashBtn:active{
+     background-color: #323A42;
+    color: #E8F0F6;
+    text-decoration: underline;
+}
+#toggleArchiveBtn.active,
+#toggleTrashBtn.active{
+      background-color: #323A42;
+    color: #E8F0F6;
+    text-decoration: underline;
 }
