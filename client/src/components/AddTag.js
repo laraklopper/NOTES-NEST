@@ -58,7 +58,7 @@ export default function AddTag(
                 <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
               </div>
             </div>
-     <div className="p-2">
+     <div className="p-2" id='tagReqInput'>
           <p className='infoMsg' aria-live='polite' aria-hidden='true'>
             <small><Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /> Indicates required information</small>
           </p>

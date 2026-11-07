@@ -87,7 +87,15 @@ and AddTag.js
     background:#323A42;
 }
 
-
+#noteBookListHeading{
+    display: flex;
+    justify-content: center;
+}
+#noteBookList{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
 /* ADD TAG: AddTag.js */
 #addTagForm{
     width: 100%;
@@ -103,10 +111,31 @@ and AddTag.js
     flex-direction: column;
     align-items: center;
 }
+#tagReqInput{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#tagListBlock,
 #tagBtnBlock{
     display: flex;
     flex-direction: column;
     margin: 0px;
     padding: 0px;
     gap: 10px;
+    align-items: center;
+}
+#tagListHeading{
+    text-decoration: underline;
+    margin: 0px;
+    font-family: "Comic Relief", system-ui;
+  font-weight: 700;
+    padding: 0px;
+}
+.tagListItem{
+     font-family: "Comic Relief", system-ui;
+  font-weight: 700;
+  text-decoration: underline;
+  color: #000;
+  text-transform: capitalize;
 }
