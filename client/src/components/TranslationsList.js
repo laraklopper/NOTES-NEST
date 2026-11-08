@@ -15,7 +15,7 @@ import { dateDisplay, timeDisplay } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 import languageData from '../util/languageData';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArrowRight, ChevronLeft, ChevronRight, Copy, Trash2, X } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Copy, Search, Trash2, X } from 'lucide-react';
 
 const PAGE_SIZES = [10, 20, 50];// Options for the "per page" select (server caps at 50)
 
@@ -162,6 +162,61 @@ export default function TranslationsList(
     </Row>
     <Row style={{width: '100%'}}>
         <Col style={{width: '100%'}}>
+        <form aria-busy={loading} aria-labelledby='formTitle'>
+            <Stack gap={3}>
+            <div className="p-2">
+                <p className='visually-hidden' id='formTitle'>FILTER TRANSLATIONS</p>
+            </div>
+      <div className="p-2">
+        <label className='visually-hidden'>FILTER BY:</label>
+        <div className='inputDiv'>
+            <label className='filterLabel'>SOURCE LANGUAGE</label>
+            <select 
+                className='input' 
+                value={targetLanguage} 
+                onChange={handleLanguageFilter}
+                >
+                 <option value=''>All languages</option>
+                                    {languageData.map((language) => (
+                                        <option key={language.code} value={language.code}>{language.name}</option>
+                                    ))}
+            </select>
+        </div>
+        <div className='inputDiv'>
+            <label className='filterLabel'>TARGET LANGUAGE:</label>
+             <select 
+                className='input' 
+                value={targetLanguage} 
+                onChange={handleLanguageFilter}
+                >
+                 <option value=''>All languages</option>
+                                    {languageData.map((language) => (
+                                        <option key={language.code} value={language.code}>{language.name}</option>
+                                    ))}
+            </select>
+        </div>
+      </div>
+      <div className="p-2">
+      <div id='filterBtns'>
+   <Button
+   variant='light'
+        type='submit'
+        id='submitFiltersBtn'
+        >
+            APPLY <Search/>
+        </Button>
+        <Button 
+        variant='danger'
+        id='clearFormBtn'
+        >
+            CLEAR FILTERS
+        </Button>
+      </div>
+     
+      </div>
+      
+    </Stack>
+        </form>
         <Stack gap={3}>
       <div className="p-2">  
       {/* <Form.Group controlId='translationLangFilter'>
