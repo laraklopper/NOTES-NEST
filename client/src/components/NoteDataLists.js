@@ -4,7 +4,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
-
+/*NoteDataLists function component 
+display notebook and tags list no panal display available for notebooks
+and tags
+*/
 export default function NoteDataLists() {
     const [showNoteBooks, setShowNoteBooks] = useState(false)
     const [showTags, setShowTags] = useState(false)
@@ -19,11 +22,10 @@ export default function NoteDataLists() {
     },[])
   return (
     <div id='notesDataList'>
-      
            <Row id='toggleDataListRow'>
         <Col id='toggleListDataCol1'/>
         <Col xs={5}>
-            <Stack gap={3}>
+            <Stack gap={1} id='toggleNoteBooksStack'>
       <div className="p-2" id='toggleBtnBlock1'>
         <Button
         variant='light'
@@ -72,7 +74,7 @@ export default function NoteDataLists() {
                         <th>#</th>
                         <th>NAME</th>
                         <th>COLOUR</th>
-                        <th>DATE ADDED</th>
+                        <th style={{width: '250px', margin: '0px', padding: '0px'}}>DATE ADDED</th>
                         <th>{/* BUTTONS: EDIT + DELETE*/}</th>
                     </tr>
                 </thead>
@@ -111,7 +113,7 @@ export default function NoteDataLists() {
         <div id='tagsListPanal'>
               <Row id='tagsDataRow'>
         <Col id='tagsDataCol1'/>
-        <Col xs={6} id='tagsDataCol'>
+        <Col xs={12} md={10} id='tagsDataCol'>
         <div id='tagsTableWrapper'>
             <table id='tagsTable'>
                 <thead>
@@ -121,16 +123,22 @@ export default function NoteDataLists() {
                     <tr>
                         <th>#</th>
                         <th>NAME</th>
-                        <th>DATE ADDED</th>
-                        <th>{/*BUTTONS: DELETE*/}</th>
+                        <th style={{width: '250px', margin: '0px', padding: '0px'}}>DATE ADDED</th>
+                        <th>{/*BUTTONS: DELETE + Edit*/}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>#</td>{/*INDEX */}
                         <td>name</td>
-                        <td>date added</td>
-                        <td><div id='tagTableBtns'>
+                        <td style={{width: '250px', margin: '0px', padding: '0px'}}>date added</td>
+                        <td style={{width: '400px'}}><div id='tagTableBtns'>
+                        <Button
+                        variant='warning'
+                        id='toggleEditTagBtn'
+                        >
+                            EDIT TAG
+                        </Button>
                             <Button
                             variant='danger'
                             id='deleteItemBtn'
@@ -145,9 +153,6 @@ export default function NoteDataLists() {
       </Row>
         </div>
        )}
-
-       
-   
        </div>
         
     </div>

@@ -102,13 +102,14 @@
 
 #translationsTable tbody tr:nth-child(even) { background: #fff; }
 #translationsTable tbody tr:nth-child(odd) {background: #93A0AB;  }
-#tagTableBtns,
+
 .translationBtnDiv{
     display: flex;
     justify-content: center;
     margin: 0px;
     padding: 0px;
 }
+#tagTableBtns,
 #notebooksListBtns{
     display: flex;
     flex-direction: column;
@@ -137,6 +138,7 @@ color: #f8f9fa; ;}
     padding: 0px;
 }
 #toggleEditNoteBookBtn,
+#toggleEditTagBtn,
 #toggleNoteBooksBtn,
 #toggleTagsBtn{
     display: flex;
@@ -169,6 +171,7 @@ color: #f8f9fa; ;}
     gap: 5px;
 }
 #toggleNoteBooksBtn:hover,
+#toggleEditTagBtn:hover
 #toggleTagsBtn:hover,
 #deleteItemBtn:hover,
 .viewTranslationBtn:hover{

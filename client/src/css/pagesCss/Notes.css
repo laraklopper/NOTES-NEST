@@ -90,6 +90,7 @@
     margin: 0px;
     padding: 0px;
 }
+#toggleNoteBooksStack,
 #toggleNotesStack{
     width: 100%;
     display: flex;
