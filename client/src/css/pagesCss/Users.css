@@ -1,0 +1,9 @@
+#usersSection1{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 10px;
+    background-color: #946E26;
+}
