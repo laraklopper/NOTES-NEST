@@ -70,7 +70,7 @@ Notes:
 | GET | `/user/fetchUser/:id` | Get one user for the Users page details panel. Returns 403 for admin accounts | Admin | ✅ |
 | PATCH | `/user/editProfile` | Edit profile details and default languages (only fields sent are changed) | Protected | ✅ |
 | PATCH | `/user/editPassword` | Change password (current password required) | Protected | ✅ |
-| DELETE | `/user/deleteUser/:id` | Delete a user and all their data | Admin | 📝 |
+| DELETE | `/user/deleteUser/:id` | Delete a user and all their notes, notebooks, tags and translations. Returns 403 for admin accounts | Admin | ✅ |
 
 Notes:
 - Responses never include the password field.
@@ -135,7 +135,7 @@ Notes:
 |--------|----------|-------------|--------|--------|
 | GET | `/tag/fetchTags` | List tags A–Z, each with `noteCount` (active notes using it) | Protected | ✅ |
 | POST | `/tag/addTag` | Create a tag (body: `name`) | Protected | ✅ |
-| DELETE | `/tag/:id` | Delete a tag and `$pull` it from every note | Protected | 📝 |
+| DELETE | `/tag/:id` | Delete a tag and `$pull` it from every note | Protected | ✅ |
 
 Notes:
 - Tag names are trimmed, stored lowercase, max 30 characters, and unique per user, so a duplicate returns **409**.
@@ -214,7 +214,7 @@ Notes:
 | 8 | GET | `/user/fetchUser/:id` | Admin | ✅ |
 | 9 | PATCH | `/user/editProfile` | Protected | ✅ |
 | 10 | PATCH | `/user/editPassword` | Protected | ✅ |
-| 11 | DELETE | `/user/deleteUser/:id` | Admin | 📝 |
+| 11 | DELETE | `/user/deleteUser/:id` | Admin | ✅ |
 | 12 | GET | `/notes/fetchNotes` | Protected | ✅ |
 | 13 | GET | `/notes/trash` | Protected | ✅ |
 | 14 | GET | `/notes/:id` | Protected | 📝 |
@@ -233,7 +233,7 @@ Notes:
 | 27 | DELETE | `/notebooks/:id` | Protected | 📝 |
 | 28 | GET | `/tag/fetchTags` | Protected | ✅ |
 | 29 | POST | `/tag/addTag` | Protected | ✅ |
-| 30 | DELETE | `/tag/:id` | Protected | 📝 |
+| 30 | DELETE | `/tag/:id` | Protected | ✅ |
 | 31 | GET | `/api/language/translate/v2/languages` | Protected | ✅ |
 | 32 | POST | `/api/language/translate/v2/detect` | Protected | ✅ |
 | 33 | POST | `/api/language/translate/v2` | Protected | ✅ |

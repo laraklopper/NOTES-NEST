@@ -86,4 +86,37 @@ router.post('/addTag', checkJwtToken, async (req, res) => {
     }
 })
 
-module.exports = router;
+/*──────────────────────────── DELETE ROUTES ───────────────────────────────────
+    DELETE: Used to remove an item from the database
+ ────────────────────────────────────────────────────────────────────────────────*/
+/* DELETE: /tag/:id : Deletes one of the signed-in user's tags from the TagsList
+on the Notes page. The tagSchema findOneAndDelete hook $pulls it from every note. */
+router.delete('/:id', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the tag ID from the URL
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: tagRoutes.js, DELETE /:id] Invalid tag id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid tag id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        const tag = await Tag.findOneAndDelete({ _id: id, user: userId });// Only a tag the user owns can be deleted; runs the hook that removes it from notes
+
+        // Conditional rendering to check the tag was found
+        if (!tag) {
+            console.error(`[ERROR: tagRoutes.js, DELETE /:id] Tag not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Tag not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: tagRoutes.js, DELETE /:id] Tag deleted: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Tag deleted', tag: { _id: tag._id, name: tag.name } });// Send a 200 (OK) status code with a message
+    } catch (error) {
+        console.error('[ERROR: tagRoutes.js, DELETE /:id]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+
+//========EXPORT THE ROUTER============
+module.exports = router;// Export the router to be used in other parts of the application

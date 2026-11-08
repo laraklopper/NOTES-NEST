@@ -214,7 +214,14 @@ export default function Notes(//Export the default Notes.js function component
       <Tab eventKey="notesData" title="NOTEBOOKS AND TAGS">
         {/* Notebook list + tags list */}
         <div id='notesDataListPanal'>
-              <NoteDataLists/>
+              <NoteDataLists
+                tags={tags}
+                notebooks={notebooks}
+                fetchTags={fetchTags}
+                fetchNotebooks={fetchNotebooks}
+                fetchNotes={fetchNotes}// Notes show their notebook and tags, so refresh them after a change
+                setError={setError}
+              />
         </div>
       </Tab>
       <Tab eventKey="archive" title="ARCHIVE & TRASH">

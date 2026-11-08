@@ -6,6 +6,10 @@ const express = require('express');// Import the Express.js library
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const bcrypt = require('bcryptjs');// Used to check the current password against the stored hash
 const User = require('../models/userSchema');// Import the User model
+const Note = require('../models/noteSchema');// Import the Note model (removed with the user)
+const Notebook = require('../models/notebookSchema');// Import the Notebook model (removed with the user)
+const Tag = require('../models/tagSchema');// Import the Tag model (removed with the user)
+const Translation = require('../models/translationSchema');// Import the Translation model (removed with the user)
 const router = express.Router();// Create a new router object using Express.js
 const {
     checkJwtToken,
@@ -269,4 +273,54 @@ router.patch('/editPassword', checkJwtToken, checkPasswordChange, checkPassword,
     }
 })
 
-module.exports = router;
+/*──────────────────────────── DELETE ROUTES ───────────────────────────────────
+    DELETE: Used to remove an item from the database
+ ────────────────────────────────────────────────────────────────────────────────*/
+/* DELETE: /user/deleteUser/:id : Permanently removes a user and all their data
+(notes, notebooks, tags and translations), from the details panel on the admin-only
+Users page. Admin accounts cannot be removed, which also stops an admin removing themselves. */
+router.delete('/deleteUser/:id', checkJwtToken, checkAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;// Extract the user ID from the request parameters
+
+        // Conditional rendering to check the id is a usable ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: userRoutes.js, DELETE /deleteUser/:id] Invalid user id: ${id}`);//Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid user id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        const user = await User.findById(id).select('username admin').exec();// Only the fields needed for the checks below
+
+        // Conditional rendering to check the user was found
+        if (!user) {
+            console.error(`[ERROR: userRoutes.js, DELETE /deleteUser/:id] User not found: ${id}`);//Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'User not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        // Conditional rendering to check the account is not an admin account
+        if (user.admin === true) {
+            console.warn(`[WARN: userRoutes.js, DELETE /deleteUser/:id] Refused to remove admin account: ${id}`);//Log a warning message in the console for debugging purposes
+            return res.status(403).json({ message: 'Admin accounts cannot be removed.' });// Return a 403 (Forbidden) status code with a message
+        }
+
+        /* Remove the user's data first and the account last, so if a step fails
+        the account still exists and the request can be sent again */
+        const [notes, notebooks, tags, translations] = await Promise.all([
+            Note.deleteMany({ user: id }),
+            Notebook.deleteMany({ user: id }),
+            Tag.deleteMany({ user: id }),
+            Translation.deleteMany({ user: id })
+        ]);
+        await User.deleteOne({ _id: id });
+
+        console.log(`[SUCCESS: userRoutes.js, DELETE /deleteUser/:id] Removed ${user.username} (${id}) by ${req.adminUser.username}: ` +
+            `${notes.deletedCount} notes, ${notebooks.deletedCount} notebooks, ${tags.deletedCount} tags, ${translations.deletedCount} translations`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'User removed', user: { _id: user._id, username: user.username } });// Send a 200 (OK) status code with a message
+    } catch (error) {
+        console.error('[ERROR: userRoutes.js, DELETE /deleteUser/:id]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+
+//========EXPORT THE ROUTER============
+module.exports = router;// Export the router to be used in other parts of the application
