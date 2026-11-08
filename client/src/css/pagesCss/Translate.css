@@ -100,12 +100,11 @@
     font-weight: 800;
     color: #f8f9fa;
     font-family: "Roboto", sans-serif; letter-spacing: 2px; text-decoration: underline; }
-#languageTable tbody tr:nth-child(even) { background: #fff; }
-#languageTable  tbody tr:nth-child(odd) { background: #93A0AB; }
+#tagsTable,#languageTable tbody tr:nth-child(even) { background: #fff; }
+#tagsTable, #languageTable  tbody tr:nth-child(odd) { background: #93A0AB; }
 #languageTable  tfoot tr:nth-child(odd) { background: #212529; 
 color: #f8f9fa; ;}
 #languageTable  tfoot tr:nth-child(even) { background: #383838; 
-    
 color: #f8f9fa; ;}
 #languageTable tfoot{
     text-align: center;

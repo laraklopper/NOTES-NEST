@@ -52,6 +52,7 @@
     margin: 0px;
     padding: 0px;
 }
+#toggleDataListRow,
 #toggleNotesRow{
     width: 100%;
     display: flex;

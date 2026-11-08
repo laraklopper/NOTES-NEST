@@ -1,3 +1,5 @@
+#notesDataList,
+#notesDataListsDiv,
 #translationsList{
     width: 100%;
     margin: 0px;
@@ -6,7 +8,49 @@
     padding: 0px;
     align-items: center;
 }
+#noteBookListPanal,
+#tagsListPanal{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+#noteBooksCol,
+#tagsDataCol{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#noteBooksCol1,
+#noteBooksCol1,
+#tagsDataCol1,
+#tagsDataCol1{
+    margin: 0px;
+    padding: 0px;
+}
 
+#notebookDataRow,
+#tagsDataRow{
+        display: flex;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+#toggleListDataCol1
+#toggleListDataCol2,
+#notesDataCol1,
+#notesDataCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#tagsTableWrapper,
+#notebookTableWrapper{
+    width: 100%;
+    margin: 0px;
+    padding: 5px;
+}
 #archiveTableWrapper,
 #trashTableWrapper,
 #translationsTableWrapper{
@@ -16,7 +60,8 @@
     display: flex;
     justify-content:center;
 }
-
+#notebookTable,
+#tagsTable,
 #translationsTable{
     width: 100%;
     margin: 0px;
@@ -57,12 +102,46 @@
 
 #translationsTable tbody tr:nth-child(even) { background: #fff; }
 #translationsTable tbody tr:nth-child(odd) {background: #93A0AB;  }
-
+#tagTableBtns,
 .translationBtnDiv{
     display: flex;
     justify-content: center;
     margin: 0px;
     padding: 0px;
+}
+#languageTable thead tr:nth-child(even) { background: #fff; }
+#languageTable  thead tr:nth-child(odd) { 
+    background: #212529; 
+    font-weight: 800;
+    color: #f8f9fa;
+    font-family: "Roboto", sans-serif; letter-spacing: 2px; text-decoration: underline; }
+#tagsTable,#languageTable tbody tr:nth-child(even) { background: #fff; }
+#tagsTable, #languageTable  tbody tr:nth-child(odd) { background: #93A0AB; }
+#languageTable  tfoot tr:nth-child(odd) { background: #212529; 
+color: #f8f9fa; ;}
+#languageTable  tfoot tr:nth-child(even) { background: #383838; 
+color: #f8f9fa; ;}
+#toggleBtnBlock1,
+#toggleBtnBlock2{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleNoteBooksBtn,
+#toggleTagsBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    width: 180px;
+    height: 40px;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    text-transform: uppercase;
+    color: #000;
+    border: solid 2px #323A42;
 }
 #deleteItemBtn,
 .viewTranslationBtn{
@@ -79,6 +158,8 @@
     color: #000;
     gap: 5px;
 }
+#toggleNoteBooksBtn:hover,
+#toggleTagsBtn:hover,
 #deleteItemBtn:hover,
 .viewTranslationBtn:hover{
     background-color: #323A42;
