@@ -217,7 +217,7 @@ export default function TranslationsList(
                                 <div className='translationBtnDiv'>
                                     <Button
                                     variant='light'
-                                    className='viewTranslationBtn'
+                                    id='viewTranslationBtn'
                                     type='button'
                                     onClick={() => setSelectedId(translation._id)}
                                     // ARIA ATTRIBUTES:

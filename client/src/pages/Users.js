@@ -20,12 +20,9 @@ export default function Users(
     <div id='pageContainer'>
       <Header heading={'USERS'} currentUser={currentUser} />
       <section id='usersSection1'>
-        <div>
-          <Row>
-            <Col>
+        <div id='usersListPanal'>
               <UsersList/>
-            </Col>
-          </Row>
+              
         </div>
       </section>
       <Footer logout={logout}/>

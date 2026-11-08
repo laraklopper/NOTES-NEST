@@ -1,3 +1,4 @@
+#usersData,
 #notesDataList,
 #notesDataListsDiv,
 #translationsList{
@@ -46,7 +47,8 @@
     padding: 0px;
 }
 #tagsTableWrapper,
-#notebookTableWrapper{
+#notebookTableWrapper,
+#usersTableWrapper{
     width: 100%;
     margin: 0px;
     padding: 5px;
@@ -61,6 +63,7 @@
     justify-content:center;
 }
 #notebookTable,
+#usersTable,
 #tagsTable,
 #translationsTable{
     width: 100%;
@@ -137,26 +140,14 @@ color: #f8f9fa; ;}
     margin: 0px;
     padding: 0px;
 }
+
 #toggleEditNoteBookBtn,
 #toggleEditTagBtn,
 #toggleNoteBooksBtn,
-#toggleTagsBtn{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0px;
-    padding: 0px;
-    width: 180px;
-    height: 40px;
-    font-weight: 700;
-    font-family: "Roboto Mono", monospace;
-    text-transform: uppercase;
-    color: #000;
-    border: solid 2px #323A42;
-}
-
+#toggleTagsBtn,
+#removeUserBtn,
 #deleteItemBtn,
-.viewTranslationBtn{
+#viewTranslationBtn{
     width: 120px;
     height: 40px;
     display: flex;
@@ -170,6 +161,15 @@ color: #f8f9fa; ;}
     color: #000;
     gap: 5px;
 }
+#toggleEditNoteBookBtn,
+#toggleEditTagBtn,
+#toggleNoteBooksBtn,
+#toggleTagsBtn,
+#removeUserBtn{
+    width: 180px;
+    text-transform: uppercase;
+}
+#removeUserBtn:hover,
 #toggleNoteBooksBtn:hover,
 #toggleEditTagBtn:hover
 #toggleTagsBtn:hover,

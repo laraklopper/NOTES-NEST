@@ -1,5 +1,14 @@
 /* DetailsPanals.css */
-
+#userPanal{
+        background-color: #949ca2;
+         display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 5px;
+    gap: 5px;
+}
 .panalHeading{
     font-family: "Comic Relief", system-ui;
   font-weight: 700;
@@ -20,12 +29,17 @@
     background-color: #949ca2;
 }
 
-#translationPanalBody{
+#translationPanalBody,
+#notePanalBody{
     display: flex;
     align-items: baseline;
+    padding: 5px;
+    margin: 0px;
     width: 100%;
+     background-color: #b7bdc4;
 }
 /* STACK */
+#panalHeader,
 #translationPanalHead,
 #notePanalHead{
     display: flex;
@@ -54,13 +68,7 @@
     padding: 0px;
     gap: 10px;
 }
-#notePanalBody{
-    display: flex;
-    align-items: baseline;
-    padding: 5px;
-    margin: 0px;
-    width: 100%;
-}
+
 
 .dataSpan{
     display: flex;
@@ -68,12 +76,22 @@
     margin: 0px;
     padding: 0px;
 }
+.userDataLabel{
+    font-family: "Comic Relief", system-ui;
+        font-weight: bold;
+    letter-spacing: 1px;
+    color: #000;
+    border-bottom: 1px solid #323A42;
+    letter-spacing: 2px;
+    font-weight: 700;
+   
+}
 .dataLabel{
     font-family: "Comic Relief", system-ui;
     color: #000;
     margin: 0px;
     padding: 0px;
-    text-decoration: underline;
+    text-decoration: underline #8a9199 1.5px;
     letter-spacing: 2px;
     font-weight: 700;
 }
