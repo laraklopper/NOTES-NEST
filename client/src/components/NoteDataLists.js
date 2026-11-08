@@ -6,7 +6,7 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 /*NoteDataLists function component 
 display notebook and tags list no panal display available for notebooks
-and tags
+and tags. Tags can be deleted but cannot be edited
 */
 export default function NoteDataLists() {
     const [showNoteBooks, setShowNoteBooks] = useState(false)
