@@ -109,6 +109,14 @@
     margin: 0px;
     padding: 0px;
 }
+#notebooksListBtns{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    margin: 0px;
+    padding: 0px;
+}
 #languageTable thead tr:nth-child(even) { background: #fff; }
 #languageTable  thead tr:nth-child(odd) { 
     background: #212529; 
@@ -128,6 +136,7 @@ color: #f8f9fa; ;}
     margin: 0px;
     padding: 0px;
 }
+#toggleEditNoteBookBtn,
 #toggleNoteBooksBtn,
 #toggleTagsBtn{
     display: flex;
@@ -143,6 +152,7 @@ color: #f8f9fa; ;}
     color: #000;
     border: solid 2px #323A42;
 }
+
 #deleteItemBtn,
 .viewTranslationBtn{
     width: 120px;

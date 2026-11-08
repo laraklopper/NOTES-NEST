@@ -61,23 +61,43 @@ export default function NoteDataLists() {
             <div id='noteBookListPanal'>
                 <Row id='notebookDataRow'>
                 <Col id='noteBooksCol1'/>
-<Col  id='noteBooksCol' xs={12} md={8}>
+<Col  id='noteBooksCol' xs={12} md={10}>
              <div id='notebookTableWrapper'>
             <table id='notebookTable'>
                 <thead>
                     <tr>
-                        <th colSpan={4}>NOTEBOOKS</th>
+                        <th colSpan={5}>NOTEBOOKS</th>
                     </tr>
                     <tr>
                         <th>#</th>
                         <th>NAME</th>
                         <th>COLOUR</th>
+                        <th>DATE ADDED</th>
                         <th>{/* BUTTONS: EDIT + DELETE*/}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
+                        <td>#{/*INDEX */}</td>
+                        <td>name</td>
+                        <td>colour</td>
+                        <td style={{width: '250px', margin: '0px', padding: '0px'}}>date added</td>
+                        <td style={{width: '200px'}}>
+                        <div id='notebooksListBtns'>
+                            <Button 
+                            variant='warning'
+                            id='toggleEditNoteBookBtn'
+                            >
+                                EDIT NOTEBOOK
+                            </Button>
+                            <Button
+                             variant='danger'
+                             id='deleteItemBtn'>
+                                DELETE 
+                             </Button>
+                        </div>
 
+                        </td>
                     </tr>
                 </tbody>
             </table>
