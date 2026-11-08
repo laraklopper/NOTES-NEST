@@ -113,7 +113,7 @@ export default function NoteDataLists() {
         <div id='tagsListPanal'>
               <Row id='tagsDataRow'>
         <Col id='tagsDataCol1'/>
-        <Col xs={12} md={10} id='tagsDataCol'>
+        <Col  md={6} id='tagsDataCol'>
         <div id='tagsTableWrapper'>
             <table id='tagsTable'>
                 <thead>
@@ -123,7 +123,7 @@ export default function NoteDataLists() {
                     <tr>
                         <th>#</th>
                         <th>NAME</th>
-                        <th style={{width: '250px', margin: '0px', padding: '0px'}}>DATE ADDED</th>
+                        <th >DATE ADDED</th>
                         <th>{/*BUTTONS: DELETE + Edit*/}</th>
                     </tr>
                 </thead>
@@ -131,14 +131,8 @@ export default function NoteDataLists() {
                     <tr>
                         <td>#</td>{/*INDEX */}
                         <td>name</td>
-                        <td style={{width: '250px', margin: '0px', padding: '0px'}}>date added</td>
+                        <td >date added</td>
                         <td style={{width: '400px'}}><div id='tagTableBtns'>
-                        <Button
-                        variant='warning'
-                        id='toggleEditTagBtn'
-                        >
-                            EDIT TAG
-                        </Button>
                             <Button
                             variant='danger'
                             id='deleteItemBtn'
