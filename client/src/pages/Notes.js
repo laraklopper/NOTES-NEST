@@ -211,8 +211,7 @@ export default function Notes(//Export the default Notes.js function component
       )}
         </div>
       </Tab>
-      
-      <Tab eventKey="notesData" title="NOTEBOOKS">
+      <Tab eventKey="notesData" title="NOTEBOOKS AND TAGS">
         {/* Notebook list */}
         {/* tags list */}
         <div id='notesDataListPanal'>
