@@ -48,13 +48,14 @@ export default function TranslationsList(
     const [actionLoading, setActionLoading] = useState(false)// True while a delete request is running
     const [error, setError] = useState(null)
     const [selectedId, setSelectedId] = useState(null)// Id of the translation shown in the panal
-
+const [showFilter, setShowFilter] = useState(false)
     /* The selected translation is looked up from the list (rather than stored as
     a copy) so it always shows the latest data after a re-fetch */
     const selectedIndex = translations.findIndex((t) => t._id === selectedId)
     const selectedTranslation = selectedIndex === -1 ? null : translations[selectedIndex]
     const rowNumber = (index) => (pagination.page - 1) * pagination.limit + index + 1// Numbering carries on across pages
 
+    const toggleFilter = setShowFilter(prev => (!prev))
     //========FETCH TRANSLATIONS REQUEST===============
     const fetchTranslations = useCallback(async () => {
         setError(null)
@@ -161,8 +162,20 @@ export default function TranslationsList(
         </Col>
         <Col/>
     </Row>
-    <Row style={{width: '100%'}}>
-        <Col style={{width: '100%'}}>
+    <Row>
+        <Col>
+             <Stack direction="horizontal" gap={3}>
+      <div className="p-2">First item</div>
+      <div className="p-2 ms-auto">Second item</div>
+      <div className="p-2">
+        <Button onClick={toggleFilter} variant='light'>SHOW FILTER</Button>
+      </div>
+    </Stack>
+        </Col>
+    </Row>
+    {showFilter && (
+        <Row style={{width: '100%'}}>
+        <Col style={{width: '100%'}}>  
         <FilterTranslations
             loading={loading}
             targetLanguage={targetLanguage}
@@ -170,6 +183,7 @@ export default function TranslationsList(
         />
         </Col>
     </Row>
+    )}
     <Row id='translationsListRow'>
         <Col xs={12} md={12} id='translationsListCol'>
              <div id='translationsTableWrapper'>
