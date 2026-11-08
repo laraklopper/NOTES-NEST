@@ -28,7 +28,9 @@
     gap: 5px;
     background-color: #949ca2;
 }
-
+/* PANAL HEADER*/
+/* Heading */
+/* BODY */
 #translationPanalBody,
 #notePanalBody{
     display: flex;
@@ -69,7 +71,7 @@
     gap: 10px;
 }
 
-
+/* PANAL DATA */
 .dataSpan{
     display: flex;
     gap: 10px;
