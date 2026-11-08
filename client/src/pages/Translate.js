@@ -44,14 +44,12 @@ export default function Translate(
       {/* TRANSLATIONS LIST */}
       <Tab eventKey="translations" title="translations">
         <div id='translationListPanal'>
-          <Row id='translationsListRow'>
-            <Col xs={12} md={12}>
+       
               <TranslationsList
                 currentUser={currentUser}
                 active={key === 'translations'}// Re-fetches each time the tab opens, so newly saved translations show
               />
-            </Col>
-          </Row>       
+              
         </div>
       </Tab>
       {/* API LANGUAGES LIST */}

@@ -8,6 +8,7 @@
     flex-direction: column;
     padding: 0px;
     align-items: center;
+    gap: 10px;
 }
 #noteBookListPanal,
 #tagsListPanal{
@@ -209,4 +210,15 @@ color: #f8f9fa; ;}
   margin: 0px;
   letter-spacing: 2px;
   padding: 0px;
+}
+#translationPanalRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+
+}
+#translationCol{
+    width: 100%;
+    margin: 0px;
+        padding: 10px;
 }

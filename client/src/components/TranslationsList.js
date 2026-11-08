@@ -13,9 +13,10 @@ import Form from 'react-bootstrap/Form';
 // IMPORT UTILITY FUNCTIONS
 import { dateDisplay, timeDisplay } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
-import languageData from '../util/languageData';
+
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArrowRight, ChevronLeft, ChevronRight, Copy, Search, Trash2, X } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Copy, Trash2, X } from 'lucide-react';
+import FilterTranslations from './FilterTranslations';
 
 const PAGE_SIZES = [10, 20, 50];// Options for the "per page" select (server caps at 50)
 
@@ -162,85 +163,11 @@ export default function TranslationsList(
     </Row>
     <Row style={{width: '100%'}}>
         <Col style={{width: '100%'}}>
-        <form aria-busy={loading} aria-labelledby='formTitle'>
-            <Stack gap={3}>
-            <div className="p-2">
-                <p className='visually-hidden' id='formTitle'>FILTER TRANSLATIONS</p>
-            </div>
-      <div className="p-2">
-        <label className='visually-hidden'>FILTER BY:</label>
-        <div className='inputDiv'>
-            <label className='filterLabel'>SOURCE LANGUAGE</label>
-            <select 
-                className='input' 
-                value={targetLanguage} 
-                onChange={handleLanguageFilter}
-                >
-                 <option value=''>All languages</option>
-                                    {languageData.map((language) => (
-                                        <option key={language.code} value={language.code}>{language.name}</option>
-                                    ))}
-            </select>
-        </div>
-        <div className='inputDiv'>
-            <label className='filterLabel'>TARGET LANGUAGE:</label>
-             <select 
-                className='input' 
-                value={targetLanguage} 
-                onChange={handleLanguageFilter}
-                >
-                 <option value=''>All languages</option>
-                                    {languageData.map((language) => (
-                                        <option key={language.code} value={language.code}>{language.name}</option>
-                                    ))}
-            </select>
-        </div>
-      </div>
-      <div className="p-2">
-      <div id='filterBtns'>
-   <Button
-   variant='light'
-        type='submit'
-        id='submitFiltersBtn'
-        >
-            APPLY <Search/>
-        </Button>
-        <Button 
-        variant='danger'
-        id='clearFormBtn'
-        >
-            CLEAR FILTERS
-        </Button>
-      </div>
-     
-      </div>
-      
-    </Stack>
-        </form>
-        <Stack gap={3}>
-      <div className="p-2">  
-      {/* <Form.Group controlId='translationLangFilter'>
-                                <Form.Label className='m-0'>TARGET LANGUAGE:</Form.Label>
-                                <Form.Select
-                                size='sm'
-                                value={targetLanguage}
-                                onChange={handleLanguageFilter}
-                                disabled={loading}
-                                >
-                                    <option value=''>All languages</option>
-                                    {languageData.map((language) => (
-                                        <option key={language.code} value={language.code}>{language.name}</option>
-                                    ))}
-                                </Form.Select>
-                                
-                            </Form.Group> */}
-                            </div>
-      <div className="p-2 ms-auto">Second item</div>
-      <div className="p-2">Third item</div>
-    </Stack>
-                <Stack direction='horizontal' gap={3} style={{width: '100%'}} >
-                          
-                        </Stack>
+        <FilterTranslations
+            loading={loading}
+            targetLanguage={targetLanguage}
+            handleLanguageFilter={handleLanguageFilter}
+        />
         </Col>
     </Row>
     <Row id='translationsListRow'>
@@ -250,11 +177,6 @@ export default function TranslationsList(
             <thead>
                 <tr>
                     <th colSpan={6}>TRANSLATIONS</th>
-                </tr>
-                <tr>
-                    <th colSpan={6}>
-                    
-                    </th>
                 </tr>
                 <tr>
                     <th>#</th>
@@ -348,10 +270,12 @@ export default function TranslationsList(
 
         </Col>
     </Row>
-
     {/* SELECTED TRANSLATION PANAL */}
     {selectedTranslation && (
-    <div id='translationPanal'>
+   
+    <Row style={{width: '100%'}} id='translationPanalRow'>
+         <Col style={{width: '100%'}} id='translationCol'>
+        <div id='translationPanal'>
         <Stack direction="horizontal" gap={3} id='translationPanalHead'>
       <div className="p-2" id='panalHeadingBlock'>
         <h4 className='panalHeading'>
@@ -452,7 +376,13 @@ export default function TranslationsList(
       </div>
     </Stack>
     </div>
+    </Col>
+    
+    </Row>
+    
+    
     )}
+    
     </div>
   )
 }
