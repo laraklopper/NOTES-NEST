@@ -1,3 +1,5 @@
+/* Translatior.css 
+TranslateForm.js*/
 #translatorDiv{
     width: 100%;
     display: flex;
@@ -6,6 +8,7 @@
     flex-direction: column;
     align-items: center;
 }
+/* FORM */
 #translatorForm{
       display: flex;
     flex-direction: column;
@@ -24,6 +27,7 @@
     margin: 0px;
     padding: 0px;
 }
+/* STACK: https://react-bootstrap.netlify.app/docs/layout/stack*/
 #translateInputStack{
     display: flex;
     align-items: stretch;
@@ -71,24 +75,8 @@
     gap: 5px;
     margin: 0px 10px 0px 0px;
 }
-#translateBtn{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 180px;
-    height: 40px;
-    font-family: "Fira Mono", monospace;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #000;
-    margin: 0px;
-    padding: 0px;
-    border: solid 2px #323A42;
-}
-#translateBtn:hover:not(:disabled){
-    color: #E8F0F6;
-    background-color: #323A42;
-}
+
+
 .languageSelectDiv{
          display: flex;
     justify-content: center;
@@ -135,4 +123,39 @@ justify-content: space-between;
     margin: 0px;
     padding: 0px;
     gap: 10px;
+}
+#saveTranslationBlock{
+    width: 100%;
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+}
+/* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons */
+#translateBtn,
+#saveTranslationBtn{
+    width: 180px;
+    height: 40px;
+    gap: 5px;
+    text-transform: uppercase;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+}
+
+#translateBtn:hover,
+#saveTranslationBtn:hover{
+    background-color: #323A42;
+    color: #E8F0F6;
+}
+#translateBtn:hover:not(:disabled){
+    color: #E8F0F6;
+    background-color: #323A42;
 }

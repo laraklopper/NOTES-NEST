@@ -1,3 +1,7 @@
+/* RegistrationForm.css
+RegistrationForm.js,
+RegisAdminForm.js
+*/
 #registrationForm{
     display: flex;
     flex-direction: column;
@@ -16,6 +20,7 @@
   letter-spacing: 1px;
   padding: 0px;
 }
+/* LAYOUT */
 #registrationInput{
     display: flex;
     flex-direction: column;
@@ -48,7 +53,15 @@
      letter-spacing: 2px;
 }
 
-/* STACK 1: */
+#regisStack1,
+#regisStack2,
+#regisStack3{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    align-items: center;
+}
 #regisUsernameBlock{
     display: flex;
     align-items: baseline;
@@ -89,6 +102,12 @@
      font-weight: 700;
      letter-spacing: 2px;
 }
+#regisStack4{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 #regisPhoneBlock,
 #regisEmailBlock{
      display: flex;
@@ -118,6 +137,13 @@
      font-family: "Roboto Condensed", sans-serif;
      font-weight: 700;
      letter-spacing: 2px;
+}
+/* STACK 1 : https://react-bootstrap.netlify.app/docs/layout/stack*/
+#regisStack5{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
 }
 #regisSourceLangBlock,
 #regisTargetLangBlock,
@@ -150,7 +176,20 @@
      font-weight: 700;
      letter-spacing: 2px;
 }
-
+#adminConsentCheckboxDiv{
+    display: flex;
+    align-items: baseline;
+}
+/* BOOTSTRAP */
+/* STACK 6,7 : https://react-bootstrap.netlify.app/docs/layout/stack*/
+#regisStack6,
+#regisStack7{
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 #regisPasswordBlock{
     display: flex;
     align-items: center;
@@ -163,6 +202,7 @@
     margin: 0px;
     padding: 0px;
 }
+/* GROUP 5 */
 #regisFormBtnGroup{
     display: flex;
     justify-content: center;
@@ -170,6 +210,7 @@
     width: 100%;
     padding: 0px;
 }
+/* STACK */
 #regisFormBtnStack{
     display: flex;
     justify-content: center;
@@ -179,6 +220,7 @@
     width: 100%;
     padding: 0px;
 }
+/* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons */
 #registerBtn{
         width: 180px;
     height: 40px;
