@@ -5,6 +5,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 import '../css/componentCss/ListTables.css'
 import '../css/componentCss/DetailsPanals.css'
 // IMPORT BOOTSTRAP COMPONENTS
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -151,17 +153,18 @@ export default function TranslationsList(
     //=======================JSX RENDERING=======================================
   return (
     <div id='translationsList'>
-    {error && <p className='text-danger' role='alert'>{error}</p>}
- <div id='translationsTableWrapper'>
-        <table id='translationsTable'>
-            <thead>
-                <tr>
-                    <th colSpan={6}>TRANSLATIONS</th>
-                </tr>
-                <tr>
-                    <th colSpan={6}>
-                        <Stack direction='horizontal' gap={3} className='justify-content-center'>
-                            <Form.Group controlId='translationLangFilter' className='d-flex align-items-center gap-2'>
+    <Row id='errorRow'>
+        <Col/>
+        <Col id='errorCol' xs={6}>
+            <span>{error && <p className='text-danger' role='alert'>{error}</p>}</span>
+        </Col>
+        <Col/>
+    </Row>
+    <Row style={{width: '100%'}}>
+        <Col style={{width: '100%'}}>
+        <Stack gap={3}>
+      <div className="p-2">  
+      {/* <Form.Group controlId='translationLangFilter'>
                                 <Form.Label className='m-0'>TARGET LANGUAGE:</Form.Label>
                                 <Form.Select
                                 size='sm'
@@ -174,16 +177,28 @@ export default function TranslationsList(
                                         <option key={language.code} value={language.code}>{language.name}</option>
                                     ))}
                                 </Form.Select>
-                            </Form.Group>
-                            <Form.Group controlId='translationPageSize' className='d-flex align-items-center gap-2'>
-                                <Form.Label className='m-0'>PER PAGE:</Form.Label>
-                                <Form.Select size='sm' value={limit} onChange={handleLimitChange} disabled={loading}>
-                                    {PAGE_SIZES.map((size) => (
-                                        <option key={size} value={size}>{size}</option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
+                                
+                            </Form.Group> */}
+                            </div>
+      <div className="p-2 ms-auto">Second item</div>
+      <div className="p-2">Third item</div>
+    </Stack>
+                <Stack direction='horizontal' gap={3} style={{width: '100%'}} >
+                          
                         </Stack>
+        </Col>
+    </Row>
+    <Row id='translationsListRow'>
+        <Col xs={12} md={12} id='translationsListCol'>
+             <div id='translationsTableWrapper'>
+        <table id='translationsTable'>
+            <thead>
+                <tr>
+                    <th colSpan={6}>TRANSLATIONS</th>
+                </tr>
+                <tr>
+                    <th colSpan={6}>
+                    
                     </th>
                 </tr>
                 <tr>
@@ -233,8 +248,20 @@ export default function TranslationsList(
             <tfoot>
                 <tr>
                     <td colSpan={6}>
-                        <Stack direction='horizontal' gap={3} className='justify-content-center'>
-                            <Button
+                    <Stack gap={3} id='paginationStack'>
+      <div className="p-2" id='paginationBlock1'>
+        
+                            <Form.Group controlId='translationPageSize'>
+                                <Form.Label className='m-0' id='pagLabel'>PER PAGE:</Form.Label>
+                                <Form.Select size='sm' value={limit} onChange={handleLimitChange} disabled={loading}>
+                                    {PAGE_SIZES.map((size) => (
+                                        <option key={size} value={size}>{size}</option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+      </div>
+      <div className="p-2" id='paginationBlock2'>
+          <Button
                             variant='light'
                             size='sm'
                             type='button'
@@ -253,12 +280,20 @@ export default function TranslationsList(
                             disabled={loading || pagination.page >= pagination.totalPages}
                             aria-label='Next page'
                             ><ChevronRight aria-hidden='true' focusable='false'/></Button>
+      </div>
+    </Stack>
+                        <Stack direction='horizontal' gap={3} className='justify-content-center'>
+                          
                         </Stack>
                     </td>
                 </tr>
             </tfoot>
         </table>
     </div>
+
+        </Col>
+    </Row>
+
     {/* SELECTED TRANSLATION PANAL */}
     {selectedTranslation && (
     <div id='translationPanal'>

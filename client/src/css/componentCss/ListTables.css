@@ -177,3 +177,36 @@ color: #f8f9fa; ;}
     background-color: #323A42;
     color: #E8F0F6;
 }
+#paginationStack{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+#paginationBlock1{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#paginationBlock2{
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 5px;
+    width: 100%;
+}
+#translationPageSize{
+    font-family: "Roboto Mono", monospace;
+    text-align: center;
+    font-weight: 700;
+    width: 180px;
+    height: 40px;
+    margin: 0px;
+    padding: 0px;
+}
+#pagLabel{
+    font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 2px;
+  padding: 0px;
+}
