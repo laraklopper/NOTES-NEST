@@ -286,7 +286,6 @@ const [showFilter, setShowFilter] = useState(false)
     </Row>
     {/* SELECTED TRANSLATION PANAL */}
     {selectedTranslation && (
-   
     <Row style={{width: '100%'}} id='translationPanalRow'>
          <Col style={{width: '100%'}} id='translationCol'>
         <div id='translationPanal'>
@@ -391,12 +390,8 @@ const [showFilter, setShowFilter] = useState(false)
     </Stack>
     </div>
     </Col>
-    
     </Row>
-    
-    
     )}
-    
     </div>
   )
 }
