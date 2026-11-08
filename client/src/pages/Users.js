@@ -2,8 +2,6 @@
 import React from 'react'
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/Users.css'  
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import UsersList from '../components/UsersList'
@@ -22,7 +20,6 @@ export default function Users(
       <section id='usersSection1'>
         <div id='usersListPanal'>
               <UsersList/>
-              
         </div>
       </section>
       <Footer logout={logout}/>
