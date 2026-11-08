@@ -4,6 +4,7 @@
 - Notes.js
 - Translate.js
 */
+/* TAB PANAL */
 #tabPanal,
 #notesTabPanal,
 #notepadFormsPanal,
@@ -21,7 +22,7 @@
 #translateTabs,
 #homePageTabs{
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
     gap: 10px;
     margin: 0px;
     padding: 0px;

@@ -1,19 +1,36 @@
 import React from 'react'
+import '../css/componentCss/ListTables.css'
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 export default function NoteDataLists() {
   return (
     <div id='notesData'>
-        <div id='notebookTableWrapper'>
+     <Row>
+        <Col xs={6}>
+             <div id='notebookTableWrapper'>
             <table id='notebookTable'>
                 <thead>
                     <tr>
-                        <th>NOTEBOOKS</th>
+                        <th colSpan={4}>NOTEBOOKS</th>
+                    </tr>
+                    <tr>
+                        <th>#</th>
+                        <th>NAME</th>
+                        <th>COLOUR</th>
+                        <th>{/* BUTTONS: EDIT + DELETE*/}</th>
                     </tr>
                 </thead>
+                <tbody>
+                    <tr>
+
+                    </tr>
+                </tbody>
             </table>
 
         </div>
-        <div>
+        </Col>
+        <Col xs={6}><div>
             <table>
                 <thead>
                     <tr>
@@ -23,7 +40,10 @@ export default function NoteDataLists() {
                 <tbody></tbody>
             </table>
 
-        </div>
+        </div></Col>
+      </Row>
+       
+        
     </div>
   )
 }
