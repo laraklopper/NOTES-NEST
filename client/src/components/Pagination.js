@@ -1,6 +1,7 @@
 //Pagination.js
 import React from 'react'
 // IMPORT CSS STYLESHEETS
+import '../css/componentCss/Pagination.css'
 import '../css/componentCss/ListTables.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';

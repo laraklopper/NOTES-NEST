@@ -1,0 +1,72 @@
+/* =============================
+PAGINATION
+================*/
+#notePageSize{
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+#notePageSize option{
+    text-align: center;
+    font-weight: 700;
+}
+#paginationStack{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+#paginationBlock1{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#paginationBlock1 Form.Group{
+    display: flex;
+    justify-content: center;
+}
+#paginationBlock2{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+#paginationBlock2 span{
+        font-family: "Roboto Mono", monospace;
+    margin: 0px;
+    letter-spacing: 2px;
+    padding: 0px;
+    font-weight: 800;
+    text-decoration: underline;
+}
+#translationPageSize{
+    font-family: "Roboto Mono", monospace;
+    text-align: center;
+    font-weight: 700;
+    width: 180px;
+    height: 40px;
+    margin: 0px;
+    padding: 0px;
+}
+#pagBtn1,
+#pagBtn2{
+    height: 40px;
+    width: 40px;
+        font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    margin: 0px;
+    letter-spacing: 2px;
+    padding: 0px;
+    font-weight: 700;
+    border: solid 2px #323A42;
+}
+/* TEXT */
+#pagLabel{
+    font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 2px;
+  padding: 0px;
+}
