@@ -21,11 +21,18 @@
 /* BOOTSTRAP LAYOUT */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #notebookDataRow,
-#tagsDataRow{
+#tagsDataRow,
+#notePanalRow{
     display: flex;
     width: 100%;
     padding: 0px;
     margin: 0px;
+}
+#notePanalCol{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
 }
 #noteBooksCol,
 #tagsDataCol{

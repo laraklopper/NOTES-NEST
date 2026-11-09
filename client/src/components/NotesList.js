@@ -356,7 +356,9 @@ export default function NotesList(
     </div>
     </Col>
     </Row>
-    {/* SELECTED NOTE PANAL */}
+    <Row id='notePanalRow'>
+      <Col id='notePanalCol'>
+ {/* SELECTED NOTE PANAL */}
     {selectedNote && (
     <div id='notePanal'>
             <Stack direction="horizontal" gap={3} id='notePanalHead'>
@@ -500,6 +502,10 @@ export default function NotesList(
     </Stack>
     </div>
     )}
+      </Col>
+
+    </Row>
+   
    </div>
   )
 }
