@@ -18,7 +18,11 @@ const Tag = require('../models/tagSchema');// Import the Tag model
 const User = require('../models/userSchema');// Import the User model
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with a permanently deleted note)
 const { checkJwtToken } = require('./middleware');// Import the JWT middleware
+const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the language filter
 const router = express.Router()
+
+const DEFAULT_LIMIT = 10;// Notes per page when no limit is sent
+const MAX_LIMIT = 50;// Upper bound on the page size so one request can't pull the whole collection
 
 /*──────────────────────────── SHARED HELPERS ─────────────────────────────────
    Used by both POST /addNote and PATCH /:id
@@ -62,17 +66,58 @@ const populateNote = (query) => query
     .populate('tags', 'name');
 
 /* GET: /notes/fetchNotes : Lists the signed-in user's active notes (not archived,
-not in the trash), pinned notes first and then the most recently updated */
+not in the trash), pinned notes first and then the most recently updated.
+Query (all optional): language (code), notebook (ObjectId), tag (ObjectId), page (>= 1), limit (1-50)
+Responds { notes, pagination: { page, limit, total, totalPages } } */
 router.get('/fetchNotes', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { language, notebook, tag, page, limit } = req.query;// Extract the filters from the query string
 
-        const notes = await populateNote(
-            Note.find({ user: userId, isArchived: false, deletedAt: null })
-        ).sort({ isPinned: -1, updatedAt: -1 }).lean();// Matches the { user, isPinned, updatedAt } index
+        const filter = { user: userId, isArchived: false, deletedAt: null };// Only the user's own active notes
 
-        console.log(`[SUCCESS: noteRoutes.js, GET /fetchNotes] Fetched ${notes.length} notes`);//Log a message in the console for debugging purposes
-        return res.status(200).json({ notes });// Send a 200 (OK) status code with the notes
+        // Conditional rendering to check the optional language filter is a single valid language code
+        if (language !== undefined && language !== '') {
+            if (typeof language !== 'string' || !languageCodeRegex.test(language)) {
+                console.error(`[ERROR: noteRoutes.js, GET /fetchNotes] Invalid language code: ${language}`);// Log an error message in the console for debugging purposes
+                return res.status(400).json({ message: 'Invalid language code' });// Return a 400 (Bad Request) status code with a message
+            }
+            filter.language = language;
+        }
+
+        // Conditional rendering to check the optional notebook and tag filters are single valid ObjectIds
+        for (const [field, value, label] of [['notebook', notebook, 'notebook'], ['tags', tag, 'tag']]) {
+            if (value === undefined || value === '') continue;
+            if (typeof value !== 'string' || !mongoose.Types.ObjectId.isValid(value)) {
+                console.error(`[ERROR: noteRoutes.js, GET /fetchNotes] Invalid ${label} id: ${value}`);// Log an error message in the console for debugging purposes
+                return res.status(400).json({ message: `Invalid ${label} id` });// Return a 400 (Bad Request) status code with a message
+            }
+            filter[field] = value;// For tags this matches notes whose tags array contains the id
+        }
+
+        // Fall back to the defaults when page/limit are missing or not positive whole numbers
+        const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+        const pageSize = Math.min(Math.max(parseInt(limit, 10) || DEFAULT_LIMIT, 1), MAX_LIMIT);
+
+        const [notes, total] = await Promise.all([
+            populateNote(Note.find(filter))
+                .sort({ isPinned: -1, updatedAt: -1 })// Matches the { user, isPinned, updatedAt } index
+                .skip((pageNumber - 1) * pageSize)
+                .limit(pageSize)
+                .lean(),
+            Note.countDocuments(filter)
+        ]);
+
+        console.log(`[SUCCESS: noteRoutes.js, GET /fetchNotes] Fetched ${notes.length} of ${total} notes`);//Log a message in the console for debugging purposes
+        return res.status(200).json({// Send a 200 (OK) status code with the notes
+            notes,
+            pagination: {
+                page: pageNumber,
+                limit: pageSize,
+                total,
+                totalPages: Math.max(Math.ceil(total / pageSize), 1)
+            }
+        });
     } catch (error) {
         console.error('[ERROR: noteRoutes.js, GET /fetchNotes]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message

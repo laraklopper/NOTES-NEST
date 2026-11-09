@@ -4,18 +4,23 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 // IMPORT CSS STYLESHEETS
 import '../css/componentCss/NotesList.css'
+import '../css/componentCss/ListTables.css'
 import '../css/componentCss/DetailsPanals.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack'
+import Form from 'react-bootstrap/Form';
 // IMPORT UTILITY FUNCTIONS
 import { dateDisplay, timeDisplay } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArchiveArrowDownIcon, Copy, Edit3Icon, Filter, Pin, Trash2, X } from 'lucide-react';
-import FilterNotes from './FilterNotes';
+import { ArchiveArrowDownIcon, ChevronLeft, ChevronRight, Copy, Edit3Icon, Filter, FilterX, Pin, Trash2, X } from 'lucide-react';
+// IMPORT COMPONENTS
+import FilterNotes, { EMPTY_NOTE_FILTERS } from './FilterNotes';
+
+export const NOTE_PAGE_SIZES = [10, 20, 50];// Options for the "per page" select (server caps at 50)
 
 // Date and time a note was created, e.g. "06/11/2026 14:05:09"
 const formatTimestamp = (dateString) => {
@@ -39,7 +44,16 @@ export default function NotesList(
         loading = false,
         fetchNotes,
         selectedId,// Id of the note shown in the details panal (state lives in Notes.js so EditNoteForm can use it)
-        setSelectedId
+        setSelectedId,
+        notebooks = [],// For the notebook filter select
+        tags = [],// For the tag filter select
+        // Paging and filter state lives in Notes.js so fetchNotes() always reloads the current view
+        pagination = { page: 1, limit: NOTE_PAGE_SIZES[0], total: 0, totalPages: 1 },
+        limit = NOTE_PAGE_SIZES[0],
+        setLimit,
+        setPage,
+        filters = EMPTY_NOTE_FILTERS,
+        setFilters
     }
 ) {
     const [showFilter, setShowFilter] = useState(false)
@@ -50,7 +64,14 @@ export default function NotesList(
     so it always shows the latest data after fetchNotes runs */
     const selectedIndex = notes.findIndex((note) => note._id === selectedId)
     const selectedNote = selectedIndex === -1 ? null : notes[selectedIndex]
+    const rowNumber = (index) => (pagination.page - 1) * pagination.limit + index + 1// Numbering carries on across pages
+    const { language, notebook, tag } = filters
+    const filtersActive = Boolean(language || notebook || tag)
+    // Names for the filter summary, looked up from the ids
+    const notebookName = notebooks.find((n) => n._id === notebook)?.name || 'Unknown notebook'
+    const tagName = tags.find((t) => t._id === tag)?.name || 'Unknown tag'
 
+    // Fetch on mount and whenever the page/limit/filters change (fetchNotes is rebuilt when they do)
     useEffect(() => {
         fetchNotes?.()
     },[fetchNotes])
@@ -61,6 +82,27 @@ export default function NotesList(
         setSelectedId(null)
         if (editNote) toggleEditNote?.()
     }, [editNote, toggleEditNote, setSelectedId])
+
+    // Applying or clearing filters starts again from page 1
+    const handleApplyFilters = (newFilters) => {
+        setFilters?.({ ...EMPTY_NOTE_FILTERS, ...newFilters })
+        setPage?.(1)
+        closePanal()
+    }
+    const handleClearFilters = () => {
+        setFilters?.(EMPTY_NOTE_FILTERS)
+        setPage?.(1)
+        closePanal()
+    }
+    const handleLimitChange = (e) => {
+        setLimit?.(Number(e.target.value))
+        setPage?.(1)
+        closePanal()
+    }
+    const goToPage = (newPage) => {
+        setPage?.(newPage)
+        closePanal()
+    }
 
     /* Shared request runner for the archive and trash buttons.
     Refreshes the list and closes the panal on success */
@@ -149,32 +191,67 @@ export default function NotesList(
         <Col id='toggleFilterCol'>
         <div className='toggleFilterDiv'>
   <Stack direction="horizontal" gap={3} id='toggleFilterStack'>
-      <div className="p-2"></div>
-      <div className="p-2 ms-auto">S</div>
+      {/* SUMMARY OF THE APPLIED FILTERS */}
+      <div className="p-2" aria-live='polite'>
+        {filtersActive ? (
+            <span className='filterStatusSpan'>
+                FILTERED:
+                {language && ` ${languageName(language)}`}
+                {notebook && ` | NOTEBOOK: ${notebookName}`}
+                {tag && ` | TAG: ${tagName}`}
+            </span>
+        ) : (
+            <span className='filterStatusSpan'>
+                SHOWING ALL NOTES
+            </span>
+        )}
+      </div>
+      <div className="p-2 ms-auto">
+        {filtersActive && (
+            <Button
+            variant='light'
+            type='button'
+            onClick={handleClearFilters}
+            disabled={loading}
+            // ARIA ATTRIBUTES:
+            aria-label='Clear note filters'
+            >
+                <FilterX aria-hidden='true' focusable='false'/> CLEAR
+            </Button>
+        )}
+      </div>
       <div className="p-2">
         <Button
         variant='light'
         id='toggleFilterBtn'
         type='button'
         onClick={toggleFilter}
-        aria-label={showFilter ? 'HIDE FILTER' : 'SHOW FILTER'}
-        aria-pressed={showFilter}
+        // ARIA ATTRIBUTES:
         aria-expanded={showFilter}
-        // aria-controls=''
+        aria-controls={showFilter ? 'filterRow' : undefined}// Only point at the filter while it exists
         >
         <Filter aria-hidden='true' focusable='false'/> {showFilter ? 'HIDE FILTER' : 'SHOW FILTER'}
         </Button>
       </div>
     </Stack>
         </div>
-       
+
         </Col>
     </Row>
-    <Row id='filterRow'>
-        <Col id='filterCol'>
-        <FilterNotes/>
+    {showFilter && (
+        <Row style={{width: '100%'}} id='filterRow'>
+        <Col style={{width: '100%'}} id='filterCol'>
+        <FilterNotes
+            loading={loading}
+            filters={filters}
+            notebooks={notebooks}
+            tags={tags}
+            onApply={handleApplyFilters}
+            onClear={handleClearFilters}
+        />
         </Col>
     </Row>
+    )}
     <Row id='notesListRow'>
     <Col xs={12} md={12} id='notesListCol'>
      <div id='notesListWrapper'>
@@ -202,12 +279,12 @@ export default function NotesList(
                     </tr>
                 ) : notes.length === 0 ? (
                     <tr>
-                        <td colSpan={7}>NO NOTES YET</td>
+                        <td colSpan={7}>{filtersActive ? 'NO NOTES MATCH THESE FILTERS' : 'NO NOTES YET'}</td>
                     </tr>
                 ) : (
                     notes.map((note, index) => (
                         <tr key={note._id}>
-                            <td>{index + 1}</td>
+                            <td>{rowNumber(index)}</td>
                             <td>
                                 {note.isPinned && (
                                     <Pin size={14} aria-label='Pinned' />
@@ -236,6 +313,45 @@ export default function NotesList(
                     ))
                 )}
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colSpan={7}>
+                    <Stack gap={3} id='paginationStack'>
+      <div className="p-2" id='paginationBlock1'>
+                            <Form.Group controlId='notePageSize'>
+                                <Form.Label className='m-0' id='pagLabel'>PER PAGE:</Form.Label>
+                                <Form.Select size='sm' value={limit} onChange={handleLimitChange} disabled={loading}>
+                                    {NOTE_PAGE_SIZES.map((size) => (
+                                        <option key={size} value={size}>{size}</option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+      </div>
+      <div className="p-2" id='paginationBlock2'>
+          <Button
+                            variant='light'
+                            size='sm'
+                            type='button'
+                            onClick={() => goToPage(pagination.page - 1)}
+                            disabled={loading || pagination.page <= 1}
+                            aria-label='Previous page'
+                            ><ChevronLeft aria-hidden='true' focusable='false'/></Button>
+                            <span>
+                                PAGE {pagination.page} OF {pagination.totalPages} ({pagination.total} TOTAL)
+                            </span>
+                            <Button
+                            variant='light'
+                            size='sm'
+                            type='button'
+                            onClick={() => goToPage(pagination.page + 1)}
+                            disabled={loading || pagination.page >= pagination.totalPages}
+                            aria-label='Next page'
+                            ><ChevronRight aria-hidden='true' focusable='false'/></Button>
+      </div>
+    </Stack>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
     </Col>
@@ -246,7 +362,7 @@ export default function NotesList(
             <Stack direction="horizontal" gap={3} id='notePanalHead'>
       <div className="p-2">
       <span id='panalHeadSpan'>
-      <h4 className='panalHeading'>#{selectedIndex + 1} {selectedNote.title}</h4>
+      <h4 className='panalHeading'>#{rowNumber(selectedIndex)} {selectedNote.title}</h4>
       </span>
       </div>
       <div className="p-2 ms-auto">

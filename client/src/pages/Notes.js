@@ -1,6 +1,6 @@
 //Note.js
 //IMPORT REQUIRED MODULES AND PACKAGES
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 // IMPORT CSS STYLESHEETS
 import '../css/pagesCss/Notes.css'
 import '../css/pagesCss/PageSetup.css'
@@ -14,7 +14,8 @@ import Button from 'react-bootstrap/Button';
 //IMPORT CUSTOM COMPONENTS
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import NotesList from '../components/NotesList';
+import NotesList, { NOTE_PAGE_SIZES } from '../components/NotesList';
+import { EMPTY_NOTE_FILTERS } from '../components/FilterNotes';
 import EditNoteForm from '../components/EditNoteForm';
 import Trash from '../components/Trash';
 import ArchivedNotes from '../components/ArchivedNotes';
@@ -39,29 +40,54 @@ export default function Notes(//Export the default Notes.js function component
     const [updatingNote, setUpdatingNote] = useState(false)// True while PATCH /notes/:id is running
     const [tags, setTags] = useState([])// The user's existing tags from GET /tag/fetchTags
     const [notebooks, setNotebooks] = useState([])// The user's notebooks from GET /notebooks
-
+    /* Notes list paging and filters (sent as query params to GET /notes/fetchNotes) */
+    const [notesPage, setNotesPage] = useState(1)
+    const [notesLimit, setNotesLimit] = useState(NOTE_PAGE_SIZES[0])
+    const [noteFilters, setNoteFilters] = useState(EMPTY_NOTE_FILTERS)// Applied filters; '' = all
+    const [notesPagination, setNotesPagination] = useState({ page: 1, limit: NOTE_PAGE_SIZES[0], total: 0, totalPages: 1 })
+    const latestNotesRequest = useRef(0)// Id of the most recent notes fetch, used to ignore stale responses
 
   
 
      //========FETCH NOTES REQUEST===============
-     /* Fetches the user's active notes (not archived or trashed), pinned first */
+     /* Fetches one page of the user's active notes (not archived or trashed), pinned first.
+     Uses the current page/limit/filters, so other tabs calling fetchNotes() refresh the same view */
      const fetchNotes = useCallback(async () => {
+      /* Number each request so only the newest one updates the list. Without this a
+      slow earlier request (e.g. the previous page or filter) could finish last and
+      overwrite the results the user actually asked for. */
+      const requestId = ++latestNotesRequest.current
+      const isStale = () => requestId !== latestNotesRequest.current
       setNotesLoading(true)
       try {
+        // Only send params that have a value
+        const params = new URLSearchParams({ page: String(notesPage), limit: String(notesLimit) })
+        if (noteFilters.language) params.set('language', noteFilters.language)
+        if (noteFilters.notebook) params.set('notebook', noteFilters.notebook)
+        if (noteFilters.tag) params.set('tag', noteFilters.tag)
+
         // The browser sends the JWT cookie with the request
-        const response = await fetch('/notes/fetchNotes', { method: 'GET' });
+        const response = await fetch(`/notes/fetchNotes?${params.toString()}`, { method: 'GET' });
         const data = await response.json().catch(() => ({}));
+        if (isStale()) return// A newer request has replaced this one
         if (!response.ok) {
           throw new Error(data.message || 'Failed to fetch notes');
         }
-        setNotes(data.notes || []);
+        setNotes(Array.isArray(data.notes) ? data.notes : []);
+        if (data.pagination) {
+          setNotesPagination(data.pagination)
+          // An archive/delete can empty the last page; step back to the new last page
+          const lastPage = Math.max(data.pagination.totalPages || 1, 1)
+          if (notesPage > lastPage) setNotesPage(lastPage)
+        }
       } catch (error) {
+        if (isStale()) return
         console.error('Error fetching notes:', error);
         setError?.('An error occurred while loading your notes.')
       } finally {
-        setNotesLoading(false)
+        if (!isStale()) setNotesLoading(false)
       }
-     }, [setError])
+     }, [setError, notesPage, notesLimit, noteFilters])
 
        //===========EVENT LISTENERS==============
      const toggleEditNote = () => setEditNote ((prev) => !prev)
@@ -179,6 +205,14 @@ export default function Notes(//Export the default Notes.js function component
               fetchNotes={fetchNotes}
               selectedId={selectedId}
               setSelectedId={setSelectedId}
+              notebooks={notebooks}
+              tags={tags}
+              pagination={notesPagination}
+              limit={notesLimit}
+              setLimit={setNotesLimit}
+              setPage={setNotesPage}
+              filters={noteFilters}
+              setFilters={setNoteFilters}
             />
           </div>
       {/* TOGGLE EDIT NOTE FORM */}
