@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import '../css/componentCss/NotesList.css'
 import '../css/componentCss/ListTables.css'
 import '../css/componentCss/DetailsPanals.css'
+import '../css/componentCss/ListBtns.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
