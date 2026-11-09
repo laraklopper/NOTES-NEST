@@ -163,7 +163,6 @@ export default function NotesList(
         // aria-controls=''
         >
         <Filter aria-hidden='true' focusable='false'/> {showFilter ? 'HIDE FILTER' : 'SHOW FILTER'}
-
         </Button>
       </div>
     </Stack>
