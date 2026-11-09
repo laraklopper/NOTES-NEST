@@ -100,8 +100,10 @@
     font-weight: 800;
     color: #f8f9fa;
     font-family: "Roboto", sans-serif; letter-spacing: 2px; text-decoration: underline; }
+    /* TABLE BODY */
 #tagsTable,#languageTable tbody tr:nth-child(even) { background: #fff; }
 #tagsTable, #languageTable  tbody tr:nth-child(odd) { background: #93A0AB; }
+/* TABLE FOOT */
 #languageTable  tfoot tr:nth-child(odd) { background: #212529; 
 color: #f8f9fa; ;}
 #languageTable  tfoot tr:nth-child(even) { background: #383838; 

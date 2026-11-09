@@ -61,17 +61,13 @@
 /* LAYOUT */
 #tagsTableWrapper,
 #notebookTableWrapper,
-#usersTableWrapper{
-    width: 100%;
-    margin: 0px;
-    padding: 5px;
-}
+#usersTableWrapper,
 #archiveTableWrapper,
 #trashTableWrapper,
 #translationsTableWrapper{
     width: 100%;
     margin: 0px;
-    padding: 0px;
+    padding: 5px;
     display: flex;
     justify-content:center;
 }
@@ -90,14 +86,49 @@
 #archiveTable,
 #trashTable{
     width: 90%;
-    margin: 0px;
+    margin: 0px 4;
     padding: 0px;
     overflow-y: scroll;
     border: solid;
     text-align: center;
     font-family: "Roboto", sans-serif;
 }
+#archiveTable, thead tr:nth-child(even) { background: #fff; }
+#archiveTable  thead tr:nth-child(odd) { 
+    background: #212529; 
+    font-weight: 800;
+    color: #f8f9fa;
+    font-family: "Roboto", sans-serif; letter-spacing: 2px; text-decoration: underline; }
+#notesListTable tbody tr td{
+    text-align: center;
+    font-family: "Roboto", sans-serif;
+    letter-spacing: 2px;
+}
 /* Tables css */
+/* thead */
+
+
+#languageTable  thead tr:nth-child(odd) { 
+    background: #212529; 
+    font-weight: 800;
+    color: #f8f9fa;
+    font-family: "Roboto", sans-serif; letter-spacing: 2px; text-decoration: underline; }
+    /* tbody */
+#tagsTable,#languageTable tbody tr:nth-child(even) { background: #fff; }
+#tagsTable, #languageTable  tbody tr:nth-child(odd) { background: #93A0AB; }
+/* tfoot */
+#archiveTable, #trashTable, #languageTable  tfoot tr:nth-child(odd) { background: #212529; 
+color: #f8f9fa; ;}
+#languageTable  tfoot tr:nth-child(even) { background: #383838; 
+color: #f8f9fa; ;}
+#archiveTable, #trashTable, #languageTable tfoot{
+    text-align: center;
+    border: #000 solid 1px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-decoration: underline;
+    font-family: "Roboto Mono", monospace;
+}
 #archiveTable, #trashTable thead tr:nth-child(even) { background: #fff; }
 #archiveTable, #trashTable thead tr:nth-child(odd) { background: #d1d1d4; }
 #archiveTable, #trashTable tbody tr:nth-child(even) { background: #fff; }

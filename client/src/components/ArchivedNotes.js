@@ -100,11 +100,11 @@ export default function ArchivedNotes(
                     <th colSpan={5}>ARCHIVED NOTES</th>
                 </tr>
                 <tr>
-                    <th>#</th>
-                    <th>TITLE</th>
-                    <th>LANGUAGE</th>
-                    <th>DATE ADDED</th>
-                    <th></th>
+                    <th style={{color: '#212529'}}>#</th>
+                    <th style={{color: '#212529'}}>TITLE</th>
+                    <th style={{color: '#212529'}}>LANGUAGE</th>
+                    <th style={{color: '#212529'}}>DATE ADDED</th>
+                    <th style={{color: '#212529'}}></th>
                 </tr>
             </thead>
             <tbody>
@@ -155,7 +155,7 @@ export default function ArchivedNotes(
             </tbody>
             <tfoot>
             <tr>
-              <td colSpan={5}>RESTORE TO VIEW NOTE DETAILS</td>
+              <td colSpan={5} style={{color: '#212529'}}>RESTORE TO VIEW NOTE DETAILS</td>
             </tr>
           </tfoot>
         </table>
