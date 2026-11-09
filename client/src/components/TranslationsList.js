@@ -23,8 +23,8 @@ import Pagination, { PAGE_SIZES } from './Pagination';
 const preview = (text = '', max = 60) => (text.length > max ? `${text.slice(0, max)}…` : text)
 
 // TranslationsList component
-/* Table of the user's saved translations, with a details panal for the selected one
-GET /translation/fetch, DELETE /translation/delete/:id */
+/* Table of the user's saved translations, with a details panal (TranslationPanal.js) for the selected one
+GET /translation/fetch */
 export default function TranslationsList(
     {//PROPS PASSED FROM PARENT COMPONENT (Translate.js)
         currentUser,
@@ -37,8 +37,7 @@ export default function TranslationsList(
     const [limit, setLimit] = useState(PAGE_SIZES[0])
     const [filters, setFilters] = useState(EMPTY_FILTERS)// Applied filters; '' = all languages
     const [loading, setLoading] = useState(false)
-    const [actionLoading, setActionLoading] = useState(false)// True while a delete request is running
-    const [error, setError] = useState(null)
+    const [error, setError] = useState(null)// Set by the list and by TranslationPanal.js
     const [selectedId, setSelectedId] = useState(null)// Id of the translation shown in the panal
     const [showFilter, setShowFilter] = useState(false)// Shows/hides the filter form
     const latestRequest = useRef(0)// Id of the most recent fetch, used to ignore stale responses
@@ -96,49 +95,6 @@ export default function TranslationsList(
     useEffect(() => {
         if (active) fetchTranslations()
     }, [active, fetchTranslations])
-
-    //========DELETE TRANSLATION REQUEST===============
-    const deleteTranslation = useCallback(async (id) => {
-        setError(null)
-        setActionLoading(true)
-        try {
-            const response = await fetch(`/translation/delete/${id}`, {
-                method: 'DELETE',
-                credentials: 'include',
-            })
-            const data = await response.json().catch(() => ({}))
-            if (!response.ok) throw new Error(data?.message || 'Failed to delete translation')
-
-            setSelectedId(null)// Close the panal
-            await fetchTranslations()// Refresh the list so the translation disappears from it
-            alert('Translation successfully deleted')
-        } catch (error) {
-            console.error('[ERROR: TranslationsList.js] Deleting translation failed:', error.message)
-            setError(error.message || 'Something went wrong while deleting. Please try again.')
-        } finally {
-            setActionLoading(false)
-        }
-    }, [fetchTranslations])
-
-    // Ask before deleting the selected translation
-    const handleDelete = () => {
-        if (!selectedTranslation) return
-        const confirmDelete = window.confirm('Are you sure you want to permanently delete this translation?')
-        if (!confirmDelete) return
-        deleteTranslation(selectedTranslation._id)
-    }
-
-    // Copy the translated text to the clipboard
-    const handleCopy = async () => {
-        if (!selectedTranslation) return
-        try {
-            await navigator.clipboard.writeText(selectedTranslation.translatedText || '')
-            alert('Translation copied to clipboard')
-        } catch (error) {
-            console.error('[ERROR: TranslationsList.js] Copying translation failed:', error)
-            setError('Could not copy the translation to the clipboard.')
-        }
-    }
 
     // Applying or clearing filters starts again from page 1
     const handleApplyFilters = (newFilters) => {
@@ -306,9 +262,8 @@ export default function TranslationsList(
             rowNumber={rowNumber(selectedIndex)}
             currentUser={currentUser}
             onClose={() => setSelectedId(null)}
-            onCopy={handleCopy}
-            onDelete={handleDelete}
-            deleting={actionLoading}
+            fetchTranslations={fetchTranslations}
+            setError={setError}
         />
     </Col>
     </Row>

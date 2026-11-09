@@ -1,5 +1,5 @@
 //TranslationPanal.js
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import '../css/componentCss/DetailsPanals.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
@@ -11,17 +11,61 @@ import { languageName } from '../util/languageFunc';
 import { ArrowRight, Copy, Trash2, X } from 'lucide-react';
 
 // PANAL FOR A SELECTED TRANSLATION
+/* DELETE /translation/delete/:id */
 export default function TranslationPanal(
     {//PROPS PASSED FROM PARENT COMPONENT (TranslationsList.js)
         translation,// The selected translation
         rowNumber,// The translation's number in the table
         currentUser,
-        onClose,
-        onCopy,
-        onDelete,
-        deleting = false// True while a delete request is running
+        onClose,// Closes the panal
+        fetchTranslations,// Refreshes the list after a delete
+        setError// Shows an error message above the list
     }
 ) {
+    const [deleting, setDeleting] = useState(false)// True while a delete request is running
+
+    //========DELETE TRANSLATION REQUEST===============
+    const deleteTranslation = useCallback(async (id) => {
+        setError?.(null)
+        setDeleting(true)
+        try {
+            const response = await fetch(`/translation/delete/${id}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            })
+            const data = await response.json().catch(() => ({}))
+            if (!response.ok) throw new Error(data?.message || 'Failed to delete translation')
+
+            onClose?.()// Close the panal
+            await fetchTranslations?.()// Refresh the list so the translation disappears from it
+            alert('Translation successfully deleted')
+        } catch (error) {
+            console.error('[ERROR: TranslationPanal.js] Deleting translation failed:', error.message)
+            setError?.(error.message || 'Something went wrong while deleting. Please try again.')
+        } finally {
+            setDeleting(false)
+        }
+    }, [setError, onClose, fetchTranslations])
+
+    // Ask before deleting the translation
+    const handleDelete = () => {
+        const confirmDelete = window.confirm('Are you sure you want to permanently delete this translation?')
+        if (!confirmDelete) return
+        deleteTranslation(translation._id)
+    }
+
+    // Copy the translated text to the clipboard
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(translation.translatedText || '')
+            alert('Translation copied to clipboard')
+        } catch (error) {
+            console.error('[ERROR: TranslationPanal.js] Copying translation failed:', error)
+            setError?.('Could not copy the translation to the clipboard.')
+        }
+    }
+
+    // Hooks above must run on every render, so this check comes after them
     if (!translation) return null
 
   return (
@@ -102,7 +146,7 @@ export default function TranslationPanal(
         variant='light'
         id='copyBtn'
         type='button'
-        onClick={onCopy}
+        onClick={handleCopy}
         // ARIA ATTRIBUTES:
         aria-label='Copy translated text'
         >
@@ -116,7 +160,7 @@ export default function TranslationPanal(
         variant='danger'
         id='deleteItemBtn'
         type='button'
-        onClick={onDelete}
+        onClick={handleDelete}
         disabled={deleting}
         // ARIA ATTRIBUTES:
         aria-label='Delete translation'

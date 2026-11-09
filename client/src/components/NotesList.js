@@ -26,8 +26,8 @@ export const NOTE_PAGE_SIZES = PAGE_SIZES;// Options for the "per page" select (
 const tagNames = (tags = []) => tags.map((tag) => tag?.name).filter(Boolean).join(', ')
 
 // NotesList component
-/* Table of the user's active notes, with a details panel for the selected note
-GET /notes/fetchNotes (via fetchNotes), PATCH /archive/:id, DELETE /notes/delete/:id */
+/* Table of the user's active notes, with a details panel (NotePanal.js) for the selected note
+GET /notes/fetchNotes (via fetchNotes) */
 export default function NotesList(
     {//PROPS PASSED FROM PARENT COMPONENT (Notes.js)
         currentUser,
@@ -50,8 +50,7 @@ export default function NotesList(
     }
 ) {
     const [showFilter, setShowFilter] = useState(false)
-    const [error, setError] = useState(null)
-    const [actionLoading, setActionLoading] = useState(false)// True while an archive/trash request is running
+    const [error, setError] = useState(null)// Set by the list and by NotePanal.js
 
     /* The selected note is looked up from the list (rather than stored as a copy)
     so it always shows the latest data after fetchNotes runs */
@@ -86,75 +85,6 @@ export default function NotesList(
         setFilters?.(EMPTY_NOTE_FILTERS)
         setPage?.(1)
         closePanal()
-    }
-
-    /* Shared request runner for the archive and trash buttons.
-    Refreshes the list and closes the panal on success */
-    const runNoteAction = useCallback(async (url, method, fallbackMessage) => {
-        setError?.(null)
-        setActionLoading(true)
-        try {
-            // The browser sends the JWT cookie with the request
-            const response = await fetch(url, { method })
-            const data = await response.json().catch(() => ({}))
-            if (!response.ok) {
-                setError?.(data.message || fallbackMessage)
-                return false
-            }
-            closePanal()
-            await fetchNotes?.()// Refresh the list so the note disappears from it
-            return true
-        } catch (error) {
-            console.error(fallbackMessage, error)
-            setError?.(fallbackMessage)
-            return false
-        } finally {
-            setActionLoading(false)
-        }
-    }, [setError, closePanal, fetchNotes])
-
-    //========ARCHIVE NOTE REQUEST===============
-    const archiveNote = useCallback(async (id) => {
-        const success = await runNoteAction(`/archive/${id}`, 'PATCH', 'Error archiving note.')
-        if (success) alert('Note successfully archived')
-    }, [runNoteAction])
-
-    //========MOVE NOTE TO TRASH REQUEST===============
-    const moveToTrash = useCallback(async (id) => {
-        const success = await runNoteAction(`/notes/delete/${id}`, 'DELETE', 'Error moving note to trash.')
-        if (success) alert('Note successfully moved to trash')
-    }, [runNoteAction])
-
-    // Ask before archiving the selected note
-    const handleArchive = () => {
-        if (!selectedNote) return
-        const confirmArchive = window.confirm(
-            `Are you sure you want to archive "${selectedNote.title}"?`
-        )
-        if (!confirmArchive) return;
-        archiveNote(selectedNote._id)
-    }
-
-    // Ask before moving the selected note to trash
-    const handleDelete = () => {
-        if (!selectedNote) return
-        const confirmDelete = window.confirm(
-            `Are you sure you want to move "${selectedNote.title}" to trash?`
-        )
-        if (!confirmDelete) return;
-        moveToTrash(selectedNote._id)
-    }
-
-    // Copy the note text (without HTML tags) to the clipboard
-    const handleCopy = async () => {
-        if (!selectedNote) return
-        try {
-            await navigator.clipboard.writeText(selectedNote.plainText || '')
-            alert('Note copied to clipboard')
-        } catch (error) {
-            console.error('Error copying note:', error)
-            setError?.('Could not copy the note to the clipboard.')
-        }
     }
 
     const tableHeading = currentUser?.fullName?.firstName
@@ -325,10 +255,8 @@ export default function NotesList(
             editNote={editNote}
             onToggleEdit={toggleEditNote}
             onClose={closePanal}
-            onCopy={handleCopy}
-            onArchive={handleArchive}
-            onDelete={handleDelete}
-            actionLoading={actionLoading}
+            fetchNotes={fetchNotes}
+            setError={setError}
         />
     )}
       </Col>
