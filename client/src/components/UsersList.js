@@ -9,20 +9,12 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 // IMPORT UTILITY FUNCTIONS
-import { dateDisplay, timeDisplay } from '../util/dateFunctions';
+import { dateDisplay, formatTimestamp } from '../util/dateFunctions';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ChevronLeft, ChevronRight, TrashIcon, X } from 'lucide-react';
-
-const PAGE_SIZES = [10, 20, 50];// Options for the "per page" select
-
-// Date and time an account was created, e.g. "06/11/2026 14:05:09"
-const formatTimestamp = (dateString) => {
-    const date = new Date(dateString)
-    if (isNaN(date.getTime())) return 'Invalid date'
-    return `${dateDisplay(date)} ${timeDisplay(date)}`
-}
+import { TrashIcon, X } from 'lucide-react';
+// IMPORT COMPONENTS
+import Pagination, { PAGE_SIZES } from './Pagination';
 
 // "Firstname Lastname" from the nested fullName object
 const fullNameOf = (user) => `${user?.fullName?.firstName || ''} ${user?.fullName?.lastName || ''}`.trim() || '-'
@@ -120,8 +112,8 @@ export default function UsersList() {
         deleteUser(selectedUser)
     }
 
-    const handleLimitChange = (e) => {
-        setLimit(Number(e.target.value))
+    const handleLimitChange = (newLimit) => {
+        setLimit(newLimit)
         setPage(1)
     }
 
@@ -190,38 +182,17 @@ export default function UsersList() {
                     </tr>
                     <tr>
                         <td colSpan={6}>
-                        {/* Display in Pagination.js component*/}
-                              <div id='paginationDiv'>
-                                <Stack direction='horizontal' gap={3} className='justify-content-center'>
-                                    <Button
-                                    variant='light'
-                                    size='sm'
-                                    type='button'
-                                    onClick={() => setPage(currentPage - 1)}
-                                    disabled={loading || currentPage <= 1}
-                                    aria-label='Previous page'
-                                    ><ChevronLeft aria-hidden='true' focusable='false'/></Button>
-                                    <span>
-                                        PAGE {currentPage} OF {totalPages} ({users.length} TOTAL)
-                                    </span>
-                                    <Button
-                                    variant='light'
-                                    size='sm'
-                                    type='button'
-                                    onClick={() => setPage(currentPage + 1)}
-                                    disabled={loading || currentPage >= totalPages}
-                                    aria-label='Next page'
-                                    ><ChevronRight aria-hidden='true' focusable='false'/></Button>
-                                    <Form.Group controlId='usersPageSize' className='d-flex align-items-center gap-2'>
-                                        <Form.Label className='m-0'>PER PAGE:</Form.Label>
-                                        <Form.Select size='sm' value={limit} onChange={handleLimitChange} disabled={loading}>
-                                            {PAGE_SIZES.map((size) => (
-                                                <option key={size} value={size}>{size}</option>
-                                            ))}
-                                        </Form.Select>
-                                    </Form.Group>
-                                </Stack>
-                            </div>
+                        {/* PAGINATION (Pagination.js) */}
+                        <Pagination
+                            page={currentPage}
+                            totalPages={totalPages}
+                            total={users.length}
+                            limit={limit}
+                            onPageChange={setPage}
+                            onLimitChange={handleLimitChange}
+                            loading={loading}
+                            controlId='usersPageSize'
+                        />
                         </td>
                     </tr>
                 </tfoot>

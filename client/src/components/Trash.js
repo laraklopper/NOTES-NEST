@@ -6,20 +6,13 @@ import '../css/componentCss/Trash.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
-import { dateDisplay, timeDisplay } from '../util/dateFunctions';
+import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { ArchiveRestore, TrashIcon } from 'lucide-react';
 
 const PURGE_DAYS = 30;// Matches the TTL index on deletedAt in noteSchema
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-// Date and time, e.g. "06/11/2026 14:05:09"
-const formatTimestamp = (dateString) => {
-    const date = new Date(dateString)
-    if (isNaN(date.getTime())) return 'Invalid date'
-    return `${dateDisplay(date)} ${timeDisplay(date)}`
-}
 
 // Whole days left before the note is purged automatically (never below 0)
 const daysLeft = (deletedAt) => {

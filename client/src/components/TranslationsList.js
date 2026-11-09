@@ -9,24 +9,15 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 // IMPORT UTILITY FUNCTIONS
-import { dateDisplay, timeDisplay } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArrowRight, ChevronLeft, ChevronRight, Copy, Filter, FilterX, Trash2, X } from 'lucide-react';
+import { ArrowRight, Filter, FilterX } from 'lucide-react';
 // IMPORT COMPONENTS
 import FilterTranslations, { EMPTY_FILTERS } from './FilterTranslations';
-
-const PAGE_SIZES = [10, 20, 50];// Options for the "per page" select (server caps at 50)
-
-// Date and time a translation was saved, e.g. "06/11/2026 14:05:09"
-const formatTimestamp = (dateString) => {
-    const date = new Date(dateString)
-    if (isNaN(date.getTime())) return 'Invalid date'
-    return `${dateDisplay(date)} ${timeDisplay(date)}`
-}
+import TranslationPanal from './TranslationPanal';
+import Pagination, { PAGE_SIZES } from './Pagination';
 
 // Shortens long text for the table cells; the full text is shown in the panal
 const preview = (text = '', max = 60) => (text.length > max ? `${text.slice(0, max)}…` : text)
@@ -160,8 +151,8 @@ export default function TranslationsList(
         setPage(1)
         setSelectedId(null)
     }
-    const handleLimitChange = (e) => {
-        setLimit(Number(e.target.value))
+    const handleLimitChange = (newLimit) => {
+        setLimit(newLimit)
         setPage(1)
         setSelectedId(null)
     }
@@ -296,44 +287,17 @@ export default function TranslationsList(
             <tfoot>
                 <tr>
                     <td colSpan={6}>
-                    {/* DISPLAY PAGINATION STACK IN Pagination.js */}
-                    <Stack gap={3} id='paginationStack'>
-      <div className="p-2" id='paginationBlock1'>
-        
-                            <Form.Group controlId='translationPageSize'>
-                                <Form.Label className='m-0' id='pagLabel'>PER PAGE:</Form.Label>
-                                <Form.Select size='sm' value={limit} onChange={handleLimitChange} disabled={loading}>
-                                    {PAGE_SIZES.map((size) => (
-                                        <option key={size} value={size}>{size}</option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
-      </div>
-      <div className="p-2" id='paginationBlock2'>
-          <Button
-                            variant='light'
-                            size='sm'
-                            type='button'
-                            onClick={() => goToPage(pagination.page - 1)}
-                            disabled={loading || pagination.page <= 1}
-                            aria-label='Previous page'
-                            ><ChevronLeft aria-hidden='true' focusable='false'/></Button>
-                            <span>
-                                PAGE {pagination.page} OF {pagination.totalPages} ({pagination.total} TOTAL)
-                            </span>
-                            <Button
-                            variant='light'
-                            size='sm'
-                            type='button'
-                            onClick={() => goToPage(pagination.page + 1)}
-                            disabled={loading || pagination.page >= pagination.totalPages}
-                            aria-label='Next page'
-                            ><ChevronRight aria-hidden='true' focusable='false'/></Button>
-      </div>
-    </Stack>
-                        <Stack direction='horizontal' gap={3} className='justify-content-center'>
-                          
-                        </Stack>
+                    {/* PAGINATION (Pagination.js) */}
+                    <Pagination
+                        page={pagination.page}
+                        totalPages={pagination.totalPages}
+                        total={pagination.total}
+                        limit={limit}
+                        onPageChange={goToPage}
+                        onLimitChange={handleLimitChange}
+                        loading={loading}
+                        controlId='translationPageSize'
+                    />
                     </td>
                 </tr>
             </tfoot>
@@ -342,113 +306,19 @@ export default function TranslationsList(
 
         </Col>
     </Row>
-    {/* SELECTED TRANSLATION PANAL
-    Display in TranslationPanal.js component
-     */}
+    {/* SELECTED TRANSLATION PANAL (TranslationPanal.js) */}
     {selectedTranslation && (
     <Row style={{width: '100%'}} id='translationPanalRow'>
          <Col style={{width: '100%'}} id='translationCol'>
-        <div id='translationPanal'>
-        <Stack direction="horizontal" gap={3} id='translationPanalHead'>
-      <div className="p-2" id='panalHeadingBlock'>
-        <h4 className='panalHeading'>
-            #{rowNumber(selectedIndex)} {languageName(selectedTranslation.sourceLanguage)}
-            <ArrowRight aria-label='to'/>
-            {languageName(selectedTranslation.targetLanguage)}
-        </h4>
-      </div>
-      <div className="p-2 ms-auto">
-        {currentUser?.username && <h6>@{currentUser.username}</h6>}
-      </div>
-      <div className="vr" />
-      <div className="p-2">
-        <Button
-        id='closePanalBtn'
-        variant='warning'
-        type='button'
-        onClick={() => setSelectedId(null)}
-        // ARIA ATTRIBUTES:
-        aria-label='Close translation details'
-        >
-            <X aria-hidden='true' focusable='false'/> CLOSE
-        </Button>
-      </div>
-    </Stack>
-    <div id='translationPanalBody'>
-        <Stack gap={3}>
-      <div className="p-2">
-            <span className='dataSpan'>
-                <p className='dataLabel'>SOURCE LANGUAGE:</p>
-                <p className='dataValue'>{languageName(selectedTranslation.sourceLanguage)}</p>
-            </span>
-      </div>
-      <div className="p-2">
-          <span className='dataSpan'>
-                <p className='dataLabel'>TARGET LANGUAGE:</p>
-                <p className='dataValue'>{languageName(selectedTranslation.targetLanguage)}</p>
-            </span>
-      </div>
-      {/* NOTE if translation is linked to a note (text copied from a note) */}
-      {selectedTranslation.note && (
-      <div className="p-2">
-        <span className='dataSpan'>
-                <p className='dataLabel'>NOTE:</p>
-                <p className='dataValue'>{selectedTranslation.note.title || 'Untitled note'}</p>
-            </span>
-      </div>
-      )}
-      <div className="p-2">
-          <span className='dataSpan'>
-            <p className='dataLabel'>DATE ADDED:</p>
-            <p className='dataValue'>{formatTimestamp(selectedTranslation.createdAt)}</p>
-        </span>
-      </div>
-    </Stack>
-    <Stack gap={3}>
-      <div className="p-2">
-        <span className='dataSpan'>
-            <p className='dataLabel'>SOURCE TEXT:</p>
-            <p className='dataValue'>{selectedTranslation.sourceText}</p>
-        </span>
-      </div>
-      <div className="p-2">
-         <span className='dataSpan'>
-            <p className='dataLabel'>TRANSLATED TEXT:</p>
-            <p className='dataValue'>{selectedTranslation.translatedText}</p>
-        </span>
-      </div>
-    </Stack>
-    </div>
-     <Stack direction="horizontal" gap={3} id='panalFooter'>
-      <div className="p-2">
-        <Button
-        variant='light'
-        id='copyBtn'
-        type='button'
-        onClick={handleCopy}
-        // ARIA ATTRIBUTES:
-        aria-label='Copy translated text'
-        >
-            <Copy aria-hidden='true' focusable='false'/>COPY
-        </Button>
-      </div>
-      <div className="p-2 ms-auto"></div>
-      <div className="vr" />
-      <div className="p-2">
-        <Button
-        variant='danger'
-        id='deleteItemBtn'
-        type='button'
-        onClick={handleDelete}
-        disabled={actionLoading}
-        // ARIA ATTRIBUTES:
-        aria-label='Delete translation'
-        >
-            DELETE<Trash2 aria-hidden='true' focusable='false'/>
-        </Button>
-      </div>
-    </Stack>
-    </div>
+        <TranslationPanal
+            translation={selectedTranslation}
+            rowNumber={rowNumber(selectedIndex)}
+            currentUser={currentUser}
+            onClose={() => setSelectedId(null)}
+            onCopy={handleCopy}
+            onDelete={handleDelete}
+            deleting={actionLoading}
+        />
     </Col>
     </Row>
     )}

@@ -1,7 +1,6 @@
 //NotesList.js
 //IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
 // IMPORT CSS STYLESHEETS
 import '../css/componentCss/NotesList.css'
 import '../css/componentCss/ListTables.css'
@@ -11,23 +10,17 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack'
-import Form from 'react-bootstrap/Form';
 // IMPORT UTILITY FUNCTIONS
-import { dateDisplay, timeDisplay } from '../util/dateFunctions';
+import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArchiveArrowDownIcon, ChevronLeft, ChevronRight, Copy, Edit3Icon, Filter, FilterX, Pin, Trash2, X } from 'lucide-react';
+import { Filter, FilterX, Pin } from 'lucide-react';
 // IMPORT COMPONENTS
 import FilterNotes, { EMPTY_NOTE_FILTERS } from './FilterNotes';
+import NotePanal from './NotePanal';
+import Pagination, { PAGE_SIZES } from './Pagination';
 
-export const NOTE_PAGE_SIZES = [10, 20, 50];// Options for the "per page" select (server caps at 50)
-
-// Date and time a note was created, e.g. "06/11/2026 14:05:09"
-const formatTimestamp = (dateString) => {
-    const date = new Date(dateString)
-    if (isNaN(date.getTime())) return 'Invalid date'
-    return `${dateDisplay(date)} ${timeDisplay(date)}`
-}
+export const NOTE_PAGE_SIZES = PAGE_SIZES;// Options for the "per page" select (used by Notes.js for its initial limit)
 
 // Comma separated tag names for the table, e.g. "work, ideas"
 const tagNames = (tags = []) => tags.map((tag) => tag?.name).filter(Boolean).join(', ')
@@ -94,8 +87,8 @@ export default function NotesList(
         setPage?.(1)
         closePanal()
     }
-    const handleLimitChange = (e) => {
-        setLimit?.(Number(e.target.value))
+    const handleLimitChange = (newLimit) => {
+        setLimit?.(newLimit)
         setPage?.(1)
         closePanal()
     }
@@ -235,7 +228,6 @@ export default function NotesList(
       </div>
     </Stack>
         </div>
-
         </Col>
     </Row>
     {showFilter && (
@@ -267,9 +259,7 @@ export default function NotesList(
                 <th>NOTE BOOK</th>
                 <th>TAGS</th>
                 <th>DATE ADDED</th>
-                <td>
-                    {/* view note button */}
-                </td>
+                <td></td>
             </tr>
             </thead>
             <tbody>
@@ -316,42 +306,17 @@ export default function NotesList(
             <tfoot>
                 <tr>
                     <td colSpan={7}>
-                    {/* DISPLAY PAGINATION STACK IN Pagination.js */}
-                    <Stack gap={3} id='paginationStack'>
-      <div className="p-2" id='paginationBlock1'>
-                            <Form.Group controlId='notePageSize'>
-                                <Form.Label className='m-0' id='pagLabel'>PER PAGE:</Form.Label>
-                                <Form.Select size='sm' value={limit} onChange={handleLimitChange} disabled={loading}>
-                                    {NOTE_PAGE_SIZES.map((size) => (
-                                        <option key={size} value={size}>{size}</option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
-      </div>
-      <div className="p-2" id='paginationBlock2'>
-          <Button
-                            variant='light'
-                            id='pagBtn1'
-                            size='sm'
-                            type='button'
-                            onClick={() => goToPage(pagination.page - 1)}
-                            disabled={loading || pagination.page <= 1}
-                            aria-label='Previous page'
-                            ><ChevronLeft aria-hidden='true' focusable='false'/></Button>
-                            <span>
-                                PAGE {pagination.page} OF {pagination.totalPages} ({pagination.total} TOTAL)
-                            </span>
-                            <Button
-                            variant='light'
-                            size='sm'
-                            id='pagBtn2'
-                            type='button'
-                            onClick={() => goToPage(pagination.page + 1)}
-                            disabled={loading || pagination.page >= pagination.totalPages}
-                            aria-label='Next page'
-                            ><ChevronRight aria-hidden='true' focusable='false'/></Button>
-      </div>
-    </Stack>
+                    {/* PAGINATION (Pagination.js) */}
+                    <Pagination
+                        page={pagination.page}
+                        totalPages={pagination.totalPages}
+                        total={pagination.total}
+                        limit={limit}
+                        onPageChange={goToPage}
+                        onLimitChange={handleLimitChange}
+                        loading={loading}
+                        controlId='notePageSize'
+                    />
                     </td>
                 </tr>
             </tfoot>
@@ -361,150 +326,19 @@ export default function NotesList(
     </Row>
     <Row id='notePanalRow'>
       <Col id='notePanalCol'>
- {/* SELECTED NOTE PANAL
- display in NotePanal.js*/}
+    {/* SELECTED NOTE PANAL (NotePanal.js) */}
     {selectedNote && (
-    <div id='notePanal'>
-            <Stack direction="horizontal" gap={3} id='notePanalHead'>
-      <div className="p-2">
-      <span id='panalHeadSpan'>
-      <h4 className='panalHeading'>#{rowNumber(selectedIndex)} {selectedNote.title}</h4>
-      </span>
-      </div>
-      <div className="p-2 ms-auto">
-        <Button
-        variant='warning'
-        id='editNoteBtn'
-        type='button'
-        onClick={toggleEditNote}
-        // ARIA ATTRIBUTES:
-        aria-label={editNote ? 'Hide Form': 'Edit Note'}
-        >
-            {editNote ? (
-                <>
-                   <X/> HIDE FORM
-                </>
-            ): (
-                <>
-                    <Edit3Icon/>
-                    EDIT NOTE
-                </>
-            )}
-        </Button>
-      </div>
-      <div className="vr" style={{width: '2px'}} />
-      <div className="p-2">
-        <Button
-        variant='warning'
-        id='closePanalBtn'
-        type='button'
-        onClick={closePanal}
-        // ARIA ATTRIBUTES:
-        aria-label='Close note details'
-        >
-          <X aria-hidden='true' focusable='false' />  CLOSE
-        </Button>
-      </div>
-    </Stack>
-        <div id='notePanalBody'>
-        {/* STACK 1 */}
-             <Stack gap={3} id='notePanalStack1'>
-      <div className="p-2" id='noteContentBlock'>
-        <div id='noteContentDiv'>
-            <span className='dataSpan'>
-                <p className='dataLabel'>CONTENT:</p>
-                {/* Content is TipTap HTML, sanitised by noteSchema before it is saved.
-                A div is used because the HTML contains its own <p> tags */}
-                 <div
-                    id='noteContentPara'
-                    className='detailValue'
-                    dangerouslySetInnerHTML={{ __html: selectedNote.content }}
-                 />
-            </span>
-                 <div id='copyNoteDiv'>
-                {/* COPY CONTENT BUTTON */}
-                <Button
-                    variant='light'
-                    id='copyContentBtn'
-                    type='button'
-                    onClick={handleCopy}
-                    // ARIA ATTRIBUTES:
-                    aria-label='Copy note text'
-                ><Copy aria-hidden='true' focusable='false'/>COPY</Button>
-            </div>
-        </div>
-      </div>
-        <div className="p-2">
-        <span className='dataSpan'>
-            <p className='dataLabel'>LANGUAGE:</p>
-            <p className='dataValue'>{languageName(selectedNote.language)}</p>
-        </span>
-      </div>
-    </Stack>
-    {/* STACK 2: */}
-             <Stack gap={3} id='notePanalStack2'>
-                <div className="p-2">
-        <span className='dataSpan'>
-            <p className='dataLabel'>DATE ADDED:</p>
-            <p className='dataValue'>{formatTimestamp(selectedNote.createdAt)}</p>
-        </span>
-    </div>
-      <div className="p-2" id='noteBookBlock'>
-        {/* Notebook */}
-        <span className='dataSpan'>
-            <p className='dataLabel'>NOTE BOOK:</p>
-            <p className='dataValue'>{selectedNote.notebook?.name || 'No notebook'}</p>
-        </span>
-      </div>
-      <div className="p-2" id='noteTagGroup'>
-{/* Tags */}
-<p className='dataLabel'>TAGS:</p>
-        <ul className='tagList'>
-            {selectedNote.tags?.length ? (
-                selectedNote.tags.map((tag) => (
-                    <li className='tagListItem' key={tag._id}>{tag.name}</li>
-                ))
-            ) : (
-                <li className='tagListItem'>No tags</li>
-            )}
-        </ul>
-      </div>
-    </Stack>
-        </div>
-    <Stack direction="horizontal" gap={3} id='panalFooter'>
-      <div className="p-2">
-        {/* Link to translateForm; the note id is passed in the route state */}
-        <Link className='refLink' to='/translate' state={{ noteId: selectedNote._id }}>TRANSLATE</Link>
-      </div>
-      <div className="p-2 ms-auto">
-        <Button
-        variant='warning'
-        id='archiveNoteBtn'
-        type='button'
-        onClick={handleArchive}
-        disabled={actionLoading}
-        // ARIA ATTRIBUTES
-        aria-label='Archive note'
-        >
-           <ArchiveArrowDownIcon aria-hidden='true' focusable='false'/> ARCHIVE
-        </Button>
-      </div>
-      <div className="vr" style={{width: '2px'}}/>
-      <div className="p-2">
-        <Button
-        variant='danger'
-        id='trashNoteBtn'
-        type='button'
-        onClick={handleDelete}
-        disabled={actionLoading}
-        // ARIA ATTRIBUTES:
-        aria-label='Move to trash'
-        >
-            <Trash2 aria-hidden='true' focusable='false'/>DELETE
-        </Button>
-      </div>
-    </Stack>
-    </div>
+        <NotePanal
+            note={selectedNote}
+            rowNumber={rowNumber(selectedIndex)}
+            editNote={editNote}
+            onToggleEdit={toggleEditNote}
+            onClose={closePanal}
+            onCopy={handleCopy}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+            actionLoading={actionLoading}
+        />
     )}
       </Col>
     </Row>

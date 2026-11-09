@@ -25,6 +25,14 @@ export const timeDisplay = (dateObj) => {
     });
 };
 
+//-----------DATE + TIME FUNCTIONS-----------
+// Date and time together, e.g. "06/11/2026 14:05:09" (used for createdAt/deletedAt timestamps)
+export const formatTimestamp = (dateString) => {
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return 'Invalid date'
+    return `${dateDisplay(date)} ${timeDisplay(date)}`
+}
+
 /* Today in YYYY-MM-DD, used as the date input's upper bound so a date of birth
 in the future cannot be picked. The schema rejects one anyway; stopping it here
 saves a round trip. */

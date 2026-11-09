@@ -6,17 +6,10 @@ import '../css/componentCss/Trash.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
-import { dateDisplay, timeDisplay } from '../util/dateFunctions';
+import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { ArchiveRestore, Trash } from 'lucide-react';
-
-// Date and time a note was created, e.g. "06/11/2026 14:05:09"
-const formatTimestamp = (dateString) => {
-    const date = new Date(dateString)
-    if (isNaN(date.getTime())) return 'Invalid date'
-    return `${dateDisplay(date)} ${timeDisplay(date)}`
-}
 
 // ArchivedNotes component
 /* Table of the user's archived notes
