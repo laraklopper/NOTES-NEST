@@ -252,8 +252,8 @@ export default function NotesList(
 <Row id='toggleExportRow'>
         <Col id='toggleExportCol'>
             <Stack direction="horizontal" gap={3} id='toggleExportStack'>
-      <div className="p-2">First item</div>
-      <div className="p-2 ms-auto">Second item</div>
+      <div className="p-2"/>
+      <div className="p-2 ms-auto"/>
       <div className="vr" />
       <div className="p-2">
         <Button
@@ -265,6 +265,7 @@ export default function NotesList(
         aria-label={showExport ? 'HideForm': 'Export Translations'}
         aria-pressed={showExport}
         aria-expanded={showExport}
+        aria-controls='exportFormPanal'
         >{showExport ? (
                     <>HIDE FORM</>
                     ):(

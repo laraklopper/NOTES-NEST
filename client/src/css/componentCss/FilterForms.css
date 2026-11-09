@@ -1,4 +1,5 @@
-#filterForm{
+#filterForm,
+#exportForm{
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -7,6 +8,28 @@
     background-color: #777d83;
     border-radius: 3px;
     border: #323A42 solid 2px;
+}
+#exportFormInput{
+     display: flex;
+    flex-direction: column;
+    width: 100%;
+     background-color: #BFBFBF;
+     margin: 0px;
+     padding: 0px;
+}
+#exportFormatSelect{
+    width: 180px;
+    border: #323A42 solid 2px;
+    font-family: "Roboto Mono", monospace;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    font-weight: 700;
+}
+#exportFormatSelect option{
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
 }
 #filterStack1{
     display: flex;
@@ -22,6 +45,7 @@
     margin: 0px;
     padding: 0px;
 }
+#selectExportBlock,
 #filterByBlock{
     display: flex;
     align-items: baseline;
@@ -35,6 +59,7 @@
     margin: 0px;
     padding: 0px;
 }
+.exportLabel,
 .filterLabel{
     font-family: "Roboto Mono", monospace;
   font-weight: 700;

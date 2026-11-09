@@ -85,10 +85,11 @@ export default function ExportForm(
         <p className='visually-hidden' id='formTitle'></p>
         <div id='exportFormInput'>
             <Stack gap={3} id='exportStack1'>
-                <div className="p-2">
-                    <label>CHOOSE EXPORT FORMAT:</label>
-                    <select
-                        className='exportSelect'
+                <div className="p-2" id='selectExportBlock'>
+                    <label className='exportLabel'>CHOOSE EXPORT FORMAT:</label>
+                    <div className='inputDiv'>
+                      <select
+                        className='input'
                         required
                         id='exportFormatSelect'
                         name='format'
@@ -103,6 +104,8 @@ export default function ExportForm(
                         <option value='xlsx'>EXCEL (.xlsx)</option>
                     </select>
                     <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/>
+                    </div>
+                  
                 </div>
                 {/* ======================ERROR MESSAGE===================== */}
                 {error && (
@@ -116,9 +119,7 @@ export default function ExportForm(
                         <span style={{ fontFamily: '"Roboto Mono", monospace', fontSize: '13.6px' }}>{notice}</span>
                     </div>
                 )}
-                <div className="p-2">
-                    <Button></Button>
-                </div>
+                <div className="p-2"/>
                 </Stack>
         </div>
         <Stack direction="horizontal" gap={3} id='exportStack2'>
@@ -127,6 +128,7 @@ export default function ExportForm(
       <div className="vr" />
       <div className="p-2" id='exportBtnBlock'>
         <Button
+        variant='light'
         id='exportFormBtn'
         type='submit'
         disabled={loading}

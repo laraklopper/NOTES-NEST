@@ -43,7 +43,7 @@ export default function Pagination(
   return (
     <Stack gap={3} id='paginationStack'>
       <div className="p-2" id='paginationBlock1'>
-        <Form.Group controlId={controlId}>
+        <Form.Group controlId={controlId} style={{display: 'flex', flexDirection: 'column' ,alignItems: 'center'}}>
             <Form.Label className='m-0' id='pagLabel'>PER PAGE:</Form.Label>
             <Form.Select
             size='sm'
