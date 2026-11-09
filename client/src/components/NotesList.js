@@ -261,7 +261,15 @@ export default function NotesList(
         variant='light'
         type='button'
         onClick={toggleExport}
-        >EXPORT NOTES<Download/></Button>
+        // ARIA ATTRIBUTES:
+        aria-label={showExport ? 'HideForm': 'Export Translations'}
+        aria-pressed={showExport}
+        aria-expanded={showExport}
+        >{showExport ? (
+                    <>HIDE FORM</>
+                    ):(
+                    <>EXPORT TRANSLATIONS<Download aria-hidden='true' focusable='false'/></>
+                )}</Button>
       </div>
     </Stack>
         </Col>
