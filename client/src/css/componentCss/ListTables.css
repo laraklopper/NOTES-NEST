@@ -1,3 +1,4 @@
+/* ListTables */
 #usersData,
 #notesDataList,
 #notesDataListsDiv,
@@ -17,6 +18,15 @@
     padding: 0px;
     width: 100%;
 }
+/* BOOTSTRAP LAYOUT */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+#notebookDataRow,
+#tagsDataRow{
+    display: flex;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
 #noteBooksCol,
 #tagsDataCol{
     display: flex;
@@ -24,22 +34,15 @@
     margin: 0px;
     padding: 0px;
 }
+#translationCol{
+    width: 100%;
+    margin: 0px;
+        padding: 10px;
+}
 #noteBooksCol1,
 #noteBooksCol1,
 #tagsDataCol1,
-#tagsDataCol1{
-    margin: 0px;
-    padding: 0px;
-}
-
-#notebookDataRow,
-#tagsDataRow{
-        display: flex;
-    width: 100%;
-    padding: 0px;
-    margin: 0px;
-}
-
+#tagsDataCol1,
 #toggleListDataCol1
 #toggleListDataCol2,
 #notesDataCol1,
@@ -47,6 +50,8 @@
     margin: 0px;
     padding: 0px;
 }
+/* TABLES */
+/* LAYOUT */
 #tagsTableWrapper,
 #notebookTableWrapper,
 #usersTableWrapper{
@@ -63,6 +68,7 @@
     display: flex;
     justify-content:center;
 }
+/* Tables */
 #notebookTable,
 #usersTable,
 #tagsTable,
@@ -84,6 +90,7 @@
     text-align: center;
     font-family: "Roboto", sans-serif;
 }
+/* Tables css */
 #archiveTable, #trashTable thead tr:nth-child(even) { background: #fff; }
 #archiveTable, #trashTable thead tr:nth-child(odd) { background: #d1d1d4; }
 #archiveTable, #trashTable tbody tr:nth-child(even) { background: #fff; }
@@ -141,13 +148,96 @@ color: #f8f9fa; ;}
     margin: 0px;
     padding: 0px;
 }
+/* =============================
+PAGINATION
+================*/
+#paginationStack{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+#paginationBlock1{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#paginationBlock2{
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 5px;
+    width: 100%;
+}
+
+#translationPageSize{
+    font-family: "Roboto Mono", monospace;
+    text-align: center;
+    font-weight: 700;
+    width: 180px;
+    height: 40px;
+    margin: 0px;
+    padding: 0px;
+}
+/* TEXT */
+#pagLabel{
+    font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 2px;
+  padding: 0px;
+}
+#translationPanalRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+
+}
+/* FILTERS */
+.toggleFilterDiv{
+    width: 100%;
+    background-color: transparent;
+    margin: 0px;
+    padding: 0px 5px;
+}
+#toggleFilterRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleFilterCol{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+#toggleFilterStack{
+    background-color: #212529;
+    width: 100%;
+    margin: 0px;
+    padding: 0px 10px;
+    display: flex;
+    align-items: center;
+}
+/* TEXT */
+
+.filterStatusSpan{
+   color: #f8f9fa;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 2px;
+  padding: 0px;
+  text-decoration: underline;
+}
+/* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons*/
 #toggleEditNoteBookBtn,
 #toggleEditTagBtn,
 #toggleNoteBooksBtn,
 #toggleTagsBtn,
 #removeUserBtn,
 #deleteItemBtn,
-.viewTranslationBtn{
+#copyBtn,
+#viewTranslationBtn{
     width: 120px;
     height: 40px;
     display: flex;
@@ -169,56 +259,38 @@ color: #f8f9fa; ;}
     width: 180px;
     text-transform: uppercase;
 }
+#copyBtn:hover,
 #removeUserBtn:hover,
 #toggleNoteBooksBtn:hover,
 #toggleEditTagBtn:hover,
 #toggleTagsBtn:hover,
 #deleteItemBtn:hover,
-.viewTranslationBtn:hover{
+#viewTranslationBtn:hover{
     background-color: #323A42;
     color: #E8F0F6;
 }
-#paginationStack{
+#toggleFilterBtn{
     display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-#paginationBlock1{
-    display: flex;
-    flex-direction: column;
     align-items: center;
-}
-#paginationBlock2{
-    display: flex;
     justify-content: center;
-    align-items: baseline;
-    gap: 5px;
-    width: 100%;
-}
-#translationPageSize{
+    padding: 0px;
+    margin: 0px;
     font-family: "Roboto Mono", monospace;
-    text-align: center;
+    letter-spacing: 2px;
+    color: #000;
     font-weight: 700;
-    width: 180px;
+    gap: 5px;
     height: 40px;
-    margin: 0px;
-    padding: 0px;
+    width: 200px;
+    border: #323A42 solid 2px;
 }
-#pagLabel{
-    font-family: "Roboto Mono", monospace;
-  font-weight: 700;
-  margin: 0px;
-  letter-spacing: 2px;
-  padding: 0px;
+#toggleFilterBtn:hover{
+    color: #E8F0F6;
+    background-color: #323A42;
 }
-#translationPanalRow{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-
-}
-#translationCol{
-    width: 100%;
-    margin: 0px;
-        padding: 10px;
+#viewTranslationBtn:active,
+#toggleFilterBtn:active{
+    color: #E8F0F6;
+    text-decoration: underline;
+    background-color: #323A42;
 }

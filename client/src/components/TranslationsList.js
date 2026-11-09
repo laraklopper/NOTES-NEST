@@ -180,19 +180,22 @@ export default function TranslationsList(
         </Col>
         <Col/>
     </Row>
-    <Row>
-        <Col>
-             <Stack direction="horizontal" gap={3}>
+    <Row id='toggleFilterRow'>
+        <Col id='toggleFilterCol'>
+        <div className='toggleFilterDiv'>
+                   <Stack direction="horizontal" gap={3} id='toggleFilterStack'>
       {/* SUMMARY OF THE APPLIED FILTERS */}
       <div className="p-2" aria-live='polite'>
         {filtersActive ? (
-            <span>
+            <span className='filterStatusSpan'>
                 FILTERED: {sourceLanguage ? languageName(sourceLanguage) : 'Any language'}
                 <ArrowRight aria-label='to'/>
                 {targetLanguage ? languageName(targetLanguage) : 'Any language'}
             </span>
         ) : (
-            <span>SHOWING ALL TRANSLATIONS</span>
+            <span className='filterStatusSpan'>
+                SHOWING ALL TRANSLATIONS
+                </span>
         )}
       </div>
       <div className="p-2 ms-auto">
@@ -214,6 +217,7 @@ export default function TranslationsList(
         onClick={toggleFilter}
         variant='light'
         type='button'
+        id='toggleFilterBtn'
         // ARIA ATTRIBUTES:
         aria-expanded={showFilter}
         aria-controls={showFilter ? 'translationFilterPanal' : undefined}// Only point at the panal while it exists
@@ -222,11 +226,13 @@ export default function TranslationsList(
         </Button>
       </div>
     </Stack>
+        </div>
+      
         </Col>
     </Row>
     {showFilter && (
-        <Row style={{width: '100%'}} id='translationFilterPanal'>
-        <Col style={{width: '100%'}}>
+        <Row style={{width: '100%'}} id='translationFilterRow'>
+        <Col style={{width: '100%'}} id='translationsFilterCol'>
         <FilterTranslations
             loading={loading}
             filters={filters}
@@ -275,7 +281,7 @@ export default function TranslationsList(
                                 <div className='translationBtnDiv'>
                                     <Button
                                     variant='light'
-                                    className='viewTranslationBtn'
+                                    id='viewTranslationBtn'
                                     type='button'
                                     onClick={() => setSelectedId(translation._id)}
                                     // ARIA ATTRIBUTES:
@@ -415,7 +421,7 @@ export default function TranslationsList(
       <div className="p-2">
         <Button
         variant='light'
-        className='viewTranslationBtn'
+        id='copyBtn'
         type='button'
         onClick={handleCopy}
         // ARIA ATTRIBUTES:
