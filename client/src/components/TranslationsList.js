@@ -13,11 +13,12 @@ import Button from 'react-bootstrap/Button';
 import { languageName } from '../util/languageFunc';
 
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArrowRight, Filter, FilterX } from 'lucide-react';
+import { ArrowRight, Download, Filter, FilterX } from 'lucide-react';
 // IMPORT COMPONENTS
 import FilterTranslations, { EMPTY_FILTERS } from './FilterTranslations';
 import TranslationPanal from './TranslationPanal';
 import Pagination, { PAGE_SIZES } from './Pagination';
+import ExportForm from './ExportForm';
 
 // Shortens long text for the table cells; the full text is shown in the panal
 const preview = (text = '', max = 60) => (text.length > max ? `${text.slice(0, max)}…` : text)
@@ -37,6 +38,7 @@ export default function TranslationsList(
     const [limit, setLimit] = useState(PAGE_SIZES[0])
     const [filters, setFilters] = useState(EMPTY_FILTERS)// Applied filters; '' = all languages
     const [loading, setLoading] = useState(false)
+    const [showExport, setShowExport] = useState(false)
     const [error, setError] = useState(null)// Set by the list and by TranslationPanal.js
     const [selectedId, setSelectedId] = useState(null)// Id of the translation shown in the panal
     const [showFilter, setShowFilter] = useState(false)// Shows/hides the filter form
@@ -50,6 +52,7 @@ export default function TranslationsList(
     const filtersActive = Boolean(sourceLanguage || targetLanguage)
 
     const toggleFilter = () => setShowFilter((prev) => !prev)
+    const toggleExport = () => setShowExport((prev) => !prev)
     //========FETCH TRANSLATIONS REQUEST===============
     const fetchTranslations = useCallback(async () => {
         /* Number each request so only the newest one updates the list. Without this a
@@ -157,6 +160,7 @@ export default function TranslationsList(
         type='button'
         id='toggleFilterBtn'
         // ARIA ATTRIBUTES:
+        aria-label={showFilter ? 'HIDE FILTER' : 'SHOW FILTER'}
         aria-expanded={showFilter}
         aria-controls={showFilter ? 'translationFilterPanal' : undefined}// Only point at the panal while it exists
         >
@@ -253,10 +257,52 @@ export default function TranslationsList(
 
         </Col>
     </Row>
-    {/* SELECTED TRANSLATION PANAL (TranslationPanal.js) */}
+    <div id='exportFormDiv'>
+<Row id='toggleExportRow'>
+        <Col id='toggleExportCol'>
+            <Stack direction="horizontal" gap={3} id='toggleExportStack'>
+      <div className="p-2"/>
+      <div className="p-2 ms-auto"/>
+      <div className="vr" />
+      <div className="p-2">
+        <Button
+        id='toggleExportBtn'
+        variant='light'
+        type='button'
+        onClick={toggleExport}
+        // ARIA ATTRIBUTES:
+        aria-label={showExport ? 'Hide Form': 'Export Translations'}
+        aria-controls='exportFormPanal'
+        aria-pressed={showExport}
+        aria-expanded={showExport}
+
+        >{showExport ? (
+            <>HIDE FORM</>
+            ):(
+            <>EXPORT TRANSLATIONS<Download aria-hidden='true' focusable='false'/></>
+        )}
+        </Button>
+      </div>
+    </Stack>
+        </Col>
+    </Row>
+    {/* TOGGLE THE EXPORT FORM */}
+    {showExport && (
+        <div id='exportFormPanal'>
+            <Row id='exportFormRow'>
+                <Col md='12' xs={12} id='exportFormCol'>
+                    <ExportForm
+                    setError={setError}
+                    error={error}/>
+                </Col>
+            </Row>
+        </div>
+    )}
+    </div>
+    {/* TOGGLE THE SELECTED TRANSLATION PANAL (TranslationPanal.js) */}
     {selectedTranslation && (
-    <Row style={{width: '100%'}} id='translationPanalRow'>
-         <Col style={{width: '100%'}} id='translationCol'>
+    <Row id='translationPanalRow'>
+         <Col id='translationCol'>
         <TranslationPanal
             translation={selectedTranslation}
             rowNumber={rowNumber(selectedIndex)}

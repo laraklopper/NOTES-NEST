@@ -14,11 +14,12 @@ import Stack from 'react-bootstrap/Stack'
 import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { Filter, FilterX, Pin } from 'lucide-react';
+import { Download, Filter, FilterX, Pin } from 'lucide-react';
 // IMPORT COMPONENTS
 import FilterNotes, { EMPTY_NOTE_FILTERS } from './FilterNotes';
 import NotePanal from './NotePanal';
 import Pagination, { PAGE_SIZES } from './Pagination';
+import ExportForm from './ExportForm';
 
 export const NOTE_PAGE_SIZES = PAGE_SIZES;// Options for the "per page" select (used by Notes.js for its initial limit)
 
@@ -50,6 +51,7 @@ export default function NotesList(
     }
 ) {
     const [showFilter, setShowFilter] = useState(false)
+    const [showExport, setShowExport] = useState(false)
     const [error, setError] = useState(null)// Set by the list and by NotePanal.js
 
     /* The selected note is looked up from the list (rather than stored as a copy)
@@ -69,6 +71,7 @@ export default function NotesList(
     },[fetchNotes])
 
     const toggleFilter = () => setShowFilter((prev) => !prev)
+    const toggleExport = () => setShowExport((prev) => !prev)
     // Close the details panal (and the edit form that belongs to it)
     const closePanal = useCallback(() => {
         setSelectedId(null)
@@ -245,6 +248,37 @@ export default function NotesList(
     </div>
     </Col>
     </Row>
+     <div id='exportFormDiv'>
+<Row id='toggleExportRow'>
+        <Col id='toggleExportCol'>
+            <Stack direction="horizontal" gap={3} id='toggleExportStack'>
+      <div className="p-2">First item</div>
+      <div className="p-2 ms-auto">Second item</div>
+      <div className="vr" />
+      <div className="p-2">
+        <Button
+        id='toggleExportBtn'
+        variant='light'
+        type='button'
+        onClick={toggleExport}
+        >EXPORT <Download/></Button>
+      </div>
+    </Stack>
+        </Col>
+    </Row>
+      {showExport && (
+        <div id='exportFormPanal'>
+            <Row id='exportFormRow'>
+                <Col md='12' xs={12} id='exportFormCol'>
+                    <ExportForm
+                        setError={setError}
+                        error={error}
+                    />
+                </Col>
+            </Row>
+        </div>
+    )}
+    </div>
     <Row id='notePanalRow'>
       <Col id='notePanalCol'>
     {/* SELECTED NOTE PANAL (NotePanal.js) */}

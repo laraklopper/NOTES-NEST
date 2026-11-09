@@ -266,6 +266,22 @@ PAGINATION
   padding: 0px;
   text-decoration: underline;
 }
+#exportFormRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#exportFormCol{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleExportStack{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 /* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons*/
 #toggleEditNoteBookBtn,
 #toggleEditTagBtn,
@@ -288,6 +304,7 @@ PAGINATION
     color: #000;
     gap: 5px;
 }
+#toggleExportBtn,
 #toggleEditNoteBookBtn,
 #toggleEditTagBtn,
 #toggleNoteBooksBtn,
@@ -296,6 +313,7 @@ PAGINATION
     width: 180px;
     text-transform: uppercase;
 }
+#toggleExportBtn:hover,
 #copyBtn:hover,
 #removeUserBtn:hover,
 #toggleNoteBooksBtn:hover,
