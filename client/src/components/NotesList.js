@@ -262,14 +262,14 @@ export default function NotesList(
         type='button'
         onClick={toggleExport}
         // ARIA ATTRIBUTES:
-        aria-label={showExport ? 'HideForm': 'Export Translations'}
+        aria-label={showExport ? 'Hide Form': 'Export Notes'}
         aria-pressed={showExport}
         aria-expanded={showExport}
         aria-controls='exportFormPanal'
         >{showExport ? (
                     <>HIDE FORM</>
                     ):(
-                    <>EXPORT TRANSLATIONS<Download aria-hidden='true' focusable='false'/></>
+                    <>EXPORT NOTES<Download aria-hidden='true' focusable='false'/></>
                 )}</Button>
       </div>
     </Stack>
@@ -280,8 +280,9 @@ export default function NotesList(
             <Row id='exportFormRow'>
                 <Col md='12' xs={12} id='exportFormCol'>
                     <ExportForm
-                        setError={setError}
-                        error={error}
+                        type='notes'
+                        filters={filters}
+                        filtersActive={filtersActive}
                     />
                 </Col>
             </Row>

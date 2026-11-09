@@ -69,7 +69,7 @@ Notes:
 | 12 | Save Translation | `/translate` (translate tab) | [TranslateForm.js](../client/src/components/TranslateForm.js) | `/translation/save` | POST | Protected | ✅ |
 | 13 | Notes Filter / Search | `/notes` (NOTES tab) | — | `/notes/fetchNotes?…` | GET | Protected | 📝 |
 | 14 | Translations Filter | `/translate` (translations tab) | — | `/translation/fetch?…` | GET | Protected | 📝 |
-| 15 | Export | `/notes`, `/translate` | — | `/export?…` | GET | Protected | 📝 |
+| 15 | Export | `/notes`, `/translate` | [ExportForm.js](../client/src/components/ExportForm.js) | `/export?…` | GET | Protected | ✅ |
 
 ### 1.3. BUTTON API REQUESTS
 
@@ -449,18 +449,20 @@ A SAVE button shown under the result after a successful translation. It has no i
 
 ### 2.6. EXPORT FORMS
 
-#### EXPORT (planned)
+#### EXPORT
 
-**Pages:** [Notes.js](../client/src/pages/Notes.js), [Translate.js](../client/src/pages/Translate.js)
-**Submits to:** `GET /export?type=…&format=…` (Protected)
+**Component:** [ExportForm.js](../client/src/components/ExportForm.js), opened from [NotesList.js](../client/src/components/NotesList.js) and [TranslationsList.js](../client/src/components/TranslationsList.js)
+**Submits to:** `GET /export?type=…&format=…` (+ the list's filters) (Protected)
 
 | Field | Input type | Query param | Options |
 |-------|-----------|-------------|---------|
-| Data | radio / select | `type` | `notes`, `archived`, `translations` |
-| Format | radio / select | `format` | `csv`, `xlsx` |
+| Data | prop (set by the list) | `type` | `notes`, `translations` |
+| Format | select | `format` | `csv`, `xlsx` |
+| Rows to export | select (only shown when the list is filtered) | the list filters: `language`, `notebook`, `tag` / `sourceLanguage`, `targetLanguage` | `FILTERED LIST` (default), `ALL` |
 
 **Behaviour**
 - One form component handles every export.
+- When "FILTERED LIST" is chosen, only the filters that have a value are sent.
 - The response is a file, not JSON: read it with `res.blob()`, then trigger a download using the filename from the `Content-Disposition` header (e.g. `note-nest-notes-2026-11-02.xlsx`).
 - Disable the button and show a spinner while the file is generated.
 - Trashed notes are never included.

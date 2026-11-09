@@ -292,8 +292,9 @@ export default function TranslationsList(
             <Row id='exportFormRow'>
                 <Col md='12' xs={12} id='exportFormCol'>
                     <ExportForm
-                    setError={setError}
-                    error={error}/>
+                    type='translations'
+                    filters={filters}
+                    filtersActive={filtersActive}/>
                 </Col>
             </Row>
         </div>

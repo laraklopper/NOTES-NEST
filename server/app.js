@@ -23,6 +23,7 @@ const apiRoutes = require('./routes/apiRoutes')
 const archiveRoutes = require('./routes/archiveRoutes')
 const notebookRoutes = require('./routes/notebookRoutes')
 const translationRoutes = require('./routes/translationRoutes')
+const exportRoutes = require('./routes/exportRoutes')
 const app = express();// Create an Express application
 
 // Extract enviromental variables
@@ -52,6 +53,7 @@ app.use('/notebooks', notebookRoutes)// /notebooks, /notebooks/:id
 app.use('/tag', tagRoutes)
 app.use('/api', apiRoutes)// Langbly: /api/language/translate/v2, /detect, /languages
 app.use('/translation', translationRoutes)// /translation/fetch, /translation/save, /translation/delete/:id
+app.use('/export', exportRoutes)// /export?type=notes|translations&format=csv|xlsx (+ the list filters)
 // ================== MONGOOSE CONFIG ==================
 /* Disable strict populate to prevent errors when populating 
 paths that are conditionally defined*/

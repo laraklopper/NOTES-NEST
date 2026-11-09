@@ -1,6 +1,6 @@
 # Note-Nest — API Routes
 
-All API routes for Note-Nest, as built in `server/routes` plus the ones still planned. There are **37 routes** across **9 routers**. Seven routers are mounted in [app.js](../server/app.js); `notebookRoutes.js` and `exportRoutes.js` are still empty and not mounted.
+All API routes for Note-Nest, as built in `server/routes` plus the ones still planned. There are **37 routes** across **9 routers**. Eight routers are mounted in [app.js](../server/app.js); `notebookRoutes.js` is still empty and not mounted.
 
 _Last updated: 2026-11-07_
 
@@ -38,7 +38,7 @@ Notes:
 | [tagRoutes.js](../server/routes/tagRoutes.js) | `/tag` | 3 | 2 done, 1 planned |
 | [apiRoutes.js](../server/routes/apiRoutes.js) | `/api` | 3 | All done |
 | [translationRoutes.js](../server/routes/translationRoutes.js) | `/translation` | 3 | 3 done |
-| [exportRoutes.js](../server/routes/exportRoutes.js) | `/export` (not mounted) | 1 | File is empty; planned |
+| [exportRoutes.js](../server/routes/exportRoutes.js) | `/export` | 1 | Done |
 
 ---
 
@@ -185,18 +185,18 @@ Notes:
 - `characterCount` is set by the schema.
 - Translate flow: type or paste text on `/translate` → `POST /api/language/translate/v2` → review result → `POST /translation/save`.
 
-## 9. Export — `/export` (planned)
-
-`exportRoutes.js` is empty and isn't mounted in `app.js` yet.
+## 9. Export — `/export`
 
 | Method | Endpoint | Description | Access | Status |
 |--------|----------|-------------|--------|--------|
-| GET | `/export` | Download data as a file (query: `type` = `notes` \| `translations`, `format` = `csv` \| `xlsx`) | Protected | 📝 |
+| GET | `/export` | Download data as a file (query: `type` = `notes` \| `translations`, `format` = `csv` \| `xlsx`, plus optional list filters) | Protected | ✅ |
 
 Notes:
-- One endpoint backs the single export form.
-- Build files with `exceljs` and send them with a `Content-Disposition: attachment` header.
-- Only export the user's own data; never include trashed or archived notes notes.
+- One endpoint backs the single export form ([ExportForm.js](../client/src/components/ExportForm.js)).
+- Optional filters match the list routes so a filtered list exports exactly as shown: `language`, `notebook`, `tag` for notes; `sourceLanguage`, `targetLanguage` for translations. Invalid values return 400.
+- Files are built with `xlsx` (SheetJS) and `csv-stringify`, and sent with a `Content-Disposition: attachment` header, e.g. `note-nest-notes-2026-11-09.xlsx` or `note-nest-translations-filtered-2026-11-09.csv`.
+- CSV files start with a UTF-8 BOM so Excel shows non-Latin text correctly; cells starting with `= + - @` are prefixed with `'` to block formula injection.
+- Only exports the user's own data; never includes trashed or archived notes. Capped at 10,000 rows.
 
 ---
 
@@ -240,7 +240,7 @@ Notes:
 | 34 | GET | `/translation/fetch` | Protected | ✅ |
 | 35 | POST | `/translation/save` | Protected | ✅ |
 | 36 | DELETE | `/translation/delete/:id` | Protected | ✅ |
-| 37 | GET | `/export` | Protected | 📝 |
+| 37 | GET | `/export` | Protected | ✅ |
 
 **Totals by access:** 2 Public · 32 Protected · 3 Admin
 **Totals by status:** 21 Done · 6 Stub · 10 Planned

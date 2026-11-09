@@ -9,46 +9,57 @@ import { Asterisk, FileClock, FileDown } from 'lucide-react';
 
 
 /* Every export request in the app, keyed by the `type` prop.
-    - path:     route on exportRoutes.js (mounted at /export)
-    - method:   'GET' routes read the user's data from the database,
-    - filename: name of the downloaded file (the extension is added from the format)
-    - title:    screen reader heading for the form */
+    - filterKeys: the list filters sent as query params when exporting the filtered list
+    - filename:   fallback name of the downloaded file (the server's Content-Disposition name is used when available)
+    - title:      screen reader heading for the form */
 const EXPORT_TYPES = {
-    notes: { path: '/export/notes', method: 'GET',  filename: 'notes',      title: 'EXPORT TRANSACTIONS FORM' },
-    translations:     { path: '/export/translations',     method: 'GET',  filename: 'translations',          title: 'EXPORT HOLDINGS FORM' },
+    notes:        { filterKeys: ['language', 'notebook', 'tag'],           filename: 'note-nest-notes',        title: 'EXPORT NOTES FORM' },
+    translations: { filterKeys: ['sourceLanguage', 'targetLanguage'],      filename: 'note-nest-translations', title: 'EXPORT TRANSLATIONS FORM' },
 }
-// Download data as a file (query: `type` = `notes` \| `archived` \| `translations`, `format` = `csv` \| `xlsx`)
+
+// Reads the filename from a Content-Disposition header, e.g. attachment; filename="note-nest-notes-2026-11-09.csv"
+const filenameFromHeader = (header) => header?.match(/filename="?([^";]+)"?/i)?.[1] || null
+
 // ExportForm function component
-/* Used to export TranslationsList.js and NotesList, & Filtered Lists
- */
+/* Used to export NotesList.js and TranslationsList.js (all rows, or only the rows
+matching the applied filters) as an .xlsx or .csv file.
+GET /export?type=notes|translations&format=csv|xlsx (+ the filters) */
 export default function ExportForm(
-    {
-        error,
-        setError
+    {//PROPS PASSED FROM PARENT COMPONENT (NotesList.js / TranslationsList.js)
+        type = 'notes',// Key of EXPORT_TYPES
+        filters = {},// The filters currently applied to the list
+        filtersActive = false// True when the list is filtered
     }
 ) {
+    const exportType = EXPORT_TYPES[type] || EXPORT_TYPES.notes
     const [format, setFormat] = useState('')// Selected file format ('csv' or 'xlsx')
-    // Tracks whether the download request is currently running.
-    const [loading, setLoading] = useState(false)// State to confirm a download once the file has been handed to the browser.
+    const [scope, setScope] = useState('filtered')// 'filtered' = only the rows matching the filters, 'all' = everything
+    const [loading, setLoading] = useState(false)// Tracks whether the download request is currently running.
+    const [error, setError] = useState('')// Error message shown in the form
     const [notice, setNotice] = useState(null)// State to confirm a download once the file has been handed to the browser.
 
-    /*Function to export NotesList.js or TranslationsList.js 
+    const exportFiltered = filtersActive && scope === 'filtered'
+
+    /*Function to export NotesList.js or TranslationsList.js
     as xlsx or csv file*/
     const exportList = useCallback(async () => {
-        setLoading(true)
-          setNotice(null)
+        setNotice(null)
         setError('')// Clear any previous error messages.
         // Conditional rendering to check that a format has been selected.
         if (!format) { setError('Please select a format.'); return }
-       try {
-         const token = localStorage.getItem('token')// Retrieve JWT token from localStorage.
-            if(!token) return;
-            const response = await fetch(`http://localhost:3001/export/`,{
+        setLoading(true)
+        try {
+            // Only send the filters that have a value, and only when exporting the filtered list
+            const params = new URLSearchParams({ type, format })
+            if (exportFiltered) {
+                exportType.filterKeys.forEach((key) => {
+                    if (filters[key]) params.set(key, filters[key])
+                })
+            }
+            // The browser sends the JWT cookie with the request
+            const response = await fetch(`/export?${params.toString()}`, {
                 method: 'GET',
-                mode: 'cors',
-                headers: {
-                    Authorization: `Bearer ${token}`,// Attach JWT token for authorization
-                }
+                credentials: 'include',
             })
             /* Conditional rendering to check if the response
                is not successful (status code is not in the range 200-299)*/
@@ -58,20 +69,25 @@ export default function ExportForm(
             }
             // Trigger a browser download without navigating away from the page.
             const blob = await response.blob()// Convert response into a downloadable Blob object.
+            const filename = filenameFromHeader(response.headers.get('Content-Disposition'))
+                || `${exportType.filename}${exportFiltered ? '-filtered' : ''}.${format}`// Example: note-nest-translations.csv
             const url = URL.createObjectURL(blob)// Create temporary browser URL for the file.
             const a = document.createElement('a')// Create an invisible anchor element.
             a.href = url// Set download URL.
-            // a.download = `${exportType.filename}.${format}`// Example: translations.csv, translations.xlsx
+            a.download = filename
+            document.body.appendChild(a)// Firefox only follows links that are in the document
             a.click()// Trigger download.
-            URL.revokeObjectURL(url)// free the object URL after click is dispatched
-            setNotice(`${a.download} downloaded.`)// Confirm the download to the user
-       } catch (error) {
-        setError(error.message || 'Export failed.')// Set the error state to display the error in the UI
-       }finally{
-        setLoading(false)
-       }
-    },[setLoading, setError, format])
-    
+            a.remove()
+            setTimeout(() => URL.revokeObjectURL(url), 0)// free the object URL after the click has been handled
+            setNotice(`${filename} downloaded.`)// Confirm the download to the user
+        } catch (error) {
+            console.error('[ERROR: ExportForm.js] Export failed:', error.message)
+            setError(error.message || 'Export failed.')// Set the error state to display the error in the UI
+        } finally {
+            setLoading(false)
+        }
+    }, [type, format, exportFiltered, exportType, filters])
+
     // Function to submit exportForm
     const handleExport = (e) => {
         e.preventDefault()
@@ -80,13 +96,13 @@ export default function ExportForm(
 
     //============JSX RENDERING================
   return (
-    <form id='exportForm' onSubmit={handleExport} method='GET' aria-labelledby='formTitle'>
+    <form id='exportForm' onSubmit={handleExport} aria-labelledby='formTitle'>
         {/* ------Screen Reader Heading-------- */}
-        <p className='visually-hidden' id='formTitle'></p>
+        <p className='visually-hidden' id='formTitle'>{exportType.title}</p>
         <div id='exportFormInput'>
             <Stack gap={3} id='exportStack1'>
                 <div className="p-2" id='selectExportBlock'>
-                    <label className='exportLabel'>CHOOSE EXPORT FORMAT:</label>
+                    <label className='exportLabel' htmlFor='exportFormatSelect'>CHOOSE EXPORT FORMAT:</label>
                     <div className='inputDiv'>
                       <select
                         className='input'
@@ -96,7 +112,6 @@ export default function ExportForm(
                         value={format}
                         onChange={(e) => { setFormat(e.target.value); setError(''); setNotice(null) }}
                         // ARIA ATTRIBUTES:
-                        aria-label='Export format'
                         aria-required='true'
                     >
                         <option value=''>SELECT</option>
@@ -105,8 +120,25 @@ export default function ExportForm(
                     </select>
                     <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/>
                     </div>
-                  
                 </div>
+                {/* Only offered when the list is filtered; otherwise everything is exported */}
+                {filtersActive && (
+                    <div className="p-2" id='selectExportScopeBlock'>
+                        <label className='exportLabel' htmlFor='exportScopeSelect'>ROWS TO EXPORT:</label>
+                        <div className='inputDiv'>
+                            <select
+                                className='input'
+                                id='exportScopeSelect'
+                                name='scope'
+                                value={scope}
+                                onChange={(e) => { setScope(e.target.value); setNotice(null) }}
+                            >
+                                <option value='filtered'>FILTERED LIST</option>
+                                <option value='all'>ALL {type.toUpperCase()}</option>
+                            </select>
+                        </div>
+                    </div>
+                )}
                 {/* ======================ERROR MESSAGE===================== */}
                 {error && (
                     <div className="p-2" id='exportError' role='alert' aria-live='polite'>
