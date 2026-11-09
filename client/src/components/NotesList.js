@@ -6,13 +6,16 @@ import { Link } from 'react-router-dom';
 import '../css/componentCss/NotesList.css'
 import '../css/componentCss/DetailsPanals.css'
 // IMPORT BOOTSTRAP COMPONENTS
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack'
 // IMPORT UTILITY FUNCTIONS
 import { dateDisplay, timeDisplay } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArchiveArrowDownIcon, Copy, Edit3Icon, Pin, Trash2, X } from 'lucide-react';
+import { ArchiveArrowDownIcon, Copy, Edit3Icon, Filter, Pin, Trash2, X } from 'lucide-react';
+import FilterNotes from './FilterNotes';
 
 // Date and time a note was created, e.g. "06/11/2026 14:05:09"
 const formatTimestamp = (dateString) => {
@@ -32,7 +35,6 @@ export default function NotesList(
         currentUser,
         editNote,
         toggleEditNote,
-        setError,
         notes = [],
         loading = false,
         fetchNotes,
@@ -40,6 +42,8 @@ export default function NotesList(
         setSelectedId
     }
 ) {
+    const [showFilter, setShowFilter] = useState(false)
+    const [error, setError] = useState(null)
     const [actionLoading, setActionLoading] = useState(false)// True while an archive/trash request is running
 
     /* The selected note is looked up from the list (rather than stored as a copy)
@@ -51,6 +55,7 @@ export default function NotesList(
         fetchNotes?.()
     },[fetchNotes])
 
+    const toggleFilter = () => setShowFilter((prev) => !prev)
     // Close the details panal (and the edit form that belongs to it)
     const closePanal = useCallback(() => {
         setSelectedId(null)
@@ -133,7 +138,47 @@ export default function NotesList(
     //=======================JSX RENDERING=======================================
   return (
     <div id='notesList'>
-    <div id='notesListWrapper'>
+      <Row id='errorRow'>
+        <Col/>
+        <Col id='errorCol' xs={6}>
+            <span>{error && <p className='text-danger' role='alert'>{error}</p>}</span>
+        </Col>
+        <Col/>
+    </Row>
+    <Row id='toggleFilterRow'>
+        <Col id='toggleFilterCol'>
+        <div className='toggleFilterDiv'>
+  <Stack direction="horizontal" gap={3} id='toggleFilterStack'>
+      <div className="p-2"></div>
+      <div className="p-2 ms-auto">S</div>
+      <div className="p-2">
+        <Button
+        variant='light'
+        id='toggleFilterBtn'
+        type='button'
+        onClick={toggleFilter}
+        aria-label={showFilter ? 'HIDE FILTER' : 'SHOW FILTER'}
+        aria-pressed={showFilter}
+        aria-expanded={showFilter}
+        // aria-controls=''
+        >
+        <Filter aria-hidden='true' focusable='false'/> {showFilter ? 'HIDE FILTER' : 'SHOW FILTER'}
+
+        </Button>
+      </div>
+    </Stack>
+        </div>
+       
+        </Col>
+    </Row>
+    <Row id='filterRow'>
+        <Col id='filterCol'>
+        <FilterNotes/>
+        </Col>
+    </Row>
+    <Row id='notesListRow'>
+    <Col xs={12} md={12} id='notesListCol'>
+     <div id='notesListWrapper'>
         <table id='notesListTable'>
             <thead>
             <tr id='mainThRow'>
@@ -194,6 +239,8 @@ export default function NotesList(
             </tbody>
         </table>
     </div>
+    </Col>
+    </Row>
     {/* SELECTED NOTE PANAL */}
     {selectedNote && (
     <div id='notePanal'>

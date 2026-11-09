@@ -167,14 +167,7 @@ export default function Notes(//Export the default Notes.js function component
     >
       <Tab eventKey="notes" title="NOTES">
         <div id='notesListDiv'>
-          <Row>
-            <Col>
-              {/* Filter notes*/}
-            </Col>
-          </Row>
-          <Row id='notesListRow'>
-          <Col id='notesListCol1'/>
-        <Col id='notesListCol' md={10} xs={12}>
+       
           <div id='notesListPanal'>
             <NotesList
               currentUser={currentUser}
@@ -188,9 +181,6 @@ export default function Notes(//Export the default Notes.js function component
               setSelectedId={setSelectedId}
             />
           </div>
-        </Col>
-        <Col id='notesListCol2'/>
-      </Row>
       {/* TOGGLE EDIT NOTE FORM */}
       {editNote && selectedNote && (
         <div id='editNoteBlock'>

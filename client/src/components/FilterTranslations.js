@@ -8,7 +8,7 @@ import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { Search } from 'lucide-react';
+import { Search, Trash } from 'lucide-react';
 // IMPORT UTILITY DATA
 import languageData from '../util/languageData';
 
@@ -55,7 +55,7 @@ export default function FilterTranslations(
     //=======================JSX RENDERING=======================================
     return (
         <form id='filterForm' aria-busy={loading} aria-label='Filter translations' onSubmit={handleSubmit}>
-            <div>
+            <div id='filterFormInput'>
                 <Stack direction="horizontal" gap={3} id='filterStack1'>
                     <fieldset className="p-2" id='filterByBlock'>
                         <legend className='visually-hidden'>FILTER BY:</legend>
@@ -67,6 +67,8 @@ export default function FilterTranslations(
                                 className='input'
                                 value={draft.sourceLanguage}
                                 onChange={handleChange}
+                                // ARIA ATTRIBUTES:
+                                aria-required='false'
                             >
                                 <option value=''>All languages</option>
                                 {languageData.map((language) => (
@@ -83,6 +85,7 @@ export default function FilterTranslations(
                                 value={draft.targetLanguage}
                                 onChange={handleChange}
                                 // ARIA ATTRIBUTES:
+                                aria-required='false'
                                 aria-invalid={sameLanguage}
                                 aria-describedby={sameLanguage ? 'filterLanguageError' : undefined}
                             >
@@ -120,7 +123,7 @@ export default function FilterTranslations(
                             onClick={handleClear}
                             disabled={loading || !hasFilters}
                         >
-                            CLEAR FILTERS
+                            CLEAR FILTERS<Trash aria-hidden='true' focusable='false'/>
                         </Button>
                     </div>
                 </Stack>

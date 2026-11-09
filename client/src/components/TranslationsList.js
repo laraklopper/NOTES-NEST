@@ -227,7 +227,6 @@ export default function TranslationsList(
       </div>
     </Stack>
         </div>
-      
         </Col>
     </Row>
     {showFilter && (
