@@ -87,15 +87,6 @@ export default function NotesList(
         setPage?.(1)
         closePanal()
     }
-    const handleLimitChange = (newLimit) => {
-        setLimit?.(newLimit)
-        setPage?.(1)
-        closePanal()
-    }
-    const goToPage = (newPage) => {
-        setPage?.(newPage)
-        closePanal()
-    }
 
     /* Shared request runner for the archive and trash buttons.
     Refreshes the list and closes the panal on success */
@@ -311,8 +302,9 @@ export default function NotesList(
                         totalPages={pagination.totalPages}
                         total={pagination.total}
                         limit={limit}
-                        onPageChange={goToPage}
-                        onLimitChange={handleLimitChange}
+                        setPage={setPage}
+                        setLimit={setLimit}
+                        onChange={closePanal}
                         loading={loading}
                         controlId='notePageSize'
                     />

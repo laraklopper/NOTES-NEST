@@ -20,12 +20,26 @@ export default function Pagination(
         total = 0,// Total number of items across all pages
         limit = PAGE_SIZES[0],// Items per page
         pageSizes = PAGE_SIZES,
-        onPageChange,// Called with the new page number
-        onLimitChange,// Called with the new limit (as a number)
+        setPage,// Parent's page state setter
+        setLimit,// Parent's limit state setter
+        onChange,// Optional: runs after the page or limit changes (e.g. to close the details panal)
         loading = false,// Disables the controls while the list is loading
         controlId = 'pageSize'// Id for the per page select (must be unique on the page)
     }
 ) {
+    // Move to another page
+    const goToPage = (newPage) => {
+        setPage?.(newPage)
+        onChange?.()
+    }
+
+    // Changing the number per page starts again from page 1
+    const handleLimitChange = (e) => {
+        setLimit?.(Number(e.target.value))
+        setPage?.(1)
+        onChange?.()
+    }
+
   return (
     <Stack gap={3} id='paginationStack'>
       <div className="p-2" id='paginationBlock1'>
@@ -34,7 +48,7 @@ export default function Pagination(
             <Form.Select
             size='sm'
             value={limit}
-            onChange={(e) => onLimitChange?.(Number(e.target.value))}
+            onChange={handleLimitChange}
             disabled={loading}
             >
                 {pageSizes.map((size) => (
@@ -49,7 +63,7 @@ export default function Pagination(
         id='pagBtn1'
         size='sm'
         type='button'
-        onClick={() => onPageChange?.(page - 1)}
+        onClick={() => goToPage(page - 1)}
         disabled={loading || page <= 1}
         // ARIA ATTRIBUTES:
         aria-label='Previous page'
@@ -62,7 +76,7 @@ export default function Pagination(
         id='pagBtn2'
         size='sm'
         type='button'
-        onClick={() => onPageChange?.(page + 1)}
+        onClick={() => goToPage(page + 1)}
         disabled={loading || page >= totalPages}
         // ARIA ATTRIBUTES:
         aria-label='Next page'

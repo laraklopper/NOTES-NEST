@@ -151,15 +151,6 @@ export default function TranslationsList(
         setPage(1)
         setSelectedId(null)
     }
-    const handleLimitChange = (newLimit) => {
-        setLimit(newLimit)
-        setPage(1)
-        setSelectedId(null)
-    }
-    const goToPage = (newPage) => {
-        setPage(newPage)
-        setSelectedId(null)
-    }
 
     //=======================JSX RENDERING=======================================
   return (
@@ -292,8 +283,9 @@ export default function TranslationsList(
                         totalPages={pagination.totalPages}
                         total={pagination.total}
                         limit={limit}
-                        onPageChange={goToPage}
-                        onLimitChange={handleLimitChange}
+                        setPage={setPage}
+                        setLimit={setLimit}
+                        onChange={() => setSelectedId(null)}// Close the panal
                         loading={loading}
                         controlId='translationPageSize'
                     />

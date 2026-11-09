@@ -112,11 +112,6 @@ export default function UsersList() {
         deleteUser(selectedUser)
     }
 
-    const handleLimitChange = (newLimit) => {
-        setLimit(newLimit)
-        setPage(1)
-    }
-
     //=======================JSX RENDERING=======================================
   return (
     <div id='usersData'>
@@ -188,8 +183,8 @@ export default function UsersList() {
                             totalPages={totalPages}
                             total={users.length}
                             limit={limit}
-                            onPageChange={setPage}
-                            onLimitChange={handleLimitChange}
+                            setPage={setPage}
+                            setLimit={setLimit}
                             loading={loading}
                             controlId='usersPageSize'
                         />
