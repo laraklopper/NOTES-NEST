@@ -1,6 +1,6 @@
 //translationRoutes.js
 /*mounted at /translation by app.js
-GET - '/fetch' - List the user's saved translations (query: note, targetLanguage, page, limit)
+GET - '/fetch' - List the user's saved translations (query: note, sourceLanguage, targetLanguage, page, limit)
 POST - '/save' - Save a translation from the TranslateForm to the user's history
 DELETE - '/delete/:id' - Delete one of the user's saved translations
 */
@@ -20,12 +20,12 @@ const MAX_LIMIT = 50;// Upper bound on the page size so one request can't pull t
    GET: READ — Used to fetch information from the database
 ───────────────────────────────────────────────────────────────────────────*/
 /* GET: /translation/fetch : Lists the signed-in user's saved translations, newest first.
-Query (all optional): note (ObjectId), targetLanguage (code), page (>= 1), limit (1-50)
+Query (all optional): note (ObjectId), sourceLanguage (code), targetLanguage (code), page (>= 1), limit (1-50)
 Responds { translations, pagination: { page, limit, total, totalPages } } */
 router.get('/fetch', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
-        const { note, targetLanguage, page, limit } = req.query;// Extract the filters from the query string
+        const { note, sourceLanguage, targetLanguage, page, limit } = req.query;// Extract the filters from the query string
 
         const filter = { user: userId };// Only ever return the user's own translations
 
@@ -38,13 +38,14 @@ router.get('/fetch', checkJwtToken, async (req, res) => {
             filter.note = note;
         }
 
-        // Conditional rendering to check the optional language filter is a single valid language code
-        if (targetLanguage !== undefined && targetLanguage !== '') {
-            if (typeof targetLanguage !== 'string' || !languageCodeRegex.test(targetLanguage)) {
-                console.error(`[ERROR: translationRoutes.js, GET /fetch] Invalid language code: ${targetLanguage}`);// Log an error message in the console for debugging purposes
+        // Conditional rendering to check the optional language filters are single valid language codes
+        for (const [field, value] of [['sourceLanguage', sourceLanguage], ['targetLanguage', targetLanguage]]) {
+            if (value === undefined || value === '') continue;
+            if (typeof value !== 'string' || !languageCodeRegex.test(value)) {
+                console.error(`[ERROR: translationRoutes.js, GET /fetch] Invalid ${field} code: ${value}`);// Log an error message in the console for debugging purposes
                 return res.status(400).json({ message: 'Invalid language code' });// Return a 400 (Bad Request) status code with a message
             }
-            filter.targetLanguage = targetLanguage;
+            filter[field] = value;
         }
 
         // Fall back to the defaults when page/limit are missing or not positive whole numbers

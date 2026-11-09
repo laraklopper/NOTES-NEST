@@ -1,6 +1,6 @@
 //TranslationsList.js
 //IMPORT REQUIRED MODULES AND PACKAGES
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 // IMPORT CSS STYLESHEETS
 import '../css/componentCss/ListTables.css'
 import '../css/componentCss/DetailsPanals.css'
@@ -15,8 +15,9 @@ import { dateDisplay, timeDisplay } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArrowRight, ChevronLeft, ChevronRight, Copy, Trash2, X } from 'lucide-react';
-import FilterTranslations from './FilterTranslations';
+import { ArrowRight, ChevronLeft, ChevronRight, Copy, Filter, FilterX, Trash2, X } from 'lucide-react';
+// IMPORT COMPONENTS
+import FilterTranslations, { EMPTY_FILTERS } from './FilterTranslations';
 
 const PAGE_SIZES = [10, 20, 50];// Options for the "per page" select (server caps at 50)
 
@@ -43,26 +44,35 @@ export default function TranslationsList(
     const [pagination, setPagination] = useState({ page: 1, limit: PAGE_SIZES[0], total: 0, totalPages: 1 })
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(PAGE_SIZES[0])
-    const [targetLanguage, setTargetLanguage] = useState('')// '' = all languages
+    const [filters, setFilters] = useState(EMPTY_FILTERS)// Applied filters; '' = all languages
     const [loading, setLoading] = useState(false)
     const [actionLoading, setActionLoading] = useState(false)// True while a delete request is running
     const [error, setError] = useState(null)
     const [selectedId, setSelectedId] = useState(null)// Id of the translation shown in the panal
-const [showFilter, setShowFilter] = useState(false)
+    const [showFilter, setShowFilter] = useState(false)// Shows/hides the filter form
+    const latestRequest = useRef(0)// Id of the most recent fetch, used to ignore stale responses
     /* The selected translation is looked up from the list (rather than stored as
     a copy) so it always shows the latest data after a re-fetch */
     const selectedIndex = translations.findIndex((t) => t._id === selectedId)
     const selectedTranslation = selectedIndex === -1 ? null : translations[selectedIndex]
     const rowNumber = (index) => (pagination.page - 1) * pagination.limit + index + 1// Numbering carries on across pages
+    const { sourceLanguage, targetLanguage } = filters
+    const filtersActive = Boolean(sourceLanguage || targetLanguage)
 
-    const toggleFilter = setShowFilter(prev => (!prev))
+    const toggleFilter = () => setShowFilter((prev) => !prev)
     //========FETCH TRANSLATIONS REQUEST===============
     const fetchTranslations = useCallback(async () => {
+        /* Number each request so only the newest one updates the list. Without this a
+        slow earlier request (e.g. the previous page or filter) could finish last and
+        overwrite the results the user actually asked for. */
+        const requestId = ++latestRequest.current
+        const isStale = () => requestId !== latestRequest.current
         setError(null)
         setLoading(true)
         try {
             // Only send params that have a value
             const params = new URLSearchParams({ page: String(page), limit: String(limit) })
+            if (sourceLanguage) params.set('sourceLanguage', sourceLanguage)
             if (targetLanguage) params.set('targetLanguage', targetLanguage)
 
             // The browser sends the JWT cookie with the request
@@ -71,22 +81,25 @@ const [showFilter, setShowFilter] = useState(false)
                 credentials: 'include',
             })
             const data = await response.json().catch(() => ({}))
+            if (isStale()) return// A newer request has replaced this one
             if (!response.ok) throw new Error(data?.message || 'Failed to load translations')
 
-            setTranslations(data.translations || [])
+            setTranslations(Array.isArray(data.translations) ? data.translations : [])
             if (data.pagination) {
                 setPagination(data.pagination)
                 // A delete can empty the last page; step back to the new last page
-                if (page > data.pagination.totalPages) setPage(data.pagination.totalPages)
+                const lastPage = Math.max(data.pagination.totalPages || 1, 1)
+                if (page > lastPage) setPage(lastPage)
             }
             console.log(`[SUCCESS: TranslationsList.js] Fetched ${data.translations?.length || 0} translations`)
         } catch (error) {
+            if (isStale()) return
             console.error('[ERROR: TranslationsList.js] Fetching translations failed:', error.message)
             setError(error.message || 'Something went wrong while loading translations.')
         } finally {
-            setLoading(false)
+            if (!isStale()) setLoading(false)
         }
-    }, [page, limit, targetLanguage])
+    }, [page, limit, sourceLanguage, targetLanguage])
 
     // Fetch when the tab opens and whenever the page/filters change
     useEffect(() => {
@@ -136,9 +149,14 @@ const [showFilter, setShowFilter] = useState(false)
         }
     }
 
-    // Changing a filter starts again from page 1
-    const handleLanguageFilter = (e) => {
-        setTargetLanguage(e.target.value)
+    // Applying or clearing filters starts again from page 1
+    const handleApplyFilters = (newFilters) => {
+        setFilters({ ...EMPTY_FILTERS, ...newFilters })
+        setPage(1)
+        setSelectedId(null)
+    }
+    const handleClearFilters = () => {
+        setFilters(EMPTY_FILTERS)
         setPage(1)
         setSelectedId(null)
     }
@@ -165,21 +183,55 @@ const [showFilter, setShowFilter] = useState(false)
     <Row>
         <Col>
              <Stack direction="horizontal" gap={3}>
-      <div className="p-2">First item</div>
-      <div className="p-2 ms-auto">Second item</div>
+      {/* SUMMARY OF THE APPLIED FILTERS */}
+      <div className="p-2" aria-live='polite'>
+        {filtersActive ? (
+            <span>
+                FILTERED: {sourceLanguage ? languageName(sourceLanguage) : 'Any language'}
+                <ArrowRight aria-label='to'/>
+                {targetLanguage ? languageName(targetLanguage) : 'Any language'}
+            </span>
+        ) : (
+            <span>SHOWING ALL TRANSLATIONS</span>
+        )}
+      </div>
+      <div className="p-2 ms-auto">
+        {filtersActive && (
+            <Button
+            variant='light'
+            type='button'
+            onClick={handleClearFilters}
+            disabled={loading}
+            // ARIA ATTRIBUTES:
+            aria-label='Clear translation filters'
+            >
+                <FilterX aria-hidden='true' focusable='false'/> CLEAR
+            </Button>
+        )}
+      </div>
       <div className="p-2">
-        <Button onClick={toggleFilter} variant='light'>SHOW FILTER</Button>
+        <Button
+        onClick={toggleFilter}
+        variant='light'
+        type='button'
+        // ARIA ATTRIBUTES:
+        aria-expanded={showFilter}
+        aria-controls={showFilter ? 'translationFilterPanal' : undefined}// Only point at the panal while it exists
+        >
+            <Filter aria-hidden='true' focusable='false'/> {showFilter ? 'HIDE FILTER' : 'SHOW FILTER'}
+        </Button>
       </div>
     </Stack>
         </Col>
     </Row>
     {showFilter && (
-        <Row style={{width: '100%'}}>
-        <Col style={{width: '100%'}}>  
+        <Row style={{width: '100%'}} id='translationFilterPanal'>
+        <Col style={{width: '100%'}}>
         <FilterTranslations
             loading={loading}
-            targetLanguage={targetLanguage}
-            handleLanguageFilter={handleLanguageFilter}
+            filters={filters}
+            onApply={handleApplyFilters}
+            onClear={handleClearFilters}
         />
         </Col>
     </Row>
@@ -209,7 +261,7 @@ const [showFilter, setShowFilter] = useState(false)
                     </tr>
                 ) : translations.length === 0 ? (
                     <tr>
-                        <td colSpan={6}>NO TRANSLATIONS YET</td>
+                        <td colSpan={6}>{filtersActive ? 'NO TRANSLATIONS MATCH THESE FILTERS' : 'NO TRANSLATIONS YET'}</td>
                     </tr>
                 ) : (
                     translations.map((translation, index) => (
@@ -223,7 +275,7 @@ const [showFilter, setShowFilter] = useState(false)
                                 <div className='translationBtnDiv'>
                                     <Button
                                     variant='light'
-                                    id='viewTranslationBtn'
+                                    className='viewTranslationBtn'
                                     type='button'
                                     onClick={() => setSelectedId(translation._id)}
                                     // ARIA ATTRIBUTES:
