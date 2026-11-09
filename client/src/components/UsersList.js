@@ -190,6 +190,7 @@ export default function UsersList() {
                     </tr>
                     <tr>
                         <td colSpan={6}>
+                        {/* Display in Pagination.js component*/}
                               <div id='paginationDiv'>
                                 <Stack direction='horizontal' gap={3} className='justify-content-center'>
                                     <Button
