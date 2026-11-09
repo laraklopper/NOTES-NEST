@@ -101,7 +101,7 @@ export default function NoteDataLists(
         <div id='tagsListPanal'>
               <Row id='tagsDataRow'>
         <Col id='tagsDataCol1'/>
-        <Col  md={6} id='tagsDataCol'>
+        <Col  md={8} id='tagsDataCol'>
             <TagsList
                 tags={tags}
                 fetchTags={fetchTags}

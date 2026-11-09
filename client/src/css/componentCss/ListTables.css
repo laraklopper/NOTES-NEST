@@ -6,6 +6,7 @@
 #usersTableWrapper,
 #archiveTableWrapper,
 #trashTableWrapper,
+#languageTableWrapper,
 #translationsTableWrapper{
     width: 100%;
     margin: 0px;
@@ -32,6 +33,7 @@
 #trashTable{
     width: 90%;
 }
+
 /* thead */
 #notebookTable thead tr th,
 #usersTable thead tr th,

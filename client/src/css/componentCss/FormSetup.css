@@ -27,7 +27,20 @@
   gap: 5px;
   align-items: baseline;
 }
-
+.inputDiv select{
+    width: 200px;
+    margin: 0px;
+    padding: 0px;
+    font-weight: 700;
+   font-family: "Roboto Mono", monospace;
+    height: 40px;
+     border: solid 2px #323A42;
+}
+.inputDiv select option{
+     font-weight: 700;
+   font-family: "Roboto Mono", monospace;
+    height: 40px;
+}
 .input{
     display: flex;
     justify-content: center;

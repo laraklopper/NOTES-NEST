@@ -62,18 +62,19 @@
     margin: 0px;
     padding: 0px;
 }
-#languageList,
-#languageTableWrapper{
-    width: 100%;
-    margin: 0px;
-    padding: 10px;
-}
-#languageTable{
+#translationFilterRow{
     width: 100%;
     margin: 0px;
     padding: 0px;
-    border: solid #383838 2px;
+
 }
+#translationsFilterCol{
+     width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+
 #languageTable thead tr th{
     border: solid #383838 2px;
     text-transform: uppercase;
