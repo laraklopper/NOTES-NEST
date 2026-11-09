@@ -1,22 +1,34 @@
+// App.js
 import React, { useState, useEffect, useCallback } from 'react'
+// IMPORT CSS STYLESHEETS
 import './App.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Bug} from 'lucide-react';
+// IMPORT REACT ROUTER COMPONENTS
 import { Routes , Route, Navigate, useNavigate} from 'react-router-dom';
+// IMPORT CUSTOM COMPONENTS
+// PROTECTED ROUTES
 import ProtectedUserRoute from './protectedRoutes/ProtectedUserRoute';
 import ProtectedAdminRoute from './protectedRoutes/ProtectedAdminRoute';
-import Home from './pages/Home';
+// IMPORT MAIN PAGES CUSTOM COMPONENTS
+// PUBLIC PAGES
 import Login from './pages/Login';
 import Register from './pages/Register';
+// PROTECTED PAGES
+import Home from './pages/Home';
 import NotePad from './pages/NotePad';
 import Notes from './pages/Notes';
 import Translate from './pages/Translate';
-
 import Users from './pages/Users';
+// IMPORT ICONS FROM LUCIDE-REACT
+import { Bug } from 'lucide-react';
 
+// MAIN APP FUNCTION COMPONENT
 export default function App() {
+   // ========STATE VARIABLES================
+   //User variables
   const [users, setUsers] = useState([])
   const [currentUser, setCurrentUser] = useState(null)
   const [userData, setUserData] = useState({
@@ -35,11 +47,15 @@ export default function App() {
     password: '',
     admin: false
   })
+  // Event and UI-related states
   const [loggedIn, setLoggedIn] = useState(false)
   const [error, setError] = useState(null)
 
+    //=======NAViGATE=======
+  // Hook to navigate between different routes
   const navigate = useNavigate();
 
+  // ==============================
   // Forget the saved user and return to the logged-out state
   const clearSession = useCallback(() => {
     localStorage.removeItem('currentUser');
@@ -116,6 +132,8 @@ export default function App() {
     clearSession();
     navigate('/');// The login page lives at '/' when logged out
   }, [clearSession, navigate]);
+
+  // =================JSX RENDERING========================================
   return (
     <>
     <Container id='appContainer' role='main'>
@@ -133,42 +151,51 @@ export default function App() {
         </Col>
         <Col xs={0} md id='errorCol2'/>
       </Row>
-      <Container id='appContainer'>
+      {/* ------MAIN APPLICATION CONTAINER */}
+      <Container id='appContainer' role='main'>
+      {/* --------------
+      CLIENT SIDE ROUTES
+      ---------------------- */}
         <Routes>
           {loggedIn ? (
             <>
+            {/* Protected Route to Home page */}
               <Route path='/' element={
                 <ProtectedUserRoute currentUser={currentUser}>
                   <Home currentUser={currentUser} setError={setError} setCurrentUser={setCurrentUser} logout={logout}/>
                 </ProtectedUserRoute>
-           
               }/>
+              {/*Protected Route to NotePad page */}
               <Route path='/notepad' element={
                 <ProtectedUserRoute currentUser={currentUser}>
                   <NotePad currentUser={currentUser} logout={logout} setError={setError}/>
                 </ProtectedUserRoute>
               }/>
+              {/* Protected Route to Notes page */}
               <Route path='/notes' element={
                 <ProtectedUserRoute currentUser={currentUser}>
                   <Notes currentUser={currentUser} logout={logout} setError={setError}/>
                 </ProtectedUserRoute>
               }/>
+              {/* Protected Route to Translate page */}
               <Route path='/translate' element={
                 <ProtectedUserRoute currentUser={currentUser}>
                 <Translate currentUser={currentUser} logout={logout}/>
                 </ProtectedUserRoute>
               }/> 
-            
+              {/* Protected (Admin Only) Route to Users Page */}
               <Route path='/users' element={
                 <ProtectedAdminRoute currentUser={currentUser}>
                   <Users currentUser={currentUser} users={users} logout={logout}/>
                 </ProtectedAdminRoute>
               }/>
+               {/* FALL BACK ROUTE: Response 404 PAGE NOT FOUND */}
+        {/* <Route path='*' element={<h2 id='pageNotFound'>404: Page Not Found</h2>}/> */}
               <Route path='*' element={<Navigate to='/' replace/>}/>
             </>
           ):(
             <>
-              
+              {/* Route to Login Page */}
               <Route path='/' element={<Login
                 userData={userData}
                 setUserData={setUserData}
@@ -176,7 +203,10 @@ export default function App() {
                 setLoggedIn={setLoggedIn}
                 setCurrentUser={setCurrentUser}
               />}/>
+              {/* Route to Registration page */}
               <Route path='/reg' element={<Register setError={setError}/>}/>
+               {/* FALL BACK ROUTE: Response 404 PAGE NOT FOUND */}
+        {/* <Route path='*' element={<h2 id='pageNotFound'>404: Page Not Found</h2>}/> */}
               <Route path='*' element={<Navigate to='/' replace/>}/>
             </>
           )}
