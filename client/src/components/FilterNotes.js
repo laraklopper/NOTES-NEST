@@ -8,7 +8,7 @@ import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { Search, Trash } from 'lucide-react';
+import { Search } from 'lucide-react';
 // IMPORT UTILITY DATA
 import languageData from '../util/languageData';
 
@@ -16,15 +16,14 @@ export const EMPTY_NOTE_FILTERS = { language: '', notebook: '', tag: '' }// '' =
 
 // FilterNotes component
 /* Filter form for the NotesList table. The selects hold draft values;
-the list only re-fetches when APPLY is pressed (or CLEAR FILTERS resets them). */
+the list only re-fetches when APPLY is pressed. */
 export default function FilterNotes(
     {//PROPS PASSED FROM PARENT COMPONENT (NotesList.js)
         loading,
         filters = EMPTY_NOTE_FILTERS,// The filters currently applied to the list
         notebooks = [],// The user's notebooks from GET /notebooks
         tags = [],// The user's tags from GET /tag/fetchTags
-        onApply,// Called with { language, notebook, tag }
-        onClear// Resets the list to all notes
+        onApply// Called with { language, notebook, tag }
     }
 ) {
     const [draft, setDraft] = useState(filters)
@@ -43,13 +42,6 @@ export default function FilterNotes(
         e.preventDefault()// Stop the page reloading
         onApply?.(draft)
     }
-
-    const handleClear = () => {
-        setDraft(EMPTY_NOTE_FILTERS)
-        onClear?.()
-    }
-
-    const hasFilters = Object.keys(EMPTY_NOTE_FILTERS).some((key) => filters[key] || draft[key])
 
     //=======================JSX RENDERING=======================================
     return (
@@ -121,18 +113,6 @@ export default function FilterNotes(
                             disabled={loading}
                         >
                             APPLY <Search aria-hidden='true' focusable='false' />
-                        </Button>
-                    </div>
-                    <div className="vr" />
-                    <div className="p-2">
-                        <Button
-                            variant='danger'
-                            type='button'
-                            id='clearFilterBtn'
-                            onClick={handleClear}
-                            disabled={loading || !hasFilters}
-                        >
-                            CLEAR FILTERS <Trash aria-hidden='true' focusable='false'/>
                         </Button>
                     </div>
                 </Stack>

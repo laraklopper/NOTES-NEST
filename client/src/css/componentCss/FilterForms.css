@@ -55,23 +55,3 @@ display: flex;
     border: solid 2px #323A42;
 
 }
-#clearFilterBtn{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 230px;
-    height: 40px;
-    font-family: "Roboto Mono", monospace;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #000;
-    margin: 0px;
-    gap: 5px;
-    letter-spacing: 2px;
-    padding: 0px;
-    border: solid 2px #323A42;
-}
-#clearFilterBtn:hover:not(:disabled){
-    color: #E8F0F6;
-    background:#323A42;
-}

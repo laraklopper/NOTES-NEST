@@ -227,7 +227,6 @@ export default function TranslationsList(
             loading={loading}
             filters={filters}
             onApply={handleApplyFilters}
-            onClear={handleClearFilters}
         />
         </Col>
     </Row>

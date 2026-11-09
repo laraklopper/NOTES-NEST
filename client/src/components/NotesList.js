@@ -239,7 +239,6 @@ export default function NotesList(
             notebooks={notebooks}
             tags={tags}
             onApply={handleApplyFilters}
-            onClear={handleClearFilters}
         />
         </Col>
     </Row>

@@ -8,7 +8,7 @@ import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { Search, Trash } from 'lucide-react';
+import { Search } from 'lucide-react';
 // IMPORT UTILITY DATA
 import languageData from '../util/languageData';
 
@@ -16,13 +16,12 @@ export const EMPTY_FILTERS = { sourceLanguage: '', targetLanguage: '' }// '' = a
 
 // FilterTranslations component
 /* Filter form for the TranslationsList table. The selects hold draft values;
-the list only re-fetches when APPLY is pressed (or CLEAR FILTERS resets them). */
+the list only re-fetches when APPLY is pressed. */
 export default function FilterTranslations(
     {//PROPS PASSED FROM PARENT COMPONENT (TranslationsList.js)
         loading,
         filters = EMPTY_FILTERS,// The filters currently applied to the list
-        onApply,// Called with { sourceLanguage, targetLanguage }
-        onClear// Resets the list to all translations
+        onApply// Called with { sourceLanguage, targetLanguage }
     }
 ) {
     const [draft, setDraft] = useState(filters)
@@ -43,14 +42,8 @@ export default function FilterTranslations(
         onApply?.(draft)
     }
 
-    const handleClear = () => {
-        setDraft(EMPTY_FILTERS)
-        onClear?.()
-    }
-
     // A translation can't have the same source and target language, so this would always be empty
     const sameLanguage = draft.sourceLanguage !== '' && draft.sourceLanguage === draft.targetLanguage
-    const hasFilters = Boolean(filters.sourceLanguage || filters.targetLanguage || draft.sourceLanguage || draft.targetLanguage)
 
     //=======================JSX RENDERING=======================================
     return (
@@ -112,18 +105,6 @@ export default function FilterTranslations(
                             disabled={loading || sameLanguage}
                         >
                             APPLY <Search aria-hidden='true' focusable='false' />
-                        </Button>
-                    </div>
-                    <div className="vr" />
-                    <div className="p-2">
-                        <Button
-                            variant='danger'
-                            type='button'
-                            id='clearFilterBtn'
-                            onClick={handleClear}
-                            disabled={loading || !hasFilters}
-                        >
-                            CLEAR FILTERS<Trash aria-hidden='true' focusable='false'/>
                         </Button>
                     </div>
                 </Stack>

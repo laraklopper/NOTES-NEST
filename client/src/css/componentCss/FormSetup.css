@@ -66,8 +66,7 @@ BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons
    padding: 0px;
    border: solid 2px #323A42;
 }
-#clearFormBtn,
-#clearFilterBtn{
+#clearFormBtn{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -84,8 +83,7 @@ BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons
     border: solid 2px #323A42;
 }
 #showPasswrdBtn:hover,
-#clearFormBtn:hover,
-#clearFilterBtn:hover:not(:disabled){
+#clearFormBtn:hover{
     color: #E8F0F6;
     background:#323A42;
 }
