@@ -296,6 +296,7 @@ export default function TranslationsList(
             <tfoot>
                 <tr>
                     <td colSpan={6}>
+                    {/* DISPLAY PAGINATION STACK IN Pagination.js */}
                     <Stack gap={3} id='paginationStack'>
       <div className="p-2" id='paginationBlock1'>
         
@@ -341,7 +342,9 @@ export default function TranslationsList(
 
         </Col>
     </Row>
-    {/* SELECTED TRANSLATION PANAL */}
+    {/* SELECTED TRANSLATION PANAL
+    Display in TranslationPanal.js component
+     */}
     {selectedTranslation && (
     <Row style={{width: '100%'}} id='translationPanalRow'>
          <Col style={{width: '100%'}} id='translationCol'>

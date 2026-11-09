@@ -316,6 +316,7 @@ export default function NotesList(
             <tfoot>
                 <tr>
                     <td colSpan={7}>
+                    {/* DISPLAY PAGINATION STACK IN Pagination.js */}
                     <Stack gap={3} id='paginationStack'>
       <div className="p-2" id='paginationBlock1'>
                             <Form.Group controlId='notePageSize'>
@@ -360,7 +361,8 @@ export default function NotesList(
     </Row>
     <Row id='notePanalRow'>
       <Col id='notePanalCol'>
- {/* SELECTED NOTE PANAL */}
+ {/* SELECTED NOTE PANAL
+ display in NotePanal.js*/}
     {selectedNote && (
     <div id='notePanal'>
             <Stack direction="horizontal" gap={3} id='notePanalHead'>
@@ -505,9 +507,7 @@ export default function NotesList(
     </div>
     )}
       </Col>
-
     </Row>
-   
    </div>
   )
 }
