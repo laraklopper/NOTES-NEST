@@ -37,12 +37,21 @@
     margin: 0px;
     padding: 0px;
 }
+#navigation{
+    width: fit-content;
+    margin: 0px;
+    padding: 5px;
+    
+}
 #navBarStack{
     width: 100%;
     margin: 0px;
     padding: 0px;
     display: flex;
     align-items: center;
+    background-color: #8797A8;
+    border-radius: 8px;
+    border: solid #323A42 2px;
 }
 #navBlock1,
 #navBlock2{
@@ -61,9 +70,10 @@
     align-items: center;
     list-style-type: none;
 }
-#navCol1,
-#navCol,
-#navCol2{
+#navCol{
+    display: flex;
+    justify-content: center;
+    width: 100%;
     margin: 0px;
     padding: 0px;
 }
@@ -150,6 +160,7 @@
     letter-spacing: 2px;
     margin: 0px;
     padding: 0px;
+    text-decoration: underline;
 }
 #pageHeading{
     font-family: "Roboto", sans-serif;
@@ -157,4 +168,5 @@
     letter-spacing: 2px;
     margin: 0px;
     padding: 0px;
+    font-style: italic;
 }

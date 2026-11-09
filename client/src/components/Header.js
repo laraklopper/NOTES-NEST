@@ -28,8 +28,7 @@ export default function Header({
         <Col id='headingCol2'/>
       </Row>
       <Row id='headerRow3'>
-         <Col id='navCol1'/>
-        <Col xs={12} md={8} id='navCol'>
+        <Col xs={12} md={12} id='navCol'>
         <nav id='navigation'>
             <ul id='navbar'>
       <Stack gap={3} id='navBarStack'>
@@ -75,10 +74,7 @@ export default function Header({
     </Stack>
             </ul>
         </nav>
-       
         </Col>
-        <Col id='navCol2'/>
-
       </Row>
     </header>
   )
