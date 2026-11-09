@@ -2,6 +2,7 @@
 //IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useEffect, useState } from 'react'
 // IMPORT CSS STYLESHEETS
+import '../css/componentCss/FilterForms.css'
 import '../css/componentCss/FormSetup.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';

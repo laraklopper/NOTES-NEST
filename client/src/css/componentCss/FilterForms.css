@@ -1,0 +1,42 @@
+#filterForm{
+    background-color: #777d83;
+}
+#filterStack1{
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#filterByBlock{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0px;
+    width: 100%;
+}
+.filterLabel{
+    font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 1px;
+  padding: 0px;
+
+}
+#applyFilterBtn{
+display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 40px;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #000;
+    margin: 0px;
+    gap: 5px;
+    letter-spacing: 2px;
+    padding: 0px;
+    border: solid 2px #323A42;
+
+}
