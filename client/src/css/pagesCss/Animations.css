@@ -1,0 +1,86 @@
+/* Animations.css 
+App.js
+Page animations styling
+*/
+/* LAYOUT */
+
+/* ======BOOTSTRAP LAYOUT============= */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+#eventRow{
+       display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#eventCol {
+    width: 100%;
+    background-color: #C22419;
+    margin: 0px;
+    padding: 0px;
+}
+/* JSX(HTML) LAYOUT */
+.eventBar{
+    display: flex;
+    align-items: center;    
+    width: 100%;
+     background-color: #1e7b1e;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+    margin: 0;
+    padding: 0;
+    height: 40px;
+    overflow: hidden;
+}
+.eventBar2{
+    display: flex;
+    align-items: center;    
+    width: 100%;
+     background-color: #C22419;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+    margin: 0;
+    padding: 0;
+    height: 40px;
+    overflow: hidden;
+}
+/* ---------- Shared track behavior ---------- */
+/* container-type enables cqi units so the keyframes can reference track width */
+.eventTrack {
+    container-type: inline-size;
+    position: relative;
+    width: 100%;
+    height: 40px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* ---------- Slide left → right edge → centre ---------- */
+/* Only transform is animated — compositor-only, no layout/paint cost.          */
+/* cqi = 1% of the nearest container's inline size (the track width).           */
+/* left: 0 is the static anchor; all movement is expressed via translateX.      */
+@keyframes slideToCenter {
+    0%  { transform: translate(0,                                         -50%); }
+    70% { transform: translate(calc(100cqi - var(--event-size)),          -50%); }
+    100%{ transform: translate(calc(50cqi  - var(--event-size) / 2),      -50%); }
+}
+
+.eventSlide {
+    --event-size: 32px;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translate(0, -50%);
+    color: #fff;
+    will-change: transform;
+    animation: slideToCenter 15s ease-in-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .eventSlide {
+        animation: none;
+        transform: translate(calc(50cqi - var(--event-size) / 2), -50%);
+    }
+}

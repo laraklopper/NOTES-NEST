@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 // IMPORT CSS STYLESHEETS
 import './App.css'
+import './css/pagesCss/Animations.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
