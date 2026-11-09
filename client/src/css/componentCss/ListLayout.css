@@ -1,4 +1,43 @@
 /* show all bootstrap cols & rows and div tags in lists*/
+/* BOOTSTRAP LAYOUT */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+#notebookDataRow,
+#tagsDataRow,
+#notePanalRow{
+    display: flex;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+#notePanalCol{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+#noteBooksCol,
+#tagsDataCol{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#translationCol{
+    width: 100%;
+    margin: 0px;
+        padding: 10px;
+}
+#noteBooksCol1,
+#noteBooksCol1,
+#tagsDataCol1,
+#tagsDataCol1,
+#toggleListDataCol1
+#toggleListDataCol2,
+#notesDataCol1,
+#notesDataCol2{
+    margin: 0px;
+    padding: 0px;
+}
 #toggleBtnBlock1,
 #toggleBtnBlock2{
     display: flex;
