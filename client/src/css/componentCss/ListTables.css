@@ -266,11 +266,26 @@ PAGINATION
   padding: 0px;
   text-decoration: underline;
 }
+#exportFormDiv{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+}
+#exportFormPanal{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+#toggleExportRow,
 #exportFormRow{
     width: 100%;
     margin: 0px;
     padding: 0px;
 }
+#toggleExportCol,
 #exportFormCol{
     width: 100%;
     margin: 0px;
@@ -304,7 +319,9 @@ PAGINATION
     color: #000;
     gap: 5px;
 }
-#toggleExportBtn,
+#toggleExportBtn{
+    width: 250px;
+}
 #toggleEditNoteBookBtn,
 #toggleEditTagBtn,
 #toggleNoteBooksBtn,

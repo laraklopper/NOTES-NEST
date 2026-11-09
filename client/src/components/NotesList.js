@@ -261,7 +261,7 @@ export default function NotesList(
         variant='light'
         type='button'
         onClick={toggleExport}
-        >EXPORT <Download/></Button>
+        >EXPORT NOTES<Download/></Button>
       </div>
     </Stack>
         </Col>
