@@ -330,6 +330,7 @@ export default function NotesList(
       <div className="p-2" id='paginationBlock2'>
           <Button
                             variant='light'
+                            id='pagBtn1'
                             size='sm'
                             type='button'
                             onClick={() => goToPage(pagination.page - 1)}
@@ -342,6 +343,7 @@ export default function NotesList(
                             <Button
                             variant='light'
                             size='sm'
+                            id='pagBtn2'
                             type='button'
                             onClick={() => goToPage(pagination.page + 1)}
                             disabled={loading || pagination.page >= pagination.totalPages}

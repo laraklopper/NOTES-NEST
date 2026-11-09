@@ -171,11 +171,18 @@ PAGINATION
 #paginationBlock2{
     display: flex;
     justify-content: center;
-    align-items: baseline;
-    gap: 5px;
+    align-items: center;
+    gap: 10px;
     width: 100%;
 }
-
+#paginationBlock2 span{
+        font-family: "Roboto Mono", monospace;
+    margin: 0px;
+    letter-spacing: 2px;
+    padding: 0px;
+    font-weight: 800;
+    text-decoration: underline;
+}
 #translationPageSize{
     font-family: "Roboto Mono", monospace;
     text-align: center;
@@ -184,6 +191,18 @@ PAGINATION
     height: 40px;
     margin: 0px;
     padding: 0px;
+}
+#pagBtn1,
+#pagBtn2{
+    height: 40px;
+    width: 40px;
+        font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    margin: 0px;
+    letter-spacing: 2px;
+    padding: 0px;
+    font-weight: 700;
+    border: solid 2px #323A42;
 }
 /* TEXT */
 #pagLabel{
