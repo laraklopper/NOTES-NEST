@@ -191,12 +191,12 @@ Notes:
 
 | Method | Endpoint | Description | Access | Status |
 |--------|----------|-------------|--------|--------|
-| GET | `/export` | Download data as a file (query: `type` = `notes` \| `archived` \| `translations`, `format` = `csv` \| `xlsx`) | Protected | 📝 |
+| GET | `/export` | Download data as a file (query: `type` = `notes` \| `translations`, `format` = `csv` \| `xlsx`) | Protected | 📝 |
 
 Notes:
 - One endpoint backs the single export form.
 - Build files with `exceljs` and send them with a `Content-Disposition: attachment` header.
-- Only export the user's own data; never include trashed notes.
+- Only export the user's own data; never include trashed or archived notes notes.
 
 ---
 
