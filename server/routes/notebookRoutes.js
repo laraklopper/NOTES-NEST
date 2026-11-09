@@ -5,13 +5,15 @@ POST - '/' - Create a notebook for the signed-in user
 PATCH - '/:id' - Rename or recolour a notebook
 DELETE - '/:id' - Delete a notebook: its notes move to "No notebook"
 */
+/* Load environment variables from a .env
+file using the dotenv package*/
 require('dotenv').config()
 const express = require('express');
 const mongoose = require('mongoose');
 const Notebook = require('../models/notebookSchema');// Import the Notebook model
 const Note = require('../models/noteSchema');// Import the Note model (for notebook note counts)
 const { checkJwtToken } = require('./middleware');// Import the JWT middleware
-const router = express.Router()
+const router = express.Router()// Create a new router instance
 
 /*──────────────────────────── SHARED HELPERS ─────────────────────────────────
    Used by POST / and PATCH /:id
@@ -26,6 +28,7 @@ const notebookSaveError = (error) => {
     }
     // Duplicate key on the { user, name } unique index
     if (error.code === 11000) {
+        console.error('[ERROR: notebookRoutes.js]: You already have a notebook with that name');//Log the error in the console for debugging purposes
         return { status: 409, message: 'You already have a notebook with that name' };
     }
     return null;
