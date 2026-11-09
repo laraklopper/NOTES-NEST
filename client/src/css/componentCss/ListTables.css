@@ -11,6 +11,16 @@
     align-items: center;
     gap: 10px;
 }
+#notesList{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
 #noteBookListPanal,
 #tagsListPanal{
     display: flex;
@@ -60,6 +70,7 @@
 /* TABLES */
 /* LAYOUT */
 #tagsTableWrapper,
+#notesListWrapper,
 #notebookTableWrapper,
 #usersTableWrapper,
 #archiveTableWrapper,
@@ -71,6 +82,7 @@
     display: flex;
     justify-content:center;
 }
+
 /* TABLES - shared formatting (matches #languageTable in Translate.css) */
 #notebookTable,
 #usersTable,
@@ -203,101 +215,6 @@
     flex-direction: column;
     align-items: center;
     gap: 3px;
-    margin: 0px;
-    padding: 0px;
-}
-#toggleBtnBlock1,
-#toggleBtnBlock2{
-    display: flex;
-    justify-content: center;
-    margin: 0px;
-    padding: 0px;
-}
-
-#translationPanalRow{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-
-}
-/* FILTERS */
-.toggleFilterDiv{
-    width: 100%;
-    background-color: transparent;
-    margin: 0px;
-    padding: 0px 5px;
-}
-#toggleFilterRow{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-#toggleFilterCol{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-
-#toggleFilterStack{
-    background-color: #212529;
-    width: 100%;
-    margin: 0px;
-    padding: 0px 10px;
-    display: flex;
-    align-items: center;
-}
-#filterRow{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-#filterCol{
-    display: flex;
-    width: 100%;
-    margin: 0px;
-    padding: 0px 5px;
-}
-/* TEXT */
-
-.filterStatusSpan{
-   color: #f8f9fa;
-  font-family: "Roboto Mono", monospace;
-  font-weight: 700;
-  margin: 0px;
-  letter-spacing: 2px;
-  padding: 0px;
-  text-decoration: underline;
-}
-#exportFormDiv{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    margin: 0px;
-    padding: 0px;
-    gap: 10px;
-}
-#exportFormPanal{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    display: flex;
-}
-#toggleExportRow,
-#exportFormRow{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-#toggleExportCol,
-#exportFormCol{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-#toggleExportStack{
-    background-color: #212529;
-    display: flex;
-    width: 100%;
     margin: 0px;
     padding: 0px;
 }

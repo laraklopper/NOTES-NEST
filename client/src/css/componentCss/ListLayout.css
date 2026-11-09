@@ -1,1 +1,225 @@
 /* show all bootstrap cols & rows and div tags in lists*/
+#toggleBtnBlock1,
+#toggleBtnBlock2{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+
+#translationPanalRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+
+}
+/* FILTERS */
+.toggleFilterDiv{
+    width: 100%;
+    background-color: transparent;
+    margin: 0px;
+    padding: 0px 5px;
+}
+#toggleFilterRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleFilterCol{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+#toggleFilterStack{
+    background-color: #212529;
+    width: 100%;
+    margin: 0px;
+    padding: 0px 10px;
+    display: flex;
+    align-items: center;
+}
+#filterRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#filterCol{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px 5px;
+}
+/* TEXT */
+
+.filterStatusSpan{
+   color: #f8f9fa;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 2px;
+  padding: 0px;
+  text-decoration: underline;
+}
+#exportFormDiv{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+}
+#exportFormPanal{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+#toggleExportRow,
+#exportFormRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleExportCol,
+#exportFormCol{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleExportStack{
+    background-color: #212529;
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#mainThRow{
+    width: 100%;
+    text-align: center;
+    margin: 0px;
+    padding: 10px  0px;
+    text-decoration: underline;
+    font-family: "Roboto Mono", monospace;
+    letter-spacing: 2px;
+    font-weight: 800;
+    border: solid 2px #404040;
+}
+#tableMainHead{
+    width: 100%;
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+    border: inherit;
+}
+thead{
+    border: solid 2px #404040;
+}
+
+thead tr th{
+    border: solid 2px #404040;
+    text-align: center;
+}
+tbody{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+tbody tr td {
+    border: solid 2px #404040;
+}
+#noteTagGroup{
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+#noteContentBlock{
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#noteContentDiv{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 5px;
+    width: 100%;
+    border: #404040 solid 1px;
+    border-radius: 5px;
+    background-color: #ced4da;;
+    gap: 5px;
+}
+#notePanalStack1,
+#notePanalStack2{
+    margin: 0px;
+    padding: 0px;
+}
+#noteTags{
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin: 0px;
+    padding: 0px;
+}
+#copyNoteDiv{
+    display: flex;
+    justify-content: flex-end;
+}
+#noteContentPara{
+    text-align: justify;
+    margin: 0px;
+    padding: 0px;
+}
+.viewNoteBtn,
+#copyContentBtn{
+     width: 100px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+    gap: 5px;
+}
+.viewNoteBtn:hover,
+#copyContentBtn:hover{
+    background-color: #323A42;
+    color: #E8F0F6;
+}
+
+#editNoteBtn,
+#archiveNoteBtn,
+#trashNoteBtn,
+#closePanalBtn{
+    width: 150px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+    gap: 5px;
+}
+#editNoteBtn{
+    width: 180px;
+}
+#editNoteBtn:hover,
+#archiveNoteBtn:hover,
+#trashNoteBtn:hover,
+#copyContentBtn:hover,
+#closePanalBtn:hover{
+    color: #E8F0F6;
+    background:#323A42;
+}

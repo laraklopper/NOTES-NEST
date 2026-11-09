@@ -2,6 +2,7 @@
 //IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useState } from 'react'
 // IMPORT CSS STYLESHEETS
+import '../css/componentCss/ListLayout.css'
 import '../css/componentCss/ListBtns.css'
 import '../css/componentCss/ListTables.css'
 // IMPORT BOOTSTRAP COMPONENTS
