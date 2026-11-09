@@ -71,71 +71,102 @@
     display: flex;
     justify-content:center;
 }
-/* Tables */
+/* TABLES - shared formatting (matches #languageTable in Translate.css) */
 #notebookTable,
 #usersTable,
 #tagsTable,
-#translationsTable{
+#translationsTable,
+#notesListTable,
+#archiveTable,
+#trashTable,
+#languageTable{
     width: 100%;
     margin: 0px;
     padding: 0px;
-    border: solid;
-    text-align: center;
-    font-family: "Roboto", sans-serif;
+    border: solid #383838 2px;
 }
 #archiveTable,
 #trashTable{
     width: 90%;
-    margin: 0px 4;
-    padding: 0px;
-    overflow-y: scroll;
-    border: solid;
-    text-align: center;
-    font-family: "Roboto", sans-serif;
 }
-#archiveTable, thead tr:nth-child(even) { background: #fff; }
-#archiveTable  thead tr:nth-child(odd) { 
-    background: #212529; 
-    font-weight: 800;
-    color: #f8f9fa;
-    font-family: "Roboto", sans-serif; letter-spacing: 2px; text-decoration: underline; }
-#notesListTable tbody tr td{
-    text-align: center;
-    font-family: "Roboto", sans-serif;
-    letter-spacing: 2px;
-}
-/* Tables css */
 /* thead */
-
-
-#languageTable  thead tr:nth-child(odd) { 
-    background: #212529; 
+#notebookTable thead tr th,
+#usersTable thead tr th,
+#tagsTable thead tr th,
+#translationsTable thead tr th,
+#notesListTable thead tr th,
+#archiveTable thead tr th,
+#trashTable thead tr th,
+#languageTable thead tr th{
+    border: solid #383838 2px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 800;
+}
+#notebookTable thead tr:nth-child(even),
+#usersTable thead tr:nth-child(even),
+#tagsTable thead tr:nth-child(even),
+#translationsTable thead tr:nth-child(even),
+#notesListTable thead tr:nth-child(even),
+#archiveTable thead tr:nth-child(even),
+#trashTable thead tr:nth-child(even),
+#languageTable thead tr:nth-child(even) { background: #fff; }
+#notebookTable thead tr:nth-child(odd),
+#usersTable thead tr:nth-child(odd),
+#tagsTable thead tr:nth-child(odd),
+#translationsTable thead tr:nth-child(odd),
+#notesListTable thead tr:nth-child(odd),
+#archiveTable thead tr:nth-child(odd),
+#trashTable thead tr:nth-child(odd),
+#languageTable thead tr:nth-child(odd) {
+    background: #212529;
     font-weight: 800;
     color: #f8f9fa;
-    font-family: "Roboto", sans-serif; letter-spacing: 2px; text-decoration: underline; }
-    /* tbody */
-#tagsTable,#languageTable tbody tr:nth-child(even) { background: #fff; }
-#tagsTable, #languageTable  tbody tr:nth-child(odd) { background: #93A0AB; }
+    font-family: "Roboto", sans-serif;
+    letter-spacing: 2px;
+    text-decoration: underline;
+}
+/* tbody */
+#notebookTable tbody tr td,
+#usersTable tbody tr td,
+#tagsTable tbody tr td,
+#translationsTable tbody tr td,
+#notesListTable tbody tr td,
+#archiveTable tbody tr td,
+#trashTable tbody tr td,
+#languageTable tbody tr td{
+    border: solid #383838 2px;
+    text-align: center;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 600;
+}
+#notebookTable tbody tr:nth-child(even),
+#usersTable tbody tr:nth-child(even),
+#tagsTable tbody tr:nth-child(even),
+#translationsTable tbody tr:nth-child(even),
+#notesListTable tbody tr:nth-child(even),
+#archiveTable tbody tr:nth-child(even),
+#trashTable tbody tr:nth-child(even),
+#languageTable tbody tr:nth-child(even) { background: #fff; }
+#notebookTable tbody tr:nth-child(odd),
+#usersTable tbody tr:nth-child(odd),
+#tagsTable tbody tr:nth-child(odd),
+#translationsTable tbody tr:nth-child(odd),
+#notesListTable tbody tr:nth-child(odd),
+#archiveTable tbody tr:nth-child(odd),
+#trashTable tbody tr:nth-child(odd),
+#languageTable tbody tr:nth-child(odd) { background: #93A0AB; }
 /* tfoot */
-#archiveTable, #trashTable, #languageTable  tfoot tr:nth-child(odd) { background: #212529; 
-color: #f8f9fa; ;}
-#languageTable  tfoot tr:nth-child(even) { background: #383838; 
-color: #f8f9fa; ;}
-#archiveTable, #trashTable, #languageTable tfoot{
-    text-align: center;
-    border: #000 solid 1px;
-    letter-spacing: 2px;
-    font-weight: 700;
-    text-decoration: underline;
-    font-family: "Roboto Mono", monospace;
-}
-#archiveTable, #trashTable thead tr:nth-child(even) { background: #fff; }
-#archiveTable, #trashTable thead tr:nth-child(odd) { background: #d1d1d4; }
-#archiveTable, #trashTable tbody tr:nth-child(even) { background: #fff; }
-#archiveTable, #trashTable tbody tr:nth-child(odd) { background: #93A0AB; }
-#archiveTable, #trashTable  tfoot tr:nth-child(odd) { background: #d1d1d4; }
+#notebookTable tfoot,
+#usersTable tfoot,
+#tagsTable tfoot,
+#translationsTable tfoot,
+#notesListTable tfoot,
 #archiveTable tfoot,
-#trashTable tfoot{
+#trashTable tfoot,
+#languageTable tfoot{
     text-align: center;
     border: #000 solid 1px;
     letter-spacing: 2px;
@@ -143,14 +174,22 @@ color: #f8f9fa; ;}
     text-decoration: underline;
     font-family: "Roboto Mono", monospace;
 }
-#translationsTable thead tr:nth-child(even) { background: #fff; }
-#translationsTable  thead tr:nth-child(odd) { 
-    background: #212529; 
-    font-weight: 800;
-    color: #f8f9fa;  letter-spacing: 2px; text-decoration: underline; }
-
-#translationsTable tbody tr:nth-child(even) { background: #fff; }
-#translationsTable tbody tr:nth-child(odd) {background: #93A0AB;  }
+#notebookTable tfoot tr:nth-child(odd),
+#usersTable tfoot tr:nth-child(odd),
+#tagsTable tfoot tr:nth-child(odd),
+#translationsTable tfoot tr:nth-child(odd),
+#notesListTable tfoot tr:nth-child(odd),
+#archiveTable tfoot tr:nth-child(odd),
+#trashTable tfoot tr:nth-child(odd),
+#languageTable tfoot tr:nth-child(odd) { background: #212529; color: #f8f9fa; }
+#notebookTable tfoot tr:nth-child(even),
+#usersTable tfoot tr:nth-child(even),
+#tagsTable tfoot tr:nth-child(even),
+#translationsTable tfoot tr:nth-child(even),
+#notesListTable tfoot tr:nth-child(even),
+#archiveTable tfoot tr:nth-child(even),
+#trashTable tfoot tr:nth-child(even),
+#languageTable tfoot tr:nth-child(even) { background: #383838; color: #f8f9fa; }
 
 .translationBtnDiv{
     display: flex;
@@ -167,18 +206,6 @@ color: #f8f9fa; ;}
     margin: 0px;
     padding: 0px;
 }
-#languageTable thead tr:nth-child(even) { background: #fff; }
-#languageTable  thead tr:nth-child(odd) { 
-    background: #212529; 
-    font-weight: 800;
-    color: #f8f9fa;
-    font-family: "Roboto", sans-serif; letter-spacing: 2px; text-decoration: underline; }
-#tagsTable,#languageTable tbody tr:nth-child(even) { background: #fff; }
-#tagsTable, #languageTable  tbody tr:nth-child(odd) { background: #93A0AB; }
-#languageTable  tfoot tr:nth-child(odd) { background: #212529; 
-color: #f8f9fa; ;}
-#languageTable  tfoot tr:nth-child(even) { background: #383838; 
-color: #f8f9fa; ;}
 #toggleBtnBlock1,
 #toggleBtnBlock2{
     display: flex;

@@ -7,27 +7,7 @@
     display: flex;
     justify-content:center;
 }
-#archiveTable,
-#trashTable{
-    width: 90%;
-    margin: 0px;
-    padding: 0px;
-    overflow-y: scroll;
-}
-#archiveTable, #trashTable thead tr:nth-child(even) { background: #fff; }
-#archiveTable, #trashTable thead tr:nth-child(odd) { background: #d1d1d4; }
-#archiveTable, #trashTable tbody tr:nth-child(even) { background: #fff; }
-#archiveTable, #trashTable tbody tr:nth-child(odd) { background: #d1d1d4; }
-#archiveTable, #trashTable  tfoot tr:nth-child(odd) { background: #d1d1d4; }
-#archiveTable tfoot,
-#trashTable tfoot{
-    text-align: center;
-    border: #000 solid 1px;
-    letter-spacing: 2px;
-    font-weight: 700;
-    text-decoration: underline;
-    font-family: "Roboto Mono", monospace;
-}
+/* #archiveTable / #trashTable formatting lives in ListTables.css */
 .archiveTableBtns,
 .trashTableBtns{
     display: flex;

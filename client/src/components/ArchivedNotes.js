@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 // IMPORT CSS STYLESHEETS
 import '../css/componentCss/Trash.css'
+import '../css/componentCss/ListTables.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
