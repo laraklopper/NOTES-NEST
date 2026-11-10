@@ -171,7 +171,9 @@ A **MERN** stack application **(MongoDB, Express, React, Node.js)** renders the 
 
 ### 3.3. KEY ARIA ROLES
 
-Roles define what an element *is*. They map to native `HTML` elements where possible. 
+Roles are defined and described by their characteristics and defines wha an element *is*. 
+
+Characteristics define the structural function of a role, such as what a role is, concepts behind it, and what instances the role can or must contain. They map to native `HTML` elements where possible. 
 <!-- Prefer the native element when it supplies the role and interaction the design needs. -->
 
 | Role | HTML Equivalent | Use When |
@@ -260,12 +262,13 @@ Accessibility in aN application is a full-stack quality concern. In `MERN STACK`
 
 
 ---
-## 6. References
+## 6. REFERENCES
 
 - [W3C WAI introduction to web accessibility](https://www.w3.org/WAI/fundamentals/accessibility-intro/)
 - [W3C WCAG overview](https://www.w3.org/WAI/standards-guidelines/wcag/)
 - [W3C WCAG 2.2](https://www.w3.org/TR/WCAG22/)
 - [W3C WCAG2ICT guidance](https://www.w3.org/TR/wcag2ict-22/)
+- [W3C THE ROLES MODEL5](https://www.w3.org/TR/wai-aria-1.2/#roles)
 - [W3C WAI-ARIA 1.2 specification](https://www.w3.org/TR/wai-aria-1.2/)
 - [W3C ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)
 - [W3C ATAG overview](https://www.w3.org/WAI/standards-guidelines/atag/)
