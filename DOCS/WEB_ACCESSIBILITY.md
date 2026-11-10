@@ -1,36 +1,55 @@
 # WEB ACCESSIBILITY IN MERN STACK
 
-# Web Accessibility in the MERN Stack
-
 ## TABLE OF CONTENTS
-1. [Overview](#1-overview)
-2. [Web Accessibility Initiative and standards](#2-web-accessibility-initiative-and-standards)
-3. [Common ARIA patterns in React](#3-common-aria-patterns-in-react)
-4. [Assistive technologies](#4-assistive-technologies)
-5. [Conclusion](#5-conclusion)
-6. [References](#6-references)
+1. [OVERVIEW](#1-overview)
+    - [1.1. WHY IT MATTERS?](#11-why-it-matters)
+    - [1.2. HISTORY](#12-history)
+2. [WEB ACCESSIBILITT INITIATIVE(WAI) AND STANDARDS](#2-web-accessibility-initiativewai-and-standards)
+    - [2.1. WHAT IS ARIA?](#21-what-is-aria)
+    - [2.2. WHAT IS WCAG?](#22-what-is-wcag)
+        - [2.2.1. **The POUR Principles**](#221-the-pour-principles)
+    - [2.3. WHAT IS ATAG?](#23-what-is-atag)
+    - [2.4. WHAT IS UAAG?](#24-what-is-uaag)
+3. [COMMON ARIA PATTERNS IN REACT ](#3-common-aria-patterns-in-react)
+    - [3.1. USAGE ACROSS MERN STACK](#31-usage-accross-mern-stack)
+    - [3.2. CHOOSING A PATTERN](#32-choosing-a-pattern)
+    - [3.3. KEY ARIA ROLES](#33-key-aria-roles)
+    - [3.4. COMMON ARIA ATTRIBUTES](#34-common-aria-attributes)
+4. [ASSISTIVE TECHNOLOGIES (AT)](#4-assistive-technologies-at)
+    - [4.1. ACCESSIBILIY API](#41-accessibiliy-api)
+5. [CONCLUSION](#5-conclusion)
+6. [REFERENCES](#6-references)
+
+- *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
+
+----
 
 ## 1. OVERVIEW
 
 <!-- INTRODUCTION -->
 `Accessibility` is the practice of making your websites usable by as many people as possible. The domain of web accessibility defines how to design and developing websites, applications and make web content usable for people with disabilities so that they can use them effectively. In a MERN application, React presents the interface, while Express, Node.js and MongoDB help supply the information the interface needs.
 
-The two main standards bodies driving web accessibility are **Web Accessibility Initiative (`WAI`)** and its technical specification **Accessible Rich Internet Applications (`ARIA`)**. Together, WAI-ARIA gives developers a standardised vocabulary of HTML attributes that bridge the gap between what is displayed on screen and what assistive technologies (such as screen readers) communicate to users.
-
 Extensions and apps that simplify text, add text-to-speech, or customise typography (e.g. **Immersive Reader**, **Retext**, dyslexia-friendly font tools) benefit from clean semantic HTML and consistent, predictable page structure.
 Web accessibility means and applications so that people with disabilities can use them effectively. 
+
+The **Web Accessibility Initiative (`WAI`)** is the W3C programme that produces the main web accessibility standards. One of those standards is **Accessible Rich Internet Applications (`ARIA`)**, a technical specification. Together, **WAI-ARIA** gives developers a standardised vocabulary of HTML attributes that bridges the gap between what is displayed on screen and what assistive technologies (such as screen readers) communicate to users.
 
 ### 1.1. WHY IT MATTERS?
 
 People may use the web with visual, hearing, motor, cognitive or neurological disabilities. They may navigate with a keyboard, use a screen reader, enlarge text, or rely on captions to follow a video. The same design choices can help someone using a phone in bright sunlight, working in a noisy environment, or recovering from an injury.
 
+**Web accessibility:**
+ 
+- Gives more people equal access to information and services
+- Improves usability and the overall user experience
+- Supports legal and organisational accessibility requirements
+- Often improves search-engine optimisation through meaningful structure and text alternatives
+- Makes products easier to use on mobile devices and under temporary or situational constraints (e.g. a broken arm, bright sunlight, a noisy environment)
+- Reduces the cost of retrofitting accessibility after a product has been built
 Accessibility should be considered throughout research, design, development, content creation, testing, and maintenance.
-
-Building accessibility into research, design, content, development and testing can reduce rework. For example, defining an alternative-text field when designing an image upload lets editors describe meaningful images and gives React the data it needs to render them accessibly.
 
 
 ---
-
 
 ### 1.2. HISTORY
 | Year | Milestone |
@@ -47,20 +66,7 @@ Building accessibility into research, design, content, development and testing c
 
 
 
-### 1.3 THE POUR PRINCIPLES
-
-<!-- WCAG is organised around four principles: -->
-
-| Principle | Meaning in a MERN application | Examples |
-| --- | --- | --- |
-| **Perceivable** | Users can obtain the information presented by React. | Alternative text, captions, contrast, responsive layouts |
-| **Operable** | Users can operate every feature. | Keyboard support, visible focus, usable dialogs and menus |
-| **Understandable** | Content and behaviour are clear and predictable. | Labels, consistent navigation, useful validation messages |
-| **Robust** | The interface works with browsers and assistive technologies. | Semantic HTML, valid ARIA, reliable state updates |
-
-
-
-### 2. WEB ACCESSIBILITT INITIATIVE(WAI)
+### 2. WEB ACCESSIBILITY INITIATIVE(WAI) AND STANDARDS
 
 The **Web Accessibility Initiative (`WAI`)** is an initiative by the **World Wide Web Consortium (`W3C`)** to develop standards and guidelines to help everyone building the web ensure and improve accessibility for people with various challenges. The **WAI** is a program run by the **World Wide Web Consortium (W3C)**. 
 
@@ -91,11 +97,32 @@ In `JSX`, ARIA attributes keep their HTML spellings, such as `aria-expanded` and
 
 ### 2.2. WHAT IS WCAG?
 
-WCAG describes testable **success criteria** for the information and interfaces in a website or web application, including text, images, media, forms and dynamic content. WCAG 2 defines three conformance levels. Level A covers foundational criteria, Level AA includes A and AA criteria, and Level AAA includes criteria at all three levels.
-
-WCAG applies to the experience users receive. In a MERN app, the API and data model can support that experience by supplying field-specific errors, meaningful labels or content metadata. 
-
-W3C's **WCAG2ICT** guidance explains how WCAG concepts can be applied to non-web software and documents. The WCAG documents explain how to make web content more accessible to people with disabilities. Web “content” generally refers to the information in a web page or web application
+**Web Content Accessibility Guidelines (WCAG) 2** is developed through the W3C process in cooperation with individuals and organisations around the world, with the goal of providing a single shared standard for web content accessibility that meets the needs of individuals, organisations, and governments internationally.
+ 
+The WCAG documents explain how to make web content more accessible to people with disabilities. Web "content" generally refers to the information in a web page or web application, including:
+ 
+- **Natural information** such as text, images, and sounds
+- **Code or markup** that defines structure, presentation, etc.
+WCAG applies to dynamic content, multimedia, mobile web, and AI web interfaces. It can also be applied to non-web information and communications technologies (ICT) such as native apps, software, and documents.
+ 
+**Conformance levels**
+ 
+| Level | Meaning |
+|-------|---------|
+| **A** | Minimum level — the most basic barriers are removed. |
+| **AA** | The level most laws and organisational policies target. |
+| **AAA** | The highest level — not always achievable for all content. |
+ 
+### 2.2.1. **The POUR Principles**
+ 
+WCAG is organised around four principles:
+ 
+| Principle | Meaning in a MERN Application | Examples |
+|-----------|-------------------------------|----------|
+| **Perceivable** | Users can obtain the information presented by React. | Alternative text, captions, contrast, responsive layouts |
+| **Operable** | Users can operate every feature. | Keyboard support, visible focus, usable dialogs and menus |
+| **Understandable** | Content and behaviour are clear and predictable. | Labels, consistent navigation, useful validation messages |
+| **Robust** | The interface works with browsers and assistive technologies. | Semantic HTML, valid ARIA, reliable state updates |
 
 
 ### 2.3. WHAT IS ATAG?
@@ -130,7 +157,7 @@ A **MERN** stack application **(MongoDB, Express, React, Node.js)** renders the 
 | **Testing** | Use keyboard and screen reader checks on complete workflows, alongside automated checks. |
 
 
-### 3.2 CHOOSING A PATTERN
+### 3.2. CHOOSING A PATTERN
 
 | Scenario | Implementation |
 | --- | --- |
@@ -230,14 +257,7 @@ Accessibility in aN application is a full-stack quality concern. In `MERN STACK`
 
  A client form illustrates the connection. Express returns a field-specific error, React renders it beside a labelled input, and a keyboard or screen reader user can find the field, understand the error and correct it.
 
-**ACESSIBILITY CHECKLIST**
- 
-1. Use semantic `HTML` before reaching for `ARIA`.
-2. Ensure every feature works with a keyboard alone, with visible focus.
-3. Provide text alternatives for images and captions for media.
-4. Keep ARIA states in sync with React state.
-5. Announce dynamic changes (loading, errors, route changes).
-6. Test with automated tools (e.g. `eslint-plugin-jsx-a11y`, axe, Lighthouse) **and** a real screen reader — automated tools catch only some issues.
+
 
 ---
 ## 6. References
