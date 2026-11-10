@@ -1,7 +1,13 @@
 # PACKAGES
 
 ## TABLE OF CONTENTS
-
+1. [NODE PACKAGE MANAGER](#1-node-package-manager)
+    - [1.1. NPM COMMANDS](#11-npm-commands)
+    - [1.2. package.json](#12-packagejson)
+2. [APPLICATION PACKAGES](#2-application-packages)
+    - [2.1 SERVER-SIDE(BACK-END)](#21-server-sideback-end)
+    - [2.2 CLIENT-SIDE(FRONT-END)](#22-client-sidefront-end)
+3. [REFERENCES](#3-references)
 
 
 - *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
@@ -55,3 +61,57 @@ The NPM version used in the application: `11.10.1`
 | `browserslist` | Target browsers used by build tools to determine JS/CSS compatibility output |
 
 Each dependency is listed as `"<package-name>": "<version-range>"`. The `^` prefix (e.g. `^19.2.7`) means npm may install any compatible minor/patch update, while the exact installed versions (and those of all transitive/nested dependencies) are locked in the accompanying `package-lock.json` file so installs stay reproducible across machines. The version numbers listed below are the minimums those ranges are written against.
+
+**SCRIPTS**
+| _LAYER_ | _COMMAND_ | _RUNS_ |
+|---|---|---|
+| server | `npm start` | `nodemon app.js` — starts the API on port 3001 and restarts it on file changes |
+| client | `npm start` | `react-scripts start` — starts the development server on port 3000 |
+| client | `npm run build` | `react-scripts build` — produces the optimised production bundle |
+| client | `npm test` | `react-scripts test` — runs the test suite in watch mode |
+
+## 2. APPLICATION PACKAGES
+### 2.1 SERVER-SIDE(BACK-END)
+
+| _PACKAGE_ | _CLI / TERMINAL_ | _PURPOSE_ | _VERSION_ |
+|-----------|-----------------|-----------|-----------|
+
+### 2.2 CLIENT-SIDE(FRONT-END)
+
+| _PACKAGE_ | _CLI / TERMINAL_ | _PURPOSE_ | _VERSION_ |
+|-----------|-----------------|-----------|-----------|
+| @testing-library/dom | `npm install @testing-library/dom` | DOM querying utilities for testing | 10.4.1 |
+| @testing-library/jest-dom | `npm install @testing-library/jest-dom` | Custom Jest matchers for DOM assertions, registered in `setupTests.js` | |
+| @testing-library/react | `npm install @testing-library/react` | React component testing utilities | 16.3.2 |
+| @testing-library/user-event | `npm install @testing-library/user-event` | Simulates real user interactions in tests | 13.5.0 |
+|react | `npm create-react-app@latest`| Core React library for building UIs ||
+|react-bootstrap|`npm install react-bootstrap bootstrap` | CSS framework for responsive UI components |  |
+| react-router-dom | `npm install react-router-dom@latest` | DOM bindings for React Router (`BrowserRouter`, `Link`, `NavLink`, `useNavigate`) | |
+| lucide-react | `npm install lucide-react` | SVG icon library for React | |
+
+## 3. REFERENCES
+
+- https://nodejs.org/learn/getting-started/an-introduction-to-the-npm-package-manager
+- https://www.geeksforgeeks.org/node-js/important-npm-commands/
+- https://expressjs.com/
+- https://expressjs.com/en/resources/middleware/
+- https://expressjs.com/en/resources/middleware/cors/#installation
+- https://mongoosejs.com/docs/index.html
+- https://www.npmjs.com/package/dotenv
+- https://www.npmjs.com/package/bcrypt
+- https://expressjs.com/en/resources/middleware/cors/#installation
+- https://www.npmjs.com/package/cookie-parser
+- https://www.npmjs.com/package/helmet
+- https://www.npmjs.com/package/express-rate-limit
+- https://www.npmjs.com/package/jsonwebtoken
+- https://www.npmjs.com/package/nodemon
+- https://csv.js.org/stringify/
+- https://www.npmjs.com/package/xlsx
+- https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch
+- https://react.dev/learn/creating-a-react-app
+- https://react-bootstrap.netlify.app/docs/getting-started/introduction
+- https://getbootstrap.com/docs/5.3/getting-started/introduction/
+- https://lucide.dev/guide/packages/lucide-react
+- https://www.npmjs.com/package/react-router-dom
+- https://testing-library.com/docs/react-testing-library/intro/
+- https://www.npmjs.com/package/web-vitals
