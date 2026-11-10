@@ -7,8 +7,10 @@ import Button from 'react-bootstrap/Button';
 import { ArrowLeftRight, RotateCw, Bug, Check, Save, Copy } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 const {FALLBACK_LANGUAGES, FALLBACK_SOURCE_LANG, FALLBACK_TARGET_LANG, MIN_DETECT_CHARS, DETECT_DEBOUNCE_MS, MAX_LENGTH} = require('../util/languageFunc')
-export default function TranslateForm(
-    {//PROPS PASSED FROM PARENT COMPONENT
+
+//TranslateForm function component
+export default function TranslateForm(//Export default TranslateForm.js function component
+    {//PROPS PASSED FROM PARENT COMPONENT(Translate.js)
         currentUser
     }
 ) {
@@ -275,7 +277,6 @@ export default function TranslateForm(
     on screen against the logged-in user. */
     const handleSave = useCallback(async () => {
         if (!lastTranslation) return;
-
         setSaving(true);
         setSaved(false);
         setSaveError('');
@@ -302,7 +303,7 @@ export default function TranslateForm(
     }, [lastTranslation])
     //===================================
   return (
-    <div id='translatorDiv'>
+    <div id='translatorDiv' role='region'>
      <form id='translatorForm' onSubmit={handleSubmit}>
         <div id='translatorInputDetails'>
             <Stack gap={3} id='translateInputStack'>
