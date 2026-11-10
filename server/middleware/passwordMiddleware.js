@@ -1,4 +1,16 @@
-const User = require('../models/userSchema')
+//passwordMiddleware.js
+/* Load environment variables from a .env 
+file using the dotenv package*/
+require('dotenv').config();
+const bcrypt = require('bcryptjs');// Import the bcrypt library
+/* Passwords are stored as plaintext during development and hashed everywhere else.
+Matches ensureJwtSecret.js: an unset NODE_ENV counts as development */
+
+// Industry standard, balances security and performance
+const SALT_ROUNDS = 10; // Number of hashing rounds
+const isDevelopment = (process.env.NODE_ENV || 'development').toLowerCase() === 'development';
+
+
  /*===============================
 PASSWORD VALIDATION MIDDLEWARE
 =========================*/
@@ -63,4 +75,12 @@ const checkPassword = (req, res, next) => {
         );
     }
     return next();// Call the next middleware or route handler
+}
+
+module.exports = {
+    hashPassword,// Export the password hashing middleware
+    checkPassword,// Export the password validation middleware
+    isDevelopment,// Export the development flag so login compares passwords the same way
+    hashPassword,
+    checkPassword
 }
