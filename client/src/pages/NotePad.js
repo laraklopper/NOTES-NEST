@@ -181,6 +181,7 @@ export default function NotePad(
         }
       },[setError, fetchTags])
 
+      //==================JSX RENDERING===================
   return (
     <div id='pageContainer'>
       <Header currentUser={currentUser}/>
