@@ -27,6 +27,8 @@ export default function Login(//Export the default Login function component
         //=============STATE VARIABLES=============
         const [loading, setLoading] = useState(false);// State Used to disable the button and show loading text.
         
+            //=======NAViGATE=======
+  // Hook to navigate between different routes
         const navigate = useNavigate();
 
     //================REQUESTS/CALLBACKS====================
@@ -82,6 +84,9 @@ export default function Login(//Export the default Login function component
                 </div>
             </Col>
         </Row>
+        {/* -------------------------
+        SECTION 1: LoginForm
+        ------------------ */}
         <section id='loginSection'>
         <div id='loginPanal' role='region'>
             <Row id='loginRow'>
