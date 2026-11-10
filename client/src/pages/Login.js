@@ -1,15 +1,22 @@
 //Login.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+// IMPORT CSS STYLESHEETS
 import '../css/pagesCss/LoggedOut.css'
 import '../css/pagesCss/PageSetup.css'
-import MainHeader from '../components/MainHeader'
+// IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+//IMPORT CUSTOM COMPONENTS
+import MainHeader from '../components/MainHeader'
 import LoginForm from '../components/LoginForm';
+//IMPORT REACT-ROUTER-DOM COMPENTS
+import { useNavigate } from 'react-router-dom'
+// IMPORT ICONS FROM LUCIDE-REACT
+import { UserKey } from 'lucide-react'
 
 //============MAIN LOGIN COMPONENT===========
-export default function Login(
+export default function Login(//Export the default Login function component
     {//PROPS PASSED FROM PARENT COMPONENT (App.js)
         userData, 
         setUserData,
@@ -19,6 +26,7 @@ export default function Login(
     }) {
         //=============STATE VARIABLES=============
         const [loading, setLoading] = useState(false);// State Used to disable the button and show loading text.
+        
         const navigate = useNavigate();
 
     //================REQUESTS/CALLBACKS====================
@@ -63,8 +71,17 @@ export default function Login(
         },[loading, setCurrentUser, userData, setUserData, setError, setLoggedIn, navigate])
         //===========JSX RENDERING===========
   return (
-    <div id='pageContainer'>
+    <div id='pageContainer' role='main'>
         <MainHeader mainHeading={'LOGIN'}/>
+        <Row id='eventRow' role='presentation'>
+            <Col id='eventCol'>
+                <div className='eventBar'>
+                    <div className='eventTrack'>
+                        <UserKey className='eventSlide' color='#000' size={32} aria-hidden='true' focusable='false'/>
+                    </div>
+                </div>
+            </Col>
+        </Row>
         <section id='loginSection'>
         <div id='loginPanal' role='region'>
             <Row id='loginRow'>
