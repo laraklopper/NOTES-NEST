@@ -9,6 +9,7 @@ Each route forwards to the Langbly endpoint of the same path, so the API key in
 require('dotenv').config();
 const express = require('express');
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
+const { translateLimiter, detectLimiter } = require('../middleware/rateLimitMiddleware');// Limits translation and language detection requests per IP
 const { languageData } = require('../util/langaugeData');// Local copy of the Langbly language list
 const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../util/schemaUtil');
 const router = express.Router()
@@ -142,7 +143,7 @@ router.get('/language/translate/v2/languages', checkJwtToken, async (req, res) =
 /* POST: /api/language/translate/v2 : Translates the text from the TranslateForm.
 Nothing is saved here — the Save button sends the result to /translation/save.
 Body: { sourceText, sourceLanguage ("auto" or blank to detect), targetLanguage } */
-router.post('/language/translate/v2', checkJwtToken, async (req, res) => {
+router.post('/language/translate/v2', translateLimiter, checkJwtToken, async (req, res) => {
     try {
         const { sourceText, sourceLanguage, targetLanguage } = req.body || {};// Extract the translation fields from the request body
 
@@ -206,7 +207,7 @@ router.post('/language/translate/v2', checkJwtToken, async (req, res) => {
 the user types. Body: { sourceText }
 Responds { language, name, confidence, isReliable }; language is null when
 Langbly could not tell (it answers "und" for text that is too short). */
-router.post('/language/translate/v2/detect', checkJwtToken, async (req, res) => {
+router.post('/language/translate/v2/detect', detectLimiter, checkJwtToken, async (req, res) => {
     try {
         const { sourceText } = req.body || {};// Extract the text from the request body
 

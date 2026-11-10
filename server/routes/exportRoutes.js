@@ -14,6 +14,7 @@ const { stringify } = require('csv-stringify/sync');// Builds the .csv text
 const Note = require('../models/noteSchema');// Import the Note model
 const Translation = require('../models/translationSchema');// Import the Translation model
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
+const { exportLimiter } = require('../middleware/rateLimitMiddleware');// Limits exports per IP
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the language filters
 const { languageData } = require('../util/langaugeData');// Used to show language names instead of codes
 const router = express.Router()
@@ -147,7 +148,7 @@ const CONTENT_TYPES = {
 /* GET: /export : Sends the user's notes or translations as a file download.
 Responds with the file and a Content-Disposition header, e.g.
 note-nest-notes-2026-11-09.xlsx (or note-nest-notes-filtered-2026-11-09.csv) */
-router.get('/', checkJwtToken, async (req, res) => {
+router.get('/', exportLimiter, checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { type, format } = req.query;
