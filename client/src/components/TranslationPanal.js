@@ -1,5 +1,7 @@
 //TranslationPanal.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/DetailsPanals.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
@@ -22,6 +24,7 @@ export default function TranslationPanal(
         setError// Shows an error message above the list
     }
 ) {
+    // =======STATE VARIABLES==============
     const [deleting, setDeleting] = useState(false)// True while a delete request is running
 
     //========DELETE TRANSLATION REQUEST===============
@@ -68,8 +71,10 @@ export default function TranslationPanal(
     // Hooks above must run on every render, so this check comes after them
     if (!translation) return null
 
+    //==============JSX RENDERING================
   return (
-    <div id='translationPanal'>
+    <div id='translationPanal' role='group'>
+    {/* Panal header Stack */}
         <Stack direction="horizontal" gap={3} id='translationPanalHead'>
       <div className="p-2" id='panalHeadingBlock'>
         <h4 className='panalHeading'>
@@ -95,8 +100,10 @@ export default function TranslationPanal(
         </Button>
       </div>
     </Stack>
+    {/* Translation Panal Body */}
     <div id='translationPanalBody'>
-        <Stack gap={3}>
+    {/* STACK 1: */}
+        <Stack gap={3} id='panalStack1'>
       <div className="p-2">
             <span className='dataSpan'>
                 <p className='dataLabel'>SOURCE LANGUAGE:</p>
@@ -125,7 +132,8 @@ export default function TranslationPanal(
         </span>
       </div>
     </Stack>
-    <Stack gap={3}>
+    {/* STACK 2: */}
+    <Stack gap={3} id='panalStack2'>
       <div className="p-2">
         <span className='dataSpan'>
             <p className='dataLabel'>SOURCE TEXT:</p>
@@ -140,6 +148,7 @@ export default function TranslationPanal(
       </div>
     </Stack>
     </div>
+    {/* PANAL FOOTER */}
      <Stack direction="horizontal" gap={3} id='panalFooter'>
       <div className="p-2">
         <Button

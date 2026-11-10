@@ -1,3 +1,4 @@
+//TranslateForm.js
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import '../css/componentCss/Translator.css'
 import '../css/componentCss/FormSetup.css'
@@ -7,7 +8,9 @@ import { ArrowLeftRight, RotateCw, Bug, Check, Save, Copy } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 const {FALLBACK_LANGUAGES, FALLBACK_SOURCE_LANG, FALLBACK_TARGET_LANG, MIN_DETECT_CHARS, DETECT_DEBOUNCE_MS, MAX_LENGTH} = require('../util/languageFunc')
 export default function TranslateForm(
-    {currentUser}
+    {//PROPS PASSED FROM PARENT COMPONENT
+        currentUser
+    }
 ) {
 /* The language pair the form opens on, and the pair CLEAR FORM returns to:
     the logged-in user's saved defaults from GET /user/me, falling back to the
@@ -15,7 +18,7 @@ export default function TranslateForm(
     no preference. */
     const defaultSourceLang = currentUser?.defaultLanguages?.defaultSourceLang || FALLBACK_SOURCE_LANG;
     const defaultTargetLang = currentUser?.defaultLanguages?.defaultTargetLang || FALLBACK_TARGET_LANG;
-  
+  //============STATE VARIABLES==================
     const [languages, setLanguages] = useState(FALLBACK_LANGUAGES)
     const [sourceLang, setSourceLang] = useState(defaultSourceLang)//State to store the source language
     const [targetLang, setTargetLang] = useState(defaultTargetLang)//State to store the target language
@@ -323,11 +326,11 @@ export default function TranslateForm(
             onClick={handleSwap}// Function to  flip source/target language and text
             type='button'
             title='Swap language'
-            // ARIA ATTRIBUTES
+            // ARIA ATTRIBUTES:
+            // aria-label=''
             >
                 <ArrowLeftRight fontWeight={700} size={18} aria-hidden='true' focusable='false' />
             </Button>
-
         </div>
         {/* SET TO DEFAULT TARGET/SOURCE LANGUAGE OR auto-detect if none */}
         <div className='languageSelectDiv' id='targetLangSelectdiv'>
@@ -344,83 +347,83 @@ export default function TranslateForm(
             />
         </div>
             {/* DETECTED SOURCE LANGUAGE */}
-        {sourceLang === 'auto' && (
-            <div id='detectedLanguageBlock'>
-                                <p id='detectedLanguageNote' aria-live='polite'>
-                                    {detecting
-                                        ? 'Detecting language…'
-                                        : detected?.language
-                                            ? `Detected: ${detected.name}${detected.isReliable ? '' : ' (low confidence)'}`
-                                            /* A result with no language means the server was asked and
-                                            came back undecided, which is worth saying. A blank note is
-                                            for when there was nothing to ask about yet. */
-                                            : detected
-                                                ? 'Could not identify the language'
-                                                : ''}
-                                </p>
-                            </div>
-        )}
+            {sourceLang === 'auto' && (
+                <div id='detectedLanguageBlock'>
+                    <p id='detectedLanguageNote' aria-live='polite'>
+                        {detecting
+                            ? 'Detecting language…'
+                            : detected?.language
+                                ? `Detected: ${detected.name}${detected.isReliable ? '' : ' (low confidence)'}`
+                                /* A result with no language means the server was asked and
+                                came back undecided, which is worth saying. A blank note is
+                                for when there was nothing to ask about yet. */
+                                : detected
+                                    ? 'Could not identify the language'
+                                    : ''}
+                    </p>
+                </div>
+            )}
       </div>
       <div className="p-2" id='translateTextBlock'>
         <div id='translationText'>
             <div id='translatedInputDiv'>
             {/* Text to translate value={sourceText} */}
-                                <div id='sourceTextBlock'>
-                                    <label htmlFor='sourceText' className='translateLabel visually-hidden'>Text to translate</label>
-                                    <textarea
-                                        id='sourceText'
-                                        className='form-control'
-                                        rows={8}
-                                        placeholder='Enter text to translate…'
-                                        name='sourceText'
-                                        value={sourceText}
-                                        maxLength={MAX_LENGTH}
-                                        disabled={loading}
-                                        /* Editing clears the save confirmation */
-                                        onChange={(e) => {
-                                            setSourceText(e.target.value);
-                                            resetSaveState();
-                                        }}
-                                        // ARIA ATTRIBUTES:
-                                        aria-label='Text to translate'
-                                        aria-required='true'
-                                    />
-                                     <div
-                                        id='sourceTextCounter'
-                                        className={`form-text text-end ${remainingChars < 100 ? 'text-danger' : ''}`}
-                                        aria-live='polite'
-                                    >
-                                        {sourceText.length} / {MAX_LENGTH}
-                                    </div>
-                                </div>
-                                {/* Translation result value={translatedText} */}
-                                <div id='translatedTextBlock'>
-                                    <label htmlFor='translatedText' className='translateLabel visually-hidden'>Translation result</label>
-                                    <Button
-                                        type='button'
-                                        variant='outline-secondary'
-                                        size='sm'
-                                        id='copyTranslationBtn'
-                                        onClick={handleCopy}
-                                        disabled={!translatedText}
-                                        // ARIA ATTRIBUTES
-                                        aria-label={copied ? 'Translation copied' : 'Copy translation'}
-                                    >
-                                        {copied ? (
-                                            <>Copied <Check size={16} aria-hidden='true' focusable='false' /></>
-                                        ) : (
-                                            <>Copy <Copy size={16} aria-hidden='true' focusable='false' /></>
-                                        )}
-                                    </Button>
-                                    {/* Read-only preview: nothing is saved until SAVE HISTORY is pressed */}
-                                    <div
-                                        id='translatedText'
-                                        className='form-control bg-light'
-                                        aria-live='polite'
-                                    >
-                                        {loading ? 'Translating…' : translatedText}
-                                    </div>
-                                </div>
+                <div id='sourceTextBlock'>
+                    <label htmlFor='sourceText' className='translateLabel visually-hidden'>Text to translate</label>
+                    <textarea
+                        id='sourceText'
+                        className='form-control'
+                        rows={8}
+                        placeholder='Enter text to translate…'
+                        name='sourceText'
+                        value={sourceText}
+                        maxLength={MAX_LENGTH}
+                        disabled={loading}
+                        /* Editing clears the save confirmation */
+                        onChange={(e) => {
+                            setSourceText(e.target.value);
+                            resetSaveState();
+                        }}
+                        // ARIA ATTRIBUTES:
+                        aria-label='Text to translate'
+                        aria-required='true'
+                    />
+                        <div
+                        id='sourceTextCounter'
+                        className={`form-text text-end ${remainingChars < 100 ? 'text-danger' : ''}`}
+                        aria-live='polite'
+                    >
+                        {sourceText.length} / {MAX_LENGTH}
+                    </div>
+                </div>
+                {/* Translation result value={translatedText} */}
+                <div id='translatedTextBlock'>
+                    <label htmlFor='translatedText' className='translateLabel visually-hidden'>Translation result</label>
+                    <Button
+                        type='button'
+                        variant='outline-secondary'
+                        size='sm'
+                        id='copyTranslationBtn'
+                        onClick={handleCopy}
+                        disabled={!translatedText}
+                        // ARIA ATTRIBUTES
+                        aria-label={copied ? 'Translation copied' : 'Copy translation'}
+                    >
+                        {copied ? (
+                            <>Copied <Check size={16} aria-hidden='true' focusable='false' /></>
+                        ) : (
+                            <>Copy <Copy size={16} aria-hidden='true' focusable='false' /></>
+                        )}
+                    </Button>
+                    {/* Read-only preview: nothing is saved until SAVE HISTORY is pressed */}
+                    <div
+                        id='translatedText'
+                        className='form-control bg-light'
+                        aria-live='polite'
+                    >
+                        {loading ? 'Translating…' : translatedText}
+                    </div>
+                </div>
             </div>
         </div>
       </div>

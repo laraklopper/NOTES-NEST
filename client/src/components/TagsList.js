@@ -21,6 +21,7 @@ export default function TagsList(
         setError
     }
 ) {
+    //================STATE VARIABLES=================
     const [deletingId, setDeletingId] = useState(null)// Id of the tag being deleted
 
     //========DELETE TAG REQUEST===============

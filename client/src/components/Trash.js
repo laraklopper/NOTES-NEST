@@ -141,6 +141,7 @@ export default function Trash(
                       {remaining !== null && <><br/><small>({remaining} {remaining === 1 ? 'DAY' : 'DAYS'} LEFT)</small></>}
                     </td>
                     <td>
+                    {/* TABLE BUTTONS */}
                       <div className='trashTableBtns'>
                         <Button
                         variant='light'
@@ -161,8 +162,8 @@ export default function Trash(
                         disabled={actionId !== null}
                         // ARIA ATTRIBUTES:
                         aria-label={`Permanently delete note ${note.title}`}
-                        >DELETE
-                          <TrashIcon aria-hidden='true' focusable='false'/>
+                        >
+                        DELETE<TrashIcon aria-hidden='true' focusable='false'/>
                         </Button>
                       </div>
                     </td>

@@ -24,6 +24,7 @@ const fullNameOf = (user) => `${user?.fullName?.firstName || ''} ${user?.fullNam
 /* Admin-only table of every account, with a details panal for the selected (non-admin) user.
 GET /user/fetchUsers, GET /user/fetchUser/:id, DELETE /user/deleteUser/:id */
 export default function UsersList() {
+    // ==========STATE VARIABLES===================
     const [users, setUsers] = useState([])
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(PAGE_SIZES[0])

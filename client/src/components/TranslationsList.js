@@ -12,10 +12,9 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
 import { languageName } from '../util/languageFunc';
-
 // IMPORT ICONS FROM LUCIDE-REACT
 import { ArrowRight, Download, Filter, FilterX } from 'lucide-react';
-// IMPORT COMPONENTS
+// IMPORT CUSTOM COMPONENTS
 import FilterTranslations, { EMPTY_FILTERS } from './FilterTranslations';
 import TranslationPanal from './TranslationPanal';
 import Pagination, { PAGE_SIZES } from './Pagination';
@@ -33,6 +32,7 @@ export default function TranslationsList(
         active = true// True while the translations tab is open; the list refreshes each time it opens
     }
 ) {
+    //=============JSX RENDERING==================
     const [translations, setTranslations] = useState([])
     const [pagination, setPagination] = useState({ page: 1, limit: PAGE_SIZES[0], total: 0, totalPages: 1 })
     const [page, setPage] = useState(1)
@@ -255,7 +255,6 @@ export default function TranslationsList(
             </tfoot>
         </table>
     </div>
-
         </Col>
     </Row>
     <div id='exportFormDiv'>
