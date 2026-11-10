@@ -1,5 +1,17 @@
 //userUtil.js
-
+/* Request body fields the edit profile form may change, mapped to their path in the
+userSchema. dateOfBirth, password, adminDataConsent and admin are left out on purpose,
+so a client cannot change them by adding them to the request body */
+const EDITABLE_PROFILE_FIELDS = {
+    username: 'username',
+    firstName: 'fullName.firstName',
+    lastName: 'fullName.lastName',
+    email: 'contactDetails.email',
+    contactNumber: 'contactDetails.contactNumber',
+    defaultSourceLang: 'defaultLanguages.defaultSourceLanguage',
+    defaultTargetLang: 'defaultLanguages.defaultTargetLanguage',
+    defaultNoteLang: 'defaultLanguages.defaultNoteLanguage'
+};
 // Calculate a user's age in years from their date of birth
 const calculateAge = (dateOfBirth) => {
     const dob = new Date(dateOfBirth);
@@ -18,4 +30,4 @@ the raw token exists only in the email that was sent. SHA-256 (rather than
 bcrypt) is enough here because the token is 256 bits of random data, not a
 guessable, human-chosen secret. */
 const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
-module.exports = {ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge, hashResetToken}
+module.exports = {ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge, hashResetToken, EDITABLE_PROFILE_FIELDS}

@@ -11,11 +11,11 @@ const Notebook = require('../models/notebookSchema');// Import the Notebook mode
 const Tag = require('../models/tagSchema');// Import the Tag model (removed with the user)
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with the user)
 const router = express.Router();// Create a new router object using Express.js
-const {
-    checkJwtToken,
-    checkAdmin,
-} = require('../middleware/middleware');// Import the JWT, admin, password middleware functions and development flag
+/// Import the JWT, admin, password middleware functions and development flag
 const {checkPassword, checkPasswordChange, hashPassword}= require('../middleware/passwordMiddleware')
+const { checkJwtToken} = require ('../middleware/securityMiddleware')
+const {checkAdmin} = require('../middleware/adminMiddleware')
+import { EDITABLE_PROFILE_FIELDS } from '../util/userUtil';
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/
@@ -100,19 +100,7 @@ router.get('/fetchUser/:id', checkJwtToken, checkAdmin, async (req, res) => {
 /*──────────────────────────── PATCH ROUTES ─────────────────────────────────────
    PATCH: UPDATE — Used to change part of an existing document
 ────────────────────────────────────────────────────────────────────────────────*/
-/* Request body fields the edit profile form may change, mapped to their path in the
-userSchema. dateOfBirth, password, adminDataConsent and admin are left out on purpose,
-so a client cannot change them by adding them to the request body */
-const EDITABLE_PROFILE_FIELDS = {
-    username: 'username',
-    firstName: 'fullName.firstName',
-    lastName: 'fullName.lastName',
-    email: 'contactDetails.email',
-    contactNumber: 'contactDetails.contactNumber',
-    defaultSourceLang: 'defaultLanguages.defaultSourceLanguage',
-    defaultTargetLang: 'defaultLanguages.defaultTargetLanguage',
-    defaultNoteLang: 'defaultLanguages.defaultNoteLanguage'
-};
+
 
 /* PATCH: /user/editProfile : Updates the signed-in user's profile details and default
 languages from the EditProfile form on the Home page. Only the fields sent are changed. */

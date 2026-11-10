@@ -11,16 +11,16 @@ require('dotenv').config()
 const express = require('express');
 const User = require('../models/userSchema');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { checkJwtToken } = require('../middleware/middleware');// Import the password hashing and JWT middleware and development flag
+const {checkJwtToken, setTokenCookie} = require('../middleware/securityMiddleware')
 const {isDevelopment, hashPassword, checkPassword} = require('../middleware/passwordMiddleware')
+const { loginLimiter, registerLimiter } = require('../middleware/rateLimitMiddleware');
 const router = express.Router()
 const { calculateAge } = require('../util/userUtil')
 
 
 // schemaUtil holds the admin rules: 21+, and an account age of 3 months in production (1 day otherwise)
 const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil');
-const { loginLimiter, registerLimiter } = require('../middleware/rateLimitMiddleware');
+
 
 // Extract environmental variables (with safe fallbacks for local dev)
 const rawSecretKey = process.env.JWT_SECRET_KEY;// JWT secret key
@@ -54,26 +54,7 @@ const cookieOptions = {
 //=============ROUTES================
 // Use Plaintext passwords for development
 /*──────────────────────────── HELPERS ──────────────────────────────*/
-/* Sign a JWT for the given user document and send it as the HTTP-only 'token' cookie.
-The payload is { id, isAdmin }, which checkJwtToken and the routes read as req.user.id */
-const setTokenCookie = (res, user) => {
-    const jwtToken = jwt.sign(
-        {
-            id: user._id,// Set the user id in the token payload
-            isAdmin: user.admin === true// Store the user's admin status in the token payload
-        },
-        secretKey,// Use the secret key to sign the token
-        {
-            expiresIn: expirationTime,// Set the token expiration time
-            algorithm: jwtAlgorithm// Set the JWT algorithm
-        }
-    );
-    const { exp } = jwt.decode(jwtToken);// Expiry (in seconds) that jwt.sign set from expirationTime
-    res.cookie('token', jwtToken, {
-        ...cookieOptions,
-        expires: new Date(exp * 1000)// Cookie expires with the token
-    });
-}
+
 
 // The user details sent back by /login, /setAdmin and /clearAdmin (the token stays in the cookie)
 const sessionUser = (user) => ({

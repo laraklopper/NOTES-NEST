@@ -4,10 +4,29 @@ file using the dotenv package*/
 require('dotenv').config();
 // Import Required modules and packages
 const jwt = require('jsonwebtoken');// Import the JSON Web Token (JWT) library
-const User = require('../models/userSchema');// Import the User model (filename is case-sensitive on Linux)
 
+// Extract environmental variables (with safe fallbacks for local dev)
+const rawSecretKey = process.env.JWT_SECRET_KEY;// JWT secret key
+const rawExpiration = process.env.JWT_EXPIRATION;// JWT expiration time
+const rawAlgorithm = process.env.JWT_ALGORITHM;// JWT algorithm
+const secretKey = rawSecretKey || 'secretKey';// Fallback secret key
+const expirationTime = rawExpiration || '12h';// Fallback expiration time
+const jwtAlgorithm = rawAlgorithm || 'HS256';// Fallback JWT algorithm
 
-const secretKey = process.env.JWT_SECRET_KEY || 'secretKey';
+//=====CHECK IF ALL THE ENVIRONMENTAL VARIABLES A PRESENT=========
+// Conditional rendering to check if the environmental variables are missing
+if (!rawSecretKey) {
+    console.warn("[WARNING: userRoute.js]: JWT_SECRET_KEY not set. Using fallback key.");// Log a warning message in the console for debugging purposes
+}
+// Conditional rendering to check if the environmental variables are missing
+else if (!rawExpiration) {
+    console.warn('[WARNING: userRoute.js] Missing exiration time, using fallback time')// Log a warning message in the console for debugging purposes
+}
+// Conditional rendering to check if the environmental variables are missing
+else if (!rawAlgorithm) {
+    console.warn('[WARNING: userRoute.js] Missing jwt algorithm, using fallback algorithm.'); // Log a warning message in the console for debugging purposes
+}
+
 
 /*=============================
 JWT VERIFICATION MIDDLEWARE
@@ -60,7 +79,27 @@ JWT VERIFICATION MIDDLEWARE
         });
     }
 }
-
+/* Sign a JWT for the given user document and send it as the HTTP-only 'token' cookie.
+The payload is { id, isAdmin }, which checkJwtToken and the routes read as req.user.id */
+const setTokenCookie = (res, user) => {
+    const jwtToken = jwt.sign(
+        {
+            id: user._id,// Set the user id in the token payload
+            isAdmin: user.admin === true// Store the user's admin status in the token payload
+        },
+        secretKey,// Use the secret key to sign the token
+        {
+            expiresIn: expirationTime,// Set the token expiration time
+            algorithm: jwtAlgorithm// Set the JWT algorithm
+        }
+    );
+    const { exp } = jwt.decode(jwtToken);// Expiry (in seconds) that jwt.sign set from expirationTime
+    res.cookie('token', jwtToken, {
+        ...cookieOptions,
+        expires: new Date(exp * 1000)// Cookie expires with the token
+    });
+}
 module.exports = {
-    checkJwtToken
+    checkJwtToken,
+    setTokenCookie,
 }
