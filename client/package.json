@@ -8,8 +8,6 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^13.5.0",
-    "@tiptap/extension-list": "^3.32.3",
-    "@tiptap/extensions": "^3.32.3",
     "bootstrap": "^5.3.8",
     "lucide-react": "^1.65.0",
     "react": "^19.3.1",
