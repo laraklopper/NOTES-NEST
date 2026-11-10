@@ -12,15 +12,15 @@ const express = require('express');
 const User = require('../models/userSchema');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { hashPassword, checkJwtToken } = require('../middleware/middleware');// Import the password hashing and JWT middleware and development flag
-const {isDevelopment} = require('../middleware/passwordMiddleware')
-const { rateLimit } = require('express-rate-limit');
+const { checkJwtToken } = require('../middleware/middleware');// Import the password hashing and JWT middleware and development flag
+const {isDevelopment, hashPassword, checkPassword} = require('../middleware/passwordMiddleware')
 const router = express.Router()
 const { calculateAge } = require('../util/userUtil')
 
 
 // schemaUtil holds the admin rules: 21+, and an account age of 3 months in production (1 day otherwise)
-const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil')
+const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil');
+const { loginLimiter, registerLimiter } = require('../middleware/rateLimitMiddleware');
 
 // Extract environmental variables (with safe fallbacks for local dev)
 const rawSecretKey = process.env.JWT_SECRET_KEY;// JWT secret key
@@ -85,7 +85,7 @@ const sessionUser = (user) => ({
     POST: Used to create a new resource/submit data to the database
  ─────────────────────────────────────────────────────────────────────────*/
 // Send a POST request to the /auth/login route
-router.post('/login', authLimiter, async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
     try {
         const { username, password } = req.body || {};//Extract the usersername and password from the request body
 
@@ -153,7 +153,7 @@ router.post('/login', authLimiter, async (req, res) => {
 });
 
 // Send a POST request to the /auth/register route
-router.post('/register', authLimiter, hashPassword, async (req, res) => {
+router.post('/register', registerLimiter, checkPassword, hashPassword, async (req, res) => {
     try {
         const {
             username,
