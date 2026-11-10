@@ -1,8 +1,8 @@
 # Note-Nest — API Routes
 
-All API routes for Note-Nest, as built in `server/routes` plus the ones still planned. There are **37 routes** across **9 routers**. Eight routers are mounted in [app.js](../server/app.js); `notebookRoutes.js` is still empty and not mounted.
+All API routes for Note-Nest, as built in `server/routes` plus the ones still planned. There are **37 routes** across **9 routers**, all mounted in [app.js](../server/app.js).
 
-_Last updated: 2026-11-07_
+_Last updated: 2026-11-10_
 
 ## Status key
 
@@ -31,11 +31,11 @@ Notes:
 | Router file | Mounted at | Routes | Status |
 |-------------|-----------|--------|--------|
 | [authRoutes.js](../server/routes/authRoutes.js) | `/auth` | 5 | All done |
-| [userRoutes.js](../server/routes/userRoutes.js) | `/user` | 6 | 5 done, 1 planned |
+| [userRoutes.js](../server/routes/userRoutes.js) | `/user` | 6 | All done |
 | [noteRoutes.js](../server/routes/noteRoutes.js) | `/notes` | 8 | 7 done, 1 planned |
 | [archiveRoutes.js](../server/routes/archiveRoutes.js) | `/archive` | 4 | All done |
-| [notebookRoutes.js](../server/routes/notebookRoutes.js) | `/notebooks` (not mounted) | 4 | File is empty; all planned |
-| [tagRoutes.js](../server/routes/tagRoutes.js) | `/tag` | 3 | 2 done, 1 planned |
+| [notebookRoutes.js](../server/routes/notebookRoutes.js) | `/notebooks` | 4 | All done |
+| [tagRoutes.js](../server/routes/tagRoutes.js) | `/tag` | 3 | All done |
 | [apiRoutes.js](../server/routes/apiRoutes.js) | `/api` | 3 | All done |
 | [translationRoutes.js](../server/routes/translationRoutes.js) | `/translation` | 3 | 3 done |
 | [exportRoutes.js](../server/routes/exportRoutes.js) | `/export` | 1 | Done |
@@ -114,20 +114,21 @@ Notes:
 - Archived notes can't be edited (`PATCH /notes/:id`) or translated (`POST /translation/save`).
 - The stub routes already use `checkJwtToken`, so they return 401 without a login.
 
-## 5. Notebooks — `/notebooks` (planned)
-
-`notebookRoutes.js` is empty and isn't mounted in `app.js` yet. The model ([notebookSchema.js](../server/models/notebookSchema.js)) already exists.
+## 5. Notebooks — `/notebooks`
 
 | Method | Endpoint | Description | Access | Status |
 |--------|----------|-------------|--------|--------|
-| GET | `/notebooks` | List notebooks with note counts | Protected | 📝 |
-| POST | `/notebooks` | Create a notebook (`name` max 80 characters, `colour` hex, default `#1F4E79`) | Protected | 📝 |
-| PATCH | `/notebooks/:id` | Rename or recolour a notebook | Protected | 📝 |
-| DELETE | `/notebooks/:id` | Delete a notebook; set its notes' `notebook` to `null` | Protected | 📝 |
+| GET | `/notebooks` | List notebooks A–Z, each with `noteCount` (active notes in it) | Protected | ✅ |
+| POST | `/notebooks` | Create a notebook (body: `name` max 80 characters, optional `colour` hex, default `#1F4E79`) | Protected | ✅ |
+| PATCH | `/notebooks/:id` | Rename or recolour a notebook (only fields sent are changed) | Protected | ✅ |
+| DELETE | `/notebooks/:id` | Delete a notebook; its notes' `notebook` is set to `null` ("No notebook") | Protected | ✅ |
 
 Notes:
 - Notebook names are unique per user (`{ user, name }` index), so a duplicate returns **409**.
-- The other routers use action names (`/fetchNotes`, `/addTag`). Pick one style for these routes (e.g. `/notebooks/fetchNotebooks`, `/notebooks/addNotebook`) and update this table to match.
+- `POST` responds `201 { message, notebook }`; `PATCH` responds `{ message, notebook }`; `DELETE` responds `{ message, notebook: { _id, name } }`.
+- `PATCH` returns 400 if nothing changed or the name is blank. An invalid ID returns 400; a notebook that doesn't belong to the user returns 404.
+- Notes are moved to "No notebook" by the `findOneAndDelete` hook in [notebookSchema.js](../server/models/notebookSchema.js).
+- Client: `GET` and `POST` are called from [NotePad.js](../client/src/pages/NotePad.js) and [Notes.js](../client/src/pages/Notes.js); `PATCH` and `DELETE` from [NoteBookList.js](../client/src/components/NoteBookList.js).
 
 ## 6. Tags — `/tag`
 
@@ -227,10 +228,10 @@ Notes:
 | 21 | PATCH | `/archive/:id` | Protected | ✅ |
 | 22 | PATCH | `/archive/:id/restore` | Protected | ✅ |
 | 23 | DELETE | `/archive/:id` | Protected | ✅ |
-| 24 | GET | `/notebooks` | Protected | 📝 |
-| 25 | POST | `/notebooks` | Protected | 📝 |
-| 26 | PATCH | `/notebooks/:id` | Protected | 📝 |
-| 27 | DELETE | `/notebooks/:id` | Protected | 📝 |
+| 24 | GET | `/notebooks` | Protected | ✅ |
+| 25 | POST | `/notebooks` | Protected | ✅ |
+| 26 | PATCH | `/notebooks/:id` | Protected | ✅ |
+| 27 | DELETE | `/notebooks/:id` | Protected | ✅ |
 | 28 | GET | `/tag/fetchTags` | Protected | ✅ |
 | 29 | POST | `/tag/addTag` | Protected | ✅ |
 | 30 | DELETE | `/tag/:id` | Protected | ✅ |
@@ -243,7 +244,7 @@ Notes:
 | 37 | GET | `/export` | Protected | ✅ |
 
 **Totals by access:** 2 Public · 32 Protected · 3 Admin
-**Totals by status:** 21 Done · 6 Stub · 10 Planned
+**Totals by status:** 36 Done · 0 Stub · 1 Planned
 
 ---
 

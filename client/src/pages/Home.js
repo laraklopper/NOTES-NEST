@@ -148,6 +148,13 @@ export default function Home(
           >
             <Tab eventKey="home" title="Home">
               {/* Application description */}
+              <div>
+                <Row>
+                  <Col>
+                    <p>CREATE and Save notes, and translations</p>
+                  </Col>
+                </Row>
+              </div>
             </Tab>
             <Tab eventKey="profile" title="Profile">
               {/* user profile */}
