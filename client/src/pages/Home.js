@@ -18,6 +18,7 @@ import Profile from '../components/Profile';
 import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
 import AdminRegisForm from '../components/AdminRegisForm'
+import { UserCheck } from 'lucide-react'
 // IMPORT UTILITY FUNCTIONS
 const {ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 
@@ -128,6 +129,16 @@ export default function Home(
   return (
     <div id='pageContainer'>
       <Header currentUser={currentUser} />
+      {/* ====EVENT/ANIMATION======== */}
+      <Row id='eventRow'>
+        <Col id='eventCol'>
+          <div className='eventBar'>
+            <div className='eventTrack'>
+              <UserCheck className='eventSlide' color='#000' size={32} aria-hidden='true' focusable='false'/>
+            </div>
+          </div>
+        </Col>
+      </Row>
       <section id='homeSection1'>
         <div id='tabPanal'>
           <Tabs

@@ -12,6 +12,7 @@ import Footer from '../components/Footer'
 import NotePadForm from '../components/NotePadForm';
 import AddNoteBook from '../components/AddNoteBook';
 import AddTag from '../components/AddTag';
+import { NotepadText } from 'lucide-react';
 export default function NotePad(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, 
@@ -185,6 +186,16 @@ export default function NotePad(
   return (
     <div id='pageContainer'>
       <Header currentUser={currentUser}/>
+      {/* ========EVENT/ANIMATION========== */}
+      <Row id='eventRow' role='presentation'>
+        <Col id='eventCol'>
+          <div className='eventBar'>
+            <div className='eventTrack'>
+              <NotepadText color='#000' size={32} className='eventSlide' aria-hidden='true' focusable='false'/>
+            </div>
+          </div>
+        </Col>
+      </Row>
       <section
       id='notePadSection'
       >

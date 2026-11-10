@@ -5,6 +5,7 @@
     margin: 0px;
     padding: 0px;
     width: 100%;
+    gap: 10px;
 }
 .apiLink{
     color: #E8F0F6;
