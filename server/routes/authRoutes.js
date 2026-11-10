@@ -22,27 +22,6 @@ const { calculateAge } = require('../util/userUtil')
 const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil');
 
 
-// Extract environmental variables (with safe fallbacks for local dev)
-const rawSecretKey = process.env.JWT_SECRET_KEY;// JWT secret key
-const rawExpiration = process.env.JWT_EXPIRATION;// JWT expiration time
-const rawAlgorithm = process.env.JWT_ALGORITHM;// JWT algorithm
-const secretKey = rawSecretKey || 'secretKey';// Fallback secret key
-const expirationTime = rawExpiration || '12h';// Fallback expiration time
-const jwtAlgorithm = rawAlgorithm || 'HS256';// Fallback JWT algorithm
-
-//=====CHECK IF ALL THE ENVIRONMENTAL VARIABLES A PRESENT=========
-// Conditional rendering to check if the environmental variables are missing
-if (!rawSecretKey) {
-    console.warn("[WARNING: userRoute.js]: JWT_SECRET_KEY not set. Using fallback key.");// Log a warning message in the console for debugging purposes
-}
-// Conditional rendering to check if the environmental variables are missing
-else if (!rawExpiration) {
-    console.warn('[WARNING: userRoute.js] Missing exiration time, using fallback time')// Log a warning message in the console for debugging purposes
-}
-// Conditional rendering to check if the environmental variables are missing
-else if (!rawAlgorithm) {
-    console.warn('[WARNING: userRoute.js] Missing jwt algorithm, using fallback algorithm.'); // Log a warning message in the console for debugging purposes
-}
 
 // Settings shared by setting and clearing the JWT cookie (clearCookie needs the same ones to match)
 const cookieOptions = {
