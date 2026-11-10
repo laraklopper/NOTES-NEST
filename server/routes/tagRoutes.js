@@ -9,7 +9,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Tag = require('../models/tagSchema');// Import the Tag model
 const Note = require('../models/noteSchema');// Import the Note model (for tag usage counts)
-const { checkJwtToken } = require('./middleware');// Import the JWT middleware
+const { checkJwtToken } = require('../middleware/middleware');// Import the JWT middleware
 const router = express.Router()
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────

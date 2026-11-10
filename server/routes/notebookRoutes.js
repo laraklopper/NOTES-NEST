@@ -12,7 +12,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Notebook = require('../models/notebookSchema');// Import the Notebook model
 const Note = require('../models/noteSchema');// Import the Note model (for notebook note counts)
-const { checkJwtToken } = require('./middleware');// Import the JWT middleware
+const { checkJwtToken } = require('../middleware/middleware');// Import the JWT middleware
 const router = express.Router()// Create a new router instance
 
 /*──────────────────────────── SHARED HELPERS ─────────────────────────────────

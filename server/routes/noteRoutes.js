@@ -17,7 +17,7 @@ const Notebook = require('../models/notebookSchema');// Import the Notebook mode
 const Tag = require('../models/tagSchema');// Import the Tag model
 const User = require('../models/userSchema');// Import the User model
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with a permanently deleted note)
-const { checkJwtToken } = require('./middleware');// Import the JWT middleware
+const { checkJwtToken } = require('../middleware/middleware');// Import the JWT middleware
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the language filter
 const router = express.Router()
 

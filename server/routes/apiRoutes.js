@@ -8,7 +8,7 @@ Each route forwards to the Langbly endpoint of the same path, so the API key in
  */
 require('dotenv').config();
 const express = require('express');
-const { checkJwtToken } = require('./middleware');// Import the JWT middleware
+const { checkJwtToken } = require('../middleware/middleware');// Import the JWT middleware
 const { languageData } = require('../util/langaugeData');// Local copy of the Langbly language list
 const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../util/schemaUtil');
 const router = express.Router()

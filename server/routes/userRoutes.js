@@ -17,7 +17,7 @@ const {
     checkPassword,
     hashPassword,
     isDevelopment
-} = require('./middleware');// Import the JWT, admin, password middleware functions and development flag
+} = require('../middleware/middleware');// Import the JWT, admin, password middleware functions and development flag
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/
