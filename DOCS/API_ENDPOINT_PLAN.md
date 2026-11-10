@@ -32,7 +32,7 @@ Notes:
 |-------------|-----------|--------|--------|
 | [authRoutes.js](../server/routes/authRoutes.js) | `/auth` | 5 | All done |
 | [userRoutes.js](../server/routes/userRoutes.js) | `/user` | 6 | All done |
-| [noteRoutes.js](../server/routes/noteRoutes.js) | `/notes` | 8 | 7 done, 1 planned |
+| [noteRoutes.js](../server/routes/noteRoutes.js) | `/notes` | 8 | All done |
 | [archiveRoutes.js](../server/routes/archiveRoutes.js) | `/archive` | 4 | All done |
 | [notebookRoutes.js](../server/routes/notebookRoutes.js) | `/notebooks` | 4 | All done |
 | [tagRoutes.js](../server/routes/tagRoutes.js) | `/tag` | 3 | All done |
@@ -83,7 +83,7 @@ Notes:
 |--------|----------|-------------|--------|--------|
 | GET | `/notes/fetchNotes` | List active notes (not archived or trashed), pinned first and then most recently updated. Notebook (`name`, `colour`) and tags (`name`) are populated | Protected | ✅ |
 | GET | `/notes/trash` | List trashed notes | Protected | ✅ |
-| GET | `/notes/:id` | Get a single note | Protected | 📝 |
+| GET | `/notes/:id` | Get one note (active, archived or trashed) with notebook and tags populated; returns `{ note }` | Protected | ✅ |
 | POST | `/notes/addNote` | Create a note | Protected | ✅ |
 | PATCH | `/notes/:id` | Update title, content, language, notebook, tags or pin (archiving uses `/archive/:id`) | Protected | ✅ |
 | PATCH | `/notes/:id/restore` | Restore a note from the trash | Protected | ✅ |
@@ -96,9 +96,8 @@ Notes:
 - `PATCH /:id` only edits active notes, so archived or trashed notes return 404. Sending no fields returns 400 `"No changes were sent"`.
 - A notebook ID that isn't valid returns 400; one that doesn't belong to the user returns 404.
 - Trashed notes are purged automatically 30 days after `deletedAt` (TTL index in `noteSchema`).
-- `/notes/fetchNotes` takes no query parameters yet. Planned filters: `notebook`, `tag`, `search` (text index on `title` and `plainText`), `language`, `page`, `limit`.
-- Declare `/notes/trash` before any `GET /notes/:id` route so Express doesn't treat "trash" as an ID.
-- The stub routes already use `checkJwtToken`, so they return 401 without a login.
+- `/notes/fetchNotes` takes optional query filters `language`, `notebook`, `tag`, `page` and `limit` (default 10, max 50), and responds `{ notes, pagination: { page, limit, total, totalPages } }`. A `search` filter (text index on `title` and `plainText`) is still planned.
+- `GET /notes/:id` is declared after `/notes/fetchNotes` and `/notes/trash` so Express doesn't treat those paths as IDs. An invalid ID returns 400; a note that doesn't exist or belongs to another user returns 404.
 
 ## 4. Archive — `/archive`
 
@@ -218,7 +217,7 @@ Notes:
 | 11 | DELETE | `/user/deleteUser/:id` | Admin | ✅ |
 | 12 | GET | `/notes/fetchNotes` | Protected | ✅ |
 | 13 | GET | `/notes/trash` | Protected | ✅ |
-| 14 | GET | `/notes/:id` | Protected | 📝 |
+| 14 | GET | `/notes/:id` | Protected | ✅ |
 | 15 | POST | `/notes/addNote` | Protected | ✅ |
 | 16 | PATCH | `/notes/:id` | Protected | ✅ |
 | 17 | PATCH | `/notes/:id/restore` | Protected | ✅ |
@@ -244,7 +243,7 @@ Notes:
 | 37 | GET | `/export` | Protected | ✅ |
 
 **Totals by access:** 2 Public · 32 Protected · 3 Admin
-**Totals by status:** 36 Done · 0 Stub · 1 Planned
+**Totals by status:** 37 Done · 0 Stub · 0 Planned
 
 ---
 

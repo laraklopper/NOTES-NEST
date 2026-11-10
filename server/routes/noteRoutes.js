@@ -1,8 +1,8 @@
 // noteRoutes.js
 /*mounted at /notes by app.js
 GET- /fetchNotes - fethc and list all notes for the specific user
-GET - /:id - Get a single note by id
 GET - /trash - List trashed notes - (declare route before /:id)
+GET - /:id - Get a single note by id (active, archived or trashed)
 POST - /addNote - Create a note (tags sent as names; missing tags are created)
 PATCH - /notes/:id - Update title, content, language, notebook, tags or pin (archive is PATCH /archive/:id)
 PATCH - /notes/:id/restore - Restore from trash
@@ -140,8 +140,38 @@ router.get('/trash', checkJwtToken, async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
-// Route to send a GET request to the /notes/:id endpoint
-/*notes/:id - GET a single note*/
+/* GET: /notes/:id : Gets one of the signed-in user's notes, with the notebook
+and tag names populated. Works for active, archived and trashed notes so it can
+back a details view from any list. Declared after /trash and /fetchNotes so those
+paths aren't read as ids */
+router.get('/:id', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the note ID from the URL
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: noteRoutes.js, GET /:id] Invalid note id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid note id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only a note the user owns can be read (another user's note returns 404, not 403, so ids can't be probed)
+        const note = await populateNote(Note.findOne({ _id: id, user: userId })).lean();
+
+        // Conditional rendering to check the note was found
+        if (!note) {
+            console.error(`[ERROR: noteRoutes.js, GET /:id] Note not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Note not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: noteRoutes.js, GET /:id] Fetched note: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ note });// Send a 200 (OK) status code with the note
+    } catch (error) {
+        console.error('[ERROR: noteRoutes.js, GET /:id]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+
 /*──────────────────────────── POST ROUTES ──────────────────────────────
     POST: CREATE — Used to submit new data to the database
  ─────────────────────────────────────────────────────────────────────────*/
