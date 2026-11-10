@@ -75,19 +75,36 @@ Each dependency is listed as `"<package-name>": "<version-range>"`. The `^` pref
 
 | _PACKAGE_ | _CLI / TERMINAL_ | _PURPOSE_ | _VERSION_ |
 |-----------|-----------------|-----------|-----------|
+| express | `npm install express` | Web framework used to create the API server, routers and middleware | 5.3.0 |
+| mongoose | `npm install mongoose` | MongoDB object modelling (ODM): defines schemas/models, connects to the database and validates ObjectIds | 9.11.4 |
+| dotenv | `npm install dotenv` | Loads environment variables (e.g. database URI, JWT secret) from a `.env` file into `process.env` | 18.0.9 |
+| cors | `npm install cors` | Enables Cross-Origin Resource Sharing so the client can call the API | 2.8.6 |
+| helmet | `npm install helmet` | Sets secure HTTP response headers | 8.3.0 |
+| cookie-parser | `npm install cookie-parser` | Parses cookies into `req.cookies` so the JWT cookie can be read | 1.4.7 |
+| express-rate-limit | `npm install express-rate-limit` | Limits repeated requests to endpoints (e.g. login) to prevent brute-force attacks | 8.7.2 |
+| jsonwebtoken | `npm install jsonwebtoken` | Signs and verifies JSON Web Tokens (JWT) for user authentication | 9.0.3 |
+| bcryptjs | `npm install bcryptjs` | Hashes passwords and compares login/current passwords against the stored hash | 3.0.3 |
+| sanitize-html | `npm install sanitize-html` | Strips dangerous HTML from note content and produces plain-text versions (prevents XSS) | 2.18.1 |
+| csv-stringify | `npm install csv-stringify` | Converts note data into CSV text for exports | 6.9.0 |
+| xlsx | `npm install xlsx` | Builds Excel (`.xlsx`) workbooks for exports | 0.18.5 |
+| nodemon | `npm install nodemon` | Automatically restarts the server when files change during development (`npm start`) | 3.1.14 |
 
 ### 2.2 CLIENT-SIDE(FRONT-END)
 
 | _PACKAGE_ | _CLI / TERMINAL_ | _PURPOSE_ | _VERSION_ |
 |-----------|-----------------|-----------|-----------|
-| @testing-library/dom | `npm install @testing-library/dom` | DOM querying utilities for testing | 10.4.1 |
-| @testing-library/jest-dom | `npm install @testing-library/jest-dom` | Custom Jest matchers for DOM assertions, registered in `setupTests.js` | |
-| @testing-library/react | `npm install @testing-library/react` | React component testing utilities | 16.3.2 |
+| react | `npx create-react-app client` | Core React library for building UIs | 19.3.1 |
+| react-dom | `npx create-react-app client` | Renders React components into the browser DOM | 19.3.1 |
+| react-scripts | `npx create-react-app client` | Create React App's build tooling and scripts (`start`, `build`, `test`) | 5.0.1 |
+| react-bootstrap | `npm install react-bootstrap bootstrap` | Bootstrap components rebuilt as React components | 2.10.10 |
+| bootstrap | `npm install react-bootstrap bootstrap` | CSS framework for responsive styling, imported in `index.js` | 5.3.8 |
+| react-router-dom | `npm install react-router-dom@latest` | DOM bindings for React Router (`BrowserRouter`, `Link`, `NavLink`, `useNavigate`) | 7.18.5 |
+| lucide-react | `npm install lucide-react` | SVG icon library for React | 1.65.0 |
+| web-vitals | `npx create-react-app client` | Measures page performance metrics, used by `reportWebVitals.js` | 2.1.4 |
+| @testing-library/dom | `npm install @testing-library/dom` | DOM querying utilities for testing | 10.4.2 |
+| @testing-library/jest-dom | `npm install @testing-library/jest-dom` | Custom Jest matchers for DOM assertions, registered in `setupTests.js` | 6.9.1 |
+| @testing-library/react | `npm install @testing-library/react` | React component testing utilities | 16.3.3 |
 | @testing-library/user-event | `npm install @testing-library/user-event` | Simulates real user interactions in tests | 13.5.0 |
-|react | `npm create-react-app@latest`| Core React library for building UIs ||
-|react-bootstrap|`npm install react-bootstrap bootstrap` | CSS framework for responsive UI components |  |
-| react-router-dom | `npm install react-router-dom@latest` | DOM bindings for React Router (`BrowserRouter`, `Link`, `NavLink`, `useNavigate`) | |
-| lucide-react | `npm install lucide-react` | SVG icon library for React | |
 
 ## 3. REFERENCES
 
@@ -98,8 +115,8 @@ Each dependency is listed as `"<package-name>": "<version-range>"`. The `^` pref
 - https://expressjs.com/en/resources/middleware/cors/#installation
 - https://mongoosejs.com/docs/index.html
 - https://www.npmjs.com/package/dotenv
-- https://www.npmjs.com/package/bcrypt
-- https://expressjs.com/en/resources/middleware/cors/#installation
+- https://www.npmjs.com/package/bcryptjs
+- https://www.npmjs.com/package/sanitize-html
 - https://www.npmjs.com/package/cookie-parser
 - https://www.npmjs.com/package/helmet
 - https://www.npmjs.com/package/express-rate-limit
