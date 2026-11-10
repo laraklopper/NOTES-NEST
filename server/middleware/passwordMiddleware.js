@@ -76,10 +76,29 @@ const checkPassword = (req, res, next) => {
     }
     return next();// Call the next middleware or route handler
 }
+/* Middleware to check the request carries both passwords as strings and that the new
+password is not the same as the current one. Runs before hashPassword, while
+newPassword is still plaintext and can be compared */
+const checkPasswordChange = (req, res, next) => {
+    const { currentPassword, newPassword } = req.body || {};// Extract both passwords from the request body
+
+    // Conditional rendering to check both passwords are present (and are strings, so they cannot inject query operators)
+    if (typeof currentPassword !== 'string' || !currentPassword || typeof newPassword !== 'string' || !newPassword) {
+        console.error('[ERROR: userRoutes.js, checkPasswordChange] Both passwords are required');// Log an error message in the console for debugging purposes
+        return res.status(400).json({ message: 'Both current and new passwords are required.' });// Return a 400 (Bad Request) status code with a message
+    }
+    // Conditional rendering to check the new password is different from the current password
+    if (currentPassword === newPassword) {
+        console.error('[ERROR: userRoutes.js, checkPasswordChange] New password matches current password');// Log an error message in the console for debugging purposes
+        return res.status(400).json({ message: 'New password must be different from the current password.' });// Return a 400 (Bad Request) status code with a message
+    }
+    return next();// Call the next middleware or route handler
+};
 
 module.exports = {
     hashPassword,// Export the password hashing middleware
     checkPassword,// Export the password validation middleware
+    checkPasswordChange,
     isDevelopment,// Export the development flag so login compares passwords the same way
     hashPassword,
     checkPassword

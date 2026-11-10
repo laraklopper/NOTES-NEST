@@ -12,20 +12,13 @@ const express = require('express');
 const User = require('../models/userSchema');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { hashPassword, isDevelopment, checkJwtToken } = require('../middleware/middleware');// Import the password hashing and JWT middleware and development flag
+const { hashPassword, checkJwtToken } = require('../middleware/middleware');// Import the password hashing and JWT middleware and development flag
+const {isDevelopment} = require('../middleware/passwordMiddleware')
 const { rateLimit } = require('express-rate-limit');
 const router = express.Router()
 const { calculateAge } = require('../util/userUtil')
 
-/* Rate limit for /login and /register, to slow down brute-force and spam attempts.
-Each IP gets 10 requests per 15 minutes; after that the client receives a 429 */
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,// 15 minutes
-    limit: 10,// Requests allowed per IP in each window
-    standardHeaders: 'draft-8',// Send the RateLimit headers so the client can see the limit
-    legacyHeaders: false,// Don't send the older X-RateLimit-* headers
-    message: { message: 'Too many attempts — please wait a few minutes and try again.' }
-});
+
 // schemaUtil holds the admin rules: 21+, and an account age of 3 months in production (1 day otherwise)
 const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil')
 
