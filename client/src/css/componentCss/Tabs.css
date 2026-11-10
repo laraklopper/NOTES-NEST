@@ -70,3 +70,8 @@
     align-items: center;
     background-color: silver;
 }
+#homePageTabs-tabpane-profile{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
