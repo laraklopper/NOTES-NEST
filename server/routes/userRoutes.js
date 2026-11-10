@@ -12,10 +12,10 @@ const Tag = require('../models/tagSchema');// Import the Tag model (removed with
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with the user)
 const router = express.Router();// Create a new router object using Express.js
 /// Import the JWT, admin, password middleware functions and development flag
-const {checkPassword, checkPasswordChange, hashPassword}= require('../middleware/passwordMiddleware')
+const {checkPassword, checkPasswordChange, hashPassword, isDevelopment}= require('../middleware/passwordMiddleware')
 const { checkJwtToken} = require ('../middleware/securityMiddleware')
 const {checkAdmin} = require('../middleware/adminMiddleware')
-import { EDITABLE_PROFILE_FIELDS } from '../util/userUtil';
+const { EDITABLE_PROFILE_FIELDS } = require('../util/userUtil');
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/

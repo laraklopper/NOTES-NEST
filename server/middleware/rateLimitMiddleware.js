@@ -107,6 +107,7 @@ module.exports= {
     loginLimiter,
     registerLimiter,
     passwordUpdateRateLimiter,
+    exportLimiter,
     translateLimiter,
     detectLimiter
 }

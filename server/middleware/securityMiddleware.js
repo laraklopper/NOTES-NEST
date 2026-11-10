@@ -4,6 +4,15 @@ file using the dotenv package*/
 require('dotenv').config();
 // Import Required modules and packages
 const jwt = require('jsonwebtoken');// Import the JSON Web Token (JWT) library
+const { isDevelopment } = require('./passwordMiddleware');// Development flag, used for the cookie's secure setting
+
+// Settings shared by setting and clearing the JWT cookie (clearCookie needs the same ones to match)
+const cookieOptions = {
+    httpOnly: true,// Not readable from client-side JavaScript
+    secure: !isDevelopment,// HTTPS only outside development
+    sameSite: 'strict',// Not sent on cross-site requests
+    path: '/'
+};
 
 // Extract environmental variables (with safe fallbacks for local dev)
 const rawSecretKey = process.env.JWT_SECRET_KEY;// JWT secret key
@@ -102,4 +111,5 @@ const setTokenCookie = (res, user) => {
 module.exports = {
     checkJwtToken,
     setTokenCookie,
+    cookieOptions,// Exported so /logout can clear the cookie with matching settings
 }

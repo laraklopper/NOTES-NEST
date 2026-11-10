@@ -9,7 +9,7 @@ const express = require('express');
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const Translation = require('../models/translationSchema');// Import the Translation model
 const Note = require('../models/noteSchema');// Import the Note model
-const { checkJwtToken } = require('../middleware/middleware');// Import the JWT middleware
+const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the targetLanguage filter
 const router = express.Router()
 

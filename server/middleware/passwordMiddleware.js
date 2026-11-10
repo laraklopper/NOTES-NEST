@@ -100,6 +100,4 @@ module.exports = {
     checkPassword,// Export the password validation middleware
     checkPasswordChange,
     isDevelopment,// Export the development flag so login compares passwords the same way
-    hashPassword,
-    checkPassword
 }

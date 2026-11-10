@@ -11,7 +11,7 @@ require('dotenv').config()
 const express = require('express');
 const User = require('../models/userSchema');
 const bcrypt = require('bcryptjs');
-const {checkJwtToken, setTokenCookie} = require('../middleware/securityMiddleware')
+const {checkJwtToken, setTokenCookie, cookieOptions} = require('../middleware/securityMiddleware')
 const {isDevelopment, hashPassword, checkPassword} = require('../middleware/passwordMiddleware')
 const { loginLimiter, registerLimiter } = require('../middleware/rateLimitMiddleware');
 const router = express.Router()
@@ -22,14 +22,6 @@ const { calculateAge } = require('../util/userUtil')
 const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil');
 
 
-
-// Settings shared by setting and clearing the JWT cookie (clearCookie needs the same ones to match)
-const cookieOptions = {
-    httpOnly: true,// Not readable from client-side JavaScript
-    secure: !isDevelopment,// HTTPS only outside development
-    sameSite: 'strict',// Not sent on cross-site requests
-    path: '/'
-};
 //=============ROUTES================
 // Use Plaintext passwords for development
 /*──────────────────────────── HELPERS ──────────────────────────────*/
