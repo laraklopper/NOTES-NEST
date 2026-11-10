@@ -9,6 +9,7 @@ import '../css/componentCss/Tabs.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Stack from 'react-bootstrap/Stack';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 // IMPORT CUSTOM COMPONENTS
@@ -148,10 +149,49 @@ export default function Home(
           >
             <Tab eventKey="home" title="Home">
               {/* Application description */}
-              <div>
-                <Row>
-                  <Col>
-                    <p>CREATE and Save notes, and translations</p>
+              <div id='appDescriptionPanal'>
+                <Row id='appDescriptionRow'>
+                  <Col id='appDescriptionCol' xs={12} md={10}>
+                  <Stack gap={3} id='welcomeStack'>
+      <div className="p-2" id='welcomeBlock'>
+        <h3 className='appDescriptionHeading'>WELCOME TO NOTE NEST{user?.fullName ? `, ${user.fullName}` : ''}</h3>
+      </div>
+      <div className="p-2" id='descriptionListBlock'>
+        <h4 className='appDescriptionSubHeading'>WHAT YOU CAN DO</h4>
+          <div className='appDescriptionList'>
+            <span className='listSpan'>
+              <label className='listLabel'>NOTE PAD:</label><p>Write new notes and file them in
+                        notebooks and tags so they are easy to find later.</p>
+            </span>
+            <span className='listSpan'>
+            <label className='listLabel'>NOTES:</label>
+          <p>View, filter, edit, archive and delete your
+                        saved notes. Deleted notes go to the trash, where they can be
+                        restored or removed permanently.</p>
+            </span>
+            <span className='listSpan'>
+            <label className='listLabel'>TRANSLATE:</label>
+              <p>Translate text between languages,
+                        detect the language of a piece of text, and save translations
+                        you want to keep.</p>
+            </span>
+            <span className='listSpan'>
+            <label className='listLabel'>EXPORT:</label>
+            <p>Download your notes or translations as a
+                        CSV or Excel (.xlsx) file.</p>
+
+            </span>
+            <span className='listSpan'>
+             <label className='listLabel'>PROFILE:</label>
+            <p>View and update your personal details
+                        and change your password from the Profile tab.</p>
+
+            </span>
+          </div>
+      </div>
+    </Stack>
+              
+  
                   </Col>
                 </Row>
               </div>
@@ -174,9 +214,17 @@ export default function Home(
                   </Col>
                 </Row>
                 </div>
-                <div id='editUserDataPanal'>
+               
+                
+              </div>
+            </Tab>
+          </Tabs>
+        </div>
+      </section>
+       <div id='editUserDataPanal'>
                 {/* TOGGLE EDITPROFILE FORM */}
                   {editUser && (
+                    <section id='editUserSec' className='userEditSection'>
                     <div id='editProfileBlock'>
                       <Row id='editProfileRow'>
                       <Col id='editProfileCol1'/>
@@ -192,9 +240,11 @@ export default function Home(
                         <Col id='editProfileCol2'/>
                       </Row>
                     </div>
+                    </section>
                   )}
                   {/* TOGGLE EDIT PASSWORD FORM */}
                   {editPassword && (
+                    <section id='editPswdSection' className='userEditSection'>
                     <div id='editPasswordBlock'>
                       <Row id='editPasswordRow'>
                         <Col id='editPasswordCol1'/>
@@ -206,11 +256,13 @@ export default function Home(
                         <Col id='editPasswordCol2'/>
                       </Row>
                     </div>
+                  </section>
                   )}
                    {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not 
                    an admin user  and matches the age requirement of 21 years and has 
                    been a user for 3 months (1 day during development) */}
                   {showAdminForm && (
+                    <section id='adminRegisSec' className='userEditSection'>
                     <div>
                       <Row>
                         <Col id='adminFormCol1'/>
@@ -227,14 +279,9 @@ export default function Home(
                         </Col>
                       </Row>
                     </div>
+                      </section>
                   )}
                 </div>
-                
-              </div>
-            </Tab>
-          </Tabs>
-        </div>
-      </section>
       <Footer logout={logout}/>
     </div>
   )

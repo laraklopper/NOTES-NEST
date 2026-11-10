@@ -1,4 +1,5 @@
-#homeSection1{
+#homeSection1,
+.userEditSection{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -6,6 +7,70 @@
     margin: 0px;
     padding: 0px;
     background-color: #946E26;
+}
+/* HOME TAB: APPLICATION DESCRIPTION */
+#appDescriptionPanal{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    padding: 10px 0px;
+}
+#welcomeBlock{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+}
+#appDescriptionRow{
+    justify-content: center;
+    margin: 0px;
+}
+#appDescriptionCol{
+    padding: 0px;
+    background-color: #FFFFFF;
+    border-radius: 6px;
+}
+.appDescriptionHeading{
+    font-family: "Roboto", sans-serif;
+    font-weight: 800;
+    text-decoration: underline;
+    font-size: 28px;
+    margin: 0px;
+    padding: 0px;
+}
+.appDescriptionSubHeading{
+    font-family: "Roboto", sans-serif;
+    font-size: 24px;
+    text-align: center;
+    letter-spacing: 2px;
+    text-decoration: underline;
+    font-weight: 800;
+}
+#descriptionListBlock{
+        display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+.listLabel{
+     font-family: "Comic Relief", system-ui;
+  font-weight: 700;
+}
+.listSpan{
+    display: flex;
+    align-items: baseline;
+    margin: 0px;
+    padding: 0px;
+    font-size: 16px;
+    gap: 5px;
+}
+.listSpan p{
+     font-family: "Comic Relief", system-ui;
+  font-weight: 400;
+  font-size: 14px;
 }
 #userProfilePanal{
     width: 100%;

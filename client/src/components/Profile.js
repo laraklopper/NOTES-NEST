@@ -74,7 +74,7 @@ export default function Profile(
           aria-label={editUser ? 'Hide Form': 'Edit Profile'}
           aria-pressed={editUser}
           aria-expanded={editUser}
-          aria-controls='editProfileBlock'
+          aria-controls='editUserSec'
           >
           {editUser ? 'Hide Form': 'Edit Profile'}
           </Button>
@@ -88,7 +88,7 @@ export default function Profile(
           aria-label={editPassword ? 'Hide Form': 'Edit Password'}
           aria-expanded={editPassword}
           aria-pressed={editPassword}
-          aria-controls='editPasswordBlock'
+          aria-controls='editPswdSection'
           >
             {editPassword ? 'Hide Form': 'Edit Password'}
           </Button>
