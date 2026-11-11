@@ -20,6 +20,7 @@ import EditNoteForm from '../components/EditNoteForm';
 import Trash from '../components/Trash';
 import ArchivedNotes from '../components/ArchivedNotes';
 import NoteDataLists from '../components/NoteDataLists';
+import { NotebookTabs } from 'lucide-react';
 
 //====MAIN NOTES FUNCTION COMPONENT========
 export default function Notes(//Export the default Notes.js function component
@@ -180,9 +181,19 @@ export default function Notes(//Export the default Notes.js function component
      }, [setError, fetchNotes, fetchTags, fetchNotebooks])
 
 
+     //===================JSX RENDERING===============
   return (
-    <div id='pageContainer'>
+    <div id='pageContainer' role='main'>
       <Header heading={'NOTES'} currentUser={currentUser} />
+      <Row id='eventRow' role='presentation'>
+        <Col id='eventCol'>
+          <div className='eventBar'>
+            <div className='eventTrack'>
+              <NotebookTabs className='eventSlide' size={32} aria-hidden='true' focusable='false'/>
+            </div>
+          </div>
+        </Col>
+      </Row>
       <section id='notesSection1'>
         <div id='notesTabPanal'>
            <Tabs
@@ -193,7 +204,6 @@ export default function Notes(//Export the default Notes.js function component
     >
       <Tab eventKey="notes" title="NOTES">
         <div id='notesListDiv'>
-       
           <div id='notesListPanal'>
             <NotesList
               currentUser={currentUser}

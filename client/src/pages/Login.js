@@ -73,8 +73,11 @@ export default function Login(//Export the default Login function component
         },[loading, setCurrentUser, userData, setUserData, setError, setLoggedIn, navigate])
         //===========JSX RENDERING===========
   return (
-    <div id='pageContainer' role='main'>
+    <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
+    {/* -----------Screen Reader Heading------------ */}
+        <p className='visually-hidden' id='pageTitle'>LOGIN PAGE</p>
         <MainHeader mainHeading={'LOGIN'}/>
+        {/* ========EVENT/ANIMATION============== */}
         <Row id='eventRow' role='presentation'>
             <Col id='eventCol'>
                 <div className='eventBar'>

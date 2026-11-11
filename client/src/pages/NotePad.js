@@ -2,24 +2,29 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/NotePad.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-// import Button from 'react-bootstrap/Button';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+// IMPORT CUSTOM COMPONENTS
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import NotePadForm from '../components/NotePadForm';
 import AddNoteBook from '../components/AddNoteBook';
 import AddTag from '../components/AddTag';
+// IMPORT ICONS FROM LUCIDE-REACT
 import { NotepadText } from 'lucide-react';
-export default function NotePad(
+
+// =========MAIN NOTEPAD FUNCTION COMPONENT
+export default function NotePad(//Export default NotePad.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, 
     setError,
     logout
   
   }) {
+    //===============STATE VARIABLES=====================
       const [key, setKey] = useState('notepad')
       const [profile, setProfile] = useState(null)
       const [noteLoading, setNoteLoading] = useState(false)
@@ -184,8 +189,11 @@ export default function NotePad(
 
       //==================JSX RENDERING===================
   return (
-    <div id='pageContainer'>
-      <Header currentUser={currentUser}/>
+    <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
+    {/* ------Screen Reader Heading-------------- */}
+    <p className='visually-hidden' id='pageTitle'>NOTE PAD PAGE</p>
+    {/* Render the  */}
+      <Header currentUser={currentUser} heading={'NOTE PAD'}/>
       {/* ========EVENT/ANIMATION========== */}
       <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
@@ -196,9 +204,10 @@ export default function NotePad(
           </div>
         </Col>
       </Row>
-      <section
-      id='notePadSection'
-      >
+      {/* -----------------
+      SECTION 1:
+      ------------- */}
+      <section id='notePadSection'>
       <div id='notepadFormsPanal'>
           <Tabs
       id="notePadTabs"

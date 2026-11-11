@@ -10,15 +10,32 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
 import languageData from '../util/languageData';
-import { BookA } from 'lucide-react';
+import { BookA, BookOpenCheck } from 'lucide-react';
 import TranslationsList from '../components/TranslationsList';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
-    currentUser, logout}) {
+    currentUser, 
+    logout
+  }
+) {
+      // =========STATE VARIABLES=============
       const [key, setKey] = useState('translator')
+
+      //=============JSX RENDERING====================
   return (
-    <div>
+    <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
+    {/* ---------Screen Reader Heading------------------ */}
+    <p className='visually-hidden' id='pageTitle'>TRANSLATE PAGE</p>
       <Header heading={'TRANSLATE'} currentUser={currentUser} />
+      <Row id='eventRow'>
+        <Col id='eventCol'>
+          <div className='eventBar'>
+            <div className='eventTrack'>
+              <BookOpenCheck className='eventSlide' size={32} aria-hidden='true' focusable='false'/>
+            </div>
+          </div>
+        </Col>
+      </Row>
         <section id='translateSec1'>
           <div id='translateSectionPanal'>
              <Tabs
