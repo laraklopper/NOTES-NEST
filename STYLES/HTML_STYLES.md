@@ -7,13 +7,13 @@ General styling formats, not all formats apply for all tags.
 2. [HEADER/FOOTER](#2-headerfooter)
 3. [SECTION](#3-section)
 4. [NAVIGATION/LINKS](#4-navigationlinks)
-    [4.1. NAVIGATION BAR](#41-navigation-bar)
-    [4.2. NAVIGATION LINKS](#42-navigation-links)
-    [4.3. TABS](#43-tabs)
-    [4.4. LINKS](#44-links)
+    - [4.1. NAVIGATION BAR](#41-navigation-bar)
+    - [4.2. NAVIGATION LINKS](#42-navigation-links)
+    - [4.3. TABS](#43-tabs)
+    - [4.4. LINKS](#44-links)
 5. [FORMS](#5-forms)
 6. [LISTS](#6-lists)
-    [6.1. TABLES](#61-tables)
+    - [6.1. TABLES](#61-tables)
 7. [DATA DETAILS](#7-data-details)
 8. [BUTTONS](#8-buttons)
 9. [ANIMATIONS](#9-animations)
@@ -106,7 +106,9 @@ footer{
 }
 /* #navbar{} */
 ```
+
 ### 4.2. NAVIGATION LINKS
+
 ```css
 .refLink{
     display: flex;
@@ -142,8 +144,11 @@ footer{
     text-decoration: underline;
 }
 ```
+
 ### 4.3. TABS
+
 ### 4.4. LINKS
+
 ## 5. FORMS
 ```css
 /* #formPanal{} */
@@ -157,6 +162,38 @@ footer{
     background-color: #777d83;
     border: #323A42 solid 2px;
     gap: 10px;
+}
+#input{
+    margin: 0px;
+    width: 80%;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #BFBFBF;
+}
+```
+```css
+/* TEXT */
+#formHeadingBlock{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#formHeading{
+    font-family: "Comic Relief", system-ui;
+    font-weight: 700;
+    font-size: 24px;
+    text-decoration: underline;
+    letter-spacing: 2px;
+    margin: 0px;
+    display: flex;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 0px;
+    text-transform: uppercase;
 }
 .label{
     font-family: "Roboto Mono", monospace;
@@ -214,12 +251,99 @@ CSS styling used for selected details panals (e.g. translations, notes) or profi
 
 Styling used for animations using css, bootstrap and lucide-react.
 
+**CSS**
 ```css
+/* ======BOOTSTRAP LAYOUT============= */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+#eventRow{
+       display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#eventCol {
+    width: 100%;
+    background-color: #C22419;
+    margin: 0px;
+    padding: 0px;
+}
+/* JSX(HTML) LAYOUT */
+.eventBar{
+    display: flex;
+    align-items: center;    
+    width: 100%;
+     background-color: #1e7b1e;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+    margin: 0;
+    padding: 0;
+    height: 40px;
+    overflow: hidden;
+}
+.eventBar2{
+    display: flex;
+    align-items: center;    
+    width: 100%;
+     background-color: #C22419;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+    margin: 0;
+    padding: 0;
+    height: 40px;
+    overflow: hidden;
+}
+```
+**KEY FRAMES**
+```css
+/* ---------- Slide left → right edge → centre ---------- */
+/* Only transform is animated — compositor-only, no layout/paint cost.          */
+/* cqi = 1% of the nearest container's inline size (the track width).           */
+/* left: 0 is the static anchor; all movement is expressed via translateX.      */
+@keyframes slideToCenter {
+    0%  { transform: translate(0,                                         -50%); }
+    70% { transform: translate(calc(100cqi - var(--event-size)),          -50%); }
+    100%{ transform: translate(calc(50cqi  - var(--event-size) / 2),      -50%); }
+}
 
+.eventSlide {
+    --event-size: 32px;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translate(0, -50%);
+    color: #fff;
+    will-change: transform;
+    animation: slideToCenter 15s ease-in-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .eventSlide {
+        animation: none;
+        transform: translate(calc(50cqi - var(--event-size) / 2), -50%);
+    }
+}
 ```
 ## 10. ERRORS
 ```css
-
+#globalErrorBlock{
+      display: flex;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+    width: 100%;
+}
+#globalErrorBlock span{
+      display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+#errorMessage{
+  margin: 0px;
+  padding: 0px;
+  font-family: "Open Sans", sans-serif;
+}
 ```
 
 ## 11. REFERENCES
