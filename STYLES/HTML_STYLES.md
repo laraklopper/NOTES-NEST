@@ -3,6 +3,24 @@
 General styling formats, not all formats apply for all tags.
 
 ## TABLE OF CONTENTS
+1. [BODY/HTML/ROOT](#1-bodyhtmlroot)
+2. [HEADER/FOOTER](#2-headerfooter)
+3. [SECTION](#3-section)
+4. [NAVIGATION/LINKS](#4-navigationlinks)
+    [4.1. NAVIGATION BAR](#41-navigation-bar)
+    [4.2. NAVIGATION LINKS](#42-navigation-links)
+    [4.3. TABS](#43-tabs)
+    [4.4. LINKS](#44-links)
+5. [FORMS](#5-forms)
+6. [LISTS](#6-lists)
+    [6.1. TABLES](#61-tables)
+7. [DATA DETAILS](#7-data-details)
+8. [BUTTONS](#8-buttons)
+9. [ANIMATIONS](#9-animations)
+10. [ERRORS](#10-errors)
+11. [REFERENCES](#11-references)
+
+---
 
 ## 1. BODY/HTML/ROOT
 ```css
@@ -30,8 +48,8 @@ padding: 0px 0px 0px 0px;
   width: 100%;
   height: 100%;
 }
-
 ```
+
 ## 2. HEADER/FOOTER
 
 ```css
@@ -86,6 +104,7 @@ footer{
     gap: 10px;
     list-style-type: none;
 }
+/* #navbar{} */
 ```
 ### 4.2. NAVIGATION LINKS
 ```css
@@ -140,7 +159,9 @@ footer{
     gap: 10px;
 }
 .label{
+    font-family: "Roboto Mono", monospace;
     font-weight: 700;
+    color: #000;
 }
 .requiredIcon{
     color: #C22419;
@@ -150,45 +171,21 @@ footer{
 ```
 ## 6. LISTS
 
+### 6.1. TABLES
+<!-- TABLE CSS -->
+
 ## 7. DATA DETAILS
+
+CSS styling used for selected details panals (e.g. translations, notes) or profile.
+
 ```css
 .detailsPanal{
     background-color: #9E9E9E;
 }
-#524F19
-#F5EC4C
-#CCC53F
-#A39E33
-#767224
- 
-#941B13
-#8C1A12
-#C22419
-#470D09
-#70150F
-#B39800
-#E0BF00
-#AB9100
-#665700
-#8F7900
 
-#066072
-#044350
-#9E9E9E
-#506B1B
-#8EBD2F
-#8dbdca
-#338F27;
-#5F7F20
-#739926
-#BFBFBF
-#591616
-#c0c0c0
-#404040
-#787878
-#383838
 ```
-## 7. BUTTONS
+## 8. BUTTONS
+
 ```css
 #toggleBtn,
 #submitBtn{
@@ -213,15 +210,21 @@ footer{
 ```
 - Background-color for buttons based on bootstrap variant
 
-## 8. ANIMATIONS
+## 9. ANIMATIONS
 
-## 9. ERRORS
+Styling used for animations using css, bootstrap and lucide-react.
+
 ```css
-#941B13
-#8C1A12
-#C22419
-#470D09
-#70150F
+
+```
+## 10. ERRORS
+```css
+
 ```
 
-## 10. REFERENCES
+## 11. REFERENCES
+
+- https://react-bootstrap.netlify.app/
+- https://fonts.google.com/
+- https://color.adobe.com/create/color-wheel
+- https://www.w3schools.com/colors/colors_groups.asp
