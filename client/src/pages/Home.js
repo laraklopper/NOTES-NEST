@@ -24,13 +24,14 @@ import { UserCheck } from 'lucide-react'
 const { ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 
 //====MAIN HOME FUNCTION COMPONENT========
-export default function Home(
+export default function Home(//Export default Home.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
     setCurrentUser,
     setError,
     logout
   }) {
+  //===========STATE VARIABLES=======================
   const [key, setKey] = useState('home')
   const [profile, setProfile] = useState(null)// Full user record for the profile tab
   const [editUser, setEditUser] = useState(false)
@@ -270,8 +271,6 @@ export default function Home(
                       exitAdminForm={exitAdminForm}
                       setError={setError}
                       setCurrentUser={setCurrentUser}
-
-
                     />
                   </div>
                 </Col>
