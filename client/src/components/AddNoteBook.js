@@ -1,10 +1,15 @@
-//AddNotebookForm
+//AddNotebookForm.js
+// IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/AddNotebook.css'
 import '../css/componentCss/FormSetup.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
-import { Asterisk, RotateCcw, Save } from 'lucide-react';
 import Button from 'react-bootstrap/Button';
+// IMPORT ICONS FROM LUCIDE-REACT
+import { Asterisk, RotateCcw, Save } from 'lucide-react';
+
 
 const DEFAULT_COLOUR = '#1F4E79'// Matches the notebookSchema default
 // AddNoteBook component
