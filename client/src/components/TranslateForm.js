@@ -159,11 +159,25 @@ export default function TranslateForm(//Export default TranslateForm.js function
     //===========EVENT LISTENERS====================
     /* The selector change handlers. Both record that the pair on screen is now
     the user's own choice, so the saved defaults no longer apply to it. */
+    // Function for source or target languageChange
+    /*const handleLanguageChange = useCallback((code) => {
+            if (sourceLanguage) {
+                languageTouched.current = true;
+                setSourceLang(code)
+            }
+            else if(targetLanguage){
+                languagesTouched.current = true;
+                setTargetLang(code);
+
+            }
+        },[],)*/
+    // Function to handle changes in the source language input
     const handleSourceLangChange = useCallback((code) => {
         languagesTouched.current = true;
         setSourceLang(code);
     }, [])
 
+    // Function to handle changes in the target language input
     const handleTargetLangChange = useCallback((code) => {
         languagesTouched.current = true;
         setTargetLang(code);
@@ -269,7 +283,7 @@ export default function TranslateForm(//Export default TranslateForm.js function
             console.error('[ERROR: TranslateForm.js] Translation failed:', error.message);//Log an error message in the console for debugging purposes
             setError(error.message || 'Something went wrong while translating. Please try again.');// Set the error state to display the error in the UI
         } finally {
-            setLoading(false);
+            setLoading(false);//Set Loading state to false
         }
     }, [sourceText, sourceLang, targetLang, resetSaveState])
 
@@ -282,15 +296,16 @@ export default function TranslateForm(//Export default TranslateForm.js function
         setSaved(false);
         setSaveError('');
         try {
+            //Send a POST request to the `/translation/save`
             const response = await fetch(`/translation/save`, {
-                method: 'POST',
+                method: 'POST',//HTTP request method
                 credentials: 'include',// Send the HTTP-only auth cookie
                 headers:{
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',// Specify the Content-Type in the request payload as JSON
                 },
                 body: JSON.stringify(lastTranslation),
             });
-            const data = await response.json().catch(() => ({}));
+            const data = await response.json().catch(() => ({}));// Safely parse the JSON response (avoid crash if server returns non-JSON)
             if (!response.ok) throw new Error(data?.message || 'Failed to save translation');
 
             setSaved(true);
