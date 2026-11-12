@@ -6,18 +6,23 @@ GET - '/' - Download the user's notes or translations as a .csv or .xlsx file
       notes:        language (code), notebook (ObjectId), tag (ObjectId)
       translations: sourceLanguage (code), targetLanguage (code)
 */
+/* Load environment variables from a .env
+file using the dotenv package*/
 require('dotenv').config()
-const express = require('express');
+// IMPORT REQUIRED MODULES AND PACKAGES
+const express = require('express');//Express framework for building web applications
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const XLSX = require('xlsx');// Builds the .xlsx workbook
 const { stringify } = require('csv-stringify/sync');// Builds the .csv text
+// IMPORT SCHEMAS
 const Note = require('../models/noteSchema');// Import the Note model
 const Translation = require('../models/translationSchema');// Import the Translation model
+// IMPORT CUSTOM MIDDLEWARE
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { exportLimiter } = require('../middleware/rateLimitMiddleware');// Limits exports per IP
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the language filters
 const { languageData } = require('../util/langaugeData');// Used to show language names instead of codes
-const router = express.Router()
+const router = express.Router()// Create Express router instance
 
 const MAX_EXPORT_ROWS = 10000;// Upper bound so one export can't pull an unbounded amount of data
 const FORMATS = ['csv', 'xlsx'];
