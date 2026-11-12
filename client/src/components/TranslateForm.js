@@ -405,7 +405,7 @@ export default function TranslateForm(//Export default TranslateForm.js function
                         variant='outline-secondary'
                         size='sm'
                         id='copyTranslationBtn'
-                        onClick={handleCopy}
+                        onClick={handleCopy}//Functio to copy translated text
                         disabled={!translatedText}
                         // ARIA ATTRIBUTES
                         aria-label={copied ? 'Translation copied' : 'Copy translation'}
@@ -440,7 +440,7 @@ export default function TranslateForm(//Export default TranslateForm.js function
                         aria-label='Clear Form Button'
                         aria-disabled={loading || !canClear}
                         >
-                        <RotateCw/> CLEAR FORM 
+                        <RotateCw aria-hidden='true' focusable='false'/> CLEAR FORM 
                         </Button>
                         {/* SUBMIT (translation)FORM BUTTON */}
                         <Button
@@ -450,7 +450,7 @@ export default function TranslateForm(//Export default TranslateForm.js function
                             disabled={loading || !sourceText.trim()}
                             // ARIA ATTRIBUTES:
                             role='button'
-                            aria-label='Translate'
+                            aria-label={loading ? 'Translating…' : 'Translate'}
                             aria-disabled={loading || !sourceText.trim()}
                         >
                             {loading ? 'Translating…' : 'Translate'}
