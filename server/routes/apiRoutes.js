@@ -6,8 +6,11 @@
 Each route forwards to the Langbly endpoint of the same path, so the API key in
 .env never reaches the browser.
  */
+/* Load environment variables from a .env
+file using the dotenv package*/
 require('dotenv').config();
-const express = require('express');
+// IMPORT REQUIRED MODULES AND PACKAGES
+const express = require('express');//Express framework for building web applications
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { translateLimiter, detectLimiter } = require('../middleware/rateLimitMiddleware');// Limits translation and language detection requests per IP
 const { languageData } = require('../util/langaugeData');// Local copy of the Langbly language list
@@ -48,6 +51,7 @@ Langbly errors are mapped onto the statuses the client handles:
 (a rejected key is a server configuration problem, so it is not passed on as a
 401 — that would log the user out). */
 const langblyRequest = async (path, { method = 'GET', body } = {}) => {
+    //Conditional rendering 
     if (!LANGBLY_API_KEY) {
         console.error('[ERROR: apiRoutes.js, langblyRequest] LANGBLY_API_KEY is missing from .env');// Log an error message in the console for debugging purposes
         throw new LangblyError(502, 'The translation service is not configured.');
