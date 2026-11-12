@@ -47,7 +47,7 @@ Each route forwards to the Langbly endpoint with the **same path**, which keeps 
 ### 1.1. CLIENT SIDE USAGE
 
 | Method | Full Path | Frontend/Client side files |
-| `GET` | `/api/language/translate/v2/languages` | |
+| `GET` | `/api/language/translate/v2/languages` |  |
 | `POST` | `/api/language/translate/v2` | |
 | `POST` | `/api/language/translate/v2/detect` | |
 ---
