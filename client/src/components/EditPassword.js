@@ -1,19 +1,23 @@
-import React, { useState, useMemo, useCallback } from 'react'
+// EditPassword.js
+//IMPORT REQUIRED MODULES AND PACKAGES
+import React, { useState, useMemo, useCallback } from 'react';
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/EditUser.css'
 import '../css/componentCss/FormSetup.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT ICONS FROM LUCIDE REACT
 import { Asterisk , Bug, Eye, EyeOff} from 'lucide-react';
 
-
-export default function EditPassword(
-    {
+//EditPassword function component
+export default function EditPassword(//Export default EditPassword.js function component
+    {//PROPS PASSED FROM PARENT COMPONENT(Home.js)
         setError
     }
-) {
-    const [currentPassword, setCurrentPassword] = useState('')
-    const [newPassword, setNewPassword] = useState('')
+) {//===========STATE VARIABLES=============
+    const [currentPassword, setCurrentPassword] = useState('')// Stores the user's current password entered into the form
+    const [newPassword, setNewPassword] = useState('')// Stores the new password that the user wants to change to
     const [confirmNewPassword, setConfirmNewPassword] = useState('')// Client-side only, never sent to the API
     const [showCurrentPswd, setShowCurrentPswd] = useState(false)
      // Controls whether the new password is displayed as plain text (true) or hidden behind dots/asterisks (false)
@@ -45,20 +49,24 @@ export default function EditPassword(
                 String(pwd || '')// Ensure pwd is a string before testing
             );
     },[])
+
+    //Function to reset editPassword form
     const resetForm = useCallback(() => {
         const confirmReset = window.confirm(
             "Are you sure you want to clear the form?"
         )
-        if (!confirmReset) return;
-        setCurrentPassword('')
-        setNewPassword('')
+        if (!confirmReset) return;// If user cancels, exit the function
+        setCurrentPassword('')// Clear the current password field
+        setNewPassword('')// Clear the new password field
         setConfirmNewPassword('')
     },[])
 
+    //=========REQUESTS=========================
+    //Function to edit user password
     const editPassword = useCallback(async(e) => {
         e.preventDefault()//Prevent default form submission
         setLoading(true)
-        setError?.(null)
+        setError?.(null)//Clear any previous error messages
         try {
              if (!currentPassword || !newPassword) {
                 const msg = 'Both current and new passwords are required.';
@@ -90,7 +98,7 @@ export default function EditPassword(
             }
             // The browser sends the HTTP-only JWT cookie with the request
             const response = await fetch('/user/editPassword', {
-                method: 'PATCH',
+                method: 'PATCH',//HTTP request method
                 headers: {
                     'Content-Type': 'application/json',// Specify the Content-Type in the request payload
                 },
@@ -99,7 +107,7 @@ export default function EditPassword(
                     newPassword
                 })
             })
-             const data = await response.json().catch(() => ({}));
+             const data = await response.json().catch(() => ({}));// Safely parse the JSON response (avoid crash if server returns non-JSON)
              if (!response.ok) {
                 const errorMessage = data.message || 'Failed to change password.';//Default error message
                 setError?.(errorMessage);// Set the error state to display the error in the UI
@@ -122,7 +130,7 @@ export default function EditPassword(
             console.error('[ERROR: EditPasswordForm.js, editPassword]', msg);// Log the error message in the console for debugging
             alert('Error changing password');// Alert user of error
         }finally{
-            setLoading(false)
+            setLoading(false)//Set Loading state to false
         }
     },[setError, currentPassword, newPassword, confirmNewPassword, isStrongPassword])
      // ========= IDs USED BY aria-labelledby / aria-describedby =========
