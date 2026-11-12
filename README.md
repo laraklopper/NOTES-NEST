@@ -22,7 +22,6 @@
 7. [REFERENCES](#7-references)
 
 - *View [GLOSSARY.md](GLOSSARY.md) for terminology*
-- *Further documentation is in the [DOCS](DOCS/) and [STYLES](STYLES/) folders*
 <!-- - **NOTE** This application is not deployed. -->
 ---
 
