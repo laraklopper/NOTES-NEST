@@ -62,7 +62,7 @@ export default function NotePadForm(
 
   //Funtion to submit the form
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault()//Prevent default form submission
     // `required` blocks an empty textarea, but not one that only holds spaces
     if (!formData.content.trim()) {
       alert('Please enter the note text before saving.')
@@ -108,6 +108,7 @@ export default function NotePadForm(
             onChange={handleInputChange}
             // ARIA ATTRIBUTES:
             aria-required='true'
+            aria-label='Form Title'
           />
           <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
         </div>
@@ -125,6 +126,8 @@ export default function NotePadForm(
             name='username'
             value={username}
             // ARIA ATTRIBUTES:
+            aria-label='Hidden Readonly Username Input'
+            aria-required='true'
             aria-readonly='true'
             />
             <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
@@ -138,7 +141,7 @@ export default function NotePadForm(
           id='newNoteDate'
           required
           readOnly
-          placeholder=''
+          placeholder={TODAY}
           type='date'
           // The server sets createdAt, so this only shows the date the note is made
           value={TODAY}
@@ -151,10 +154,11 @@ export default function NotePadForm(
       </div>
     </Stack>
         </fieldset>
-        {/* GROUP 2 */}
+        {/* GROUP 2: NoteText + Language + */}
         <fieldset id='notePadGroup2'>
         <legend>Notes Details</legend>
           <Stack direction="horizontal" gap={3} id='notePadStack2'>
+          {/* NOTE: value={formData.content} */}
       <div className="p-2" id='noteTextBlock'>
           <label className='notePadLabel' htmlFor='noteTextInput'>NOTE:</label>
           <textarea
@@ -172,6 +176,7 @@ export default function NotePadForm(
       </div>
       <div className="vr" style={{width:'2px', color : '#000',}}/>
       <div className="p-2 ms-auto">
+      {/* LANGUAGE: value={formData.language || defaultLanguage}*/}
        <label className='notePadLabel' htmlFor='noteLanguageInput'>LANGAUGE:</label>
         <div className='inputDiv'>
           <select
@@ -194,6 +199,9 @@ export default function NotePadForm(
           </select>
           <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
         </div>
+        {/* NOTEBOOK:
+        select: value={formData.notebook}
+        option: value={notebook._id} */}
         <div className='noteInputDiv'>
           <label className='notePadLabel' htmlFor='noteNotebookInput'>NOTE BOOK:</label>
           <select
@@ -212,8 +220,11 @@ export default function NotePadForm(
             ))}
           </select>
         </div>
+        {/* TAGS: 
+        input: value={formData.tags}
+        option: value={tag.name}*/}
         <div className='noteInputDiv'>
-          <label className='notePadLabel' htmlFor='noteTagsInput'>TAG:</label>
+          <label className='notePadLabel' htmlFor='noteTagsInput'>TAGS:</label>
           <input
           className='input'
           id='noteTagsInput'
@@ -243,6 +254,7 @@ export default function NotePadForm(
               ))}
           </select>
         </div>
+        {/* IS PINNED: checked={formData.isPinned} */}
         <div id='checkBoxInputDiv'>
           <label className='notePadLabel' htmlFor='notePinnedInput'>IS PINNED:</label>
           <input
@@ -257,6 +269,7 @@ export default function NotePadForm(
     </Stack>
         </fieldset>
       </div>
+      {/* -------------END OF INPUT-------------------- */}
          <Stack direction="horizontal" gap={3}>
       <div className="p-2" id='reqInfoMsgBlock'>
       <span id='reqInfoSpan'>
