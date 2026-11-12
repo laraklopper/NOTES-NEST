@@ -24,7 +24,7 @@ export default function NotePadForm(
     notebooks = [],
     tags = []// The user's existing tags from GET /tag/fetchTags
   }) {
-    //=========STATE VARIABLES==================
+  //=========STATE VARIABLES==================
   const [formData, setFormData] = useState(emptyNoteForm)
 
   const handleInputChange = (event) => {
@@ -39,10 +39,10 @@ export default function NotePadForm(
   const handleTagSelect = (event) => {
     const name = event.target.value;
     if (!name || selectedTagNames.includes(name)) return;
-    setFormData((prev) => (
-      { ...prev, tags: [...selectedTagNames, name]
-        .join(', ') }
-      ))
+    setFormData((prev) => ({
+      ...prev,
+      tags: [...selectedTagNames, name].join(', ')
+    }))
   }
 
   //Functio to reset the form input
@@ -82,229 +82,228 @@ export default function NotePadForm(
   //=======================JSX RENDERING=======================================
   return (
     <form id='notePadForm' method='POST' onSubmit={handleSubmit} aria-labelledby='formTitle' aria-busy={loading}>
-    {/* --------Screen Reader Heading--------- */}
-    <p className='visually-hidden' id='formTitle'>CREATE NEW NOT FORM</p>
+      {/* --------Screen Reader Heading--------- */}
+      <p className='visually-hidden' id='formTitle'>CREATE NEW NOT FORM</p>
       <div id='formHeadingBlock'>
         <h3 id='formHeading'>CREATE NEW NOTE</h3>
       </div>
       <div id='notePadInput'>
-     {/* GROUP 1 */}
-<fieldset id='notePadGroup1'>
+        {/* GROUP 1 */}
+        <fieldset id='notePadGroup1'>
           <legend>TITLE</legend>
           {/* STACK ONE */}
           <Stack direction="horizontal" gap={3} id='notePadStack1'>
-      <div className="p-2" id='notePadBlock1'>
-      <label className='notePadLabel' htmlFor='noteTitleInput'>TITLE:</label>
-        <div className='inputDiv'>
-          <input
-            className='input'
-            id='noteTitleInput'
-            type='text'
-            required
-            maxLength={200}
-            placeholder='TITLE'
-            name='title'
-            value={formData.title}
-            onChange={handleInputChange}
-            // ARIA ATTRIBUTES:
-            aria-required='true'
-            aria-label='Form Title'
-          />
-          <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
-        </div>
-      </div>
-      {/* Hidden Readonly input */}
-      <div className="p-2 ms-auto" id='notePadBlock2'>
-        {/* USERNAME */}
-        <div className='inputDiv' hidden>
-        <label className='notePadLabel' htmlFor='noteUsername'>USERNAME:</label>
-          <input
-            className='input'
-            id='noteUsername'
-            readOnly
-            placeholder='USERNAME'
-            name='username'
-            value={username}
-            // ARIA ATTRIBUTES:
-            aria-label='Hidden Readonly Username Input'
-            aria-required='true'
-            aria-readonly='true'
-            />
-            <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
-        </div>
-      </div>
-      <div className="p-2" id='notePadBlock3'>
-        <label className='notePadLabel' htmlFor='newNoteDate' hidden>DATE:</label>
-        <div className='inputDiv'>
-        <input
-          className='input'
-          id='newNoteDate'
-          required
-          readOnly
-          placeholder={TODAY}
-          type='date'
-          // The server sets createdAt, so this only shows the date the note is made
-          value={TODAY}
-          // ARIA ATTRIBUTES:
-          aria-required='true'
-          aria-readonly='true'
-        />
-        <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
-        </div>
-      </div>
-    </Stack>
+            <div className="p-2" id='notePadBlock1'>
+              <label className='notePadLabel' htmlFor='noteTitleInput'>TITLE:</label>
+              <div className='inputDiv'>
+                <input
+                  className='input'
+                  id='noteTitleInput'
+                  type='text'
+                  required
+                  maxLength={200}
+                  placeholder='TITLE'
+                  name='title'
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  // ARIA ATTRIBUTES:
+                  aria-required='true'
+                  aria-label='Form Title'
+                />
+                <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+              </div>
+            </div>
+            {/* Hidden Readonly input */}
+            <div className="p-2 ms-auto" id='notePadBlock2'>
+              {/* USERNAME */}
+              <div className='inputDiv' hidden>
+                <label className='notePadLabel' htmlFor='noteUsername'>USERNAME:</label>
+                <input
+                  className='input'
+                  id='noteUsername'
+                  readOnly
+                  placeholder='USERNAME'
+                  name='username'
+                  value={username}
+                  // ARIA ATTRIBUTES:
+                  aria-label='Hidden Readonly Username Input'
+                  aria-required='true'
+                  aria-readonly='true'
+                />
+                <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+              </div>
+            </div>
+            <div className="p-2" id='notePadBlock3'>
+              <label className='notePadLabel' htmlFor='newNoteDate' hidden>DATE:</label>
+              <div className='inputDiv'>
+                <input
+                  className='input'
+                  id='newNoteDate'
+                  required
+                  readOnly
+                  placeholder={TODAY}
+                  type='date'
+                  // The server sets createdAt, so this only shows the date the note is made
+                  value={TODAY}
+                  // ARIA ATTRIBUTES:
+                  aria-required='true'
+                  aria-readonly='true'
+                />
+                <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+              </div>
+            </div>
+          </Stack>
         </fieldset>
         {/* GROUP 2: NoteText + Language + */}
         <fieldset id='notePadGroup2'>
-        <legend>Notes Details</legend>
+          <legend>Notes Details</legend>
           <Stack direction="horizontal" gap={3} id='notePadStack2'>
-          {/* NOTE: value={formData.content} */}
-      <div className="p-2" id='noteTextBlock'>
-          <label className='notePadLabel' htmlFor='noteTextInput'>NOTE:</label>
-          <textarea
-            className='input notesTextArea'
-            id='noteTextInput'
-            required
-            placeholder='NOTE TEXT'
-            name='content'
-            value={formData.content}
-            onChange={handleInputChange}
-            // ARIA ATTRIBUTES:
-            aria-required='true'
-          />
-           <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
-      </div>
-      <div className="vr" style={{width:'2px', color : '#000',}}/>
-      <div className="p-2 ms-auto">
-      {/* LANGUAGE: value={formData.language || defaultLanguage}*/}
-       <label className='notePadLabel' htmlFor='noteLanguageInput'>LANGAUGE:</label>
-        <div className='inputDiv'>
-          <select
-          className='input'
-          id='noteLanguageInput'
-          required
-          name='language'
-          value={formData.language || defaultLanguage}
-          onChange={handleInputChange}
-          // ARIA ATTRIBUTES:
-          aria-required='true'
-          >
-          {/* MAP ALL AVAILBLE LANGUAGES */}
-            <option value=''>SELECT</option>
-            {languageData.map((lang) => (
-              <option key={lang.code} value={lang.code}>
-                {lang.name}
-              </option>
-            ))}
-          </select>
-          <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
-        </div>
-        {/* NOTEBOOK:
-        select: value={formData.notebook}
-        option: value={notebook._id} */}
-        <div className='noteInputDiv'>
-          <label className='notePadLabel' htmlFor='noteNotebookInput'>NOTE BOOK:</label>
-          <select
-          className='input'
-          id='noteNotebookInput'
-          name='notebook'
-          value={formData.notebook}
-          onChange={handleInputChange}
-          >
-          {/* MAP ALL NOTEBOOKS */}
-            <option value=''>SELECT</option>
-            {notebooks.map((notebook) => (
-              <option key={notebook._id} value={notebook._id}>
-                {notebook.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        {/* TAGS: 
-        input: value={formData.tags}
-        option: value={tag.name}*/}
-        <div className='noteInputDiv'>
-          <label className='notePadLabel' htmlFor='noteTagsInput'>TAGS:</label>
-          <input
-          className='input'
-          id='noteTagsInput'
-          type='text'
-          placeholder='TAG, TAG'
-          title='Separate tags with commas'
-          name='tags'
-          value={formData.tags}
-          onChange={handleInputChange}
-          />
-          <select
-          className='input'
-          id='noteTagSelect'
-          value=''// Always shows "ADD TAG"; picking a tag appends it to the input above
-          onChange={handleTagSelect}
-          disabled={tags.length === 0}
-          // ARIA ATTRIBUTES:
-          aria-label='ADD AN EXISTING TAG'
-          >
-            <option value=''>ADD TAG</option>
-            {tags
-              .filter((tag) => !selectedTagNames.includes(tag.name))
-              .map((tag) => (
-                <option key={tag._id} value={tag.name}>
-                  {tag.name}
-                </option>
-              ))}
-          </select>
-        </div>
-        {/* IS PINNED: checked={formData.isPinned} */}
-        <div id='checkBoxInputDiv'>
-          <label className='notePadLabel' htmlFor='notePinnedInput'>IS PINNED:</label>
-          <input
-            type='checkbox'
-            id='notePinnedInput'
-            name='isPinned'
-            checked={formData.isPinned}
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-    </Stack>
+            {/* NOTE: value={formData.content} */}
+            <div className="p-2" id='noteTextBlock'>
+              <label className='notePadLabel' htmlFor='noteTextInput'>NOTE:</label>
+              <textarea
+                className='input notesTextArea'
+                id='noteTextInput'
+                required
+                placeholder='NOTE TEXT'
+                name='content'
+                value={formData.content}
+                onChange={handleInputChange}
+                // ARIA ATTRIBUTES:
+                aria-required='true'
+              />
+              <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+            </div>
+            <div className="vr" style={{ width: '2px', color: '#000', }} />
+            <div className="p-2 ms-auto">
+              {/* LANGUAGE: value={formData.language || defaultLanguage}*/}
+              <label className='notePadLabel' htmlFor='noteLanguageInput'>LANGAUGE:</label>
+              <div className='inputDiv'>
+                <select
+                  className='input'
+                  id='noteLanguageInput'
+                  required
+                  name='language'
+                  value={formData.language || defaultLanguage}
+                  onChange={handleInputChange}
+                  // ARIA ATTRIBUTES:
+                  aria-required='true'
+                >
+                  {/* MAP ALL AVAILBLE LANGUAGES */}
+                  <option value=''>SELECT</option>
+                  {languageData.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+                <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+              </div>
+              {/* NOTEBOOK:
+              select: value={formData.notebook}
+              option: value={notebook._id} */}
+              <div className='noteInputDiv'>
+                <label className='notePadLabel' htmlFor='noteNotebookInput'>NOTE BOOK:</label>
+                <select
+                  className='input'
+                  id='noteNotebookInput'
+                  name='notebook'
+                  value={formData.notebook}
+                  onChange={handleInputChange}
+                >
+                  {/* MAP ALL NOTEBOOKS */}
+                  <option value=''>SELECT</option>
+                  {notebooks.map((notebook) => (
+                    <option key={notebook._id} value={notebook._id}>
+                      {notebook.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* TAGS:
+              input: value={formData.tags}
+              option: value={tag.name}*/}
+              <div className='noteInputDiv'>
+                <label className='notePadLabel' htmlFor='noteTagsInput'>TAGS:</label>
+                <input
+                  className='input'
+                  id='noteTagsInput'
+                  type='text'
+                  placeholder='TAG, TAG'
+                  title='Separate tags with commas'
+                  name='tags'
+                  value={formData.tags}
+                  onChange={handleInputChange}
+                />
+                <select
+                  className='input'
+                  id='noteTagSelect'
+                  value=''// Always shows "ADD TAG"; picking a tag appends it to the input above
+                  onChange={handleTagSelect}
+                  disabled={tags.length === 0}
+                  // ARIA ATTRIBUTES:
+                  aria-label='ADD AN EXISTING TAG'
+                >
+                  <option value=''>ADD TAG</option>
+                  {tags
+                    .filter((tag) => !selectedTagNames.includes(tag.name))
+                    .map((tag) => (
+                      <option key={tag._id} value={tag.name}>
+                        {tag.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              {/* IS PINNED: checked={formData.isPinned} */}
+              <div id='checkBoxInputDiv'>
+                <label className='notePadLabel' htmlFor='notePinnedInput'>IS PINNED:</label>
+                <input
+                  type='checkbox'
+                  id='notePinnedInput'
+                  name='isPinned'
+                  checked={formData.isPinned}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+          </Stack>
         </fieldset>
       </div>
       {/* -------------END OF INPUT-------------------- */}
-         <Stack direction="horizontal" gap={3}>
-      <div className="p-2" id='reqInfoMsgBlock'>
-      <span id='reqInfoSpan'>
-          <small><Asterisk style={{display: 'flex', margin: '0px', padding: '0px'}} color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
-    <p className='infoMsg' aria-live='polite' aria-hidden='true'> Indicates required information</p>
-      </span>
-      </div>
-      <div className="p-2 ms-auto"/>
-      <div className="p-2" id='notePadBtnBlock'>
-         <Button
-        variant='light'
-        type='submit'
-        id='saveNoteBtn'
-        disabled={loading}
-        // ARIA ATTRIBUTES
-        aria-label={loading ? 'SAVING...' : 'SAVE'}
-        aria-disabled={loading ? 'SAVING...' : 'SAVE'}
-        >
-          {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false'/>
-        </Button>
-       <Button
-       variant='danger'
-       id='clearFormBtn'
-       onClick={clearForm}
-       disabled={loading}
-      type='button'
-      // ARIA ATTRIBUTES:
-      aria-label='RESET FORM'
-      aria-disabled={loading ? 'true': 'false'}
-       >
-        <RotateCcw aria-hidden='true' focusable='false'/> RESET
-       </Button>
-      </div>
-    </Stack>
-
+      <Stack direction="horizontal" gap={3}>
+        <div className="p-2" id='reqInfoMsgBlock'>
+          <span id='reqInfoSpan'>
+            <small><Asterisk style={{ display: 'flex', margin: '0px', padding: '0px' }} color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+            <p className='infoMsg' aria-live='polite' aria-hidden='true'> Indicates required information</p>
+          </span>
+        </div>
+        <div className="p-2 ms-auto" />
+        <div className="p-2" id='notePadBtnBlock'>
+          <Button
+            variant='light'
+            type='submit'
+            id='saveNoteBtn'
+            disabled={loading}
+            // ARIA ATTRIBUTES
+            aria-label={loading ? 'SAVING...' : 'SAVE'}
+            aria-disabled={loading ? 'SAVING...' : 'SAVE'}
+          >
+            {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false' />
+          </Button>
+          <Button
+            variant='danger'
+            id='clearFormBtn'
+            onClick={clearForm}
+            disabled={loading}
+            type='button'
+            // ARIA ATTRIBUTES:
+            aria-label='RESET FORM'
+            aria-disabled={loading ? 'true' : 'false'}
+          >
+            <RotateCcw aria-hidden='true' focusable='false' /> RESET
+          </Button>
+        </div>
+      </Stack>
     </form>
   )
 }
