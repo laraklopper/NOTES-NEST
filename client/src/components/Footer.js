@@ -37,9 +37,9 @@ export default function Footer(//Export default Footer component
       {/* Row 2 */}
       <Row id='footerRow2'>
         <Col xs={0} md id='copyRightCol1'/>
-        <Col xs={12} md={4} id='copyRightCol'>
+        <Col xs={12} md={8} id='copyRightCol'>
           {/* COPY RIGHT MESSAGE */}
-          <div id='copyright-div' >
+          <div id='copyrightDiv' >
             <p id='copyrightText' aria-label='copy right details' aria-live='polite' >© 2026 Text Translator App. All rights reserved.</p>
           </div>
         </Col>

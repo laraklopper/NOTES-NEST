@@ -12,6 +12,7 @@ Footer.js
     background-color: #B78830;
     gap: 10px;
 }
+/* BOOTSTRAP */
 #footerRow1,
 #footerRow2{
     width: 100%;
@@ -19,13 +20,30 @@ Footer.js
     padding: 0px;
     display: flex;
 }
+/* COPY RIGHT MESSAGE */
+#copyRightCol{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+}
+#copyrightDiv{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+}
 #copyrightText{
     display: flex;
     margin: 0px;
     padding: 0px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
     font-family: "Open Sans", sans-serif;
     text-transform: uppercase;
 }
+/* BUTTON */
 #logoutBtn{
     width: 200px;
     margin: 0px;
