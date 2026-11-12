@@ -22,10 +22,9 @@ const { checkJwtToken } = require('../middleware/securityMiddleware');// Import 
 const { exportLimiter } = require('../middleware/rateLimitMiddleware');// Limits exports per IP
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the language filters
 const { languageData } = require('../util/langaugeData');// Used to show language names instead of codes
+const {FORMATS, MAX_EXPORT_ROWS} = require('../util/apiUtil')
 const router = express.Router()// Create Express router instance
 
-const MAX_EXPORT_ROWS = 10000;// Upper bound so one export can't pull an unbounded amount of data
-const FORMATS = ['csv', 'xlsx'];
 
 // Language code -> name, e.g. 'af' -> 'Afrikaans' (unknown codes are shown as-is)
 const LANGUAGE_NAMES = Object.fromEntries(languageData.map(({ code, name }) => [code, name]));

@@ -11,10 +11,10 @@ const Translation = require('../models/translationSchema');// Import the Transla
 const Note = require('../models/noteSchema');// Import the Note model
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the targetLanguage filter
+const {DEFAULT_LIMIT, MAX_LIMIT} = require('../util/apiUtil')
 const router = express.Router()
 
-const DEFAULT_LIMIT = 10;// Translations per page when no limit is sent
-const MAX_LIMIT = 50;// Upper bound on the page size so one request can't pull the whole collection
+
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────
    GET: READ — Used to fetch information from the database

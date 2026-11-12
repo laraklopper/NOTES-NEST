@@ -17,15 +17,14 @@ const { translateLimiter, detectLimiter } = require('../middleware/rateLimitMidd
 // IMPORT DATA AND UTILITY FUNCTIONS
 const { languageData } = require('../util/langaugeData');// Local copy of the Langbly language list
 const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../util/schemaUtil');// Shared validation rules: valid language-code pattern and max text length
+const {LANGBLY_TIMEOUT_MS, LANGUAGES_CACHE_MS, LANGBLY_PATH} = require('../util/apiUtil')
 const router = express.Router()// Create Express router instance
 
 // =======LANGBLY CONNECTION SETTINGS===============
 const LANGBLY_BASE_URL = (process.env.LANGBLY_BASE_URL || 'https://api.langbly.com').replace(/\/+$/, '');// Use the .env URL if set, else the default; the regex strips trailing slashes so the joined URL never has '//'
 const LANGBLY_API_KEY = process.env.LANGBLY_API_KEY;// Secret key, only ever used server-side
-const LANGBLY_PATH = '/language/translate/v2';// Base path shared by every Langbly endpoint this file calls
-const LANGBLY_TIMEOUT_MS = 15000;// Give up on Langbly after 15 seconds (used by AbortSignal.timeout in langblyRequest)
-const LANGUAGES_CACHE_MS = 1000 * 60 * 60 * 24;// The language list rarely changes, so cache it for 24 hours (ms * s * min * h)
- 
+// const LANGBLY_PATH = '/language/translate/v2';// Base path shared by every Langbly endpoint this file calls
+
 // Language code -> readable name, used to name detected languages
 const LANGUAGE_NAMES = languageData.reduce((names, lang) => {// Turns [{ code, name }] into { code: name } for fast lookups
     names[lang.code] = lang.name;// e.g. names['af'] = 'Afrikaans'
