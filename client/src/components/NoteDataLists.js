@@ -27,16 +27,20 @@ export default function NoteDataLists(
         setError
     }
 ) {
-    const [showNoteBooks, setShowNoteBooks] = useState(false)
-    const [showTags, setShowTags] = useState(false)
+    //=========STATE VARIABLES==================
+    const [showNoteBooks, setShowNoteBooks] = useState(false)//State to Toggle the Notebook List
+    const [showTags, setShowTags] = useState(false);//State to toggle the Tags List
 
+    //===========EVENT HANDLERS/CALLBACKS=====================
+    // Function to toggle the NoteBookList
     const toggleNoteBooks = useCallback(() => {
         setShowNoteBooks(prev => (!prev))
-        setShowTags(false)
+        setShowTags(false)//Hide TagsList
     },[])
+    // Function to toggle the Tags List
     const toggleTags = useCallback(() => {
         setShowTags(prev => (!prev))
-        setShowNoteBooks(false)
+        setShowNoteBooks(false)//Hide notebook list
     },[])
 
     //=================JSX RENDERING==============//
