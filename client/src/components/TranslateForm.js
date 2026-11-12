@@ -222,19 +222,20 @@ export default function TranslateForm(//Export default TranslateForm.js function
         setLoading(true);
         setError('');
         try {
+            // Send a POST request to the `/api/language/translate/v2``endpoint
             const response = await fetch(`/api/language/translate/v2`, {
-                method: 'POST',
+                method: 'POST',//HTTP request method
                 credentials: 'include',// Send the HTTP-only auth cookie
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',//Specify the payload as JSON
                 },
-                body: JSON.stringify({
+                body: JSON.stringify({//
                     sourceText,
                     sourceLanguage: sourceLang,// "auto" is a valid value here
                     targetLanguage: targetLang,
                 }),
             });
-            const data = await response.json().catch(() => ({}));
+            const data = await response.json().catch(() => ({}));// Safely parse JSON (avoid crash if server returns non-JSON)
             if (!response.ok) throw new Error(data?.message || 'Failed to translate');
             setTranslatedText(data.translatedText);
 
@@ -263,10 +264,10 @@ export default function TranslateForm(//Export default TranslateForm.js function
                 detectedFor.current = { text: sourceText.trim(), result: detectedFromTranslation };
                 setDetected(detectedFromTranslation);
             }
-            console.log('[SUCCESS: TranslateForm.js] Translation received');
+            console.log('[SUCCESS: TranslateForm.js] Translation received');//Log a message in the console for debugging purposes
         } catch (error) {
-            console.error('[ERROR: TranslateForm.js] Translation failed:', error.message);
-            setError(error.message || 'Something went wrong while translating. Please try again.');
+            console.error('[ERROR: TranslateForm.js] Translation failed:', error.message);//Log an error message in the console for debugging purposes
+            setError(error.message || 'Something went wrong while translating. Please try again.');// Set the error state to display the error in the UI
         } finally {
             setLoading(false);
         }

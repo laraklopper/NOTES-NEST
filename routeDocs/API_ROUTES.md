@@ -29,6 +29,7 @@ React (TranslateForm)  ──►  /api/language/translate/v2/...  ──►  Lan
 15. [Error Handling Flow](#15-error-handling-flow)
 16. [Known Gaps & Housekeeping](#16-known-gaps--housekeeping)
 
+- [apiRoutes.js](../server/routes/apiRoutes.js)
 ---
 
 ## 1. Route Summary
@@ -43,6 +44,12 @@ The router is mounted at `/api` in `app.js`, so every path below starts with `/a
 
 Each route forwards to the Langbly endpoint with the **same path**, which keeps the mapping easy to follow.
 
+### 1.1. CLIENT SIDE USAGE
+
+| Method | Full Path | Frontend/Client side files |
+| `GET` | `/api/language/translate/v2/languages` | |
+| `POST` | `/api/language/translate/v2` | |
+| `POST` | `/api/language/translate/v2/detect` | |
 ---
 
 ## 2. Imports & Setup
