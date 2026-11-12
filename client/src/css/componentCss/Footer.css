@@ -1,7 +1,6 @@
 /* Footer.css
-Footer.js
-*/
-/* FOOTER LoggedIn=true */
+Footer.js*/
+/* FOOTER loggedIn=true */
 #pageFooter {
     width: 100%;
     display: flex;
@@ -12,17 +11,22 @@ Footer.js
     background-color: #B78830;
     gap: 10px;
 }
-/* BOOTSTRAP */
-/* GRID */
-#footerRow1,
-#footerRow2,
-#footerRow3{
+/* BOOTSTRAP: https://react-bootstrap.netlify.app/ */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+/* ROW 1: CLOCK */
+#footerRow1{
     width: 100%;
     margin: 0px;
     padding: 0px;
     display: flex;
 }
-/* STACK */
+#footerTimeCol{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+/* STACK: https://react-bootstrap.netlify.app/docs/layout/stack */
 #footerTimeStack{
     display: flex;
     align-items: center;
@@ -30,14 +34,7 @@ Footer.js
     margin: 0px;
     padding: 0px;
 }
-#logoutStack{
-    display: flex;
-    align-items: center;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-/* CLOCK */
+/* CLOCK: Display date and Time */
 /* LIST: https://react-bootstrap.netlify.app/docs/components/list-group */
 #footerClockList{
     display: flex;
@@ -56,7 +53,7 @@ Footer.js
     background-color: transparent;
     border: none;
 }
-/* LAYOUT */
+/* HTML LAYOUT */
 .footerClockSpan{
     display: flex;
     align-items: center;
@@ -72,13 +69,44 @@ Footer.js
     font-weight: 700;
     font-size: 18px;
 }
-/* COPY RIGHT MESSAGE */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+/* ROW 2: LOGOUT */
+#footerRow2{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+#footerLogoutCol{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+/* STACK https://react-bootstrap.netlify.app/docs/layout/stack */
+#logoutStack{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+/* ROW 3 */
+#footerRow3{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
 #copyRightCol{
     margin: 0px;
     padding: 0px;
     display: flex;
     justify-content: center;
 }
+/* COPY RIGHT MESSAGE */
+/* HTML LAYOUT */
 #copyrightDiv{
     width: 100%;
     margin: 0px;
