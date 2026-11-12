@@ -38,8 +38,11 @@ export default function NoteDataLists(
         setShowTags(prev => (!prev))
         setShowNoteBooks(false)
     },[])
+
+    //=================JSX RENDERING==============//
   return (
     <div id='notesDataList'>
+    {/* Row 1 */}
            <Row id='toggleDataListRow'>
         <Col id='toggleListDataCol1'/>
         <Col xs={5}>
@@ -79,13 +82,15 @@ export default function NoteDataLists(
         </Col>
         <Col id='toggleListDataCol2'/>
       </Row>
-
+        {/* LISTS NOTEBOOKS + TAGS */}
        <div id='notesDataListsDiv'>
+       {/* TOGGLE THE NOTEBOOK LIST */}
        {showNoteBooks && (
             <div id='noteBookListPanal'>
                 <Row id='notebookDataRow'>
                 <Col id='noteBooksCol1'/>
                 <Col  id='noteBooksCol' xs={12} md={10}>
+                {/* Render the NoteBookList.js component */}
                     <NoteBookList
                         notebooks={notebooks}
                         fetchNotebooks={fetchNotebooks}
@@ -97,11 +102,13 @@ export default function NoteDataLists(
                 </Row>
             </div>
        )}
+       {/* TOGGLE THE TAGS LIST */}
        {showTags && (
         <div id='tagsListPanal'>
               <Row id='tagsDataRow'>
         <Col id='tagsDataCol1'/>
         <Col  md={8} id='tagsDataCol'>
+        {/* Render the TagList.js component */}
             <TagsList
                 tags={tags}
                 fetchTags={fetchTags}
@@ -114,7 +121,6 @@ export default function NoteDataLists(
         </div>
        )}
        </div>
-
     </div>
   )
 }
