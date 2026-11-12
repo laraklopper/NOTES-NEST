@@ -1,42 +1,31 @@
 //EditProfile.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/EditUser.css'
 import '../css/componentCss/FormSetup.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+//IMPORT UTILITY FUNCTIONS AND DATA
 import languageData from '../util/languageData';
+import { emptyProfileForm } from '../util/userFunc';
 // IMPORT ICONS FROM LUCIDE REACT
 import { RotateCcw } from 'lucide-react';
 
-/* Empty form values, shared by the initial state and the CLEAR FORM button.
-Fields start empty and the user's current details are shown as placeholders,
-so only the fields the user types into are sent */
-const emptyProfileForm = {
-  username: '',
-  fullName: {
-    firstName: '',
-    lastName: ''
-  },
-  contactDetails: {
-    email: '',
-    contactNumber: ''
-  },
-  defaultSourceLang: '',
-  defaultTargetLang: '',
-  defaultNoteLang: '',
-  adminDataConsent: false
-}
 
-//====MAIN EDIT PROFILE FUNCTION COMPONENT========
-export default function EditProfile(
+//EditProfile Function component
+export default function EditProfile(//Export EditProfile.js Function component
   {//PROPS PASSED FROM PARENT COMPONENT (Home.js)
     user = {},
     editUserProfile,
     loading
   }) {
+    //=========== STATE VARIABLES=============
   const [contactMsg, setContactMsg] = useState(false)
   const [formData, setFormData] = useState(emptyProfileForm)
 
+  //============EVENT LISTENERS============
   const handleInputChange = (event) => {
     const { name, value } = event.target;// Get the input name and value from the changed field
     if (name.includes('.')) {// Check if the input name represents a nested object field
@@ -53,6 +42,7 @@ export default function EditProfile(
     }
   }
 
+  //Function to handle changes in the consent checkbox
   const handleConsentChange = (event) => {
     const { checked } = event.target;
     setFormData((prev) => ({ ...prev, adminDataConsent: checked }))
@@ -83,6 +73,7 @@ export default function EditProfile(
     return changes;
   }
 
+  //Function to submit form
   const handleSubmit = async (e) => {
     e.preventDefault()
     const changes = buildChanges();
@@ -98,22 +89,23 @@ export default function EditProfile(
   //Function to clear form
   const clearForm = () => {
     const confirmClear = window.confirm('Are you sure you want to clear the form?');
-    if (!confirmClear) return;
+    if (!confirmClear) return;// If user cancels, exit the function
     setFormData(emptyProfileForm)
   }
   //====================================
   return (
-    <form id='editProfileForm' onSubmit={handleSubmit} method='PATCH'>
+    <form id='editProfileForm' onSubmit={handleSubmit} method='PATCH' aria-labelledby='formHeading' aria-busy={loading}>
       <div id='formHeadingBlock'>
           <h3 id='formHeading'>EDIT PROFILE</h3>
       </div>
       <div id='editProfileInput'>
-      {/* GROUP 1 */}
+      {/* GROUP 1: USERNAME AND FULLNAME */}
         <fieldset id='editProfileGroup1'>
           <legend>USERNAME AND FULLNAME</legend>
           {/* STACK 1 */}
-          <Stack gap={3}>
+          <Stack gap={3} id='editProfileStack1'>
       <div className="p-2" id='editProfileBlock1'>
+      {/* USERNAME: value={formData.username}  */}
         <label className='editUserLabel' htmlFor='editUsernameInput'>USERNAME:</label>
         <div className='inputDiv'>
           <input
@@ -134,6 +126,7 @@ export default function EditProfile(
       </div>
       <div className="p-2" id='editProfileBlock2'>
         <label className='editUserLabel'>EDIT FULL NAME: </label>
+        {/* FIRST NAME: value={formData.fullName.firstName} */}
         <div className='inputDiv'>
           <label className='editUserLabel' htmlFor='editFirstNameInput' hidden>FIRST NAME:</label>
           <input
@@ -147,6 +140,7 @@ export default function EditProfile(
             onChange={handleInputChange}
           />
         </div>
+        {/* LAST NAME value={formData.fullName.lastName} */}
          <div className='inputDiv'>
           <label className='editUserLabel' htmlFor='editLastNameInput' hidden>LAST NAME:</label>
           <input
@@ -163,12 +157,13 @@ export default function EditProfile(
       </div>
     </Stack>
         </fieldset>
-        {/* GROUP 2 */}
+        {/* GROUP 2: CONTACT DETAILS*/}
         <fieldset id='editProfileGroup2'>
           <legend>Contact Details</legend>
           {/* STACK 2 */}
-              <Stack direction="horizontal" gap={3} id=''>
+              <Stack direction="horizontal" gap={3} id='editProfileStack2'>
       <div className="p-2">
+      {/* EDIT EMAIL : value={formData.contactDetails.email}*/}
         <div className='inputDiv'>
         <label className='editUserLabel' htmlFor='editEmailInput'>EMAIL:</label>
         <input
@@ -184,6 +179,7 @@ export default function EditProfile(
             onBlur={() => setContactMsg(false)}
         />
         </div>
+        {/* EDIT CONTACT NUMBER: value={formData.contactDetails.contactNumber} */}
         <div className='inputDiv'>
           <label className='editUserLabel' htmlFor='editPhoneInput'>CONTACT NUMBER:</label>
           <input
@@ -208,11 +204,13 @@ export default function EditProfile(
       </div>
     </Stack>
         </fieldset>
+        {/* GROUP 3: EDIT DEFAULT LANGUAGES */}
         <fieldset id='editProfileGroup3'>
         <legend>Default Language options</legend>
         {/* STACK 3: the SELECT option keeps the current language */}
           <Stack gap={3} id='editProfileStack3'>
       <div className="p-2" id='editProfileLangBlock1'>
+      {/* EDIT SOURCE LANGUAGE: value={formData.defaultSourceLang} */}
         <label className='editUserLabel' htmlFor='editSourceLangInput'>EDIT SOURCE LANGUAGE:</label>
         <div className='inputDiv'>
           <select
@@ -254,6 +252,7 @@ export default function EditProfile(
         </div>
       </div>
       <div className="p-2" id='editProfileLangBlock1'>
+      {/* EDIT NOTES LANGUAGE: value={formData.defaultNoteLang} */}
       <label className='editUserLabel' htmlFor='editNoteLangInput'>EDIT NOTES LANGUAGE:</label>
         <div className='inputDiv'>
           <select
@@ -275,8 +274,9 @@ export default function EditProfile(
     </Stack>
         </fieldset>
       </div>
+      {/* STACK 4: */}
           <Stack direction="horizontal" gap={3}>
-        {/* ADMIN CONSENT CHECKBOX:
+        {/* ADMIN CONSENT CHECKBOX: checked={formData.adminDataConsent}
         Only required field for edit profile form*/}
          <div className="p-2" id='editProfileAdminConsentBlock'>
         <label className='editUserLabel' id='editAdminConsentLabel' htmlFor='adminEditConsent'>I CONSENT TO ALLOW ADMIN USERS KNOWING MY DETAILS</label>
@@ -291,12 +291,17 @@ export default function EditProfile(
           aria-required='true'
           />
     </div>
+    {/* ------END OF INPUT---------- */}
       <div className="p-2 ms-auto">
         <Button
          variant='warning'
          id='editProfileBtn'
          type='submit'
          disabled={loading}
+        //  ARIA ATTRIBUTES:
+        role='button'
+        aria-label={loading ? 'SAVING...' : 'UPDATE PROFILE'}
+        aria-disabled={loading}
         >
         {loading ? 'SAVING...' : 'UPDATE PROFILE'}
         </Button>
@@ -311,6 +316,7 @@ export default function EditProfile(
         disabled={loading}
         // ARIA ATTRIBUTES:
         aria-label='CLEAR FORM'
+        aria-disabled={loading}
         >
           <RotateCcw aria-hidden='true' focusable='false' fontWeight={700} size={16}/>CLEAR FORM
         </Button>

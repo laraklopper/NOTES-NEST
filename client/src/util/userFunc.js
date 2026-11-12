@@ -41,3 +41,22 @@ export const calculateAge = (dateOfBirth) => {
     }
     return age;
 };
+
+/* Empty form values, shared by the initial state and the CLEAR FORM button.
+Fields start empty and the user's current details are shown as placeholders,
+so only the fields the user types into are sent */
+export const emptyProfileForm = {
+  username: '',
+  fullName: {
+    firstName: '',
+    lastName: ''
+  },
+  contactDetails: {
+    email: '',
+    contactNumber: ''
+  },
+  defaultSourceLang: '',
+  defaultTargetLang: '',
+  defaultNoteLang: '',
+  adminDataConsent: false
+}
