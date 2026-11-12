@@ -33,6 +33,12 @@ const sessionUser = (user) => ({
     fullName: user.fullName,// User's full name
     isAdmin: user.admin === true// Indicates whether the user is an administrator
 })
+
+/* A fixed bcrypt hash that /login compares against when the username does not exist.
+Running bcrypt.compare() either way makes both failures take about the same time,
+so response timing cannot reveal which usernames are real. Uses the same cost (10)
+as SALT_ROUNDS in passwordMiddleware so the timing matches real hashes */
+const DUMMY_HASH = bcrypt.hashSync('dummy-password-for-timing', 10);
 /*──────────────────────────── POST ROUTES ──────────────────────────────
     POST: Used to create a new resource/submit data to the database
  ─────────────────────────────────────────────────────────────────────────*/
@@ -62,6 +68,7 @@ router.post('/login', loginLimiter, async (req, res) => {
         /*/ Conditional rendering to check if user exists
         Use the same status/message as an incorrect password so usernames cannot be enumerated*/
         if (!user) {
+            await bcrypt.compare(password, DUMMY_HASH);// Spend the same time as a real password check, so timing cannot reveal the username is unknown
             console.error('[ERROR: authRoutes.js, /login] User not found');// Log an error message in the console for debugging purposes
             return res.status(401).json({// Send a 401 (Unauthorized) status code with a JSON message
                  message: 'Invalid credentials' //JSON message
@@ -109,8 +116,8 @@ router.post('/register', registerLimiter, checkPassword, hashPassword, async (re
     try {
         const {
             username,
-            fullName = {},
-            contactDetails = {},
+            fullName: rawFullName,
+            contactDetails: rawContactDetails,
             dateOfBirth,
             defaultSourceLang,
             defaultTargetLang,
@@ -118,6 +125,12 @@ router.post('/register', registerLimiter, checkPassword, hashPassword, async (re
             password,
             adminDataConsent
         } = req.body || {};// Extract the registration fields from the request body
+
+        /* Destructuring defaults only cover undefined, so "fullName": null would crash on
+        fullName.firstName and return a 500. Treat null or any non-object as empty instead,
+        so the required fields check below returns a 400 */
+        const fullName = rawFullName && typeof rawFullName === 'object' ? rawFullName : {};
+        const contactDetails = rawContactDetails && typeof rawContactDetails === 'object' ? rawContactDetails : {};
 
         // Reject non-string values (e.g. { "$gt": "" }) so req.body cannot be used to inject Mongo query operators
         const requiredStrings = [
@@ -186,12 +199,16 @@ router.post('/register', registerLimiter, checkPassword, hashPassword, async (re
             console.error('[ERROR: authRoutes.js, /register] Validation failed:', error.message);
             return res.status(400).json({ message: firstMessage || 'Invalid registration details' });
         }
-        // Duplicate key on a unique field (username or contact number)
+        /* Duplicate key on a unique field. Each field has its own message, with a
+        general fallback, so a unique field added later is never reported as "username" */
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern || {})[0] || '';
-            const message = field.includes('contactNumber')
-                ? 'That contact number is already registered'
-                : 'That username is already taken';
+            const duplicateMessages = {
+                username: 'That username is already taken',
+                'contactDetails.contactNumber': 'That contact number is already registered',
+                'contactDetails.email': 'That email is already registered',
+            };
+            const message = duplicateMessages[field] || 'Those details are already registered to another account';
             console.error('[ERROR: authRoutes.js, /register] Duplicate field:', field);
             return res.status(409).json({ message });// Send a 409 (Conflict) status code with a JSON message
         }
@@ -201,9 +218,11 @@ router.post('/register', registerLimiter, checkPassword, hashPassword, async (re
 });
 
 // Send a POST request to the /auth/logout route
-router.post('/logout', checkJwtToken, (req, res) => {
-    res.clearCookie('token', cookieOptions);// Remove the JWT cookie
-    console.log('[INFO: authRoutes.js, /logout] User logged out:', { userId: req.user.id });
+/* No checkJwtToken here: clearing a cookie is harmless, and requiring a valid token
+would leave an expired cookie stuck in the browser with a 401 */
+router.post('/logout', (req, res) => {
+    res.clearCookie('token', cookieOptions);// Remove the JWT cookie (Express 5 ignores maxAge/expires here, so the cookie is deleted)
+    console.log('[INFO: authRoutes.js, /logout] User logged out');
     return res.status(200).json({ message: 'Logged out' });// Send a 200 OK status code with a JSON message
 });
 

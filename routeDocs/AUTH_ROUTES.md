@@ -35,11 +35,11 @@ According to the header comment, the router is mounted at **`/users`** in `app.j
 |---|---|---|---|
 | `POST` | `/users/login` | `loginLimiter` | Check credentials and set the JWT cookie |
 | `POST` | `/users/register` | `registerLimiter`, `checkPassword`, `hashPassword` | Create a new user |
-| `POST` | `/users/logout` | `checkJwtToken` | Clear the JWT cookie |
+| `POST` | `/users/logout` | — | Clear the JWT cookie |
 | `PATCH` | `/users/setAdmin` | `checkJwtToken` | Upgrade the logged-in user to admin (21+, minimum account age) |
 | `PATCH` | `/users/clearAdmin` | `checkJwtToken` | Remove admin status from the logged-in user |
 
-`/login` and `/register` **don't** require a token, because the user doesn't have one yet.
+`/login` and `/register` **don't** require a token, because the user doesn't have one yet. `/logout` doesn't either, so an expired cookie can still be cleared.
 
 ---
 
@@ -129,7 +129,7 @@ Not strings? (e.g. { "$gt": "" }) ───────────────�
      ▼
 User.findOne({ username: trimmed + lowercase }).select('+password')
      ▼
-No user? ──────────────────────────────────────────────► 401 "Invalid credentials"
+No user? ── dummy bcrypt.compare() ────────────────────► 401 "Invalid credentials"
      ▼
 Compare the password (bcrypt, or plaintext in development)
      ▼
@@ -181,6 +181,19 @@ return res.status(401).json({ message: 'Invalid credentials' });
 ```
 
 Both cases send an **identical** status and message. If they were different ("User not found" vs. "Wrong password"), an attacker could use the login form to find out which usernames exist. This is called **user enumeration**.
+
+The two cases also take the **same time**. When the user isn't found, the route still runs a `bcrypt.compare()` against a fixed dummy hash before responding:
+
+```js
+const DUMMY_HASH = bcrypt.hashSync('dummy-password-for-timing', 10);// Created once, when the file loads
+// ...
+if (!user) {
+    await bcrypt.compare(password, DUMMY_HASH);
+    return res.status(401).json({ message: 'Invalid credentials' });
+}
+```
+
+Without it, an unknown username would get an instant reply, while a real one would wait for bcrypt. The difference in response time would give the username away even though the message is the same. The dummy hash uses cost `10`, the same as `SALT_ROUNDS` in `passwordMiddleware`, so it takes as long as a real check.
 
 **Step 5: Compare the password**
 
@@ -259,13 +272,15 @@ So when the handler runs, `req.body.password` is **already hashed**.
 
 ### Step-by-step
 
-**Step 1: Destructure with defaults**
+**Step 1: Destructure, then make the nested objects safe**
 
 ```js
-const { username, fullName = {}, contactDetails = {}, ... } = req.body || {};
+const { username, fullName: rawFullName, contactDetails: rawContactDetails, ... } = req.body || {};
+const fullName = rawFullName && typeof rawFullName === 'object' ? rawFullName : {};
+const contactDetails = rawContactDetails && typeof rawContactDetails === 'object' ? rawContactDetails : {};
 ```
 
-`fullName = {}` and `contactDetails = {}` mean `fullName.firstName` doesn't crash when the client leaves out the whole object. (Defaults only apply to `undefined`. See [Gap 2](#gap-2-null-nested-objects-cause-a-500).)
+If the client leaves out `fullName` or `contactDetails`, or sends `null` or a non-object, it's replaced with `{}`. That way `fullName.firstName` never crashes, and the required fields check in Step 2 returns a **400**. A destructuring default (`fullName = {}`) wouldn't be enough, because defaults only apply to `undefined`, not `null`. (See [Gap 2](#gap-2-null-nested-objects-cause-a-500-fixed).)
 
 **Step 2: Required strings check**
 
@@ -335,7 +350,7 @@ This runs the schema validation (regex for SA phone numbers, email format, enums
 | Error | Detected By | Status | Message |
 |---|---|---|---|
 | Schema validation failed | `error.name === 'ValidationError'` | `400` | The **first** validation message (e.g. "Please enter a valid SA contact number") |
-| Duplicate unique field | `error.code === 11000` (MongoDB) | `409` | "That contact number is already registered" / "That username is already taken" |
+| Duplicate unique field | `error.code === 11000` (MongoDB) | `409` | A message for the specific field (see below) |
 | Anything else | — | `500` | "Internal Server Error" |
 
 **Getting the first validation message:**
@@ -352,14 +367,25 @@ Object.values(error.errors)[0]?.message
 const field = Object.keys(error.keyPattern || {})[0] || '';
 ```
 
-MongoDB's duplicate key error includes `keyPattern`, e.g. `{ 'contactDetails.contactNumber': 1 }`. The route checks whether the field name includes `contactNumber`, and otherwise assumes it's the username.
+MongoDB's duplicate key error includes `keyPattern`, e.g. `{ 'contactDetails.contactNumber': 1 }`. The route looks the field up in a map of messages:
+
+```js
+const duplicateMessages = {
+    username: 'That username is already taken',
+    'contactDetails.contactNumber': 'That contact number is already registered',
+    'contactDetails.email': 'That email is already registered',
+};
+const message = duplicateMessages[field] || 'Those details are already registered to another account';
+```
+
+Any field not in the map gets the general fallback, so a unique field added later is never reported as the username. This is the same map `PATCH /editProfile` uses in `userRoutes.js`.
 
 ---
 
 ## 7. POST `/users/logout`
 
 ```js
-router.post('/logout', checkJwtToken, (req, res) => {
+router.post('/logout', (req, res) => {
     res.clearCookie('token', cookieOptions);
     return res.status(200).json({ message: 'Logged out' });
 });
@@ -371,7 +397,7 @@ router.post('/logout', checkJwtToken, (req, res) => {
 |---|---|
 | `POST`, not `GET` | Logging out changes state. A `GET` could be triggered by an `<img src="/users/logout">` on another site. |
 | `cookieOptions` passed to `clearCookie` | Browsers only delete a cookie when the `path`, `domain`, `sameSite` and `secure` settings **match** the ones it was set with |
-| `checkJwtToken` | Provides `req.user.id` for the log line |
+| No `checkJwtToken` | Clearing a cookie is harmless, and requiring a valid token would leave an **expired** cookie stuck in the browser with a 401 ([Gap 5](#gap-5-logout-required-a-valid-token-fixed)) |
 | No `try/catch` | The handler is synchronous and has nothing that would throw |
 
 Logging out only removes the cookie from the browser. The JWT itself stays **valid until it expires**, so anyone who had copied it could still use it. With an HTTP-only cookie, that's very hard to do.
@@ -471,12 +497,13 @@ There are no age or account-age checks, because giving up a permission never nee
 |---|---|---|
 | HTTP-only JWT cookie | `setTokenCookie` | XSS stealing the token (JavaScript can't read it) |
 | Same "Invalid credentials" for both failures | `/login` | Username enumeration |
+| Dummy `bcrypt.compare()` for unknown usernames | `/login` | Username enumeration through response timing |
 | `typeof === 'string'` checks | `/login`, `/register` | NoSQL operator injection (`{ "$gt": "" }`) |
 | Building the user from named fields | `/register` | Mass assignment (`{ "admin": true }`) |
 | Server-side consent check | `/register` | Skipping the form's checkbox |
 | Rate limiters | `/login`, `/register` | Brute-force logins, spam signups |
 | `select: false` + `.select('+password')` | Schema + `/login` | Accidentally returning password hashes in other queries |
-| User ID taken from the token, not the body | `/setAdmin`, `/clearAdmin`, `/logout` | Acting on another user's account |
+| User ID taken from the token, not the body | `/setAdmin`, `/clearAdmin` | Acting on another user's account |
 | `sessionUser()` whitelist | All responses | Leaking private fields |
 | No passwords in logs | All `console.log` calls | Credentials in log files |
 | `POST` for logout | `/logout` | Cross-site GET-triggered logouts |
@@ -491,7 +518,7 @@ There are no age or account-age checks, because giving up a permission never nee
 | `201` | register | User created |
 | `400` | login, register | Missing or invalid fields, no consent, schema validation failed |
 | `401` | login | Invalid credentials |
-| `401` | logout, setAdmin, clearAdmin | (From `checkJwtToken`) No token, or an invalid or expired one |
+| `401` | setAdmin, clearAdmin | (From `checkJwtToken`) No token, or an invalid or expired one |
 | `403` | setAdmin | Under 21, or account too new |
 | `404` | setAdmin, clearAdmin | The token's user no longer exists |
 | `409` | register | Username or contact number already taken |
@@ -511,49 +538,43 @@ The header says passwords are stored as **plaintext in development**. This is fi
 - Accounts created while in plaintext mode store a value that isn't a bcrypt hash. In production, `/login` sends them to `bcrypt.compare()`, which can't match a plaintext value, so **those accounts won't be able to log in**. Clear out dev users (or re-hash them) before deploying.
 - The plaintext comparison uses `===`, which isn't timing-safe. That's acceptable for development only.
 
-### Gap 2: `null` nested objects cause a 500
+### Gap 2: `null` nested objects cause a 500 (fixed)
 
-```js
-const { fullName = {}, contactDetails = {} } = req.body || {};
-```
+Destructuring defaults (`fullName = {}`) only apply when the value is `undefined`. A client sending `"fullName": null` made `fullName.firstName` throw a `TypeError`, so the user got a **500** instead of a 400.
 
-Destructuring defaults only apply when the value is `undefined`. If a client sends `"fullName": null`, then `fullName.firstName` throws a `TypeError`, and the user gets a **500** instead of a 400. **Fix:**
+**Fixed:** `/register` now replaces a `null` or non-object `fullName` / `contactDetails` with `{}`, so the required fields check returns a 400. See [section 6, Step 1](#step-by-step-1).
 
-```js
-const safeFullName = fullName && typeof fullName === 'object' ? fullName : {};// Treat null or non-objects as empty
-const safeContact = contactDetails && typeof contactDetails === 'object' ? contactDetails : {};// Same for contact details
-```
+### Gap 3: The duplicate-field message assumed "username" (fixed)
 
-### Gap 3: The duplicate-field message assumes "username"
+Any duplicate key that wasn't `contactNumber` was reported as "That username is already taken", so a unique field added later would show the wrong message.
 
-Any duplicate key that isn't `contactNumber` is reported as "That username is already taken". If you later add another unique field (e.g. `contactDetails.email`), it'll show the wrong message. Check each field explicitly:
+**Fixed:** `/register` now looks the field up in a map of messages, with a general fallback for anything not listed. See [Error handling in the catch](#error-handling-in-the-catch).
 
-```js
-const messages = {
-    username: 'That username is already taken',
-    'contactDetails.contactNumber': 'That contact number is already registered',
-    'contactDetails.email': 'That email is already registered',
-};
-const message = messages[field] || 'That account already exists';// Fallback for any new unique field
-```
+### Gap 4: Login timing revealed usernames (fixed)
 
-### Gap 4: Login timing reveals usernames (minor)
+When the user didn't exist, `/login` responded immediately. When they did, it ran `bcrypt.compare()`, which takes noticeably longer, so response time hinted at which usernames were real.
 
-When the user **doesn't exist**, `/login` responds immediately. When they **do** exist, it runs `bcrypt.compare()`, which takes noticeably longer. The messages are the same, but the response time can still hint at which usernames are real. The rate limiter makes this hard to exploit. To close it completely, run a dummy `bcrypt.compare()` against a fixed hash when the user isn't found.
+**Fixed:** `/login` now runs `bcrypt.compare()` against a fixed dummy hash when the user isn't found, so both failures take about the same time. See [section 5, Step 4](#step-by-step).
 
-### Gap 5: Logout requires a valid token
+### Gap 5: Logout required a valid token (fixed)
 
-Because of `checkJwtToken`, a user whose token has **expired** gets a 401 from `/logout`, and the expired cookie stays in their browser. Consider dropping `checkJwtToken` from `/logout` (clearing a cookie is harmless) and logging `req.user?.id` only when it's present.
+Because of `checkJwtToken`, a user whose token had **expired** got a 401 from `/logout`, and the expired cookie stayed in their browser.
 
-Also check `cookieOptions`: if it contains `maxAge`, **Express 4** can set a fresh expiry when clearing instead of deleting the cookie (Express 5 ignores `maxAge` in `clearCookie`). Use a copy without `maxAge`/`expires` for `clearCookie`.
+**Fixed:** `/logout` no longer uses `checkJwtToken`. Clearing a cookie is harmless, so anyone can call it, and it always returns 200. The log line no longer includes the user ID, because there's no verified token to read it from. See [section 7](#7-post-userslogout).
 
-### Gap 6: Self-service admin
+**Checked:** `cookieOptions` has no `maxAge` or `expires` (the expiry is only added inside `setTokenCookie`), and the project uses **Express 5**, which ignores both in `clearCookie`. So `clearCookie` really deletes the cookie, with no change needed.
 
-Any user who meets the age and account-age rules can make **themselves** an admin. That's fine for a portfolio or dev project, but in a real app admin rights are normally granted by an existing admin, or need approval.
+### Gap 6: Self-service admin (accepted by design)
 
-### Gap 7: `checkPassword` / `hashPassword` run before the type checks
+Any user who meets the age and account-age rules can make **themselves** an admin through `AdminRegisForm`. This is **intentional** for this project: Notes Nest is a portfolio/dev project with no "super admin" to approve requests, so the rules in `schemaUtil` (21+, minimum account age) are the only gate.
 
-The route's `typeof password === 'string'` check runs **after** both password middlewares. Make sure those middlewares handle a missing or non-string `password` themselves (returning a 400), otherwise `bcrypt.hash()` may throw and give a 500.
+In a real production app, admin rights would normally be granted by an existing admin, or need approval. That would mean making `/setAdmin` admin-only with a target user ID, plus a frontend screen for promoting users.
+
+### Gap 7: `checkPassword` / `hashPassword` run before the type checks (not an issue)
+
+The route's `typeof password === 'string'` check runs **after** both password middlewares, so the concern was that a missing or non-string `password` could reach `bcrypt.hash()` and cause a 500.
+
+**Checked:** `checkPassword` runs first and returns a **400** ("Password is required.") when the password isn't a string, so `hashPassword` only ever sees a string. The one odd case is a register request with no `password` but a valid `newPassword`: both middlewares pass, but the route's required fields check still returns a 400. There's no path to a 500, so no code change was needed.
 
 ### Housekeeping
 
