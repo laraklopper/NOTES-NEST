@@ -21,7 +21,7 @@ export default function AddNoteBook(//Export default AddNoteBook.js function com
     loading,
     notebooks = []
   }) {
-    // ==========STATE VARIABLES===================
+  // ==========STATE VARIABLES===================
   const [name, setName] = useState('')
   const [colour, setColour] = useState(DEFAULT_COLOUR)
 
@@ -56,9 +56,9 @@ export default function AddNoteBook(//Export default AddNoteBook.js function com
       <div id='noteBookInput'>
         <fieldset id='noteBookGroup1'>
           <legend>NOTEBOOK DETAILS</legend>
-           <Stack gap={3} id='noteBookStack1'>
-    <div className="p-2" id='noteBookBlock1'> 
-            {/* NOTEBOOK NAME: value={name} */}
+          <Stack gap={3} id='noteBookStack1'>
+            <div className="p-2" id='noteBookBlock1'>
+              {/* NOTEBOOK NAME: value={name} */}
               <label className='notePadLabel' htmlFor='noteBookNameInput'>NAME:</label>
               <div className='inputDiv'>
                 <input
@@ -77,8 +77,8 @@ export default function AddNoteBook(//Export default AddNoteBook.js function com
                 <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
               </div>
             </div>
-       <div className="p-2" id='noteBookBlock2'>
-       {/* COLOUR:  value={colour} */}
+            <div className="p-2" id='noteBookBlock2'>
+              {/* COLOUR:  value={colour} */}
               <label className='notePadLabel' htmlFor='noteBookColourInput'>COLOUR:</label>
               <div className='inputDiv'>
                 <input
@@ -88,23 +88,23 @@ export default function AddNoteBook(//Export default AddNoteBook.js function com
                   name='colour'
                   value={colour}
                   onChange={(e) => setColour(e.target.value)}
-                //   ARIA ATTRIBUTES:
-                aria-required='false'
+                  // ARIA ATTRIBUTES:
+                  aria-required='false'
                 />
               </div>
             </div>
-    </Stack>
+          </Stack>
         </fieldset>
       </div>
       {/* -------END OF INPUT------------ */}
       <Stack gap={3} id='addNotebookBtnStack'>
         <div className="p-2" id='requiredInputBlock'>
-            <span className='reqInfoSpan'>
+          <span className='reqInfoSpan'>
             <small><Asterisk color="#C22419" fontWeight={700} size={14} aria-hidden='true' focusable='false' /> </small>
             <p className='reqInfo'>Indicates required information</p>
-            </span>
+          </span>
         </div>
-       <div className="p-2" id='noteBookBtnBlock'>
+        <div className="p-2" id='noteBookBtnBlock'>
           <Button
             variant='light'
             type='submit'
@@ -143,13 +143,12 @@ export default function AddNoteBook(//Export default AddNoteBook.js function com
                     aria-hidden='true'
                   />
                   {notebook.name} ({notebook.noteCount})
-                  
                 </li>
               ))}
             </ul>
           )}
         </div>
-    </Stack>
+      </Stack>
     </form>
   )
 }

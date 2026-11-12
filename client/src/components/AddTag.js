@@ -16,6 +16,7 @@ export default function AddTag(//Export default AddTag.js function component
     loading,
     tags = []
   }) {
+  //===============STATE VARIABLES===========
   const [name, setName] = useState('')
 
   const handleSubmit = async (e) => {
@@ -41,73 +42,72 @@ export default function AddTag(//Export default AddTag.js function component
         <h3 id='formHeading'>CREATE NEW TAG</h3>
       </div>
       <div id='tagInput'>
-           <Stack gap={3} id='tagStack1'>
-      <div className="p-2" id='tagBlock1'>
-              <label className='notePadLabel' htmlFor='tagNameInput'>NAME:</label>
-              <div className='inputDiv'>
-                <input
-                  className='input'
-                  id='tagNameInput'
-                  type='text'
-                  placeholder='TAG NAME'
-                  required
-                  maxLength={30}
-                  name='name'
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  // ARIA ATTRIBUTES:
-                  aria-required='true'
-                />
-                <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
-              </div>
+        <Stack gap={3} id='tagStack1'>
+          <div className="p-2" id='tagBlock1'>
+            <label className='notePadLabel' htmlFor='tagNameInput'>NAME:</label>
+            <div className='inputDiv'>
+              <input
+                className='input'
+                id='tagNameInput'
+                type='text'
+                placeholder='TAG NAME'
+                required
+                maxLength={30}
+                name='name'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                // ARIA ATTRIBUTES:
+                aria-required='true'
+              />
+              <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
             </div>
-     <div className="p-2" id='tagReqInput'>
-          <p className='infoMsg' aria-live='polite' aria-hidden='true'>
-            <small><Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /> Indicates required information</small>
-          </p>
-        </div>
-      <div className="p-2" id='tagBtnBlock'>
-          <Button
-            variant='light'
-            type='submit'
-            id='saveTagBtn'
-            disabled={loading}
-            // ARIA ATTRIBUTES
-            aria-label='SAVE TAG'
-          >
-            {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false'/>
-          </Button>
-          <Button
-            variant='danger'
-            id='clearFormBtn'
-            type='button'
-            onClick={clearForm}
-            disabled={loading}
-            // ARIA ATTRIBUTES:
-            aria-label='RESET FORM'
-            aria-disabled={loading ? 'true': 'false'}
-          >
-            <RotateCcw aria-hidden='true' focusable='false'/> RESET
-          </Button>
-        </div>
-      <div className="p-2" id='tagListBlock'>
-          <h4 id='tagListHeading'>YOUR TAGS</h4>
-          {tags.length === 0 ? (
-            <p className='infoMsg'>You have no tags yet.</p>
-          ) : (
-            <ul id='tagList'>
-            {/* MAP ALL AVAILABLE TAGS */}
-              {tags.map((tag) => (
-                <li key={tag._id} className='tagListItem'>
-                  {tag.name} ({tag.noteCount})
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-    </Stack>
-    </div>
-
+          </div>
+          <div className="p-2" id='tagReqInput'>
+            <p className='infoMsg' aria-live='polite' aria-hidden='true'>
+              <small><Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /> Indicates required information</small>
+            </p>
+          </div>
+          <div className="p-2" id='tagBtnBlock'>
+            <Button
+              variant='light'
+              type='submit'
+              id='saveTagBtn'
+              disabled={loading}
+              // ARIA ATTRIBUTES
+              aria-label='SAVE TAG'
+            >
+              {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false'/>
+            </Button>
+            <Button
+              variant='danger'
+              id='clearFormBtn'
+              type='button'
+              onClick={clearForm}
+              disabled={loading}
+              // ARIA ATTRIBUTES:
+              aria-label='RESET FORM'
+              aria-disabled={loading ? 'true': 'false'}
+            >
+              <RotateCcw aria-hidden='true' focusable='false'/> RESET
+            </Button>
+          </div>
+          <div className="p-2" id='tagListBlock'>
+            <h4 id='tagListHeading'>YOUR TAGS</h4>
+            {tags.length === 0 ? (
+              <p className='infoMsg'>You have no tags yet.</p>
+            ) : (
+              <ul id='tagList'>
+                {/* MAP ALL AVAILABLE TAGS */}
+                {tags.map((tag) => (
+                  <li key={tag._id} className='tagListItem'>
+                    {tag.name} ({tag.noteCount})
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </Stack>
+      </div>
     </form>
   )
 }
