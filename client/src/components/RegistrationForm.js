@@ -1,7 +1,10 @@
 // RegistrationForm.js
+// IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/FormSetup.css'
 import '../css/componentCss/RegistrationForm.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT ICONS FROM LUCIDE REACT
@@ -11,7 +14,7 @@ import { languageData } from '../util/languageData';
 import { emptyNewUser } from '../pages/Register';
 
 //RegistrationForm Function component
-export default function RegistrationForm(
+export default function RegistrationForm(//Export default RegistrationForm.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (Register.js)
   newUserData,
   setNewUserData,
@@ -66,6 +69,7 @@ export default function RegistrationForm(
     //==================JSX RENDERING=================
   return (
     <form id='registrationForm' method='POST' onSubmit={handleRegister} aria-labelledby='formTitle'>
+    {/* ---------Screen Reader Heading------ */}
       <p className='visually-hidden' id='formTitle'>REGISTRATION FORM</p>
       <div id='formHeadingBlock'>
         <h3 id='formHeading'>SIGN UP</h3>

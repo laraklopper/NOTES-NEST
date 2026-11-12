@@ -95,6 +95,7 @@ export default function NotePanal(
     // Hooks above must run on every render, so this check comes after them
     if (!note) return null
 
+    //================JSX RENDERING======================
   return (
     <div id='notePanal'>
     {/* HEADING STACK */}
@@ -120,8 +121,7 @@ export default function NotePanal(
                 </>
             ): (
                 <>
-                    <Edit3Icon/>
-                    EDIT NOTE
+                    <Edit3Icon aria-hidden='true' focusable='false'/> EDIT NOTE
                 </>
             )}
         </Button>
@@ -136,20 +136,18 @@ export default function NotePanal(
         // ARIA ATTRIBUTES:
         aria-label='Close note details'
         >
-          <X aria-hidden='true' focusable='false' />  CLOSE
+          <X aria-hidden='true' focusable='false' />CLOSE
         </Button>
       </div>
     </Stack>
     {/* PANAL BODY */}
         <div id='notePanalBody'>
-        {/* STACK 1 */}
+        {/* PANAL BODY STACK 1 */}
              <Stack gap={3} id='notePanalStack1'>
       <div className="p-2" id='noteContentBlock'>
         <div id='noteContentDiv'>
             <span className='dataSpan'>
                 <p className='dataLabel'>CONTENT:</p>
-                {/* Content is TipTap HTML, sanitised by noteSchema before it is saved.
-                A div is used because the HTML contains its own <p> tags */}
                  <div
                     id='noteContentPara'
                     className='detailValue'
@@ -165,7 +163,9 @@ export default function NotePanal(
                     onClick={handleCopy}
                     // ARIA ATTRIBUTES:
                     aria-label='Copy note text'
-                ><Copy aria-hidden='true' focusable='false'/>COPY</Button>
+                >
+                <Copy aria-hidden='true' focusable='false'/>COPY
+                </Button>
             </div>
         </div>
       </div>
@@ -210,7 +210,7 @@ export default function NotePanal(
         {/* PANAL FOOTER STACK */}
     <Stack direction="horizontal" gap={3} id='panalFooter'>
       <div className="p-2">
-        {/* Link to translateForm; the note id is passed in the route state */}
+        {/* Link to TranslateForm.js; the note id is passed in the route state */}
         <Link className='refLink' to='/translate' state={{ noteId: note._id }}>TRANSLATE</Link>
       </div>
       <div className="p-2 ms-auto">
@@ -222,7 +222,7 @@ export default function NotePanal(
         disabled={actionLoading}
         // ARIA ATTRIBUTES
         aria-label='Archive note'
-        aria-disabled={actionLoading}
+        aria-disabled={actionLoading ? 'true': 'false'}
         >
            <ArchiveArrowDownIcon aria-hidden='true' focusable='false'/> ARCHIVE
         </Button>
@@ -237,7 +237,7 @@ export default function NotePanal(
         disabled={actionLoading}
         // ARIA ATTRIBUTES:
         aria-label='Move to trash'
-        aria-disabled={actionLoading}
+        aria-disabled={actionLoading ? 'true': 'false'}
         >
             <Trash2 aria-hidden='true' focusable='false'/>DELETE
         </Button>

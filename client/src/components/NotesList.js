@@ -147,6 +147,7 @@ export default function NotesList(
         type='button'
         onClick={toggleFilter}
         // ARIA ATTRIBUTES:
+        aria-pressed={showFilter}
         aria-expanded={showFilter}
         aria-controls={showFilter ? 'filterRow' : undefined}// Only point at the filter while it exists
         >
@@ -157,6 +158,7 @@ export default function NotesList(
         </div>
         </Col>
     </Row>
+    {/* TOGGLE THE FILTER NOTES FORM */}
     {showFilter && (
         <Row style={{width: '100%'}} id='filterRow'>
         <Col style={{width: '100%'}} id='filterCol'>
@@ -278,6 +280,7 @@ export default function NotesList(
     </Stack>
         </Col>
     </Row>
+    {/* TOGGLE EXPORT FORM */}
       {showExport && (
         <div id='exportFormPanal'>
             <Row id='exportFormRow'>

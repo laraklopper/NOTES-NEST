@@ -298,6 +298,7 @@ export default function NotePadForm(
       type='button'
       // ARIA ATTRIBUTES:
       aria-label='RESET FORM'
+      aria-disabled={loading ? 'true': 'false'}
        >
         <RotateCcw aria-hidden='true' focusable='false'/> RESET
        </Button>

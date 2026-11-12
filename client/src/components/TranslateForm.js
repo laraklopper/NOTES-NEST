@@ -1,10 +1,15 @@
 //TranslateForm.js
+// IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/Translator.css'
 import '../css/componentCss/FormSetup.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+// IMPORT ICONS FROM LUCIDE-REACT
 import { ArrowLeftRight, RotateCw, Bug, Check, Save, Copy } from 'lucide-react';
+// IMPORT CUSTOM COMPONENTS
 import LanguageSelector from './LanguageSelector';
 const {FALLBACK_LANGUAGES, FALLBACK_SOURCE_LANG, FALLBACK_TARGET_LANG, MIN_DETECT_CHARS, DETECT_DEBOUNCE_MS, MAX_LENGTH} = require('../util/languageFunc')
 

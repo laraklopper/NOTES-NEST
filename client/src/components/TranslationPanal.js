@@ -173,6 +173,7 @@ export default function TranslationPanal(
         disabled={deleting}
         // ARIA ATTRIBUTES:
         aria-label='Delete translation'
+        aria-disabled={deleting ? 'true': 'false'}
         >
             DELETE<Trash2 aria-hidden='true' focusable='false'/>
         </Button>

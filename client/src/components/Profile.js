@@ -1,11 +1,14 @@
 //Profile.js
+// IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/Profile.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 
-//====MAIN PROFILE FUNCTION COMPONENT========
-export default function Profile(
+//Profile Function Component
+export default function Profile(//Export default Profile.js Function component
   {//PROPS PASSED FROM PARENT COMPONENT (Home.js)
     user = {},
     editUser,
@@ -15,7 +18,10 @@ export default function Profile(
     setCurrentUser,
     setError
   }) {
+    //==========STATE VARIABLES===============
     const [clearingAdmin, setClearingAdmin] = useState(false)
+
+    //user data
     const notProvided = 'Not provided';
     const firstName = user.fullName?.firstName || notProvided;
     const lastName = user.fullName?.lastName || notProvided;
