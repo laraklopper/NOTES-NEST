@@ -3,7 +3,7 @@ import React from "react";
 
 //LanguageSelector function component
 export default function LanguageSelector(//Export default LanguageSelector.js component
-  {//PROPS PASSED FROM PARENT COMPONENT(GuestTranlatorForm.js', TranslateForm.js)
+  {//PROPS PASSED FROM PARENT COMPONENT(TranslateForm.js)
   id,
   label,
   languages,
