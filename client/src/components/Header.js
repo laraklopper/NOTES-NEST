@@ -65,7 +65,6 @@ export default function Header(//Export default Header.js Function component
                         <NavLink to='/translate' className='refLink'>TRANSLATE</NavLink>
                     </li>
                 </div>
-
              )}
              {/* (Admin only)NAVBAR BLOCK 3: Users */}
              {currentUser?.admin && (
