@@ -129,7 +129,9 @@ export default function Home(//Export default Home.js function component
 
   //======JSX RENDERING========
   return (
-    <div id='pageContainer'>
+    <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
+    {/* ---------Screen Reader Heading------------- */}
+    <p className='visually-hidden' id='pageTitle'>ADMIN ONLY USERS PAGE</p>
       <Header currentUser={currentUser} />
       {/* ====EVENT/ANIMATION======== */}
       <Row id='eventRow'>
@@ -141,6 +143,9 @@ export default function Home(//Export default Home.js function component
           </div>
         </Col>
       </Row>
+      {/* -----------------------
+      SECTION 1: USERS LIST
+      ------------ */}
       <section id='homeSection1'>
         <div id='tabPanal'>
           <Tabs
@@ -180,19 +185,15 @@ export default function Home(//Export default Home.js function component
                             <label className='listLabel'>EXPORT:</label>
                             <p>Download your notes or translations as a
                               CSV or Excel (.xlsx) file.</p>
-
                           </span>
                           <span className='listSpan'>
                             <label className='listLabel'>PROFILE:</label>
                             <p>View and update your personal details
                               and change your password from the Profile tab.</p>
-
                           </span>
                         </div>
                       </div>
                     </Stack>
-
-
                   </Col>
                 </Row>
               </div>
