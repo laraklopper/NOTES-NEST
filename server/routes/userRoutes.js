@@ -33,7 +33,7 @@ router.get('/me', checkJwtToken, async (req, res) => {
             console.error('[ERROR: userRoutes.js]: User not found with ID:', userId);//Log an error message in the console for debugging purposes
             return res.status(404).json({ error: 'User not found' }); // Send a 404 (Not Found) response with a JSON message
         }
-        console.log(`[RESPONSE: userRoutes]`, user);//Log a message in the console for debugging purposes
+        console.log(`[RESPONSE: userRoutes]`, userId);//Log a message in the console for debugging purposes
         return res.status(200).json(user); // Return the full user object (minus password) to the client
     } catch (error) {
          console.error('Error fetching current user:', error);//Log an error message in the console for debugging purposes
