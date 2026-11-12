@@ -1,14 +1,16 @@
 // AddTag.js
 import React, { useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/AddNotebook.css'
 import '../css/componentCss/FormSetup.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
-import { Asterisk, RotateCcw, Save } from 'lucide-react';
 import Button from 'react-bootstrap/Button';
-// AddTag component
-/*Form to create a new tag
-POST request*/
-export default function AddTag(
+// IMPORT ICONS FROM LUCIDE-REACT
+import { Asterisk, RotateCcw, Save } from 'lucide-react';
+
+// AddTag function component
+export default function AddTag(//Export default AddTag.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (NotePad.js)
     addTag,
     loading,
@@ -83,6 +85,7 @@ export default function AddTag(
             disabled={loading}
             // ARIA ATTRIBUTES:
             aria-label='RESET FORM'
+            aria-disabled={loading ? 'true': 'false'}
           >
             <RotateCcw aria-hidden='true' focusable='false'/> RESET
           </Button>
@@ -93,6 +96,7 @@ export default function AddTag(
             <p className='infoMsg'>You have no tags yet.</p>
           ) : (
             <ul id='tagList'>
+            {/* MAP ALL AVAILABLE TAGS */}
               {tags.map((tag) => (
                 <li key={tag._id} className='tagListItem'>
                   {tag.name} ({tag.noteCount})

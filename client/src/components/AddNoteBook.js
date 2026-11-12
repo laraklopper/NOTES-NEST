@@ -15,7 +15,7 @@ const DEFAULT_COLOUR = '#1F4E79'// Matches the notebookSchema default
 // AddNoteBook component
 /*Form to create a new notebook
 POST request*/
-export default function AddNoteBook(
+export default function AddNoteBook(//Export default AddNoteBook.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (NotePad.js)
     addNotebook,
     loading,
