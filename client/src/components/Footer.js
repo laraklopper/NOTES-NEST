@@ -18,9 +18,11 @@ export default function Footer(//Export default Footer component
   }) {
     //====================JSX RENDERING========================
   return (
-    <footer id='pageFooter'>
+    <footer id='pageFooter' role="contentinfo">
+    {/* Row 1 */}
         <Row id='footerRow1'>
         <Col id='footerLogoutCol'>
+        {/* STACK 1 */}
            <Stack direction="horizontal" gap={3} id='footerStack1' >
       <div className="p-2"/>
       <div className="p-2 ms-auto"/>
@@ -32,9 +34,11 @@ export default function Footer(//Export default Footer component
     </Stack> 
         </Col>
         </Row>
+        {/* Row 2 */}
 <Row id='footerRow2'>
   <Col xs={0} md id='copyRightCol1'/>
         <Col xs={12} md={4} id='copyRightCol'>
+        {/* COPY RIGHT MESSAGE */}
           <div id='copyright-div' >
             <p id='copyrightText' aria-label='copy right details' aria-live='polite' >© 2026 Text Translator App. All rights reserved.</p>
           </div>
