@@ -21,7 +21,7 @@ export default function EditProfile(//Export EditProfile.js Function component
     editUserProfile,
     loading
   }) {
-    //=========== STATE VARIABLES=============
+  //=========== STATE VARIABLES=============
   const [contactMsg, setContactMsg] = useState(false)
   const [formData, setFormData] = useState(emptyProfileForm)
 
@@ -96,232 +96,231 @@ export default function EditProfile(//Export EditProfile.js Function component
   return (
     <form id='editProfileForm' onSubmit={handleSubmit} method='PATCH' aria-labelledby='formHeading' aria-busy={loading}>
       <div id='formHeadingBlock'>
-          <h3 id='formHeading'>EDIT PROFILE</h3>
+        <h3 id='formHeading'>EDIT PROFILE</h3>
       </div>
       <div id='editProfileInput'>
-      {/* GROUP 1: USERNAME AND FULLNAME */}
+        {/* GROUP 1: USERNAME AND FULLNAME */}
         <fieldset id='editProfileGroup1'>
           <legend>USERNAME AND FULLNAME</legend>
           {/* STACK 1 */}
           <Stack gap={3} id='editProfileStack1'>
-      <div className="p-2" id='editProfileBlock1'>
-      {/* USERNAME: value={formData.username}  */}
-        <label className='editUserLabel' htmlFor='editUsernameInput'>USERNAME:</label>
-        <div className='inputDiv'>
-          <input
-            className='input'
-            id='editUsernameInput'
-            type='text'
-            autoComplete='username'
-            minLength={3}
-            maxLength={30}
-            pattern='[a-zA-Z0-9_]+'
-            title='Letters, numbers and underscores only'
-            placeholder={user.username || 'USERNAME'}
-            name='username'
-            value={formData.username}
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-      <div className="p-2" id='editProfileBlock2'>
-        <label className='editUserLabel'>EDIT FULL NAME: </label>
-        {/* FIRST NAME: value={formData.fullName.firstName} */}
-        <div className='inputDiv'>
-          <label className='editUserLabel' htmlFor='editFirstNameInput' hidden>FIRST NAME:</label>
-          <input
-            className='input'
-            id='editFirstNameInput'
-            type='text'
-            autoComplete='given-name'
-            placeholder={user.fullName?.firstName || 'FIRST NAME'}
-            name='fullName.firstName'
-            value={formData.fullName.firstName}
-            onChange={handleInputChange}
-          />
-        </div>
-        {/* LAST NAME value={formData.fullName.lastName} */}
-         <div className='inputDiv'>
-          <label className='editUserLabel' htmlFor='editLastNameInput' hidden>LAST NAME:</label>
-          <input
-            className='input'
-            id='editLastNameInput'
-            type='text'
-            autoComplete='family-name'
-            placeholder={user.fullName?.lastName || 'LAST NAME'}
-            name='fullName.lastName'
-            value={formData.fullName.lastName}
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-    </Stack>
+            <div className="p-2" id='editProfileBlock1'>
+              {/* USERNAME: value={formData.username}  */}
+              <label className='editUserLabel' htmlFor='editUsernameInput'>USERNAME:</label>
+              <div className='inputDiv'>
+                <input
+                  className='input'
+                  id='editUsernameInput'
+                  type='text'
+                  autoComplete='username'
+                  minLength={3}
+                  maxLength={30}
+                  pattern='[a-zA-Z0-9_]+'
+                  title='Letters, numbers and underscores only'
+                  placeholder={user.username || 'USERNAME'}
+                  name='username'
+                  value={formData.username}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            <div className="p-2" id='editProfileBlock2'>
+              <label className='editUserLabel'>EDIT FULL NAME: </label>
+              {/* FIRST NAME: value={formData.fullName.firstName} */}
+              <div className='inputDiv'>
+                <label className='editUserLabel' htmlFor='editFirstNameInput' hidden>FIRST NAME:</label>
+                <input
+                  className='input'
+                  id='editFirstNameInput'
+                  type='text'
+                  autoComplete='given-name'
+                  placeholder={user.fullName?.firstName || 'FIRST NAME'}
+                  name='fullName.firstName'
+                  value={formData.fullName.firstName}
+                  onChange={handleInputChange}
+                />
+              </div>
+              {/* LAST NAME value={formData.fullName.lastName} */}
+              <div className='inputDiv'>
+                <label className='editUserLabel' htmlFor='editLastNameInput' hidden>LAST NAME:</label>
+                <input
+                  className='input'
+                  id='editLastNameInput'
+                  type='text'
+                  autoComplete='family-name'
+                  placeholder={user.fullName?.lastName || 'LAST NAME'}
+                  name='fullName.lastName'
+                  value={formData.fullName.lastName}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+          </Stack>
         </fieldset>
         {/* GROUP 2: CONTACT DETAILS*/}
         <fieldset id='editProfileGroup2'>
           <legend>Contact Details</legend>
           {/* STACK 2 */}
-              <Stack direction="horizontal" gap={3} id='editProfileStack2'>
-      <div className="p-2">
-      {/* EDIT EMAIL : value={formData.contactDetails.email}*/}
-        <div className='inputDiv'>
-        <label className='editUserLabel' htmlFor='editEmailInput'>EMAIL:</label>
-        <input
-        type='email'
-        className='input'
-        id='editEmailInput'
-        autoComplete='email'
-        placeholder={user.contactDetails?.email || 'EMAIL'}
-          name='contactDetails.email'
-          value={formData.contactDetails.email}
-          onChange={handleInputChange}
-          onFocus={() => setContactMsg(true)}
-            onBlur={() => setContactMsg(false)}
-        />
-        </div>
-        {/* EDIT CONTACT NUMBER: value={formData.contactDetails.contactNumber} */}
-        <div className='inputDiv'>
-          <label className='editUserLabel' htmlFor='editPhoneInput'>CONTACT NUMBER:</label>
-          <input
-          type='tel'
-          className='input'
-            id='editPhoneInput'
-            autoComplete='tel'
-            placeholder={user.contactDetails?.contactNumber || '082 123 4567'}
-            name='contactDetails.contactNumber'
-            value={formData.contactDetails.contactNumber}
-            onChange={handleInputChange}
-            onFocus={() => setContactMsg(true)}
-            onBlur={() => setContactMsg(false)}
-          />
-        </div>
-      </div>
-      <div className="p-2 ms-auto"></div>
-      <div className="p-2">
-        {contactMsg && (
-          <p>WE WILL NEVER SHARE YOUR CONTACT DETAILS</p>
-        )}
-      </div>
-    </Stack>
+          <Stack direction="horizontal" gap={3} id='editProfileStack2'>
+            <div className="p-2">
+              {/* EDIT EMAIL : value={formData.contactDetails.email}*/}
+              <div className='inputDiv'>
+                <label className='editUserLabel' htmlFor='editEmailInput'>EMAIL:</label>
+                <input
+                  type='email'
+                  className='input'
+                  id='editEmailInput'
+                  autoComplete='email'
+                  placeholder={user.contactDetails?.email || 'EMAIL'}
+                  name='contactDetails.email'
+                  value={formData.contactDetails.email}
+                  onChange={handleInputChange}
+                  onFocus={() => setContactMsg(true)}
+                  onBlur={() => setContactMsg(false)}
+                />
+              </div>
+              {/* EDIT CONTACT NUMBER: value={formData.contactDetails.contactNumber} */}
+              <div className='inputDiv'>
+                <label className='editUserLabel' htmlFor='editPhoneInput'>CONTACT NUMBER:</label>
+                <input
+                  type='tel'
+                  className='input'
+                  id='editPhoneInput'
+                  autoComplete='tel'
+                  placeholder={user.contactDetails?.contactNumber || '082 123 4567'}
+                  name='contactDetails.contactNumber'
+                  value={formData.contactDetails.contactNumber}
+                  onChange={handleInputChange}
+                  onFocus={() => setContactMsg(true)}
+                  onBlur={() => setContactMsg(false)}
+                />
+              </div>
+            </div>
+            <div className="p-2 ms-auto"></div>
+            <div className="p-2">
+              {contactMsg && (
+                <p>WE WILL NEVER SHARE YOUR CONTACT DETAILS</p>
+              )}
+            </div>
+          </Stack>
         </fieldset>
         {/* GROUP 3: EDIT DEFAULT LANGUAGES */}
         <fieldset id='editProfileGroup3'>
-        <legend>Default Language options</legend>
-        {/* STACK 3: the SELECT option keeps the current language */}
+          <legend>Default Language options</legend>
+          {/* STACK 3: the SELECT option keeps the current language */}
           <Stack gap={3} id='editProfileStack3'>
-      <div className="p-2" id='editProfileLangBlock1'>
-      {/* EDIT SOURCE LANGUAGE: value={formData.defaultSourceLang} */}
-        <label className='editUserLabel' htmlFor='editSourceLangInput'>EDIT SOURCE LANGUAGE:</label>
-        <div className='inputDiv'>
-          <select
-          className='input'
-          id='editSourceLangInput'
-          name='defaultSourceLang'
-          value={formData.defaultSourceLang}
-          onChange={handleInputChange}
-          >
-          <option value={''} className='input'>SELECT</option>
-          {languageData.map((lang) => (
-            <option
-            className='input'
-            key={lang.code} value={lang.code}>
-              {lang.name}
-            </option>
-          ))}
-          </select>
-        </div>
-      </div>
-      <div className="p-2" id='editProfileLangBlock2'>
-        <label className='editUserLabel' htmlFor='editTargetLangInput'>EDIT TARGET LANGUAGE:</label>
-          <div className='inputDiv'>
-          <select
-          className='input'
-          id='editTargetLangInput'
-          name='defaultTargetLang'
-          value={formData.defaultTargetLang}
-          onChange={handleInputChange}
-          >
-          <option value={''}>SELECT</option>
-            {languageData.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-              {lang.name}
-            </option>
-          ))}
-          </select>
-
-        </div>
-      </div>
-      <div className="p-2" id='editProfileLangBlock1'>
-      {/* EDIT NOTES LANGUAGE: value={formData.defaultNoteLang} */}
-      <label className='editUserLabel' htmlFor='editNoteLangInput'>EDIT NOTES LANGUAGE:</label>
-        <div className='inputDiv'>
-          <select
-          className='input'
-          id='editNoteLangInput'
-          name='defaultNoteLang'
-          value={formData.defaultNoteLang}
-          onChange={handleInputChange}
-          >
-          <option value={''}>SELECT</option>
-            {languageData.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-              {lang.name}
-            </option>
-          ))}
-          </select>
-        </div>
-      </div>
-    </Stack>
+            <div className="p-2" id='editProfileLangBlock1'>
+              {/* EDIT SOURCE LANGUAGE: value={formData.defaultSourceLang} */}
+              <label className='editUserLabel' htmlFor='editSourceLangInput'>EDIT SOURCE LANGUAGE:</label>
+              <div className='inputDiv'>
+                <select
+                  className='input'
+                  id='editSourceLangInput'
+                  name='defaultSourceLang'
+                  value={formData.defaultSourceLang}
+                  onChange={handleInputChange}
+                >
+                  <option value={''} className='input'>SELECT</option>
+                  {languageData.map((lang) => (
+                    <option
+                      className='input'
+                      key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="p-2" id='editProfileLangBlock2'>
+              <label className='editUserLabel' htmlFor='editTargetLangInput'>EDIT TARGET LANGUAGE:</label>
+              <div className='inputDiv'>
+                <select
+                  className='input'
+                  id='editTargetLangInput'
+                  name='defaultTargetLang'
+                  value={formData.defaultTargetLang}
+                  onChange={handleInputChange}
+                >
+                  <option value={''}>SELECT</option>
+                  {languageData.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="p-2" id='editProfileLangBlock1'>
+              {/* EDIT NOTES LANGUAGE: value={formData.defaultNoteLang} */}
+              <label className='editUserLabel' htmlFor='editNoteLangInput'>EDIT NOTES LANGUAGE:</label>
+              <div className='inputDiv'>
+                <select
+                  className='input'
+                  id='editNoteLangInput'
+                  name='defaultNoteLang'
+                  value={formData.defaultNoteLang}
+                  onChange={handleInputChange}
+                >
+                  <option value={''}>SELECT</option>
+                  {languageData.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </Stack>
         </fieldset>
       </div>
       {/* STACK 4: */}
-          <Stack direction="horizontal" gap={3}>
+      <Stack direction="horizontal" gap={3}>
         {/* ADMIN CONSENT CHECKBOX: checked={formData.adminDataConsent}
         Only required field for edit profile form*/}
-         <div className="p-2" id='editProfileAdminConsentBlock'>
-        <label className='editUserLabel' id='editAdminConsentLabel' htmlFor='adminEditConsent'>I CONSENT TO ALLOW ADMIN USERS KNOWING MY DETAILS</label>
-        <input
-          type='checkbox'
-          id='adminEditConsent'
-          required
-          name='adminDataConsent'
-          checked={formData.adminDataConsent}
-          onChange={handleConsentChange}
-          // ARIA ATTRIBUTES
-          aria-required='true'
+        <div className="p-2" id='editProfileAdminConsentBlock'>
+          <label className='editUserLabel' id='editAdminConsentLabel' htmlFor='adminEditConsent'>I CONSENT TO ALLOW ADMIN USERS KNOWING MY DETAILS</label>
+          <input
+            type='checkbox'
+            id='adminEditConsent'
+            required
+            name='adminDataConsent'
+            checked={formData.adminDataConsent}
+            onChange={handleConsentChange}
+            // ARIA ATTRIBUTES
+            aria-required='true'
           />
-    </div>
-    {/* ------END OF INPUT---------- */}
-      <div className="p-2 ms-auto">
-        <Button
-         variant='warning'
-         id='editProfileBtn'
-         type='submit'
-         disabled={loading}
-        //  ARIA ATTRIBUTES:
-        role='button'
-        aria-label={loading ? 'SAVING...' : 'UPDATE PROFILE'}
-        aria-disabled={loading}
-        >
-        {loading ? 'SAVING...' : 'UPDATE PROFILE'}
-        </Button>
-      </div>
-      <div className="vr" />
-      <div className="p-2">
-        <Button
-        variant='danger'
-        id='clearFormBtn'
-        type='button'
-        onClick={clearForm}
-        disabled={loading}
-        // ARIA ATTRIBUTES:
-        aria-label='CLEAR FORM'
-        aria-disabled={loading}
-        >
-          <RotateCcw aria-hidden='true' focusable='false' fontWeight={700} size={16}/>CLEAR FORM
-        </Button>
-      </div>
-    </Stack>
+        </div>
+        {/* ------END OF INPUT---------- */}
+        <div className="p-2 ms-auto">
+          <Button
+            variant='warning'
+            id='editProfileBtn'
+            type='submit'
+            disabled={loading}
+            // ARIA ATTRIBUTES:
+            role='button'
+            aria-label={loading ? 'SAVING...' : 'UPDATE PROFILE'}
+            aria-disabled={loading}
+          >
+            {loading ? 'SAVING...' : 'UPDATE PROFILE'}
+          </Button>
+        </div>
+        <div className="vr" />
+        <div className="p-2">
+          <Button
+            variant='danger'
+            id='clearFormBtn'
+            type='button'
+            onClick={clearForm}
+            disabled={loading}
+            // ARIA ATTRIBUTES:
+            aria-label='CLEAR FORM'
+            aria-disabled={loading}
+          >
+            <RotateCcw aria-hidden='true' focusable='false' fontWeight={700} size={16}/>CLEAR FORM
+          </Button>
+        </div>
+      </Stack>
     </form>
   )
 }

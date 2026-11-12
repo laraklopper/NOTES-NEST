@@ -64,7 +64,7 @@ export default function EditNoteForm(
         return changes
     }
 
-     //==============EVENT LISTENERS===================
+    //==============EVENT LISTENERS===================
     const handleInputChange = (event) => {
         const { name, value, type, checked } = event.target;// Get the input name and value from the changed field
         setEditNoteData((prev) => ({
@@ -107,194 +107,193 @@ export default function EditNoteForm(
     }
 
     //======================JSX RENDERING=========================
-  return (
-    <form id='updateNoteForm' method='PATCH' onSubmit={handleSubmit} aria-busy={loading} aria-labelledby={formTitleId}>
-        <div id='formHeadingBlock'>
-        {/* -------------Screen Reader Heading------------------- */}
-            <p className='visually-hidden' id={formTitleId}>EDIT SELECTED NOTE FORM</p>
-            <h3 id='formHeading'>EDIT NOTE</h3>
-        </div>
-        {/* =======INPUT=========== */}
-        <div id='editNoteInput'>
-            {/* GROUP 1: */}
-            <fieldset id='editNoteGroup1' aria-describedby='editNoteGroup1Desc'>
-            {/* -----Screen Reader Heading */}
-            <p className='visually-hidden' id='editNoteGroup1Desc'>Edit note title</p>
-                <legend>EDIT TITLE</legend>
-                {/* STACK 1 */}
-                <Stack direction="horizontal" gap={3} id='editNoteStack1'>
-                {/* TITLE */}
-                <div className="p-2" id='editTitleBlock'>
-                    <label className='editNoteLabel' htmlFor='editNoteTitleInput'>TITLE:</label>
-                    <input
-                        className='input'
-                        type='text'
-                        id='editNoteTitleInput'
-                        maxLength={200}
-                        placeholder='TITLE'
-                        name='title'
-                        value={editNoteData.title}
-                        onChange={handleInputChange}
-                    />
-                </div>
-                <div className="p-2 ms-auto"/>
-                <div className="p-2">
-                    <div className='inputDiv'>
-                    <label className='notePadLabel' htmlFor='editNoteDate'>DATE:</label>
-                        <input
-                            type='date'
-                            className='input'
-                            id='editNoteDate'
-                            readOnly
-                            // The date the note was created; it cannot be edited
-                            value={createdDate}
-                            // ARIA ATTRIBUTES:
-                            aria-label='Date added'
-                            aria-readonly='true'
-                        />
-                    </div>
-                </div>
-                </Stack>
-            </fieldset>
-            {/* GROUP 2 */}
-            <fieldset id='editNoteGroup2'>
-            <legend>EDIT NOTE DETAILS</legend>
-                <Stack direction="horizontal" gap={3} id='editNoteStack2'>
-                  <div className="p-2" id='editNoteTextBlock'>
-                          <label className='notePadLabel' htmlFor='editNoteTextInput'>NOTE:</label>
-                          <textarea
-                            className='input notesTextArea'
-                            id='editNoteTextInput'
-                            required
-                            placeholder='NOTE TEXT'
-                            name='content'
-                            value={editNoteData.content}
-                            onChange={handleInputChange}
-                            // ARIA ATTRIBUTES:
-                            aria-required='true'
-                          />
-                          <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
-                      </div>
-                <div className="ms-auto" id='editNoteDetailsBlock'>
-                    <div className='noteInputDiv'>
-                        <label className='notePadLabel' htmlFor='editLanguageInput'>EDIT LANGUAGE:</label>
-                        <div className='inputDiv'>
-                            <select
-                            className='input'
-                            id='editLanguageInput'
-                            required
-                            name='language'
-                            value={editNoteData.language}
-                            onChange={handleInputChange}
-                            // ARIA ATTRIBUTES:
-                            aria-required='true'
-                            >
-                                <option value=''>SELECT</option>
-                                {languageData.map((lang) => (
-                                    <option key={lang.code} value={lang.code}>
-                                        {lang.name}
-                                    </option>
-                                ))}
-                            </select>
+    return (
+        <form id='updateNoteForm' method='PATCH' onSubmit={handleSubmit} aria-busy={loading} aria-labelledby={formTitleId}>
+            <div id='formHeadingBlock'>
+                {/* -------------Screen Reader Heading------------------- */}
+                <p className='visually-hidden' id={formTitleId}>EDIT SELECTED NOTE FORM</p>
+                <h3 id='formHeading'>EDIT NOTE</h3>
+            </div>
+            {/* =======INPUT=========== */}
+            <div id='editNoteInput'>
+                {/* GROUP 1: */}
+                <fieldset id='editNoteGroup1' aria-describedby='editNoteGroup1Desc'>
+                    {/* -----Screen Reader Heading */}
+                    <p className='visually-hidden' id='editNoteGroup1Desc'>Edit note title</p>
+                    <legend>EDIT TITLE</legend>
+                    {/* STACK 1 */}
+                    <Stack direction="horizontal" gap={3} id='editNoteStack1'>
+                        {/* TITLE */}
+                        <div className="p-2" id='editTitleBlock'>
+                            <label className='editNoteLabel' htmlFor='editNoteTitleInput'>TITLE:</label>
+                            <input
+                                className='input'
+                                type='text'
+                                id='editNoteTitleInput'
+                                maxLength={200}
+                                placeholder='TITLE'
+                                name='title'
+                                value={editNoteData.title}
+                                onChange={handleInputChange}
+                            />
                         </div>
-                    </div>
-                    <div className='noteInputDiv'>
-                        <label className='editNoteLabel' htmlFor='editNotebookInput'>NOTEBOOK:</label>
-                            <select
-                            className='input'
-                            id='editNotebookInput'
-                            name='notebook'
-                            value={editNoteData.notebook}
-                            onChange={handleInputChange}
-                            >
-                                <option value=''>NO NOTEBOOK</option>
-                                {notebookOptions.map((notebook) => (
-                                    <option key={notebook._id} value={notebook._id}>
-                                        {notebook.name}
-                                    </option>
-                                ))}
-                            </select>
-                    </div>
-                    <div className='noteInputDiv'>
-                        <label className='notePadLabel' htmlFor='editNoteTagsInput'>TAG:</label>
-                        <input
-                            className='input'
-                            id='editNoteTagsInput'
-                            type='text'
-                            placeholder='TAG, TAG'
-                            title='Separate tags with commas'
-                            name='tags'
-                            value={editNoteData.tags}
-                            onChange={handleInputChange}
-                        />
-                        <select
-                        className='input'
-                        id='editNoteTagSelect'
-                        value=''// Always shows "ADD TAG"; picking a tag appends it to the input above
-                        onChange={handleTagSelect}
-                        disabled={tags.length === 0}
-                        // ARIA ATTRIBUTES:
-                        aria-label='ADD AN EXISTING TAG'
-                        >
-                            <option value=''>ADD TAG</option>
-                            {tags
-                              .filter((tag) => !selectedTagNames.includes(tag.name))
-                              .map((tag) => (
-                                <option key={tag._id} value={tag.name}>
-                                  {tag.name}
-                                </option>
-                              ))}
-                        </select>
-                    </div>
-                    <div id='checkBoxInputDiv'>
-                        <label className='notePadLabel' htmlFor='editNotePinnedInput'>IS PINNED:</label>
-                        <input
-                        type='checkbox'
-                        id='editNotePinnedInput'
-                            name='isPinned'
-                            checked={editNoteData.isPinned}
-                            onChange={handleInputChange}
-                        />
-                    </div>
+                        <div className="p-2 ms-auto"/>
+                        <div className="p-2">
+                            <div className='inputDiv'>
+                                <label className='notePadLabel' htmlFor='editNoteDate'>DATE:</label>
+                                <input
+                                    type='date'
+                                    className='input'
+                                    id='editNoteDate'
+                                    readOnly
+                                    // The date the note was created; it cannot be edited
+                                    value={createdDate}
+                                    // ARIA ATTRIBUTES:
+                                    aria-label='Date added'
+                                    aria-readonly='true'
+                                />
+                            </div>
+                        </div>
+                    </Stack>
+                </fieldset>
+                {/* GROUP 2 */}
+                <fieldset id='editNoteGroup2'>
+                    <legend>EDIT NOTE DETAILS</legend>
+                    <Stack direction="horizontal" gap={3} id='editNoteStack2'>
+                        <div className="p-2" id='editNoteTextBlock'>
+                            <label className='notePadLabel' htmlFor='editNoteTextInput'>NOTE:</label>
+                            <textarea
+                                className='input notesTextArea'
+                                id='editNoteTextInput'
+                                required
+                                placeholder='NOTE TEXT'
+                                name='content'
+                                value={editNoteData.content}
+                                onChange={handleInputChange}
+                                // ARIA ATTRIBUTES:
+                                aria-required='true'
+                            />
+                            <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
+                        </div>
+                        <div className="ms-auto" id='editNoteDetailsBlock'>
+                            <div className='noteInputDiv'>
+                                <label className='notePadLabel' htmlFor='editLanguageInput'>EDIT LANGUAGE:</label>
+                                <div className='inputDiv'>
+                                    <select
+                                        className='input'
+                                        id='editLanguageInput'
+                                        required
+                                        name='language'
+                                        value={editNoteData.language}
+                                        onChange={handleInputChange}
+                                        // ARIA ATTRIBUTES:
+                                        aria-required='true'
+                                    >
+                                        <option value=''>SELECT</option>
+                                        {languageData.map((lang) => (
+                                            <option key={lang.code} value={lang.code}>
+                                                {lang.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className='noteInputDiv'>
+                                <label className='editNoteLabel' htmlFor='editNotebookInput'>NOTEBOOK:</label>
+                                <select
+                                    className='input'
+                                    id='editNotebookInput'
+                                    name='notebook'
+                                    value={editNoteData.notebook}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value=''>NO NOTEBOOK</option>
+                                    {notebookOptions.map((notebook) => (
+                                        <option key={notebook._id} value={notebook._id}>
+                                            {notebook.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className='noteInputDiv'>
+                                <label className='notePadLabel' htmlFor='editNoteTagsInput'>TAG:</label>
+                                <input
+                                    className='input'
+                                    id='editNoteTagsInput'
+                                    type='text'
+                                    placeholder='TAG, TAG'
+                                    title='Separate tags with commas'
+                                    name='tags'
+                                    value={editNoteData.tags}
+                                    onChange={handleInputChange}
+                                />
+                                <select
+                                    className='input'
+                                    id='editNoteTagSelect'
+                                    value=''// Always shows "ADD TAG"; picking a tag appends it to the input above
+                                    onChange={handleTagSelect}
+                                    disabled={tags.length === 0}
+                                    // ARIA ATTRIBUTES:
+                                    aria-label='ADD AN EXISTING TAG'
+                                >
+                                    <option value=''>ADD TAG</option>
+                                    {tags
+                                        .filter((tag) => !selectedTagNames.includes(tag.name))
+                                        .map((tag) => (
+                                            <option key={tag._id} value={tag.name}>
+                                                {tag.name}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            <div id='checkBoxInputDiv'>
+                                <label className='notePadLabel' htmlFor='editNotePinnedInput'>IS PINNED:</label>
+                                <input
+                                    type='checkbox'
+                                    id='editNotePinnedInput'
+                                    name='isPinned'
+                                    checked={editNoteData.isPinned}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                        </div>
+                    </Stack>
+                </fieldset>
+            </div>
+            {/* STACK 3 */}
+            <Stack direction="horizontal" gap={3} id='editNoteBtnStack'>
+                <div className="p-2">
+                    <p className='infoMsg' aria-hidden='true'>
+                        <small><Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /> Indicates required information</small>
+                    </p>
                 </div>
-                </Stack>
-            </fieldset>
-        </div>
-        {/* STACK 3 */}
-         <Stack direction="horizontal" gap={3} id='editNoteBtnStack'>
-      <div className="p-2">
-        <p className='infoMsg' aria-hidden='true'>
-          <small><Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /> Indicates required information</small>
-        </p>
-      </div>
-      <div className="p-2 ms-auto">
-        <Button
-        variant='warning'
-        id='submitEditNoteBtn'
-        type='submit'
-        disabled={loading}
-        // ARIA ATTRIBUTES
-        aria-label='SAVE NOTE CHANGES'
-        >
-            {loading ? 'SAVING...' : 'EDIT NOTE'}
-        </Button>
-      </div>
-      <div className="vr" />
-      <div className="p-2">
-        <Button
-            variant='danger'
-            id='clearFormBtn'
-            type='button'
-            onClick={resetForm}
-            disabled={loading}
-            // ARIA ATTRIBUTES:
-            aria-label='UNDO CHANGES'
-            >
-                <RotateCw aria-hidden='true' focusable='false'/> RESET
-            </Button>
-      </div>
-    </Stack>
-
-    </form>
-  )
+                <div className="p-2 ms-auto">
+                    <Button
+                        variant='warning'
+                        id='submitEditNoteBtn'
+                        type='submit'
+                        disabled={loading}
+                        // ARIA ATTRIBUTES
+                        aria-label='SAVE NOTE CHANGES'
+                    >
+                        {loading ? 'SAVING...' : 'EDIT NOTE'}
+                    </Button>
+                </div>
+                <div className="vr" />
+                <div className="p-2">
+                    <Button
+                        variant='danger'
+                        id='clearFormBtn'
+                        type='button'
+                        onClick={resetForm}
+                        disabled={loading}
+                        // ARIA ATTRIBUTES:
+                        aria-label='UNDO CHANGES'
+                    >
+                        <RotateCw aria-hidden='true' focusable='false'/> RESET
+                    </Button>
+                </div>
+            </Stack>
+        </form>
+    )
 }

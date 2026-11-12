@@ -32,6 +32,7 @@ export default function ExportForm(
     }
 ) {
     const exportType = EXPORT_TYPES[type] || EXPORT_TYPES.notes
+    //================STATE VARIABLES========================
     const [format, setFormat] = useState('')// Selected file format ('csv' or 'xlsx')
     const [scope, setScope] = useState('filtered')// 'filtered' = only the rows matching the filters, 'all' = everything
     const [loading, setLoading] = useState(false)// Tracks whether the download request is currently running.
@@ -58,7 +59,7 @@ export default function ExportForm(
             }
             // The browser sends the JWT cookie with the request
             const response = await fetch(`/export?${params.toString()}`, {
-                method: 'GET',
+                method: 'GET',//HTTP request method
                 credentials: 'include',
             })
             /* Conditional rendering to check if the response
@@ -95,92 +96,93 @@ export default function ExportForm(
     }
 
     //============JSX RENDERING================
-  return (
-    <form id='exportForm' onSubmit={handleExport} aria-labelledby='formTitle'>
-        {/* ------Screen Reader Heading-------- */}
-        <p className='visually-hidden' id='formTitle'>{exportType.title}</p>
-        <div id='exportFormInput'>
-            <Stack gap={3} id='exportStack1'>
-                <div className="p-2" id='selectExportBlock'>
-                    <label className='exportLabel' htmlFor='exportFormatSelect'>CHOOSE EXPORT FORMAT:</label>
-                    <div className='inputDiv'>
-                      <select
-                        className='input'
-                        required
-                        id='exportFormatSelect'
-                        name='format'
-                        value={format}
-                        onChange={(e) => { setFormat(e.target.value); setError(''); setNotice(null) }}
-                        // ARIA ATTRIBUTES:
-                        aria-required='true'
-                    >
-                        <option value=''>SELECT</option>
-                        <option value='csv'>CSV (.csv)</option>
-                        <option value='xlsx'>EXCEL (.xlsx)</option>
-                    </select>
-                    <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/>
-                    </div>
-                </div>
-                {/* Only offered when the list is filtered; otherwise everything is exported */}
-                {filtersActive && (
-                    <div className="p-2" id='selectExportScopeBlock'>
-                        <label className='exportLabel' htmlFor='exportScopeSelect'>ROWS TO EXPORT:</label>
+    return (
+        <form id='exportForm' onSubmit={handleExport} aria-labelledby='formTitle'>
+            {/* ------Screen Reader Heading-------- */}
+            <p className='visually-hidden' id='formTitle'>{exportType.title}</p>
+            <div id='exportFormInput'>
+            {/* STACK 1*/}
+                <Stack gap={3} id='exportStack1'>
+                    <div className="p-2" id='selectExportBlock'>
+                        <label className='exportLabel' htmlFor='exportFormatSelect'>CHOOSE EXPORT FORMAT:</label>
                         <div className='inputDiv'>
                             <select
                                 className='input'
-                                id='exportScopeSelect'
-                                name='scope'
-                                value={scope}
-                                onChange={(e) => { setScope(e.target.value); setNotice(null) }}
+                                required
+                                id='exportFormatSelect'
+                                name='format'
+                                value={format}
+                                onChange={(e) => { setFormat(e.target.value); setError(''); setNotice(null) }}
+                                // ARIA ATTRIBUTES:
+                                aria-required='true'
                             >
-                                <option value='filtered'>FILTERED LIST</option>
-                                <option value='all'>ALL {type.toUpperCase()}</option>
+                                <option value=''>SELECT</option>
+                                <option value='csv'>CSV (.csv)</option>
+                                <option value='xlsx'>EXCEL (.xlsx)</option>
                             </select>
+                            <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/>
                         </div>
                     </div>
-                )}
-                {/* ======================ERROR MESSAGE===================== */}
-                {error && (
-                    <div className="p-2" id='exportError' role='alert' aria-live='polite'>
-                        <span style={{ color: '#C22419', fontFamily: '"Roboto Mono", monospace', fontSize: '0.85rem' }}>{error}</span>
-                    </div>
-                )}
-                 {/* ======================DOWNLOAD NOTICE===================== */}
-                {notice && (
-                    <div className="p-2" id='exportNotice' role='status' aria-live='polite'>
-                        <span style={{ fontFamily: '"Roboto Mono", monospace', fontSize: '13.6px' }}>{notice}</span>
-                    </div>
-                )}
-                <div className="p-2"/>
+                    {/* Only offered when the list is filtered; otherwise everything is exported */}
+                    {filtersActive && (
+                        <div className="p-2" id='selectExportScopeBlock'>
+                            <label className='exportLabel' htmlFor='exportScopeSelect'>ROWS TO EXPORT:</label>
+                            <div className='inputDiv'>
+                                <select
+                                    className='input'
+                                    id='exportScopeSelect'
+                                    name='scope'
+                                    value={scope}
+                                    onChange={(e) => { setScope(e.target.value); setNotice(null) }}
+                                >
+                                    <option value='filtered'>FILTERED LIST</option>
+                                    <option value='all'>ALL {type.toUpperCase()}</option>
+                                </select>
+                            </div>
+                        </div>
+                    )}
+                    {/* ======================ERROR MESSAGE===================== */}
+                    {error && (
+                        <div className="p-2" id='exportError' role='alert' aria-live='polite'>
+                            <span style={{ color: '#C22419', fontFamily: '"Roboto Mono", monospace', fontSize: '0.85rem' }}>{error}</span>
+                        </div>
+                    )}
+                    {/* ======================DOWNLOAD NOTICE===================== */}
+                    {notice && (
+                        <div className="p-2" id='exportNotice' role='status' aria-live='polite'>
+                            <span style={{ fontFamily: '"Roboto Mono", monospace', fontSize: '13.6px' }}>{notice}</span>
+                        </div>
+                    )}
+                    <div className="p-2"/>
                 </Stack>
-        </div>
-        <Stack direction="horizontal" gap={3} id='exportStack2'>
-      <div className="p-2"></div>
-      <div className="p-2 ms-auto"/>
-      <div className="vr" />
-      <div className="p-2" id='exportBtnBlock'>
-        <Button
-        variant='light'
-        id='exportFormBtn'
-        type='submit'
-        disabled={loading}
-        // ARIA ATTRIBUTES:
-        aria-label={loading ? 'DOWNLOADING...' : 'DOWNLOAD'}
-        aria-disabled={loading}
-        >
-        {loading ? (
-            <>
-                <FileClock fontWeight={700} aria-hidden='true' focusable='false'/> DOWNLOADING...
-            </>
-        ):(
-            <>
-                <FileDown fontWeight={700} aria-hidden='true' focusable='false'/> DOWNLOAD
-            </>
-        )}
-        </Button>
-      </div>
-    </Stack>
-
-    </form>
-  )
+            </div>
+            {/* STACK 2 */}
+            <Stack direction="horizontal" gap={3} id='exportStack2'>
+                <div className="p-2"></div>
+                <div className="p-2 ms-auto"/>
+                <div className="vr" />
+                <div className="p-2" id='exportBtnBlock'>
+                    <Button
+                        variant='light'
+                        id='exportFormBtn'
+                        type='submit'
+                        disabled={loading}
+                        // ARIA ATTRIBUTES:
+                        aria-label={loading ? 'DOWNLOADING...' : 'DOWNLOAD'}
+                        aria-disabled={loading}
+                    >
+                        {loading ? (
+                            <>
+                                <FileClock fontWeight={700} aria-hidden='true' focusable='false'/> DOWNLOADING...
+                            </>
+                        ):(
+                            <>
+                                <FileDown fontWeight={700} aria-hidden='true' focusable='false'/> DOWNLOAD
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </Stack>
+        </form>
+    )
 }
