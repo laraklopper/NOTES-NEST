@@ -22,6 +22,7 @@ export default function ArchivedNotes(
         fetchNotes// Refreshes the main notes list after a note is restored
     }
 ) {
+    //=========STATE VARIABLES==========
     const [notes, setNotes] = useState([])// The user's archived notes
     const [loading, setLoading] = useState(false)
     const [actionId, setActionId] = useState(null)// Id of the note a restore/delete request is running for
@@ -94,73 +95,73 @@ export default function ArchivedNotes(
     }
 
     //=======================JSX RENDERING=======================================
-  return (
-    <div id='archiveTableWrapper'>
-        <table id='archiveTable'>
-            <thead>
-                <tr>
-                    <th colSpan={5}>ARCHIVED NOTES</th>
-                </tr>
-                <tr>
-                    <th style={{color: '#212529'}}>#</th>
-                    <th style={{color: '#212529'}}>TITLE</th>
-                    <th style={{color: '#212529'}}>LANGUAGE</th>
-                    <th style={{color: '#212529'}}>DATE ADDED</th>
-                    <th style={{color: '#212529'}}></th>
-                </tr>
-            </thead>
-            <tbody>
-                {loading && notes.length === 0 ? (
+    return (
+        <div id='archiveTableWrapper'>
+            <table id='archiveTable'>
+                <thead>
                     <tr>
-                        <td colSpan={5}>LOADING ARCHIVED NOTES...</td>
+                        <th colSpan={5}>ARCHIVED NOTES</th>
                     </tr>
-                ) : notes.length === 0 ? (
                     <tr>
-                        <td colSpan={5}>NO ARCHIVED NOTES</td>
+                        <th style={{color: '#212529'}}>#</th>
+                        <th style={{color: '#212529'}}>TITLE</th>
+                        <th style={{color: '#212529'}}>LANGUAGE</th>
+                        <th style={{color: '#212529'}}>DATE ADDED</th>
+                        <th style={{color: '#212529'}}></th>
                     </tr>
-                ) : (
-                    notes.map((note, index) => (
-                        <tr key={note._id}>
-                            <td>{index + 1}</td>
-                            <td>{note.title}</td>
-                            <td>{languageName(note.language)}</td>
-                            <td>{formatTimestamp(note.createdAt)}</td>
-                            <td>
-                                <div className='archiveTableBtns'>
-                                    <Button
-                                    variant='light'
-                                    className='restoreNoteBtn'
-                                    type='button'
-                                    onClick={() => handleRestore(note)}
-                                    disabled={actionId !== null}
-                                    // ARIA ATTRIBUTES:
-                                    aria-label={`Restore note ${note.title}`}
-                                    >
-                                     <ArchiveRestore aria-hidden='true' focusable='false'/> RESTORE
-                                    </Button>
-                                    <Button
-                                    variant='danger'
-                                    className='deleteArchiveNoteBtn'
-                                    type='button'
-                                    onClick={() => handleDelete(note)}
-                                    disabled={actionId !== null}
-                                    // ARIA ATTRIBUTES:
-                                    aria-label={`Move note ${note.title} to trash`}
-                                    >
-                                        <Trash aria-hidden='true' focusable='false'/>DELETE
-                                    </Button>
-                                </div>
-                            </td>
+                </thead>
+                <tbody>
+                    {loading && notes.length === 0 ? (
+                        <tr>
+                            <td colSpan={5}>LOADING ARCHIVED NOTES...</td>
                         </tr>
-                    ))
-                )}
-            </tbody>
-            <tfoot>
-            <tr>
-              <td colSpan={5} style={{color: '#212529'}}>RESTORE TO VIEW NOTE DETAILS</td>
-            </tr>
-          </tfoot>
-        </table>
-    </div>
-  )
+                    ) : notes.length === 0 ? (
+                        <tr>
+                            <td colSpan={5}>NO ARCHIVED NOTES</td>
+                        </tr>
+                    ) : (
+                        notes.map((note, index) => (
+                            <tr key={note._id}>
+                                <td>{index + 1}</td>
+                                <td>{note.title}</td>
+                                <td>{languageName(note.language)}</td>
+                                <td>{formatTimestamp(note.createdAt)}</td>
+                                <td>
+                                    <div className='archiveTableBtns'>
+                                        <Button
+                                            variant='light'
+                                            className='restoreNoteBtn'
+                                            type='button'
+                                            onClick={() => handleRestore(note)}
+                                            disabled={actionId !== null}
+                                            // ARIA ATTRIBUTES:
+                                            aria-label={`Restore note ${note.title}`}
+                                        >
+                                            <ArchiveRestore aria-hidden='true' focusable='false'/> RESTORE
+                                        </Button>
+                                        <Button
+                                            variant='danger'
+                                            className='deleteArchiveNoteBtn'
+                                            type='button'
+                                            onClick={() => handleDelete(note)}
+                                            disabled={actionId !== null}
+                                            // ARIA ATTRIBUTES:
+                                            aria-label={`Move note ${note.title} to trash`}
+                                        >
+                                            <Trash aria-hidden='true' focusable='false'/>DELETE
+                                        </Button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colSpan={5} style={{color: '#212529'}}>RESTORE TO VIEW NOTE DETAILS</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    )
 }
