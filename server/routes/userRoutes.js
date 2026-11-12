@@ -140,7 +140,7 @@ router.patch('/editProfile', checkJwtToken, async (req, res) => {
             .filter(([, value]) => typeof value === 'string' && value.trim())
             .map(([field, value]) => [EDITABLE_PROFILE_FIELDS[field], value.trim()]);
 
-        // Guard clause: check there is something to update
+        // Conditional rendering to check there is something to update
         if (updates.length === 0) {
             console.error('[ERROR: userRoutes.js, PATCH /editProfile] No fields to update');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Please change at least one field before updating your profile' });// Return a 400 (Bad Request) status code with a message
@@ -148,13 +148,13 @@ router.patch('/editProfile', checkJwtToken, async (req, res) => {
 
         const user = await User.findById(userId).exec();// Find the signed-in user's document
 
-        // Guard clause: check the user was found
+        // Conditional rendering check the user was found
         if (!user) {
             console.error('[ERROR: userRoutes.js, PATCH /editProfile] User not found:', userId);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'User not found' });// Return a 404 (Not Found) status code with a message
         }
 
-        /* Guard clause: check the new source and target languages are not the same.
+        /* Check the new source and target languages are not the same.
         Compare the trimmed strings, the same values the update below saves, so " af" and "af"
         count as a match. Non-strings are ignored, as they are by the update */
         const trimmedLang = (value) => (typeof value === 'string' ? value.trim() : '');
@@ -233,7 +233,7 @@ router.patch('/editPassword', checkJwtToken, checkPasswordChange, checkPassword,
             ? currentPassword === user.password
             : await bcrypt.compare(currentPassword, user.password);
 
-        /* Guard clause: check the current password is correct.
+        /* Conditional rendering to if check the users current password is correct.
         A 400 rather than a 401, so the client does not treat it as an expired session */
         if (!isCurrentValid) {
             console.error('[ERROR: userRoutes.js, PATCH /editPassword] Current password is incorrect');// Log an error message in the console for debugging purposes

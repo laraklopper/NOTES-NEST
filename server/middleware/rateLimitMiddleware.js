@@ -2,15 +2,6 @@
 /*Custom middleware used for rate limiting, used to limit repeated requests*/
 const rateLimit = require('express-rate-limit');
 
-/* Rate limit for /login and /register, to slow down brute-force and spam attempts.
-Each IP gets 10 requests per 15 minutes; after that the client receives a 429 */
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,// 15 minutes
-    limit: 10,// Requests allowed per IP in each window
-    standardHeaders: 'draft-8',// Send the RateLimit headers so the client can see the limit
-    legacyHeaders: false,// Don't send the older X-RateLimit-* headers
-    message: { message: 'Too many attempts — please wait a few minutes and try again.' }
-});
 /**Middleware General API rate limiterapplied to sensitive endpoints to limit 
   to 100 requests per 15 minutes per IP*/
 const generalRateLimiter = rateLimit({
@@ -102,7 +93,6 @@ const detectLimiter = rateLimit({
 });
 
 module.exports= {
-    authLimiter,
     generalRateLimiter,
     loginLimiter,
     registerLimiter,

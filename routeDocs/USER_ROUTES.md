@@ -1,8 +1,8 @@
 # USER_ROUTES.md — `userRoutes.js` Breakdown
 
-`userRoutes.js` is the Express router for **user accounts after sign-in**: a user reading and editing their own profile, changing their password, and the **admin-only** Users page (listing users, viewing one, and removing one along with all their data).
+[`userRoutes.js`](../server/routes/userRoutes.js) is the Express router for **user accounts after sign-in**: a user reading and editing their own profile, changing their password, and the **admin-only** Users page (listing users, viewing one, and removing one along with all their data).
 
-Signing in, registering, logging out and switching admin status on or off live in `authRoutes.js`.
+Signing in, registering, logging out and switching admin status on or off live in [`authRoute.js`](../server/routes/authRoutes.js),
 
 | Router | Handles |
 |---|---|
@@ -25,6 +25,7 @@ Signing in, registering, logging out and switching admin status on or off live i
 10. [Status Code Reference](#10-status-code-reference)
 11. [Known Gaps & Housekeeping](#11-known-gaps--housekeeping)
 
+- [`userRoutes.js`](../server/routes/userRoutes.js)
 ---
 
 ## 1. Route Summary
