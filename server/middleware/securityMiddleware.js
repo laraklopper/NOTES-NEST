@@ -4,6 +4,7 @@ file using the dotenv package*/
 require('dotenv').config();
 // Import Required modules and packages
 const jwt = require('jsonwebtoken');// Import the JSON Web Token (JWT) library
+const User = require('../models/userSchema');// Import the User model, to check the token's account still exists
 const { isDevelopment } = require('./passwordMiddleware');// Development flag, used for the cookie's secure setting
 
 // Settings shared by setting and clearing the JWT cookie (clearCookie needs the same ones to match)
@@ -41,7 +42,7 @@ else if (!rawAlgorithm) {
 JWT VERIFICATION MIDDLEWARE
  ====================================*/
  //Middleware function to check and verify a JWT token from the HTTP-only 'token' cookie
- const checkJwtToken = (req, res, next) => {
+ const checkJwtToken = async (req, res, next) => {
     console.log('[DEBUG: middleware.js] [checkJwtToken] Middleware triggered');// Log a message in the console for debugging purposes
     try {
         /* /auth/login and /auth/register set the token as an HTTP-only cookie,
@@ -58,8 +59,34 @@ JWT VERIFICATION MIDDLEWARE
         }
 
         const decoded = jwt.verify(token, secretKey)// Verify and decode the JWT using the secret key
+
+        /* A valid signature is not enough: the account may have been deleted, or the
+        password changed, since the token was issued. Load only the session version */
+        const user = await User.findById(decoded.id).select('tokenVersion').lean().exec();
+
+        // Conditional rendering to check the user on the token still exists
+        if (!user) {
+            console.warn('[WARN: middleware.js, checkJwtToken] No user found for id', decoded.id);// Log a warning message in the console for debugging purposes
+            res.clearCookie('token', cookieOptions);// Drop the dead cookie
+            return res.status(401).json({// Respond with a 401 (Unauthorised) status code and an error message
+                success: false,//Success status
+                message: 'Invalid token. Please login again.'//JSON message
+            });
+        }
+
+        /* Conditional rendering to check the token was issued for the current session version.
+        Tokens and accounts created before tokenVersion existed are treated as version 0 */
+        if ((decoded.tokenVersion ?? 0) !== (user.tokenVersion ?? 0)) {
+            console.warn('[WARN: middleware.js, checkJwtToken] Token version is out of date for user', decoded.id);// Log a warning message in the console for debugging purposes
+            res.clearCookie('token', cookieOptions);// Drop the revoked cookie
+            return res.status(401).json({// Respond with a 401 (Unauthorised) status code and an error message
+                success: false,//Success status
+                message: 'Your session has ended. Please login again.'//JSON message
+            });
+        }
+
         req.user = decoded;// Attach decoded user information to the request object
-        // This allows routes to access req.user.userId, req.user.isAdmin, etc.
+        // This allows routes to access req.user.id, req.user.isAdmin, etc.
 
         console.log('[SUCCESS: middleware.js, checkJwtToken ]: Token provided');//Log a message in the console for debugging purposes
         next()// Call the next middleware or route handler
@@ -81,6 +108,14 @@ JWT VERIFICATION MIDDLEWARE
                 success: false, //Success Status
                 message: 'Invalid token. Please login again.'//JSON message
             });
+        } else if (error.name !== 'CastError' && error.name !== 'NotBeforeError') {
+            /* Anything else is a server fault (e.g. the user lookup failed because the database
+            is down), not a bad token, so don't send a 401 that would sign the user out */
+            console.error('[ERROR: middleware.js, checkJwtToken]: User lookup failed');// Log an error message in the console for debugging purposes
+            return res.status(500).json({ // Respond with a 500 (Internal Server Error) status code
+                success: false, //Success status
+                message: 'Internal Server Error'//JSON message
+            });
         }
         return res.status(401).json({// Respond with a 401 (Unauthorized) status code with an error message
             success: false, //Success status
@@ -89,12 +124,13 @@ JWT VERIFICATION MIDDLEWARE
     }
 }
 /* Sign a JWT for the given user document and send it as the HTTP-only 'token' cookie.
-The payload is { id, isAdmin }, which checkJwtToken and the routes read as req.user.id */
+The payload is { id, isAdmin, tokenVersion }, which checkJwtToken and the routes read as req.user.id */
 const setTokenCookie = (res, user) => {
     const jwtToken = jwt.sign(
         {
             id: user._id,// Set the user id in the token payload
-            isAdmin: user.admin === true// Store the user's admin status in the token payload
+            isAdmin: user.admin === true,// Store the user's admin status in the token payload
+            tokenVersion: user.tokenVersion ?? 0// Session version, checked by checkJwtToken
         },
         secretKey,// Use the secret key to sign the token
         {

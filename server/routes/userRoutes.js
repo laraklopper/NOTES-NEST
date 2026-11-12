@@ -1,7 +1,12 @@
 // userRoutes.js
-/* Load environment variables from a .env 
-file using the dotenv package*/
-require('dotenv').config()
+/*mounted at /user by app.js
+GET - '/me' - The signed-in user's own profile
+GET - '/fetchUsers' - Every user, for the admin Users page
+GET - '/fetchUser/:id' - One non-admin user, for the admin details panel
+PATCH - '/editProfile' - Update the signed-in user's profile and default languages
+PATCH - '/editPassword' - Change the signed-in user's password (signs out other sessions)
+DELETE - '/deleteUser/:id' - Remove a non-admin user and all their data (admin)
+*/
 const express = require('express');// Import the Express.js library
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const bcrypt = require('bcryptjs');// Used to check the current password against the stored hash
@@ -11,41 +16,39 @@ const Notebook = require('../models/notebookSchema');// Import the Notebook mode
 const Tag = require('../models/tagSchema');// Import the Tag model (removed with the user)
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with the user)
 const router = express.Router();// Create a new router object using Express.js
-/// Import the JWT, admin, password middleware functions and development flag
-const {checkPassword, checkPasswordChange, hashPassword, isDevelopment}= require('../middleware/passwordMiddleware')
-const { checkJwtToken} = require ('../middleware/securityMiddleware')
-const {checkAdmin} = require('../middleware/adminMiddleware')
-const { EDITABLE_PROFILE_FIELDS } = require('../util/userUtil');
+const { checkPassword, checkPasswordChange, hashPassword, isDevelopment } = require('../middleware/passwordMiddleware');// Password middleware and the development flag
+const { checkJwtToken, setTokenCookie } = require('../middleware/securityMiddleware');// JWT check and cookie issuing
+const { checkAdmin } = require('../middleware/adminMiddleware');// Admin-only guard
+const { EDITABLE_PROFILE_FIELDS } = require('../util/userUtil');// Form field -> schema path map for /editProfile
+const { passwordUpdateRateLimiter } = require('../middleware/rateLimitMiddleware');// Limits password change attempts
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/
-/* GET: /users/me : Returns the signed-in user's own profile, used by App.js to populate
+/* GET: /user/me : Returns the signed-in user's own profile, used by App.js to populate
 `currentUser` and by the Settings page profile panel. */
 router.get('/me', checkJwtToken, async (req, res) => {
     try {
-        const userId = req.user.id;// Use middleware to attach user info to the request
-        // Get the authenticated user's ID from the JWT token.
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token (set by checkJwtToken)
         const user = await User.findById(userId)//Find a single document by its _id field.
             .select('-password')// Exclude password from the response
             .exec();// Execute the query
-        //Conditional rendering to check if user is found
+        // Guard clause: check the user was found
         if (!user) {
             console.error('[ERROR: userRoutes.js]: User not found with ID:', userId);//Log an error message in the console for debugging purposes
-            return res.status(404).json({ error: 'User not found' }); // Send a 404 (Not Found) response with a JSON message
+            return res.status(404).json({ message: 'User not found' }); // Send a 404 (Not Found) response with a JSON message
         }
-        console.log(`[RESPONSE: userRoutes]`, userId);//Log a message in the console for debugging purposes
+        console.log(`[SUCCESS: userRoutes.js, GET /me] Fetched profile: ${userId}`);//Log a message in the console for debugging purposes
         return res.status(200).json(user); // Return the full user object (minus password) to the client
     } catch (error) {
-         console.error('Error fetching current user:', error);//Log an error message in the console for debugging purposes
-        res.status(500).json({// Send a 500 (Internal Server Error) status code with an json error message
-            success: false,//Success status
-             error: 'An error occurred while fetching the current user' //JSON error message
-            });
+        console.error('[ERROR: userRoutes.js, GET /me]', error.message);//Log an error message in the console for debugging purposes
+        return res.status(500).json({// Send a 500 (Internal Server Error) status code with a JSON message
+            message: 'An error occurred while fetching the current user' //JSON error message
+        });
     }
 })
 
-/* GET : /users/fetchUsers :Returns all user documents in the database, for 
-the admin-only Users pagetable (UsersList.js). */
+/* GET: /user/fetchUsers : Returns all user documents in the database, for
+the admin-only Users page table (UsersList.js). */
 router.get('/fetchUsers', checkJwtToken, checkAdmin, async (req, res) => {
     try {
         const users = await User.find()// Fetch every user document in the collection
@@ -56,18 +59,18 @@ router.get('/fetchUsers', checkJwtToken, checkAdmin, async (req, res) => {
         console.log(`[SUCCESS: userRoutes.js, GET /fetchUsers] Returned ${users.length} users`);//Log a message in the console for debugging purposes
         return res.status(200).json(users);
     } catch (error) {
-        console.error('[ERROR: userRoutes.js, GET /] Error fetching users:', error.message);// Log an error message in the console for debugging purposes
-        return res.status(500).json({ message: 'Internal Server Error', error: error.message });// Return a 500 (Internal Server Error) status code with a message
+        console.error('[ERROR: userRoutes.js, GET /fetchUsers] Error fetching users:', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code
     }
 })
 
-/* GET : /users/fetchUser/:id Returns one user document, for the details panel 
-on the Users page.*/
+/* GET: /user/fetchUser/:id : Returns one user document, for the details panel
+on the Users page. */
 router.get('/fetchUser/:id', checkJwtToken, checkAdmin, async (req, res) => {
     try {
         const { id } = req.params;// Extract the user ID from the request parameters
 
-        // Conditional rendering to check the id is a usable ObjectId
+        // Guard clause: check the id is a usable ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.error(`[ERROR: userRoutes.js, GET /fetchUser/:id] Invalid user id: ${id}`);//Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid user id' });// Return a 400 (Bad Request) status code with a message
@@ -77,13 +80,13 @@ router.get('/fetchUser/:id', checkJwtToken, checkAdmin, async (req, res) => {
             .select('-password')// Exclude password from the response
             .exec();// Execute the query
 
-        // Conditional rendering to check the user was found
+        // Guard clause: check the user was found
         if (!user) {
             console.error(`[ERROR: userRoutes.js, GET /fetchUser/:id] User not found: ${id}`);//Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'User not found' });// Return a 404 (Not Found) status code with a message
         }
 
-        // Conditional rendering to check the account is not an admin account
+        // Guard clause: check the account is not an admin account
         if (user.admin === true) {
             console.warn(`[WARN: userRoutes.js, GET /fetchUser/:id] Refused to return admin account: ${id}`);//Log a warning message in the console for debugging purposes
             return res.status(403).json({ message: 'Admin accounts cannot be viewed.' });// Return a 403 (Forbidden) status code with a message
@@ -100,8 +103,6 @@ router.get('/fetchUser/:id', checkJwtToken, checkAdmin, async (req, res) => {
 /*──────────────────────────── PATCH ROUTES ─────────────────────────────────────
    PATCH: UPDATE — Used to change part of an existing document
 ────────────────────────────────────────────────────────────────────────────────*/
-
-
 /* PATCH: /user/editProfile : Updates the signed-in user's profile details and default
 languages from the EditProfile form on the Home page. Only the fields sent are changed. */
 router.patch('/editProfile', checkJwtToken, async (req, res) => {
@@ -116,13 +117,18 @@ router.patch('/editProfile', checkJwtToken, async (req, res) => {
             defaultNoteLang
         } = req.body || {};// Extract the profile fields from the request body
 
+        /* The defaults above only apply when a value is undefined, so "fullName": null
+        would make fullName.firstName throw (a 500). Treat null or non-objects as empty */
+        const safeFullName = fullName && typeof fullName === 'object' ? fullName : {};
+        const safeContact = contactDetails && typeof contactDetails === 'object' ? contactDetails : {};
+
         // Flatten the request body so each value can be matched to its schema path
         const submitted = {
             username,
-            firstName: fullName.firstName,
-            lastName: fullName.lastName,
-            email: contactDetails.email,
-            contactNumber: contactDetails.contactNumber,
+            firstName: safeFullName.firstName,
+            lastName: safeFullName.lastName,
+            email: safeContact.email,
+            contactNumber: safeContact.contactNumber,
             defaultSourceLang,
             defaultTargetLang,
             defaultNoteLang
@@ -134,7 +140,7 @@ router.patch('/editProfile', checkJwtToken, async (req, res) => {
             .filter(([, value]) => typeof value === 'string' && value.trim())
             .map(([field, value]) => [EDITABLE_PROFILE_FIELDS[field], value.trim()]);
 
-        // Conditional rendering to check there is something to update
+        // Guard clause: check there is something to update
         if (updates.length === 0) {
             console.error('[ERROR: userRoutes.js, PATCH /editProfile] No fields to update');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Please change at least one field before updating your profile' });// Return a 400 (Bad Request) status code with a message
@@ -142,16 +148,21 @@ router.patch('/editProfile', checkJwtToken, async (req, res) => {
 
         const user = await User.findById(userId).exec();// Find the signed-in user's document
 
-        // Conditional rendering to check the user was found
+        // Guard clause: check the user was found
         if (!user) {
             console.error('[ERROR: userRoutes.js, PATCH /editProfile] User not found:', userId);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'User not found' });// Return a 404 (Not Found) status code with a message
         }
 
-        // Conditional rendering to check the new source and target languages are not the same
-        const sourceLang = defaultSourceLang || user.defaultLanguages?.defaultSourceLanguage;
-        const targetLang = defaultTargetLang || user.defaultLanguages?.defaultTargetLanguage;
-        if ((defaultSourceLang || defaultTargetLang) && sourceLang === targetLang) {
+        /* Guard clause: check the new source and target languages are not the same.
+        Compare the trimmed strings, the same values the update below saves, so " af" and "af"
+        count as a match. Non-strings are ignored, as they are by the update */
+        const trimmedLang = (value) => (typeof value === 'string' ? value.trim() : '');
+        const newSourceLang = trimmedLang(defaultSourceLang);
+        const newTargetLang = trimmedLang(defaultTargetLang);
+        const sourceLang = newSourceLang || user.defaultLanguages?.defaultSourceLanguage;
+        const targetLang = newTargetLang || user.defaultLanguages?.defaultTargetLanguage;
+        if ((newSourceLang || newTargetLang) && sourceLang === targetLang) {
             console.error('[ERROR: userRoutes.js, PATCH /editProfile] Source and target languages match');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Default source and target languages must be different' });// Return a 400 (Bad Request) status code with a message
         }
@@ -177,12 +188,16 @@ router.patch('/editProfile', checkJwtToken, async (req, res) => {
             console.error('[ERROR: userRoutes.js, PATCH /editProfile] Validation failed:', error.message);// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: firstMessage || 'Invalid profile details' });// Return a 400 (Bad Request) status code with a message
         }
-        // Duplicate key on a unique field (username or contact number)
+        /* Duplicate key on a unique field. Each field has its own message, with a
+        general fallback, so a unique field added later is never reported as "username" */
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern || {})[0] || '';
-            const message = field.includes('contactNumber')
-                ? 'That contact number is already registered'
-                : 'That username is already taken';
+            const duplicateMessages = {
+                username: 'That username is already taken',
+                'contactDetails.contactNumber': 'That contact number is already registered',
+                'contactDetails.email': 'That email is already registered',
+            };
+            const message = duplicateMessages[field] || 'Those details are already registered to another account';
             console.error('[ERROR: userRoutes.js, PATCH /editProfile] Duplicate field:', field);// Log an error message in the console for debugging purposes
             return res.status(409).json({ message });// Return a 409 (Conflict) status code with a message
         }
@@ -191,11 +206,12 @@ router.patch('/editProfile', checkJwtToken, async (req, res) => {
     }
 })
 
-
 /* PATCH: /user/editPassword : Changes the signed-in user's password from the EditPassword
 form on the Home page. checkPassword enforces the strength rules on newPassword, then
-hashPassword hashes it (left as plaintext during development). */
-router.patch('/editPassword', checkJwtToken, checkPasswordChange, checkPassword, hashPassword, async (req, res) => {
+hashPassword hashes it (left as plaintext during development).
+passwordUpdateRateLimiter runs after the form checks, so a typo in the new password does
+not use up an attempt, but before the current password is compared, so guesses are limited. */
+router.patch('/editPassword', checkJwtToken, checkPasswordChange, checkPassword, passwordUpdateRateLimiter, hashPassword, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { currentPassword, newPassword } = req.body;// newPassword has already been hashed by hashPassword
@@ -204,7 +220,7 @@ router.patch('/editPassword', checkJwtToken, checkPasswordChange, checkPassword,
             .select('+password')// Include the password so the current one can be checked
             .exec();// Execute the query
 
-        // Conditional rendering to check the user was found
+        // Guard clause: check the user was found
         if (!user) {
             console.error('[ERROR: userRoutes.js, PATCH /editPassword] User not found:', userId);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'User not found' });// Return a 404 (Not Found) status code with a message
@@ -217,7 +233,7 @@ router.patch('/editPassword', checkJwtToken, checkPasswordChange, checkPassword,
             ? currentPassword === user.password
             : await bcrypt.compare(currentPassword, user.password);
 
-        /* Conditional rendering to check the current password is correct.
+        /* Guard clause: check the current password is correct.
         A 400 rather than a 401, so the client does not treat it as an expired session */
         if (!isCurrentValid) {
             console.error('[ERROR: userRoutes.js, PATCH /editPassword] Current password is incorrect');// Log an error message in the console for debugging purposes
@@ -225,7 +241,12 @@ router.patch('/editPassword', checkJwtToken, checkPasswordChange, checkPassword,
         }
 
         user.password = newPassword;// Replace the stored password with the new (hashed) one
+        user.tokenVersion = (user.tokenVersion ?? 0) + 1;// Invalidate every token issued before this change
         await user.save({ validateModifiedOnly: true });// Validate the new password and save the user
+
+        /* Every other device or browser is now signed out; give this session a
+        new cookie carrying the new version so it stays signed in */
+        setTokenCookie(res, user);
 
         console.log(`[SUCCESS: userRoutes.js, PATCH /editPassword] Password changed for user: ${userId}`);//Log a message in the console for debugging purposes
         return res.status(200).json({ message: 'Password changed successfully' });// Send a 200 (OK) status code with a message
@@ -251,7 +272,7 @@ router.delete('/deleteUser/:id', checkJwtToken, checkAdmin, async (req, res) => 
     try {
         const { id } = req.params;// Extract the user ID from the request parameters
 
-        // Conditional rendering to check the id is a usable ObjectId
+        // Guard clause: check the id is a usable ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.error(`[ERROR: userRoutes.js, DELETE /deleteUser/:id] Invalid user id: ${id}`);//Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid user id' });// Return a 400 (Bad Request) status code with a message
@@ -259,13 +280,13 @@ router.delete('/deleteUser/:id', checkJwtToken, checkAdmin, async (req, res) => 
 
         const user = await User.findById(id).select('username admin').exec();// Only the fields needed for the checks below
 
-        // Conditional rendering to check the user was found
+        // Guard clause: check the user was found
         if (!user) {
             console.error(`[ERROR: userRoutes.js, DELETE /deleteUser/:id] User not found: ${id}`);//Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'User not found' });// Return a 404 (Not Found) status code with a message
         }
 
-        // Conditional rendering to check the account is not an admin account
+        // Guard clause: check the account is not an admin account
         if (user.admin === true) {
             console.warn(`[WARN: userRoutes.js, DELETE /deleteUser/:id] Refused to remove admin account: ${id}`);//Log a warning message in the console for debugging purposes
             return res.status(403).json({ message: 'Admin accounts cannot be removed.' });// Return a 403 (Forbidden) status code with a message

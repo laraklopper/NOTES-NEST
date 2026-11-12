@@ -146,6 +146,13 @@ const userSchema = new mongoose.Schema({
     admin:{// admin field to indicate if the user has administrative privileges
         type:Boolean,
         default: false,
+    },
+    /* Session version, copied into every JWT. checkJwtToken rejects a token whose
+    version no longer matches, so increasing it (e.g. on a password change)
+    signs out every existing session at once */
+    tokenVersion: {
+        type: Number,
+        default: 0,
     }
 
 },{
