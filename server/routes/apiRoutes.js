@@ -15,7 +15,7 @@ const { checkJwtToken } = require('../middleware/securityMiddleware');// Import 
 const { translateLimiter, detectLimiter } = require('../middleware/rateLimitMiddleware');// Limits translation and language detection requests per IP
 const { languageData } = require('../util/langaugeData');// Local copy of the Langbly language list
 const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../util/schemaUtil');
-const router = express.Router()
+const router = express.Router()// Create Express router instance
 
 // =======LANGBLY CONNECTION SETTINGS===============
 const LANGBLY_BASE_URL = (process.env.LANGBLY_BASE_URL || 'https://api.langbly.com').replace(/\/+$/, '');
