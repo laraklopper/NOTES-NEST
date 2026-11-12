@@ -157,30 +157,14 @@ export default function TranslateForm(//Export default TranslateForm.js function
     }, [sourceText, sourceLang])
 
     //===========EVENT LISTENERS====================
-    /* The selector change handlers. Both record that the pair on screen is now
-    the user's own choice, so the saved defaults no longer apply to it. */
-    // Function for source or target languageChange
-    /*const handleLanguageChange = useCallback((code) => {
-            if (sourceLanguage) {
-                languageTouched.current = true;
-                setSourceLang(code)
-            }
-            else if(targetLanguage){
-                languagesTouched.current = true;
-                setTargetLang(code);
-
-            }
-        },[],)*/
-    // Function to handle changes in the source language input
-    const handleSourceLangChange = useCallback((code) => {
+    /* Handles a change in either language selector. `side` is 'source' or
+    'target'; `code` is the selected language code. Records that the pair on
+    screen is now the user's own choice, so the saved defaults no longer
+    apply to it. */
+    const handleLanguageChange = useCallback((side, code) => {
         languagesTouched.current = true;
-        setSourceLang(code);
-    }, [])
-
-    // Function to handle changes in the target language input
-    const handleTargetLangChange = useCallback((code) => {
-        languagesTouched.current = true;
-        setTargetLang(code);
+        if (side === 'source') setSourceLang(code);
+        else setTargetLang(code);
     }, [])
 
     // Function to  flip source/target language and text
@@ -331,7 +315,7 @@ export default function TranslateForm(//Export default TranslateForm.js function
         label={'Source Language'}
         languages={languages}
         value={sourceLang}
-        onChange={handleSourceLangChange}
+        onChange={(code) => handleLanguageChange('source', code)}
         allowAuto
         disabled={loading}/>
         </div>
@@ -358,7 +342,7 @@ export default function TranslateForm(//Export default TranslateForm.js function
                 label='Target language'
                 languages={languages}
                 value={targetLang}
-                onChange={handleTargetLangChange}
+                onChange={(code) => handleLanguageChange('target', code)}
                 disabled={loading}
             
             />
