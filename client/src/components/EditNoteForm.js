@@ -196,12 +196,6 @@ export default function EditNoteForm(
                                     </option>
                                 ))}
                             </select>
-                            {/* BUTTON to detect language */}
-                            <Button
-                                variant="outline-secondary"
-                                type='button'
-                            >
-                            DETECT</Button>
                         </div>
                     </div>
                     <div className='noteInputDiv'>

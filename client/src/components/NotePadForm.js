@@ -10,7 +10,6 @@ import Button from 'react-bootstrap/Button';
 import languageData from '../util/languageData';
 import { TODAY } from '../util/dateFunctions';
 import { emptyNoteForm, textToHtml } from '../util/notesUtil';
-import { LANGUAGE_NAMES, MAX_LENGTH, MIN_DETECT_CHARS } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Asterisk, RotateCcw, Save } from 'lucide-react';
 // NotePadForm component
@@ -26,7 +25,6 @@ export default function NotePadForm(
     tags = []// The user's existing tags from GET /tag/fetchTags
   }) {
   const [formData, setFormData] = useState(emptyNoteForm)
-  const [detecting, setDetecting] = useState(false)// True while POST /detect is in flight
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;// Get the input name and value from the changed field
@@ -41,55 +39,6 @@ export default function NotePadForm(
     const name = event.target.value;
     if (!name || selectedTagNames.includes(name)) return;
     setFormData((prev) => ({ ...prev, tags: [...selectedTagNames, name].join(', ') }))
-  }
-
-  //========DETECT LANGUAGE REQUEST===============
-  /* Sends the note text to POST /api/language/translate/v2/detect and sets the
-  LANGUAGE select to the detected language */
-  const detectLanguage = async () => {
-    const text = formData.content.trim();
-    if (text.length < MIN_DETECT_CHARS) {
-      alert(`Please enter at least ${MIN_DETECT_CHARS} characters of note text to detect the language.`)
-      return
-    }
-    setDetecting(true)
-    try {
-      // The browser sends the JWT cookie with the request
-      const response = await fetch('/api/language/translate/v2/detect', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // The server caps detection text at MAX_LENGTH, and the start of the note is enough to go on
-        body: JSON.stringify({ sourceText: text.slice(0, MAX_LENGTH) })
-      })
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to detect language')
-      }
-      if (!data.language) {
-        alert('The language of this note could not be detected.')
-        return
-      }
-      /* The provider can return a region-qualified code (e.g. 'zh-CN') that is not
-      in the dropdown, so fall back to the base code ('zh') before giving up */
-      const baseCode = data.language.split('-')[0];
-      const code = LANGUAGE_NAMES[data.language] ? data.language : (LANGUAGE_NAMES[baseCode] ? baseCode : null);
-      if (!code) {
-        alert(`Detected "${data.name || data.language}", which is not in the language list.`)
-        return
-      }
-      setFormData((prev) => ({ ...prev, language: code }))
-      if (!data.isReliable) {
-        alert(`Detected ${LANGUAGE_NAMES[code]} with low confidence. Please check the selected language.`)
-      }
-    } catch (error) {
-      console.error('[ERROR: NotePadForm.js] Language detection failed:', error.message);
-      alert(error.message || 'An error occurred while detecting the language.')
-    } finally {
-      setDetecting(false)
-    }
   }
 
   const resetForm = () => {
@@ -237,17 +186,6 @@ export default function NotePadForm(
               </option>
             ))}
           </select>
-          {/* Button to detect language */}
-          <Button
-          variant="outline-secondary"
-          type='button'// Stops the button submitting the form
-          id='detectLanguageBtn'
-          onClick={detectLanguage}
-          disabled={detecting || loading || !formData.content.trim()}
-          // ARIA ATTRIBUTES:
-          aria-label='DETECT NOTE LANGUAGE'
-          aria-busy={detecting}
-          >{detecting ? 'DETECTING...' : 'DETECT'}</Button>
           <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
         </div>
         <div className='noteInputDiv'>
