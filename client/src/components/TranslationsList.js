@@ -12,10 +12,11 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
 import { languageName } from '../util/languageFunc';
+import { EMPTY_FILTERS } from '../util/formUtil';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { ArrowRight, Download, Filter, FilterX } from 'lucide-react';
 // IMPORT CUSTOM COMPONENTS
-import FilterTranslations, { EMPTY_FILTERS } from './FilterTranslations';
+import FilterTranslations from './FilterTranslations';
 import TranslationPanal from './TranslationPanal';
 import Pagination, { PAGE_SIZES } from './Pagination';
 import ExportForm from './ExportForm';

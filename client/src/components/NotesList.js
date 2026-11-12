@@ -12,11 +12,12 @@ import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack'
 // IMPORT UTILITY FUNCTIONS
 import { formatTimestamp } from '../util/dateFunctions';
+import { EMPTY_NOTE_FILTERS } from '../util/formUtil';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Download, Filter, FilterX, Pin } from 'lucide-react';
 // IMPORT COMPONENTS
-import FilterNotes, { EMPTY_NOTE_FILTERS } from './FilterNotes';
+import FilterNotes from './FilterNotes';
 import NotePanal from './NotePanal';
 import Pagination, { PAGE_SIZES } from './Pagination';
 import ExportForm from './ExportForm';
