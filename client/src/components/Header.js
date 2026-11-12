@@ -68,7 +68,7 @@ export default function Header(//Export default Header.js Function component
              )}
              {/* (Admin only)NAVBAR BLOCK 3: Users */}
              {currentUser?.admin && (
-                <div className="p-2" id='navBlock3'>
+                <div className="p-2" id='navBlock2'>
                     <li className='linkItem'>
                     {/* Admin only link to Users.js Page */}
                         <NavLink to='/users' className='refLink'>USERS</NavLink>
