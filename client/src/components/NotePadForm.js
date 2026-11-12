@@ -75,7 +75,9 @@ export default function NotePadForm(
 
   //=======================JSX RENDERING=======================================
   return (
-    <form id='notePadForm' method='POST' onSubmit={handleSubmit}>
+    <form id='notePadForm' method='POST' onSubmit={handleSubmit} aria-labelledby='formTitle' aria-busy={loading}>
+    {/* --------Screen Reader Heading--------- */}
+    <p className='visually-hidden' id='formTitle'>CREATE NEW NOT FORM</p>
       <div id='formHeadingBlock'>
         <h3 id='formHeading'>CREATE NEW NOTE</h3>
       </div>
@@ -106,7 +108,7 @@ export default function NotePadForm(
       </div>
       {/* Hidden Readonly input */}
       <div className="p-2 ms-auto" id='notePadBlock2'>
-        
+        {/* USERNAME */}
         <div className='inputDiv' hidden>
         <label className='notePadLabel' htmlFor='noteUsername'>USERNAME:</label>
           <input
@@ -120,7 +122,6 @@ export default function NotePadForm(
             aria-readonly='true'
             />
             <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
-
         </div>
       </div>
       <div className="p-2" id='notePadBlock3'>
@@ -163,9 +164,8 @@ export default function NotePadForm(
           />
            <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
       </div>
-      <div className="p-2 ms-auto"/>
-      <div className="vr" />
-      <div className="p-2">
+      <div className="vr" style={{width:'2px', color : '#000',}}/>
+      <div className="p-2 ms-auto">
        <label className='notePadLabel' htmlFor='noteLanguageInput'>LANGAUGE:</label>
         <div className='inputDiv'>
           <select
@@ -178,6 +178,7 @@ export default function NotePadForm(
           // ARIA ATTRIBUTES:
           aria-required='true'
           >
+          {/* MAP ALL AVAILBLE LANGUAGES */}
             <option value=''>SELECT</option>
             {languageData.map((lang) => (
               <option key={lang.code} value={lang.code}>
@@ -185,6 +186,7 @@ export default function NotePadForm(
               </option>
             ))}
           </select>
+          {/* Button to detect language */}
           <Button
           variant="outline-secondary"
           >DETECT</Button>
@@ -199,6 +201,7 @@ export default function NotePadForm(
           value={formData.notebook}
           onChange={handleInputChange}
           >
+          {/* MAP ALL NOTEBOOKS */}
             <option value=''>SELECT</option>
             {notebooks.map((notebook) => (
               <option key={notebook._id} value={notebook._id}>
