@@ -12,6 +12,7 @@ import TranslateForm from '../components/TranslateForm';
 import languageData from '../util/languageData';
 import { BookA, BookOpenCheck } from 'lucide-react';
 import TranslationsList from '../components/TranslationsList';
+import TrashedTranslations from '../components/TrashedTranslations';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
@@ -67,6 +68,18 @@ export default function Translate(
                   active={key === 'translations'}// Re-fetches each time the tab opens, so newly saved translations show
                 />
 
+              </div>
+            </Tab>
+            {/* TRASHED TRANLATIONS */}
+            <Tab eventKey="trash" title='TRASH'>
+              <div id='translationTrashPanal'>
+                <Row id='translationTrashRow'>
+                  <Col md={12} id='translationTrashCol'>
+                    <div id='deletedTranslationDiv'>
+                      <TrashedTranslations/>
+                    </div>
+                  </Col>
+                </Row>
               </div>
             </Tab>
             {/* API LANGUAGES LIST */}

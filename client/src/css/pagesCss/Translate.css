@@ -40,7 +40,8 @@
     width: 100%;
 }
 #translationListPanal,
-#langaugeListPanal{
+#langaugeListPanal,
+#translationTrashPanal{
     width: 100%;
     margin: 0px;
     padding: 0px;
@@ -52,6 +53,7 @@
     padding: 0px;
 }
 #translationsListRow,
+#translationTrashRow,
 #langaugeListRow{
     width: 100%;
     margin: 0px;
@@ -68,6 +70,12 @@
     padding: 0px;
 
 }
+#deletedTranslationDiv{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#translationTrashCol,
 #translationsFilterCol{
      width: 100%;
     margin: 0px;
