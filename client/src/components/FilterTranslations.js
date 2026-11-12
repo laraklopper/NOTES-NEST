@@ -9,10 +9,10 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Search } from 'lucide-react';
-// IMPORT UTILITY DATA
+// IMPORT UTILITY DATA and FUNCTIONS
 import languageData from '../util/languageData';
+import { EMPTY_FILTERS } from '../util/formUtil';
 
-export const EMPTY_FILTERS = { sourceLanguage: '', targetLanguage: '' }// '' = all languages
 
 // FilterTranslations component
 /* Filter form for the TranslationsList table. The selects hold draft values;

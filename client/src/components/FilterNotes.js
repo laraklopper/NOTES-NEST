@@ -11,8 +11,7 @@ import Button from 'react-bootstrap/Button';
 import { Search } from 'lucide-react';
 // IMPORT UTILITY DATA
 import languageData from '../util/languageData';
-
-export const EMPTY_NOTE_FILTERS = { language: '', notebook: '', tag: '' }// '' = all
+import { EMPTY_NOTE_FILTERS } from '../util/formUtil';
 
 // FilterNotes component
 /* Filter form for the NotesList table. The selects hold draft values;
@@ -26,6 +25,7 @@ export default function FilterNotes(
         onApply// Called with { language, notebook, tag }
     }
 ) {
+    //============STATE VARIABLES============
     const [draft, setDraft] = useState(filters)
 
     // Keep the selects in step when the applied filters change from outside (e.g. cleared)
@@ -33,6 +33,7 @@ export default function FilterNotes(
         setDraft(filters)
     }, [filters])
 
+    //==============EVENT HANDLERS=====================
     const handleChange = (e) => {
         const { name, value } = e.target
         setDraft((prev) => ({ ...prev, [name]: value }))

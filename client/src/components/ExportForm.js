@@ -6,19 +6,19 @@ import '../css/componentCss/FormSetup.css';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button'
 import { Asterisk, FileClock, FileDown } from 'lucide-react';
-
+import { EXPORT_TYPES, filenameFromHeader } from '../util/formUtil';
 
 /* Every export request in the app, keyed by the `type` prop.
     - filterKeys: the list filters sent as query params when exporting the filtered list
     - filename:   fallback name of the downloaded file (the server's Content-Disposition name is used when available)
     - title:      screen reader heading for the form */
-const EXPORT_TYPES = {
-    notes:        { filterKeys: ['language', 'notebook', 'tag'],           filename: 'note-nest-notes',        title: 'EXPORT NOTES FORM' },
-    translations: { filterKeys: ['sourceLanguage', 'targetLanguage'],      filename: 'note-nest-translations', title: 'EXPORT TRANSLATIONS FORM' },
-}
+// const EXPORT_TYPES = {
+//     notes:        { filterKeys: ['language', 'notebook', 'tag'],           filename: 'note-nest-notes',        title: 'EXPORT NOTES FORM' },
+//     translations: { filterKeys: ['sourceLanguage', 'targetLanguage'],      filename: 'note-nest-translations', title: 'EXPORT TRANSLATIONS FORM' },
+// }
 
-// Reads the filename from a Content-Disposition header, e.g. attachment; filename="note-nest-notes-2026-11-09.csv"
-const filenameFromHeader = (header) => header?.match(/filename="?([^";]+)"?/i)?.[1] || null
+// // Reads the filename from a Content-Disposition header, e.g. attachment; filename="note-nest-notes-2026-11-09.csv"
+// const filenameFromHeader = (header) => header?.match(/filename="?([^";]+)"?/i)?.[1] || null
 
 // ExportForm function component
 /* Used to export NotesList.js and TranslationsList.js (all rows, or only the rows

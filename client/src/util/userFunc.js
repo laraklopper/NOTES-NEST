@@ -23,7 +23,6 @@ export const isStrongPassword = (pwd) => {
       String(pwd || '')// Ensure pwd is a string before testing
     );
 }
-
 //-----------AGE FUNCTIONS-----------
 /* Age in whole years on today's date. A birthday that has not come round yet
 this year has not been had, so the year difference is reduced by one.

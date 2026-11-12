@@ -123,7 +123,7 @@ export default function EditNoteForm(
                     <legend>EDIT TITLE</legend>
                     {/* STACK 1 */}
                     <Stack direction="horizontal" gap={3} id='editNoteStack1'>
-                        {/* TITLE */}
+                        {/* TITLE: value={editNoteData.title} */}
                         <div className="p-2" id='editTitleBlock'>
                             <label className='editNoteLabel' htmlFor='editNoteTitleInput'>TITLE:</label>
                             <input
@@ -135,10 +135,14 @@ export default function EditNoteForm(
                                 name='title'
                                 value={editNoteData.title}
                                 onChange={handleInputChange}
+                                // ARIA ATTRIBUTES:
+                                // aria-label=''
+                                aria-required='false'
                             />
                         </div>
                         <div className="p-2 ms-auto"/>
                         <div className="p-2">
+                        {/* DATE: value={createdDate} */}
                             <div className='inputDiv'>
                                 <label className='notePadLabel' htmlFor='editNoteDate'>DATE:</label>
                                 <input
@@ -160,34 +164,37 @@ export default function EditNoteForm(
                 <fieldset id='editNoteGroup2'>
                     <legend>EDIT NOTE DETAILS</legend>
                     <Stack direction="horizontal" gap={3} id='editNoteStack2'>
+                        {/* EDIT NOTE: value={editNoteData.content} */}
                         <div className="p-2" id='editNoteTextBlock'>
                             <label className='notePadLabel' htmlFor='editNoteTextInput'>NOTE:</label>
                             <textarea
                                 className='input notesTextArea'
                                 id='editNoteTextInput'
-                                required
                                 placeholder='NOTE TEXT'
                                 name='content'
                                 value={editNoteData.content}
                                 onChange={handleInputChange}
                                 // ARIA ATTRIBUTES:
-                                aria-required='true'
+                                aria-required='false'
                             />
-                            <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false'/></small>
                         </div>
                         <div className="ms-auto" id='editNoteDetailsBlock'>
+                        {/* EDIT LANGUAGE:
+                        select: value={editNoteData.language} 
+                        mappedLanguages: value={lang.code}
+                        */}
                             <div className='noteInputDiv'>
                                 <label className='notePadLabel' htmlFor='editLanguageInput'>EDIT LANGUAGE:</label>
                                 <div className='inputDiv'>
                                     <select
                                         className='input'
                                         id='editLanguageInput'
-                                        required
+                                        autoComplete=''
                                         name='language'
                                         value={editNoteData.language}
                                         onChange={handleInputChange}
                                         // ARIA ATTRIBUTES:
-                                        aria-required='true'
+                                        aria-required='false'
                                     >
                                         <option value=''>SELECT</option>
                                         {languageData.map((lang) => (
@@ -198,6 +205,9 @@ export default function EditNoteForm(
                                     </select>
                                 </div>
                             </div>
+                            {/* NOTEBOOK:  
+                            select: value={editNoteData.notebook}
+                            mappedNotebook options: value={notebook._id}*/}
                             <div className='noteInputDiv'>
                                 <label className='editNoteLabel' htmlFor='editNotebookInput'>NOTEBOOK:</label>
                                 <select
@@ -215,6 +225,9 @@ export default function EditNoteForm(
                                     ))}
                                 </select>
                             </div>
+                            {/* TAG: 
+                            Input:value={editNoteData.tags}
+                            mappedTagOptions: value={tag.name}*/}
                             <div className='noteInputDiv'>
                                 <label className='notePadLabel' htmlFor='editNoteTagsInput'>TAG:</label>
                                 <input
@@ -246,6 +259,7 @@ export default function EditNoteForm(
                                         ))}
                                 </select>
                             </div>
+                            {/* IS PINNED: checked={editNoteData.isPinned} */}
                             <div id='checkBoxInputDiv'>
                                 <label className='notePadLabel' htmlFor='editNotePinnedInput'>IS PINNED:</label>
                                 <input
@@ -254,6 +268,9 @@ export default function EditNoteForm(
                                     name='isPinned'
                                     checked={editNoteData.isPinned}
                                     onChange={handleInputChange}
+                                    // ARIA ATTRIBUTES:
+                                    aria-label='edit pinned note'
+                                    aria-required='false'
                                 />
                             </div>
                         </div>
@@ -274,7 +291,8 @@ export default function EditNoteForm(
                         type='submit'
                         disabled={loading}
                         // ARIA ATTRIBUTES
-                        aria-label='SAVE NOTE CHANGES'
+                        aria-disabled={loading ? 'false': 'true'}
+                        aria-label={loading ? 'SAVING...' : 'SAVE NOTE CHANGES'}
                     >
                         {loading ? 'SAVING...' : 'EDIT NOTE'}
                     </Button>
@@ -289,6 +307,7 @@ export default function EditNoteForm(
                         disabled={loading}
                         // ARIA ATTRIBUTES:
                         aria-label='UNDO CHANGES'
+                        aria-disabled={loading ? 'false': 'true'}
                     >
                         <RotateCw aria-hidden='true' focusable='false'/> RESET
                     </Button>
