@@ -24,6 +24,7 @@ export default function NotePadForm(
     notebooks = [],
     tags = []// The user's existing tags from GET /tag/fetchTags
   }) {
+    //=========STATE VARIABLES==================
   const [formData, setFormData] = useState(emptyNoteForm)
 
   const handleInputChange = (event) => {
@@ -38,9 +39,13 @@ export default function NotePadForm(
   const handleTagSelect = (event) => {
     const name = event.target.value;
     if (!name || selectedTagNames.includes(name)) return;
-    setFormData((prev) => ({ ...prev, tags: [...selectedTagNames, name].join(', ') }))
+    setFormData((prev) => (
+      { ...prev, tags: [...selectedTagNames, name]
+        .join(', ') }
+      ))
   }
 
+  //Functio to reset the form input
   const resetForm = () => {
     setFormData(emptyNoteForm)
   }
@@ -55,6 +60,7 @@ export default function NotePadForm(
     isPinned: formData.isPinned
   })
 
+  //Funtion to submit the form
   const handleSubmit = async (e) => {
     e.preventDefault()
     // `required` blocks an empty textarea, but not one that only holds spaces
@@ -252,14 +258,13 @@ export default function NotePadForm(
         </fieldset>
       </div>
          <Stack direction="horizontal" gap={3}>
-      <div className="p-2">
-        <p className='infoMsg' aria-live='polite' aria-hidden='true'>
-          <small><Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /> Indicates required information</small>
-        </p>
+      <div className="p-2" id='reqInfoMsgBlock'>
+      <span id='reqInfoSpan'>
+          <small><Asterisk style={{display: 'flex', margin: '0px', padding: '0px'}} color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+    <p className='infoMsg' aria-live='polite' aria-hidden='true'> Indicates required information</p>
+      </span>
       </div>
-      <div className="p-2 ms-auto">
-
-      </div>
+      <div className="p-2 ms-auto"/>
       <div className="p-2" id='notePadBtnBlock'>
          <Button
         variant='light'
@@ -267,7 +272,8 @@ export default function NotePadForm(
         id='saveNoteBtn'
         disabled={loading}
         // ARIA ATTRIBUTES
-        aria-label='SAVE NOTE'
+        aria-label={loading ? 'SAVING...' : 'SAVE'}
+        aria-disabled={loading ? 'SAVING...' : 'SAVE'}
         >
           {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false'/>
         </Button>

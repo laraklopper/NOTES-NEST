@@ -152,6 +152,20 @@ LAYOUT
     margin: 0px;
     padding: 0px;
 }
+#reqInfoSpan{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+#reqInfoSpan p{
+    font-size: 14px;
+    text-transform: uppercase;
+    margin: 0px;
+    padding: 0px;
+
+}
 /* BUTTON: https://react-bootstrap.netlify.app/docs/components/buttons*/
 #saveNoteBtn{
     width: 180px;
