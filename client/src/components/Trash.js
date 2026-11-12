@@ -23,14 +23,15 @@ const daysLeft = (deletedAt) => {
     return Math.max(Math.ceil((deleted + PURGE_DAYS * DAY_MS - Date.now()) / DAY_MS), 0)
 }
 
-//====MAIN TRASH FUNCTION COMPONENT========
+//Trash Function Component
 /* Table of the user's trashed notes
 GET /notes/trash, PATCH /notes/:id/restore, DELETE /notes/:id/permanent */
-export default function Trash(
+export default function Trash(//Export default Trash function component
   {//PROPS PASSED FROM PARENT COMPONENT (Notes.js)
     setError,
     fetchNotes// Refreshes the main notes list after a note is restored
   }) {
+    //===============STATE VARIABLES
     const [notes, setNotes] = useState([])// The user's trashed notes
     const [loading, setLoading] = useState(false)
     const [actionId, setActionId] = useState(null)// Id of the note a restore/delete request is running for
