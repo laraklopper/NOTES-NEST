@@ -97,9 +97,11 @@ export default function NotePanal(
 
   return (
     <div id='notePanal'>
+    {/* HEADING STACK */}
             <Stack direction="horizontal" gap={3} id='notePanalHead'>
       <div className="p-2">
       <span id='panalHeadSpan'>
+      {/* PANA HEADING: title and row number(index) */}
       <h4 className='panalHeading'>#{rowNumber} {note.title}</h4>
       </span>
       </div>
@@ -114,7 +116,7 @@ export default function NotePanal(
         >
             {editNote ? (
                 <>
-                   <X/> HIDE FORM
+                   <X aria-hidden='true' focusable='false'/> HIDE FORM
                 </>
             ): (
                 <>
@@ -138,6 +140,7 @@ export default function NotePanal(
         </Button>
       </div>
     </Stack>
+    {/* PANAL BODY */}
         <div id='notePanalBody'>
         {/* STACK 1 */}
              <Stack gap={3} id='notePanalStack1'>
@@ -176,6 +179,7 @@ export default function NotePanal(
     {/* STACK 2: */}
              <Stack gap={3} id='notePanalStack2'>
                 <div className="p-2">
+                {/* Date added */}
         <span className='dataSpan'>
             <p className='dataLabel'>DATE ADDED:</p>
             <p className='dataValue'>{formatTimestamp(note.createdAt)}</p>
@@ -203,6 +207,7 @@ export default function NotePanal(
       </div>
     </Stack>
         </div>
+        {/* PANAL FOOTER STACK */}
     <Stack direction="horizontal" gap={3} id='panalFooter'>
       <div className="p-2">
         {/* Link to translateForm; the note id is passed in the route state */}
@@ -217,6 +222,7 @@ export default function NotePanal(
         disabled={actionLoading}
         // ARIA ATTRIBUTES
         aria-label='Archive note'
+        aria-disabled={actionLoading}
         >
            <ArchiveArrowDownIcon aria-hidden='true' focusable='false'/> ARCHIVE
         </Button>
@@ -231,6 +237,7 @@ export default function NotePanal(
         disabled={actionLoading}
         // ARIA ATTRIBUTES:
         aria-label='Move to trash'
+        aria-disabled={actionLoading}
         >
             <Trash2 aria-hidden='true' focusable='false'/>DELETE
         </Button>

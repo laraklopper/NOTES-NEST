@@ -2,7 +2,6 @@
 //IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useEffect, useState } from 'react'
 // IMPORT CSS STYLESHEETS
-
 import '../css/componentCss/ListTables.css'
 import '../css/componentCss/ListBtns.css'
 import '../css/componentCss/ListLayout.css'
@@ -51,6 +50,7 @@ export default function NotesList(
         setFilters
     }
 ) {
+    // ============STATE VARIABLES===========
     const [showFilter, setShowFilter] = useState(false)
     const [showExport, setShowExport] = useState(false)
     const [error, setError] = useState(null)// Set by the list and by NotePanal.js
@@ -71,6 +71,7 @@ export default function NotesList(
         fetchNotes?.()
     },[fetchNotes])
 
+    // ========EVENT LISTENERS===============
     const toggleFilter = () => setShowFilter((prev) => !prev)
     const toggleExport = () => setShowExport((prev) => !prev)
     // Close the details panal (and the edit form that belongs to it)

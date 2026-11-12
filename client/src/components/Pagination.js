@@ -41,6 +41,7 @@ export default function Pagination(
         onChange?.()
     }
 
+    //===================JSX RENDERING====================
   return (
     <Stack gap={3} id='paginationStack'>
       <div className="p-2" id='paginationBlock1'>
@@ -58,6 +59,7 @@ export default function Pagination(
             </Form.Select>
         </Form.Group>
       </div>
+      {/* PAGINATION BUTTONS AND PAGE NUMBER */}
       <div className="p-2" id='paginationBlock2'>
         <Button
         variant='light'
