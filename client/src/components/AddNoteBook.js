@@ -1,3 +1,4 @@
+//AddNotebookForm
 import React, { useState } from 'react'
 import '../css/componentCss/AddNotebook.css'
 import '../css/componentCss/FormSetup.css'
@@ -15,6 +16,7 @@ export default function AddNoteBook(
     loading,
     notebooks = []
   }) {
+    // ==========STATE VARIABLES===================
   const [name, setName] = useState('')
   const [colour, setColour] = useState(DEFAULT_COLOUR)
 
@@ -39,6 +41,8 @@ export default function AddNoteBook(
     setName('')
     setColour(DEFAULT_COLOUR)
   }
+
+  // ==========JSX RENDERING=================
   return (
     <form id='addNoteBookForm' method='POST' onSubmit={handleSubmit}>
       <div id='formHeadingBlock'>
@@ -48,7 +52,8 @@ export default function AddNoteBook(
         <fieldset id='noteBookGroup1'>
           <legend>NOTEBOOK DETAILS</legend>
            <Stack gap={3} id='noteBookStack1'>
-    <div className="p-2" id='noteBookBlock1'>
+    <div className="p-2" id='noteBookBlock1'> 
+            {/* NOTEBOOK NAME: value={name} */}
               <label className='notePadLabel' htmlFor='noteBookNameInput'>NAME:</label>
               <div className='inputDiv'>
                 <input
@@ -68,6 +73,7 @@ export default function AddNoteBook(
               </div>
             </div>
        <div className="p-2" id='noteBookBlock2'>
+       {/* COLOUR:  value={colour} */}
               <label className='notePadLabel' htmlFor='noteBookColourInput'>COLOUR:</label>
               <div className='inputDiv'>
                 <input
@@ -85,6 +91,7 @@ export default function AddNoteBook(
     </Stack>
         </fieldset>
       </div>
+      {/* -------END OF INPUT------------ */}
       <Stack gap={3} id='addNotebookBtnStack'>
         <div className="p-2" id='requiredInputBlock'>
             <span className='reqInfoSpan'>
@@ -100,6 +107,7 @@ export default function AddNoteBook(
             disabled={loading}
             // ARIA ATTRIBUTES
             aria-label='SAVE NOTEBOOK'
+            aria-disabled={loading ? 'true' : 'false'}
           >
             {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false'/>
           </Button>
@@ -115,6 +123,7 @@ export default function AddNoteBook(
             <RotateCcw aria-hidden='true' focusable='false'/> RESET
           </Button>
         </div>
+        {/* NOTE BOOK LIST */}
         <div className="p-2" id='noteBookListBlock'>
           <h4 id='noteBookListHeading'>YOUR NOTEBOOKS</h4>
           {notebooks.length === 0 ? (
