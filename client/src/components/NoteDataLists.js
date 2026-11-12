@@ -18,113 +18,112 @@ display notebook and tags list no panal display available for notebooks
 and tags. Tags can be deleted but cannot be edited
 */
 export default function NoteDataLists(
-    {//PROPS PASSED FROM PARENT COMPONENT (Notes.js)
-        tags,
-        notebooks,
-        fetchTags,
-        fetchNotebooks,
-        fetchNotes,
-        setError
-    }
+  {//PROPS PASSED FROM PARENT COMPONENT (Notes.js)
+    tags,
+    notebooks,
+    fetchTags,
+    fetchNotebooks,
+    fetchNotes,
+    setError
+  }
 ) {
-    //=========STATE VARIABLES==================
-    const [showNoteBooks, setShowNoteBooks] = useState(false)//State to Toggle the Notebook List
-    const [showTags, setShowTags] = useState(false);//State to toggle the Tags List
+  //=========STATE VARIABLES==================
+  const [showNoteBooks, setShowNoteBooks] = useState(false)//State to Toggle the Notebook List
+  const [showTags, setShowTags] = useState(false);//State to toggle the Tags List
 
-    //===========EVENT HANDLERS/CALLBACKS=====================
-    // Function to toggle the NoteBookList
-    const toggleNoteBooks = useCallback(() => {
-        setShowNoteBooks(prev => (!prev))
-        setShowTags(false)//Hide TagsList
-    },[])
-    // Function to toggle the Tags List
-    const toggleTags = useCallback(() => {
-        setShowTags(prev => (!prev))
-        setShowNoteBooks(false)//Hide notebook list
-    },[])
+  //===========EVENT HANDLERS/CALLBACKS=====================
+  // Function to toggle the NoteBookList
+  const toggleNoteBooks = useCallback(() => {
+    setShowNoteBooks(prev => (!prev))
+    setShowTags(false)//Hide TagsList
+  }, [])
+  // Function to toggle the Tags List
+  const toggleTags = useCallback(() => {
+    setShowTags(prev => (!prev))
+    setShowNoteBooks(false)//Hide notebook list
+  }, [])
 
-    //=================JSX RENDERING==============//
+  //=================JSX RENDERING==============//
   return (
     <div id='notesDataList'>
-    {/* Row 1 */}
-           <Row id='toggleDataListRow'>
-        <Col id='toggleListDataCol1'/>
+      {/* Row 1 */}
+      <Row id='toggleDataListRow'>
+        <Col id='toggleListDataCol1' />
         <Col xs={5}>
-            <Stack gap={1} id='toggleNoteBooksStack'>
-      <div className="p-2" id='toggleBtnBlock1'>
-        <Button
-        variant='light'
-        onClick={toggleNoteBooks}
-        id='toggleNoteBooksBtn'
-        type='button'
-        // ARIA ATTRIBUTES:
-        aria-label={showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
-        aria-pressed={showNoteBooks}
-        aria-expanded={showNoteBooks}
-        aria-controls='noteBookListPanal'
-        >
-            {showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
-        </Button>
-      </div>
-      <div className="p-2" id='toggleBtnBlock2'>
-        <Button
-        variant='light'
-        id='toggleTagsBtn'
-        onClick={toggleTags}
-        type='button'
-        // ARIA ATTRIBUTES:
-        aria-label={showTags ?'Hide Tags': 'Show Tags'}
-        aria-pressed={showTags}
-        aria-expanded={showTags}
-        aria-controls='tagsListPanal'
-        >
-            {showTags ?'Hide Tags': 'Show Tags'}
-        </Button>
-      </div>
-
-    </Stack>
-        </Col>
-        <Col id='toggleListDataCol2'/>
-      </Row>
-        {/* LISTS NOTEBOOKS + TAGS */}
-       <div id='notesDataListsDiv'>
-       {/* TOGGLE THE NOTEBOOK LIST */}
-       {showNoteBooks && (
-            <div id='noteBookListPanal'>
-                <Row id='notebookDataRow'>
-                <Col id='noteBooksCol1'/>
-                <Col  id='noteBooksCol' xs={12} md={10}>
-                {/* Render the NoteBookList.js component */}
-                    <NoteBookList
-                        notebooks={notebooks}
-                        fetchNotebooks={fetchNotebooks}
-                        fetchNotes={fetchNotes}
-                        setError={setError}
-                    />
-                </Col>
-                <Col id='noteBooksCol2'/>
-                </Row>
+          <Stack gap={1} id='toggleNoteBooksStack'>
+            <div className="p-2" id='toggleBtnBlock1'>
+              <Button
+                variant='light'
+                onClick={toggleNoteBooks}
+                id='toggleNoteBooksBtn'
+                type='button'
+                // ARIA ATTRIBUTES:
+                aria-label={showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
+                aria-pressed={showNoteBooks}
+                aria-expanded={showNoteBooks}
+                aria-controls='noteBookListPanal'
+              >
+                {showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
+              </Button>
             </div>
-       )}
-       {/* TOGGLE THE TAGS LIST */}
-       {showTags && (
-        <div id='tagsListPanal'>
-              <Row id='tagsDataRow'>
-        <Col id='tagsDataCol1'/>
-        <Col  md={8} id='tagsDataCol'>
-        {/* Render the TagList.js component */}
-            <TagsList
-                tags={tags}
-                fetchTags={fetchTags}
-                fetchNotes={fetchNotes}
-                setError={setError}
-            />
+            <div className="p-2" id='toggleBtnBlock2'>
+              <Button
+                variant='light'
+                id='toggleTagsBtn'
+                onClick={toggleTags}
+                type='button'
+                // ARIA ATTRIBUTES:
+                aria-label={showTags ? 'Hide Tags' : 'Show Tags'}
+                aria-pressed={showTags}
+                aria-expanded={showTags}
+                aria-controls='tagsListPanal'
+              >
+                {showTags ? 'Hide Tags' : 'Show Tags'}
+              </Button>
+            </div>
+          </Stack>
         </Col>
-        <Col id='tagsDataCol2'/>
+        <Col id='toggleListDataCol2' />
       </Row>
-        </div>
-       )}
-       </div>
+      {/* LISTS NOTEBOOKS + TAGS */}
+      <div id='notesDataListsDiv'>
+        {/* TOGGLE THE NOTEBOOK LIST */}
+        {showNoteBooks && (
+          <div id='noteBookListPanal'>
+            <Row id='notebookDataRow'>
+              <Col id='noteBooksCol1' />
+              <Col id='noteBooksCol' xs={12} md={10}>
+                {/* Render the NoteBookList.js component */}
+                <NoteBookList
+                  notebooks={notebooks}
+                  fetchNotebooks={fetchNotebooks}
+                  fetchNotes={fetchNotes}
+                  setError={setError}
+                />
+              </Col>
+              <Col id='noteBooksCol2' />
+            </Row>
+          </div>
+        )}
+        {/* TOGGLE THE TAGS LIST */}
+        {showTags && (
+          <div id='tagsListPanal'>
+            <Row id='tagsDataRow'>
+              <Col id='tagsDataCol1' />
+              <Col md={8} id='tagsDataCol'>
+                {/* Render the TagList.js component */}
+                <TagsList
+                  tags={tags}
+                  fetchTags={fetchTags}
+                  fetchNotes={fetchNotes}
+                  setError={setError}
+                />
+              </Col>
+              <Col id='tagsDataCol2' />
+            </Row>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
