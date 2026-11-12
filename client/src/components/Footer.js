@@ -1,5 +1,9 @@
+// Footer.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React from 'react'
-import '../css/componentCss/Footer.css'
+// IMPORT CSS STYLESHEETS
+import '../css/componentCss/Footer.css';
+// IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
@@ -7,11 +11,12 @@ import Button from 'react-bootstrap/Button';
 // IMPORT ICONS FROM LUCIDE REACT
 import { LogOut } from 'lucide-react';
 
-export default function Footer(
+//Footer Funtion component
+export default function Footer(//Export default Footer component
   {//PROPS PASSED FROM PARENT COMPONENT
     logout
   }) {
-    //============================================
+    //====================JSX RENDERING========================
   return (
     <footer id='pageFooter'>
         <Row id='footerRow1'>
@@ -25,9 +30,7 @@ export default function Footer(
         </Button>
       </div>
     </Stack> 
-        
         </Col>
-
         </Row>
 <Row id='footerRow2'>
   <Col xs={0} md id='copyRightCol1'/>
