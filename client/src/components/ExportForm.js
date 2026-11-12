@@ -1,24 +1,16 @@
 // ExportForm.js
 // IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/FilterForms.css';//Use FilterForms.css for Filter and Export forms
 import '../css/componentCss/FormSetup.css';
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button'
+// IMPORT ICONS FROM LUCIDE-REACT
 import { Asterisk, FileClock, FileDown } from 'lucide-react';
+// IMPORT UTILITY FUNCTIONS
 import { EXPORT_TYPES, filenameFromHeader } from '../util/formUtil';
-
-/* Every export request in the app, keyed by the `type` prop.
-    - filterKeys: the list filters sent as query params when exporting the filtered list
-    - filename:   fallback name of the downloaded file (the server's Content-Disposition name is used when available)
-    - title:      screen reader heading for the form */
-// const EXPORT_TYPES = {
-//     notes:        { filterKeys: ['language', 'notebook', 'tag'],           filename: 'note-nest-notes',        title: 'EXPORT NOTES FORM' },
-//     translations: { filterKeys: ['sourceLanguage', 'targetLanguage'],      filename: 'note-nest-translations', title: 'EXPORT TRANSLATIONS FORM' },
-// }
-
-// // Reads the filename from a Content-Disposition header, e.g. attachment; filename="note-nest-notes-2026-11-09.csv"
-// const filenameFromHeader = (header) => header?.match(/filename="?([^";]+)"?/i)?.[1] || null
 
 // ExportForm function component
 /* Used to export NotesList.js and TranslationsList.js (all rows, or only the rows

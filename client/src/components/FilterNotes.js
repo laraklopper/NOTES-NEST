@@ -1,4 +1,6 @@
-//FilterNotes.js
+/* FilterNotes.js
+Filter form for the NotesList table. The selects hold draft values;
+the list only re-fetches when APPLY is pressed. */
 //IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useEffect, useState } from 'react'
 // IMPORT CSS STYLESHEETS
@@ -14,9 +16,7 @@ import languageData from '../util/languageData';
 import { EMPTY_NOTE_FILTERS } from '../util/formUtil';
 
 // FilterNotes component
-/* Filter form for the NotesList table. The selects hold draft values;
-the list only re-fetches when APPLY is pressed. */
-export default function FilterNotes(
+export default function FilterNotes(//Export default FilterNotes.js function component
     {//PROPS PASSED FROM PARENT COMPONENT (NotesList.js)
         loading,
         filters = EMPTY_NOTE_FILTERS,// The filters currently applied to the list
@@ -34,11 +34,13 @@ export default function FilterNotes(
     }, [filters])
 
     //==============EVENT HANDLERS=====================
+    //Function to handle field input changes
     const handleChange = (e) => {
         const { name, value } = e.target
         setDraft((prev) => ({ ...prev, [name]: value }))
     }
 
+    //Function to submit form
     const handleSubmit = (e) => {
         e.preventDefault()// Stop the page reloading
         onApply?.(draft)
@@ -49,8 +51,11 @@ export default function FilterNotes(
         <form id='filterForm' aria-busy={loading} aria-label='Filter notes' onSubmit={handleSubmit}>
             <div id='filterFormInput'>
                 <Stack direction="horizontal" gap={3} id='filterStack1'>
-                    <fieldset className="p-2" id='filterByBlock'>
-                        <legend className='visually-hidden'>FILTER BY:</legend>
+                    <fieldset className="p-2" id='filterByBlock' aria-labelledby='filterByLegend'>
+                        <legend id='filterByLegend' className='visually-hidden'>FILTER BY:</legend>
+                        {/* Language: 
+                        select: value={draft.language} 
+                        mappedOptions: value={language.code}*/}
                         <div className='inputDiv'>
                             <label className='filterLabel' htmlFor='languageFilter'>LANGUAGE:</label>
                             <select
@@ -68,6 +73,9 @@ export default function FilterNotes(
                                 ))}
                             </select>
                         </div>
+                        {/* NOTEBOOK: 
+                        select: value={draft.notebook} 
+                        option: value={notebook._id}*/}
                         <div className='inputDiv'>
                             <label className='filterLabel' htmlFor='notebookFilter'>NOTEBOOK:</label>
                             <select
@@ -104,6 +112,7 @@ export default function FilterNotes(
                         </div>
                     </fieldset>
                 </Stack>
+                {/* STACK 2: BUTTONS */}
                 <Stack direction="horizontal" gap={3} id='filterStack2'>
                     <div className="p-2" />
                     <div className="p-2 ms-auto">
@@ -112,6 +121,9 @@ export default function FilterNotes(
                             type='submit'
                             id='applyFilterBtn'
                             disabled={loading}
+                            // ARIA ATTRIBUTES:
+                            aria-label='APPLY FILTER'
+                            aria-disabled={loading ? 'true': 'false'}
                         >
                             APPLY <Search aria-hidden='true' focusable='false' />
                         </Button>

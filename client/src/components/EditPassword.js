@@ -42,7 +42,8 @@ export default function EditPassword(//Export default EditPassword.js function c
     const showCurrentPswdError = touched.currentPassword && currentPswdEmpty;
     const showNewPswdError = touched.newPassword && newPswdEmpty;
 
-    //=============================================
+    //===============CALLBACKS==============================
+    //Function to ensure the password has all the necessary requirements
     const isStrongPassword =useCallback((pwd)=> {
         return /^(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/ //Regex pattern to check for at least 8 characters and one special character
             .test(
@@ -58,14 +59,14 @@ export default function EditPassword(//Export default EditPassword.js function c
         if (!confirmReset) return;// If user cancels, exit the function
         setCurrentPassword('')// Clear the current password field
         setNewPassword('')// Clear the new password field
-        setConfirmNewPassword('')
+        setConfirmNewPassword('')//Clear the confirmNewPassword field
     },[])
 
     //=========REQUESTS=========================
     //Function to edit user password
     const editPassword = useCallback(async(e) => {
         e.preventDefault()//Prevent default form submission
-        setLoading(true)
+        setLoading(true)//Set the Loading state
         setError?.(null)//Clear any previous error messages
         try {
             if (!currentPassword || !newPassword) {
@@ -108,6 +109,8 @@ export default function EditPassword(//Export default EditPassword.js function c
                 })
             })
             const data = await response.json().catch(() => ({}));// Safely parse the JSON response (avoid crash if server returns non-JSON)
+            /* Conditional rendering to check if the response
+               is not successful (status code is not in the range 200-299)*/
             if (!response.ok) {
                 const errorMessage = data.message || 'Failed to change password.';//Default error message
                 setError?.(errorMessage);// Set the error state to display the error in the UI
@@ -137,20 +140,25 @@ export default function EditPassword(//Export default EditPassword.js function c
     // ========= IDs USED BY aria-labelledby / aria-describedby =========
     const formTitleId = 'editPasswordFormTitle';
     const passwordHelpId = 'EditChangePasswordHelp'
+    // ErrorIds
     const currentPasswordErrorId = 'currentPasswordError'
     const newPasswordErrorId = 'newPasswordError'
 
     //================JSX RENDERING===========
     return (
-        <form id='editPasswordForm' onSubmit={editPassword} method='PATCH' aria-labelledby={formTitleId}>
+        <form id='editPasswordForm' onSubmit={editPassword} method='PATCH' aria-labelledby={formTitleId} aria-busy={loading}>
+        {/* FORM HEADING */}
             <div id='formHeadingBlock'>
+            {/* ---------Screen Reader Heading--------------------- */}
                 <p className='visually-hidden' id={formTitleId}>EDIT PASSWORD FORM</p>
                 <h3 id='formHeading'>EDIT PASSWORD:</h3>
             </div>
+            {/* ----------INPUT DETAILS------------ */}
             <div id='editPasswordInput'>
                 {/* GROUP 1: CURRENT PASSOWORD */}
-                <fieldset id='editPasswordGroup1'>
-                    <legend>Current password</legend>
+                <fieldset id='editPasswordGroup1' aria-labelledby='currentPswdLegend'>
+                    <legend id='currentPswdLegend' className='visually-hidden'>Current password input</legend>
+                    {/* STACK 1: Current Password */}
                     <Stack gap={3} id='editPasswordStack1'>
                     {/* CURRENT PASSWORD: value={currentPassword} */}
                         <div className="p-2" id='currentPasswordBlock1'>
@@ -222,8 +230,8 @@ export default function EditPassword(//Export default EditPassword.js function c
                     </Stack>
                 </fieldset>
                 {/* GROUP 2: NEW PASSWORD */}
-                <fieldset id='editPasswordGroup2'>
-                    <legend>NEW PASSWORD</legend>
+                <fieldset id='editPasswordGroup2' aria-labelledby='newPswdLegend'>
+                    <legend id='newPswdLegend' className='visually-hidden'>NEW PASSWORD INPUT</legend>
                     {/* ========EDIT PASSWORD STACK 2=============== */}
                     <Stack gap={3} id='editPasswordStack2'>
                         {/* NEW PASSWORD value={newPassword} */}
@@ -335,6 +343,7 @@ export default function EditPassword(//Export default EditPassword.js function c
                     </div>
                 )}
             </div>
+            {/* ----------END OF INPUT------------- */}
             {/* =====EDIT PASSWORD STACK 3============= */}
             <Stack gap={3} id='editPasswordStack3'>
                 <div className="p-2" id='editPswdBlock1'>
@@ -343,10 +352,11 @@ export default function EditPassword(//Export default EditPassword.js function c
                         <small className='required'>
                             <Asterisk color='#C22419' fontWeight={700} size={12} aria-hidden='true' focusable='false' />
                         </small>
-                        <p>Indicates required information</p>
+                        <p className='infoText'>Indicates required information</p>
                     </span>
                 </div>
                 <div className="p-2" id='editPswdBlock2'>
+                {/* Button to submit edit password form */}
                     <Button
                         variant='light'
                         id='editPswdBtn'
@@ -355,12 +365,13 @@ export default function EditPassword(//Export default EditPassword.js function c
                         // ARIA ATTRIBUTES:
                         role='button'
                         aria-label={loading ? 'Saving…' : 'EDIT PASSWORD'}
-                        aria-disabled={loading}
+                        aria-disabled={loading ? 'false': 'true'}
                     >
                         {loading ? 'Saving...': 'EDIT PASSWORD'}
                     </Button>
                 </div>
                 <div className="p-2" id='editPswdBlock3'>
+                {/* Button to clear edit password form */}
                     <Button
                         variant='danger'
                         type='button'
@@ -368,8 +379,8 @@ export default function EditPassword(//Export default EditPassword.js function c
                         onClick={resetForm}
                         disabled={loading}
                         // ARIA ATTRIBUTES
-                        aria-label='clearForm Button'
-                        aria-disabled={loading}
+                        aria-label='CLEAR FORM'
+                        aria-disabled={loading ? 'false': 'true'}
                     >
                         CLEAR FORM
                     </Button>

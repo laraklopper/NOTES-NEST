@@ -291,7 +291,7 @@ export default function EditNoteForm(
                         type='submit'
                         disabled={loading}
                         // ARIA ATTRIBUTES
-                        aria-disabled={loading ? 'false': 'true'}
+                        aria-disabled={loading ? 'true': 'false'}
                         aria-label={loading ? 'SAVING...' : 'SAVE NOTE CHANGES'}
                     >
                         {loading ? 'SAVING...' : 'EDIT NOTE'}
@@ -307,7 +307,7 @@ export default function EditNoteForm(
                         disabled={loading}
                         // ARIA ATTRIBUTES:
                         aria-label='UNDO CHANGES'
-                        aria-disabled={loading ? 'false': 'true'}
+                        aria-disabled={loading ? 'true': 'false'}
                     >
                         <RotateCw aria-hidden='true' focusable='false'/> RESET
                     </Button>
