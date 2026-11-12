@@ -11,8 +11,10 @@ file using the dotenv package*/
 require('dotenv').config();
 // IMPORT REQUIRED MODULES AND PACKAGES
 const express = require('express');//Express framework for building web applications
+// IMPORT CUSTOM MIDDLEWARE
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { translateLimiter, detectLimiter } = require('../middleware/rateLimitMiddleware');// Limits translation and language detection requests per IP
+// IMPORT DATA AND UTILITY FUNCTIONS
 const { languageData } = require('../util/langaugeData');// Local copy of the Langbly language list
 const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../util/schemaUtil');
 const router = express.Router()// Create Express router instance
@@ -50,24 +52,29 @@ Langbly errors are mapped onto the statuses the client handles:
   - 502: Langbly is unreachable, timed out, or rejected the API key
 (a rejected key is a server configuration problem, so it is not passed on as a
 401 — that would log the user out). */
+// Send a request to Langbly and return the data from its response.
+// The options object is optional. If no method is supplied, use GET.
 const langblyRequest = async (path, { method = 'GET', body } = {}) => {
     //Conditional rendering 
+    // Stop before making the request if the server's API key is missing.
     if (!LANGBLY_API_KEY) {
         console.error('[ERROR: apiRoutes.js, langblyRequest] LANGBLY_API_KEY is missing from .env');// Log an error message in the console for debugging purposes
         throw new LangblyError(502, 'The translation service is not configured.');
     }
 
-    let response;
+    let response;// Declare response outside the try block so it can be read afterward.
     try {
+        // Append the route suffix, such as '/detect', to the Langbly endpoint.
         response = await fetch(`${LANGBLY_BASE_URL}${LANGBLY_PATH}${path}`, {
             method,
             headers: {
+                // Send the server's API key using both authentication headers.
                 /* The Langbly docs show both schemes, so both are sent */
                 'X-API-Key': LANGBLY_API_KEY,
                 'Authorization': `Bearer ${LANGBLY_API_KEY}`,
-                ...(body ? { 'Content-Type': 'application/json' } : {}),
+                ...(body ? { 'Content-Type': 'application/json' } : {}),// Add Content-Type only when sending a body.
             },
-            body: body ? JSON.stringify(body) : undefined,
+            body: body ? JSON.stringify(body) : undefined, // Convert the request body to JSON, or omit it if none was supplied.
             signal: AbortSignal.timeout(LANGBLY_TIMEOUT_MS),
         });
     } catch (error) {
