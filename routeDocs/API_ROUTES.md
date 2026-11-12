@@ -47,9 +47,11 @@ Each route forwards to the Langbly endpoint with the **same path**, which keeps 
 ### 1.1. CLIENT SIDE USAGE
 
 | Method | Full Path | Frontend/Client side files |
-| `GET` | `/api/language/translate/v2/languages` |  |
-| `POST` | `/api/language/translate/v2` | |
-| `POST` | `/api/language/translate/v2/detect` | |
+|---|---|---|
+| `GET` | `/api/language/translate/v2/languages` | [TranslateForm.js](../client/src/components/TranslateForm.js) (on load, cancelled on unmount) |
+| `POST` | `/api/language/translate/v2` | [TranslateForm.js](../client/src/components/TranslateForm.js) (Translate button) |
+| `POST` | `/api/language/translate/v2/detect` | [TranslateForm.js](../client/src/components/TranslateForm.js) (while typing; older calls are cancelled) |
+
 ---
 
 ## 2. Imports & Setup
@@ -59,8 +61,9 @@ require('dotenv').config();
 const express = require('express');
 const { checkJwtToken } = require('../middleware/securityMiddleware');
 const { translateLimiter, detectLimiter } = require('../middleware/rateLimitMiddleware');
-const { languageData } = require('../util/langaugeData');
+const { languageData } = require('../util/languageData');
 const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../util/schemaUtil');
+const { LANGBLY_TIMEOUT_MS, LANGUAGES_CACHE_MS, LANGBLY_PATH } = require('../util/apiUtil');
 const router = express.Router();
 ```
 
@@ -70,21 +73,27 @@ const router = express.Router();
 | `express` | npm | Creates the `router`. |
 | `checkJwtToken` | `securityMiddleware` | Blocks requests from users who aren't logged in. |
 | `translateLimiter`, `detectLimiter` | `rateLimitMiddleware` | Per-IP request limits, with a separate limit for each route. |
-| `languageData` | `util/langaugeData` | Local `[{ code, name }]` list, used as a fallback for language names. |
+| `languageData` | `util/languageData` | Local `[{ code, name }]` list, used as a fallback for language names. |
 | `languageCodeRegex` | `util/schemaUtil` | Validates codes like `en`, `zu`, `zh-CN`. |
 | `MAX_TRANSLATION_CHARS` | `util/schemaUtil` | The maximum text length allowed per request. |
+| `LANGBLY_TIMEOUT_MS`, `LANGUAGES_CACHE_MS`, `LANGBLY_PATH` | `util/apiUtil` | Langbly connection settings ([section 3](#3-connection-settings-constants)). |
 
 ---
 
 ## 3. Connection Settings (Constants)
 
 ```js
+// apiRoutes.js (read from .env)
 const LANGBLY_BASE_URL = (process.env.LANGBLY_BASE_URL || 'https://api.langbly.com').replace(/\/+$/, '');
 const LANGBLY_API_KEY = process.env.LANGBLY_API_KEY;
+
+// util/apiUtil.js (fixed values)
 const LANGBLY_PATH = '/language/translate/v2';
 const LANGBLY_TIMEOUT_MS = 15000;
 const LANGUAGES_CACHE_MS = 1000 * 60 * 60 * 24;
 ```
+
+The two `.env` values stay in `apiRoutes.js`. The fixed values live in `util/apiUtil.js`.
 
 | Constant | Value | Notes |
 |---|---|---|
@@ -170,7 +179,7 @@ This is a custom error that carries two things:
 ## 7. langblyRequest() — The Core Helper
 
 ```js
-const langblyRequest = async (path, { method = 'GET', body } = {}) => { ... }
+const langblyRequest = async (path, { method = 'GET', body, signal } = {}) => { ... }
 ```
 
 Every route calls Langbly through this one function, so the authentication, timeout and error handling live in one place.
@@ -182,6 +191,7 @@ Every route calls Langbly through this one function, so the authentication, time
 | `path` | — | `''`, `'/detect'`, `'/languages?target=en'` |
 | `method` | `'GET'` | `'POST'` |
 | `body` | `undefined` | `{ q: 'Hallo', target: 'en' }` |
+| `signal` | `undefined` | `clientAbortSignal(res)`, which cancels the call if the browser disconnects ([section 8](#cancelling-when-the-browser-disconnects)) |
 
 `= {}` on the options object means you can call `langblyRequest('/languages?target=en')` without passing a second argument.
 
@@ -207,7 +217,9 @@ response = await fetch(`${LANGBLY_BASE_URL}${LANGBLY_PATH}${path}`, {
         ...(body ? { 'Content-Type': 'application/json' } : {}),
     },
     body: body ? JSON.stringify(body) : undefined,
-    signal: AbortSignal.timeout(LANGBLY_TIMEOUT_MS),
+    signal: signal
+        ? AbortSignal.any([signal, AbortSignal.timeout(LANGBLY_TIMEOUT_MS)])
+        : AbortSignal.timeout(LANGBLY_TIMEOUT_MS),
 });
 ```
 
@@ -217,7 +229,7 @@ response = await fetch(`${LANGBLY_BASE_URL}${LANGBLY_PATH}${path}`, {
 | Both auth headers | The Langbly docs show both schemes, so both are sent. |
 | Conditional spread `...(body ? {...} : {})` | Adds `Content-Type` only when there's a body (POST). GET requests stay clean. |
 | `JSON.stringify(body)` | `fetch` needs a string body, not an object. |
-| `signal` | The 15-second timeout. See [section 8](#8-the-timeout-abortsignal). |
+| `signal` | The 15-second timeout, combined with the browser-disconnect signal when one is passed in. See [section 8](#8-the-timeout-abortsignal). |
 
 `let response` is declared **outside** the `try` so it can still be used after the block.
 
@@ -230,6 +242,7 @@ response = await fetch(`${LANGBLY_BASE_URL}${LANGBLY_PATH}${path}`, {
 ```
 This `catch` only runs when **no HTTP response arrived at all**:
 - the 15s timeout fired (`TimeoutError`)
+- the browser disconnected and the request was cancelled (`AbortError`)
 - a DNS lookup failed
 - the connection was refused or reset
 
@@ -238,9 +251,19 @@ An HTTP error status (400, 500, etc.) does **not** land here, because `fetch` on
 **Step 4: Parse the body safely**
 
 ```js
-const payload = await response.json().catch(() => ({}));
+let payload;
+try {
+    payload = await response.json();
+} catch (error) {
+    if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+        throw new LangblyError(502, 'The translation service is unavailable. Please try again later.');
+    }
+    payload = {};
+}
 ```
-If Langbly sends HTML or an empty body (common with gateway errors), `.json()` would throw. The `.catch` turns that into `{}`, so the code can carry on.
+If Langbly sends HTML or an empty body (common with gateway errors), `.json()` throws. The `catch` turns that into `{}`, so the code can carry on.
+
+A **timeout or cancellation while the body is still downloading** is different: the signal stays attached after the headers arrive, so `.json()` can also reject with `TimeoutError` / `AbortError`. That's a real failure, so it becomes a `502` instead of an empty `{}`, which would otherwise look like "no data" (or "undetermined" on `/detect`). See [Gap 1](#gap-1-a-timeout-while-reading-the-body-was-swallowed-fixed).
 
 **Step 5: Map error statuses**
 
@@ -267,12 +290,14 @@ Langbly wraps results in `{ data: { ... } }`. Returning `{}` as a fallback means
 ## 8. The Timeout (AbortSignal)
 
 ```js
-signal: AbortSignal.timeout(LANGBLY_TIMEOUT_MS),
+signal: signal
+    ? AbortSignal.any([signal, AbortSignal.timeout(LANGBLY_TIMEOUT_MS)])
+    : AbortSignal.timeout(LANGBLY_TIMEOUT_MS),
 ```
 
 ### What it is
 
-`AbortSignal.timeout(ms)` is a ready-made signal that **aborts itself** after the given time. No `AbortController` is needed because nothing else ever cancels the request. It's a timeout only.
+`AbortSignal.timeout(ms)` is a ready-made signal that **aborts itself** after the given time, so it needs no `AbortController`. When a route also passes a browser-disconnect `signal`, `AbortSignal.any([...])` combines the two: whichever fires first cancels the request.
 
 ### What happens when it fires
 
@@ -291,17 +316,36 @@ signal: AbortSignal.timeout(LANGBLY_TIMEOUT_MS),
 
 | Error Name | Caused By |
 |---|---|
-| `TimeoutError` | `AbortSignal.timeout()` running out (this file) |
-| `AbortError` | A manual `controller.abort()` (not used here) |
+| `TimeoutError` | `AbortSignal.timeout()` running out |
+| `AbortError` | `clientAbortSignal` firing because the browser disconnected |
+
+Both end up as a `LangblyError(502)`, whether they happen before the headers arrive (Step 3) or while the body is downloading (Step 4).
 
 ### Why it matters
 
 Node's `fetch` has **no overall time limit**. Without this signal, a hung Langbly server would keep the user's request (and the Express connection) open indefinitely.
 
+### Cancelling when the browser disconnects
+
+```js
+const clientAbortSignal = (res) => {
+    const controller = new AbortController();
+    res.on('close', () => {
+        if (!res.writableFinished) controller.abort();// Closed before the response finished = the client left
+    });
+    return controller.signal;
+};
+```
+
+`TranslateForm` cancels older `/detect` calls while the user types. Without this, Express wouldn't notice, and the Langbly call would still run to the end and use up quota for a result nobody sees. `res` emits `close` when the connection ends. If that happens **before** the response has finished being sent (`!res.writableFinished`), the client left early, so the Langbly call is cancelled.
+
+`/translate` and `/detect` both pass `signal: clientAbortSignal(res)`. `/languages` doesn't, because its result is cached and shared by every user, so it's worth finishing even if one browser leaves.
+
 ### Requirements
 
 - `AbortSignal.timeout` needs Node **17.3+**
-- Global `fetch` needs Node **18+**, so the file already requires Node 18+
+- Global `fetch` needs Node **18+**
+- `AbortSignal.any` needs Node **20.3+**, so the file requires Node 20.3+ overall (the project runs on Node 24)
 
 ---
 
@@ -309,6 +353,7 @@ Node's `fetch` has **no overall time limit**. Without this signal, a hung Langbl
 
 ```js
 const sendError = (res, route, error) => {
+    if (res.writableEnded || res.destroyed) return;
     if (error instanceof LangblyError) {
         return res.status(error.status).json({ message: error.message });
     }
@@ -321,6 +366,7 @@ Every route's `catch` calls this, so all error responses have the same shape: `{
 
 | Error Type | Logged Here? | Response |
 |---|---|---|
+| Browser already disconnected | No | Nothing. There's no one to answer, so it returns early. |
 | `LangblyError` | No, it was already logged in `langblyRequest` | `error.status` + safe message |
 | Anything else (a bug) | Yes | `500` + generic message |
 
@@ -534,6 +580,7 @@ The **rate limiter goes first**, so a flood of requests is rejected cheaply, bef
 │  langblyRequest()                                                 │
 │    ├─ no API key ──────────► throw LangblyError(502)              │
 │    ├─ timeout / network ───► throw LangblyError(502)              │
+│    ├─ browser left ────────► throw LangblyError(502) (not sent)   │
 │    ├─ Langbly 400 ─────────► throw LangblyError(400)              │
 │    ├─ Langbly 429 ─────────► throw LangblyError(429)              │
 │    ├─ Langbly other ───────► throw LangblyError(502)              │
@@ -556,59 +603,23 @@ The **rate limiter goes first**, so a flood of requests is rejected cheaply, bef
 
 ## 16. Known Gaps & Housekeeping
 
-### Gap 1: A timeout while reading the body is swallowed
+### Gap 1: A timeout while reading the body was swallowed (fixed)
 
-```js
-const payload = await response.json().catch(() => ({}));
-```
+The timeout signal stays attached after the headers arrive. `langblyRequest` used to parse the body with `response.json().catch(() => ({}))`, so if the 15s ran out **while the body was downloading**, the `TimeoutError` became `{}` and `response.ok` was still `true`. `/languages` and `/translate` returned 502 but logged it as "no data", and `/detect` returned **200 with `language: null`**, which looked like "undetermined" instead of an error.
 
-The timeout signal stays attached after the headers arrive. If the 15s runs out **while the body is downloading**, `.json()` rejects with `TimeoutError`, the `.catch` turns it into `{}`, and `response.ok` is still `true`.
+**Fixed:** a `TimeoutError` or `AbortError` while reading the body now throws `LangblyError(502)`. Only non-JSON bodies still fall back to `{}`. See [section 7, Step 4](#step-by-step).
 
-| Route | Result |
+### Gap 2: Cancelled browser requests still reached Langbly (fixed)
+
+`TranslateForm` cancels older `/detect` calls while the user types, but Express didn't know, so each Langbly call still ran to the end and used up quota.
+
+**Fixed:** a new `clientAbortSignal(res)` helper aborts when the browser disconnects before the response is finished. `/detect` and `/translate` pass it to `langblyRequest`, which combines it with the timeout using `AbortSignal.any`. `sendError` skips responding when the browser has already gone. See [section 8](#cancelling-when-the-browser-disconnects).
+
+### Housekeeping (done)
+
+| Issue | What changed |
 |---|---|
-| `/languages` | 502 (correct), but logged as "no languages" |
-| `/translate` | 502 (correct), but logged as "no translation" |
-| `/detect` | **200 with `language: null`**, which looks like "undetermined" instead of an error |
-
-This is rare with small payloads. **Fix:** only use the `{}` fallback for errors that aren't timeouts:
-
-```js
-let payload;
-try {
-    payload = await response.json();// Parse Langbly's JSON body
-} catch (error) {
-    if (error.name === 'TimeoutError' || error.name === 'AbortError') {
-        throw new LangblyError(502, 'The translation service is unavailable. Please try again later.');// Timed out mid-body
-    }
-    payload = {};// Non-JSON body: fall back to an empty object
-}
-```
-
-### Gap 2: Cancelled browser requests still reach Langbly
-
-If the frontend aborts an earlier `/detect` call (for example, in `useEffect` cleanup while typing), Express doesn't know. The Langbly call still runs to completion and uses up quota. **Fix:** pass a client-disconnect signal through and combine it with the timeout:
-
-```js
-// In langblyRequest: accept { signal } and combine it with the timeout
-signal: signal
-    ? AbortSignal.any([signal, AbortSignal.timeout(LANGBLY_TIMEOUT_MS)])// Whichever comes first
-    : AbortSignal.timeout(LANGBLY_TIMEOUT_MS),
-
-// In the route
-const controller = new AbortController();
-res.on('close', () => {
-    if (!res.writableFinished) controller.abort();// Client left before we answered
-});
-const data = await langblyRequest('/detect', { method: 'POST', body: { q: sourceText }, signal: controller.signal });
-```
-
-`AbortSignal.any` needs Node **20.3+**.
-
-### Housekeeping
-
-| Line(s) | Issue | Suggestion |
-|---|---|---|
-| 224–231 | The `/detect` doc comment appears **twice** | Delete one copy |
-| 48–56 | Two descriptions of `langblyRequest` (a block comment plus two `//` lines) | Keep one |
-| 58, 105, 174 | Comments say "Conditional rendering" | That's a React term for UI. Here these are **guard clauses** / conditional checks. |
-| 18 | `'../util/langaugeData'` | Looks like a typo of `languageData`. Only rename it if you also rename the actual file. |
+| The `/detect` doc comment appeared **twice** | Removed the duplicate |
+| Two descriptions of `langblyRequest` (a block comment plus two `//` lines) | Merged into one block comment, which now also covers the `signal` option |
+| Comments said "Conditional rendering" | Changed to "Guard clause" (in `langblyRequest` and `/translate`), or removed where the comment beside it already explained the check (`sendError`) |
+| `'../util/langaugeData'` typo | Renamed the file to `server/util/languageData.js` and updated every `require` (`apiRoutes.js`, `exportRoutes.js`, `userSchema.js`), plus the references in `EXPORT_ROUTES.md`, `GLOSSARY.md` and the client's `languageData.js` comment |

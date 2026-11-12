@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {languageData} = require('../util/langaugeData')
+const {languageData} = require('../util/languageData')
 const {emailRegex, phoneRegex, normalizePhoneSA} = require('../util/schemaUtil')
 /* Valid language codes, derived from the Langbly language list rather than
 written out again here, so the enums stay correct when that list changes.

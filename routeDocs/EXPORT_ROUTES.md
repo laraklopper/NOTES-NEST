@@ -76,7 +76,7 @@ const Translation = require('../models/translationSchema');
 const { checkJwtToken } = require('../middleware/securityMiddleware');
 const { exportLimiter } = require('../middleware/rateLimitMiddleware');
 const { languageCodeRegex } = require('../util/schemaUtil');
-const { languageData } = require('../util/langaugeData');
+const { languageData } = require('../util/languageData');
 const { FORMATS, MAX_EXPORT_ROWS } = require('../util/apiUtil')
 ```
 
@@ -91,7 +91,7 @@ const { FORMATS, MAX_EXPORT_ROWS } = require('../util/apiUtil')
 | `checkJwtToken` | `securityMiddleware` | Only logged-in users can export, and only their own data |
 | `exportLimiter` | `rateLimitMiddleware` | Exports are heavy (database query + file build), so they're rate-limited separately |
 | `languageCodeRegex` | `util/schemaUtil` | Validates the language filters, using the same rule as the schemas |
-| `languageData` | `util/langaugeData` | Shows `Afrikaans` instead of `af` in the file |
+| `languageData` | `util/languageData` | Shows `Afrikaans` instead of `af` in the file |
 | `FORMATS` | `util/apiUtil` | The allowed formats, e.g. `['csv', 'xlsx']` |
 | `MAX_EXPORT_ROWS` | `util/apiUtil` | The maximum number of rows per file |
 
@@ -609,4 +609,3 @@ The entire result set, the rows array, and the finished file all sit in memory b
 | 129 | The BOM is an invisible character in the string literal | Write it as `'﻿'` so it's visible and can't be stripped by accident |
 | 160 | "Conditional rendering" | That's a React UI term. This is a **guard clause** / validation check. |
 | 2–8 | The header doesn't mention `MAX_EXPORT_ROWS` or the rate limiter | Add a line: "Limited to MAX_EXPORT_ROWS rows; rate-limited per IP" |
-| 24 | `'../util/langaugeData'` | The same suspected typo as in the other route files. Only rename it if you rename the actual file. |

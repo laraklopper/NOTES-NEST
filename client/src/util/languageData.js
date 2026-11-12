@@ -1,5 +1,5 @@
-// langaugeData.js
-/* Client-side mirror of server/dataArrays/langaugeData.js — the languages
+// languageData.js
+/* Client-side mirror of server/util/languageData.js — the languages
 supported by the Langbly translation API, as documented at
 https://langbly.com/docs/languages.
 

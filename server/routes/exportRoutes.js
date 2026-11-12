@@ -21,7 +21,7 @@ const Translation = require('../models/translationSchema');// Import the Transla
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { exportLimiter } = require('../middleware/rateLimitMiddleware');// Limits exports per IP
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the language filters
-const { languageData } = require('../util/langaugeData');// Used to show language names instead of codes
+const { languageData } = require('../util/languageData');// Used to show language names instead of codes
 const {FORMATS, MAX_EXPORT_ROWS} = require('../util/apiUtil')
 const router = express.Router()// Create Express router instance
 
