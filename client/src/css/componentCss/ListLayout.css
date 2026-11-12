@@ -21,8 +21,9 @@
     gap: 10px;
     width: 100%;
 }
-#notesDataList{
-        display: flex;
+#notesDataList,
+#usersData{
+    display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0px;

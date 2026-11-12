@@ -13,12 +13,64 @@ Footer.js
     gap: 10px;
 }
 /* BOOTSTRAP */
+/* GRID */
 #footerRow1,
-#footerRow2{
+#footerRow2,
+#footerRow3{
     width: 100%;
     margin: 0px;
     padding: 0px;
     display: flex;
+}
+/* STACK */
+#footerTimeStack{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#logoutStack{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+/* CLOCK */
+/* LIST: https://react-bootstrap.netlify.app/docs/components/list-group */
+#footerClockList{
+    display: flex;
+    align-items: baseline;
+    margin: 0px;
+    background-color: transparent;
+    padding: 0px;
+    gap: 5px;
+}
+#footerDate,
+#footerTime{
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    background-color: transparent;
+    border: none;
+}
+/* LAYOUT */
+.footerClockSpan{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0px;
+    padding: 0px;
+}
+/* CLOCK TEXT */
+.clockItem{
+    margin: 0px;
+    padding: 0px;
+    font-family: "Comic Relief", system-ui;
+    font-weight: 700;
+    font-size: 18px;
 }
 /* COPY RIGHT MESSAGE */
 #copyRightCol{
@@ -43,7 +95,7 @@ Footer.js
     font-family: "Open Sans", sans-serif;
     text-transform: uppercase;
 }
-/* BUTTON */
+/* BUTTON: https://react-bootstrap.netlify.app/docs/components/buttons */
 #logoutBtn{
     width: 200px;
     margin: 0px;

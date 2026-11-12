@@ -119,7 +119,6 @@ export default function UsersList() {
     <div id='usersData'>
         {error && <p className='text-danger' role='alert'>{error}</p>}
         <Row id='usersListRow'>
-          
             <Col id='usersListCol' md={8} xs='12'>
                 <div id='usersTableWrapper'>
             <table id='usersTable'>
