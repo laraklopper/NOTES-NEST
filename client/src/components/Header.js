@@ -19,7 +19,7 @@ export default function Header(//Export default Header.js Function component
 }) {
     // =====================JSX RENDERING=============
   return (
-    <header id='pageHeader'>
+    <header id='pageHeader' role='banner'>
     {/* Row 1 */}
          <Row id='headerRow1'>
         <Col id='headerCol1'/>
