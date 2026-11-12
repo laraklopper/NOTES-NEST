@@ -19,26 +19,33 @@ import { Calendar, Clock8 } from 'lucide-react';
 
 //MainHeader function component
 export default function MainHeader(//Export default MainHeader function component
-    {//PROPS PASSED FROM PARENT COMPONENT('Dashboard.js, 'Login.js', 'Register.js')
+    {//PROPS PASSED TO PARENT COMPONENT('Dashboard.js, 'Login.js', 'Register.js')
         mainHeading
     }
 ) {
     //======STATE VARIABLES======
-    const [date, setDate] = useState(new Date());
-    //===========================
+    const [date, setDate] = useState(new Date());//State to store header date/time (updated every second)
+
+     //================EFFECT LIVE CLOCK================//
 
     useEffect(() => {
+        // Create an interval that updates the time every second
         const timer = setInterval(() => {
             setDate(new Date());
             return () => clearInterval(timer);
         }, 1000);
+        // Cleanup function:
+    // Clears interval when component unmounts
+    // Prevents memory leaks and duplicate timers
         return () => clearInterval(timer);
     }, []);
-    //==================
+    //===========JSX RENDERING=======
   return (
-    <header id='mainHeader'>
+    <header id='mainHeader' role='banner'>
+    {/* Header Row 1 */}
         <Row id='headerRow1'>
             <Col id='headingCol1'>
+            {/* Main Header Stack 1: DATE AND TIME */}
                 <Stack direction="horizontal" gap={3} id='headerStack1'>
       <div className="p-2" id='headerTimeBlock'>
         <Card id='headerTimeCard'>
@@ -71,6 +78,7 @@ export default function MainHeader(//Export default MainHeader function componen
     </Stack>
             </Col>
         </Row>
+        {/* Header ROw 2 : APPLICATION AND PAGE HEADING*/}
          <Row id='headerRow2'>
         <Col id='headingCol1'/>
         <Col md={10} id='headingCol'>
@@ -83,22 +91,26 @@ export default function MainHeader(//Export default MainHeader function componen
         </Col>
         <Col id='headingCol2'/>
       </Row>
+      {/* Header ROw 3: NAVIGATION BAR*/}
         <Row id='headerRow3'>
               <Col id='headerNavCol'>
+              {/* HEADER STACK 2: NAVIAGATION BAR */}
                  <Stack direction="horizontal" gap={3} id='headerStack2'>
       <div className="p-2"/>
       <div className="p-2 ms-auto"/>
       <div className="p-2">
+      {/* Navigation Bar */}
          <nav id='navigation'>
             <ul id='mainNavbar'>    
                 {/* Login and registration pages */}
                 <li className='linkItem'>
+                {/* Link to Login Page */}
                     <NavLink to='/' className='refLink'>LOGIN</NavLink>
                 </li>
                 <li className='linkItem'>
+                {/* Link to Registration page */}
                     <NavLink to='/reg' className='refLink'>REGISTRATION</NavLink>
                 </li>
-
             </ul>
         </nav>
       </div>
