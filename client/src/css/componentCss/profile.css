@@ -193,5 +193,5 @@ flex-direction: column;
 /* Keyboard focus ring that matches the button colours */
 #editProfileToggleBtn:focus-visible,
 #editPasswordToggleBtn:focus-visible{
-    box-shadow: 0 0 0 3px rgba(50, 58, 66, 0.5);
+    box-shadow: 0 0 0 3px #323a4280;
 }
