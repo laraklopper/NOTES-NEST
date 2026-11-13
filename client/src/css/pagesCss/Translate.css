@@ -60,13 +60,19 @@
     padding: 0px;
 }
 #toggleTranslationStack{
+        width: 100%;
     display: flex;
     align-items: center;
+    margin: 0px;
+    padding: 5px 0px;
+    background-color: darkgrey;
+    border-radius: 5px;
 }
 #toggleArchiveBlock,
 #toggleTrashBlock{
 display: flex;
     align-items: center;
+    
 }
 #toggleArchiveBtn,
 #toggleTrashBtn{
