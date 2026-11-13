@@ -177,9 +177,21 @@ flex-direction: column;
        color: #E8F0F6;
     background-color: #323A42;
 }
+/* ACTIVE STATE:
+   :active only applies while the mouse button is held down, so the
+   aria-pressed="true" selector keeps the button styled for as long as
+   its form is open (aria-pressed is toggled in Profile.js) */
 #editProfileToggleBtn:active,
-#editPasswordToggleBtn:active{
-      color: #E8F0F6;
-      text-decoration: underline;
+#editPasswordToggleBtn:active,
+#editProfileToggleBtn[aria-pressed="true"],
+#editPasswordToggleBtn[aria-pressed="true"]{
+    color: #E8F0F6;
+    text-decoration: underline;
     background-color: #323A42;
+    border-color: #323A42;
+}
+/* Keyboard focus ring that matches the button colours */
+#editProfileToggleBtn:focus-visible,
+#editPasswordToggleBtn:focus-visible{
+    box-shadow: 0 0 0 3px rgba(50, 58, 66, 0.5);
 }
