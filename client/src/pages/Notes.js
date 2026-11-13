@@ -192,7 +192,7 @@ export default function Notes(//Export the default Notes.js function component
         <Col id='eventCol'>
           <div className='eventBar'>
             <div className='eventTrack'>
-              <NotebookTabs className='eventSlide' size={32} aria-hidden='true' focusable='false' />
+              <NotebookTabs className='eventSlide' color='#000' size={32} aria-hidden='true' focusable='false' />
             </div>
           </div>
         </Col>

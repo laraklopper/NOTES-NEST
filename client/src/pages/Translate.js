@@ -47,7 +47,7 @@ export default function Translate(
         <Col id='eventCol'>
           <div className='eventBar'>
             <div className='eventTrack'>
-              <BookOpenCheck className='eventSlide' size={32} aria-hidden='true' focusable='false' />
+              <BookOpenCheck className='eventSlide' color='#000' size={32} aria-hidden='true' focusable='false' />
             </div>
           </div>
         </Col>
