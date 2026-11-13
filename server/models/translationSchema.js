@@ -1,6 +1,6 @@
 //translationSchema.js
 const mongoose = require('mongoose');
-const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../util/schemaUtil');
+const { languageCodeRegex, MAX_TRANSLATION_CHARS, THIRTY_DAYS_IN_SECONDS } = require('../util/schemaUtil');
 
 const translationSchema = new mongoose.Schema(
   {
@@ -66,6 +66,7 @@ const translationSchema = new mongoose.Schema(
 translationSchema.index({ user: 1, createdAt: -1 }); // translations list, newest first
 translationSchema.index({ user: 1, isArchived: 1, deletedAt: 1, archivedAt: -1 }); // archive list filter + sort
 translationSchema.index({ isArchived: 1, archivedAt: 1 }); // 60-day archive sweep (util/archiveUtil.js)
+translationSchema.index({ deletedAt: 1 }, { expireAfterSeconds: THIRTY_DAYS_IN_SECONDS }); // TTL purge 30 days after soft delete (same as notes)
 
 translationSchema.pre('validate', function () {
   if (this.isModified('sourceText')) this.characterCount = this.sourceText.length; // characters sent to Langbly

@@ -13,7 +13,7 @@ import { languageName } from '../util/languageFunc';
 import { Archive, ArrowRight, Copy, Trash2, X } from 'lucide-react';
 
 // PANAL FOR A SELECTED TRANSLATION
-/* DELETE /translation/delete/:id, PATCH /archive/translation/:id */
+/* DELETE /translation/delete/:id (move to trash), PATCH /archive/translation/:id */
 export default function TranslationPanal(
     {//PROPS PASSED FROM PARENT COMPONENT (TranslationsList.js)
         translation,// The selected translation
@@ -73,7 +73,7 @@ export default function TranslationPanal(
 
             onClose?.()// Close the panal
             await fetchTranslations?.()// Refresh the list so the translation disappears from it
-            alert('Translation successfully deleted')
+            alert('Translation moved to trash')
         } catch (error) {
             console.error('[ERROR: TranslationPanal.js] Deleting translation failed:', error.message)
             setError?.(error.message || 'Something went wrong while deleting. Please try again.')
@@ -84,7 +84,7 @@ export default function TranslationPanal(
 
     // Ask before deleting the translation
     const handleDelete = () => {
-        const confirmDelete = window.confirm('Are you sure you want to permanently delete this translation?')
+        const confirmDelete = window.confirm('Move this translation to the trash?')
         if (!confirmDelete) return
         deleteTranslation(translation._id)
     }
@@ -218,7 +218,7 @@ export default function TranslationPanal(
         onClick={handleDelete}
         disabled={deleting || archiving}
         // ARIA ATTRIBUTES:
-        aria-label='Delete translation'
+        aria-label='Move translation to trash'
         aria-disabled={deleting ? 'true': 'false'}
         >
             DELETE<Trash2 aria-hidden='true' focusable='false'/>

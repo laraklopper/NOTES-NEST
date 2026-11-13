@@ -53,7 +53,7 @@ app.use('/archive', archiveRoutes)
 app.use('/notebooks', notebookRoutes)// /notebooks, /notebooks/:id
 app.use('/tag', tagRoutes)
 app.use('/api', apiRoutes)// Langbly: /api/language/translate/v2, /detect, /languages
-app.use('/translation', translationRoutes)// /translation/fetch, /translation/save, /translation/delete/:id
+app.use('/translation', translationRoutes)// /translation/fetch, /trash, /save, /delete/:id, /:id/restore, /:id/permanent
 app.use('/export', exportRoutes)// /export?type=notes|translations&format=csv|xlsx (+ the list filters)
 // ================== MONGOOSE CONFIG ==================
 /* Disable strict populate to prevent errors when populating 

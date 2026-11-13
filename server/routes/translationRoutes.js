@@ -1,12 +1,11 @@
 //translationRoutes.js
 /*mounted at /translation by app.js
-GET - '/translation/fetch' - List the user's saved translations (query: note, sourceLanguage, targetLanguage, page, limit)
-GET - /trash - List trashed translations - (declare route before /:id)
-POST - '/translation//save' - Save a translation from the TranslateForm to the user's history
-DELETE - '/translation/delete/:id' - Delete one of the user's saved translations (softDelete)
-PATCH - /translation//:id/restore - Restore from trash
+GET - /translation/fetch - List the user's active translations (query: note, sourceLanguage, targetLanguage, page, limit)
+GET - /translation/trash - List trashed translations (declare before any GET /:id)
+POST - /translation/save - Save a translation from the TranslateForm to the user's history
+PATCH - /translation/:id/restore - Restore a translation from the trash
 DELETE - /translation/delete/:id - Soft delete (move to trash)
-DELETE - `/translation/:id/permanent` - Permanently delete a translation
+DELETE - /translation/:id/permanent - Permanently delete a trashed translation
 */
 require('dotenv').config()
 const express = require('express');
@@ -16,6 +15,7 @@ const Note = require('../models/noteSchema');// Import the Note model
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the targetLanguage filter
 const {DEFAULT_LIMIT, MAX_LIMIT} = require('../util/apiUtil')
+const { trashExpiredArchivedTranslations } = require('../util/archiveUtil');// 60-day archive rule
 const router = express.Router()
 
 
@@ -84,6 +84,28 @@ router.get('/fetch', checkJwtToken, async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
+/* GET: /translation/trash : Lists the signed-in user's trashed translations, most
+recently deleted first. Declared before any GET /:id route so "trash" isn't read as an id */
+router.get('/trash', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+
+        // Apply the 60-day archive rule first so expired archived translations show in the trash straight away
+        await trashExpiredArchivedTranslations(userId);
+
+        const translations = await Translation.find({ user: userId, deletedAt: { $ne: null } })
+            .select('-__v')
+            .populate('note', 'title')
+            .sort({ deletedAt: -1 })
+            .lean();
+
+        console.log(`[SUCCESS: translationRoutes.js, GET /trash] Fetched ${translations.length} trashed translations`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ translations });// Send a 200 (OK) status code with the translations
+    } catch (error) {
+        console.error('[ERROR: translationRoutes.js, GET /trash]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
 
 /*──────────────────────────── POST ROUTES ──────────────────────────────
     POST: CREATE — Used to submit new data to the database
@@ -144,11 +166,49 @@ router.post('/save', checkJwtToken, async (req, res) => {
     }
 })
 
+/*──────────────────────────── PATCH ROUTES ───────────────────────────────
+   PATCH: UPDATE — Used to partially update information in the database
+ ───────────────────────────────────────────────────────────────────────────*/
+/* PATCH: /translation/:id/restore : Restores one of the signed-in user's trashed
+translations to the main translations list by clearing deletedAt, which also takes
+it out of the 30-day TTL purge */
+router.patch('/:id/restore', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the translation ID from the URL
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: translationRoutes.js, PATCH /:id/restore] Invalid translation id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid translation id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only a translation the user owns that is in the trash can be restored
+        const translation = await Translation.findOneAndUpdate(
+            { _id: id, user: userId, deletedAt: { $ne: null } },
+            { $set: { deletedAt: null, isArchived: false, archivedAt: null } }
+        ).select('_id sourceText');
+
+        // Conditional rendering to check the translation was found
+        if (!translation) {
+            console.error(`[ERROR: translationRoutes.js, PATCH /:id/restore] Trashed translation not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Translation not found in trash' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: translationRoutes.js, PATCH /:id/restore] Translation restored from trash: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Translation restored', translation });// Send a 200 (OK) status code with a message and the translation
+    } catch (error) {
+        console.error('[ERROR: translationRoutes.js, PATCH /:id/restore]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+
 /*──────────────────────────── DELETE ROUTES ───────────────────────────────
     DELETE: Used to remove an item from the database
  ───────────────────────────────────────────────────────────────────────────*/
-/* DELETE: /translation/delete/:id : Permanently deletes one of the signed-in
-user's saved translations (translations have no trash). */
+/* DELETE: /translation/delete/:id : Moves one of the signed-in user's active
+translations to the trash (soft delete) by setting deletedAt. The TTL index on
+deletedAt (translationSchema) purges it after 30 days */
 router.delete('/delete/:id', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
@@ -160,8 +220,11 @@ router.delete('/delete/:id', checkJwtToken, async (req, res) => {
             return res.status(400).json({ message: 'Invalid translation id' });// Return a 400 (Bad Request) status code with a message
         }
 
-        // Only a translation the user owns can be deleted
-        const translation = await Translation.findOneAndDelete({ _id: id, user: userId }).select('_id');
+        // Only a translation the user owns that is not already in the trash can be moved there
+        const translation = await Translation.findOneAndUpdate(
+            { _id: id, user: userId, deletedAt: null },
+            { $set: { deletedAt: new Date(), isArchived: false, archivedAt: null } }
+        ).select('_id sourceText');
 
         // Conditional rendering to check the translation was found
         if (!translation) {
@@ -169,10 +232,39 @@ router.delete('/delete/:id', checkJwtToken, async (req, res) => {
             return res.status(404).json({ message: 'Translation not found' });// Return a 404 (Not Found) status code with a message
         }
 
-        console.log(`[SUCCESS: translationRoutes.js, DELETE /delete/:id] Translation deleted: ${id}`);//Log a message in the console for debugging purposes
-        return res.status(200).json({ message: 'Translation deleted', id });// Send a 200 (OK) status code with a message
+        console.log(`[SUCCESS: translationRoutes.js, DELETE /delete/:id] Translation moved to trash: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Translation moved to trash', translation });// Send a 200 (OK) status code with a message and the translation
     } catch (error) {
         console.error('[ERROR: translationRoutes.js, DELETE /delete/:id]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+/* DELETE: /translation/:id/permanent : Permanently deletes one of the signed-in user's
+trashed translations. Only translations already in the trash can be deleted this way,
+so an active translation can't be wiped in one step */
+router.delete('/:id/permanent', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the translation ID from the URL
+
+        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: translationRoutes.js, DELETE /:id/permanent] Invalid translation id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid translation id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        const translation = await Translation.findOneAndDelete({ _id: id, user: userId, deletedAt: { $ne: null } }).select('_id sourceText');
+
+        // Conditional rendering to check the translation was found
+        if (!translation) {
+            console.error(`[ERROR: translationRoutes.js, DELETE /:id/permanent] Trashed translation not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Translation not found in trash' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: translationRoutes.js, DELETE /:id/permanent] Translation permanently deleted: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Translation permanently deleted', translation });// Send a 200 (OK) status code with a message and the translation
+    } catch (error) {
+        console.error('[ERROR: translationRoutes.js, DELETE /:id/permanent]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
