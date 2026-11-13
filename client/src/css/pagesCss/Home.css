@@ -105,6 +105,9 @@ Home.js */
      font-family: "Comic Relief", system-ui;
   font-weight: 700;
   text-decoration: underline;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 .listSpan{
     display: flex;
@@ -118,6 +121,7 @@ Home.js */
      font-family: "Comic Relief", system-ui;
   font-weight: 400;
   font-size: 14px;
+  margin: 0px;
 }
 /* SECTION 2 */
 #homeSection2{

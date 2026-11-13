@@ -133,7 +133,7 @@ LAYOUT
     gap: 5px;
 }
 
-/* GROUP 2 */
+/* GROUP 2:  */
 #editPasswordGroup2{
     width: 100%;
     background: #D6D6D6;
@@ -150,10 +150,22 @@ LAYOUT
     margin: 0px;
     gap: 5px;
 }
+
 /* =====END OF INPUT========= */
 
 /* EDITPASSWORDSTACK3 */
-#editPswdBlock1,
+#editPasswordStack3{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+#editPswdBlock1{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
 #editPswdBlock2,
 #editPswdBlock3{
     display: flex;
@@ -192,4 +204,14 @@ LAYOUT
     font-weight: 700;
     margin: 0px;
     padding: 0px;
+}
+.editUserInput{
+        display: flex;
+    justify-content: center;
+    width: 250px;
+    border-radius: 5px;
+    height: 40px;
+    text-align: center;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
 }

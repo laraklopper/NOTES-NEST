@@ -17,7 +17,7 @@ import Profile from '../components/Profile';
 import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
 import AdminRegisForm from '../components/AdminRegisForm'
-import { UserCheck } from 'lucide-react'
+import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText } from 'lucide-react'
 // IMPORT UTILITY FUNCTIONS
 const { ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 
@@ -166,28 +166,29 @@ const notProvided = 'Not provided';
                         <h4 className='appDescriptionSubHeading'>WHAT YOU CAN DO</h4>
                         <div className='appDescriptionList'>
                           <span className='listSpan'>
+                          <NotepadText/>
                             <label className='listLabel'>NOTE PAD:</label><p>Write new notes and file them in
                               notebooks and tags so they are easy to find later.</p>
                           </span>
                           <span className='listSpan'>
-                            <label className='listLabel'>NOTES:</label>
+                            <label className='listLabel'><ClipboardPenIcon/>NOTES:</label>
                             <p>View, filter, edit, archive and delete your
                               saved notes. Deleted notes go to the trash, where they can be
                               restored or removed permanently.</p>
                           </span>
                           <span className='listSpan'>
-                            <label className='listLabel'>TRANSLATE:</label>
+                            <label className='listLabel'><Languages/>TRANSLATE:</label>
                             <p>Translate text between languages,
                               detect the language of a piece of text, and save translations
                               you want to keep.</p>
                           </span>
                           <span className='listSpan'>
-                            <label className='listLabel'>EXPORT:</label>
+                            <label className='listLabel'><BookUp/>EXPORT:</label>
                             <p>Download your notes or translations as a
                               CSV or Excel (.xlsx) file.</p>
                           </span>
                           <span className='listSpan'>
-                            <label className='listLabel'>PROFILE:</label>
+                            <label className='listLabel'><FolderUser/>PROFILE:</label>
                             <p>View and update your personal details
                               and change your password from the Profile tab.</p>
                           </span>
