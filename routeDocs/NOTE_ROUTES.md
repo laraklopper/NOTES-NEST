@@ -114,10 +114,10 @@ const { languageCodeRegex } = require('../util/schemaUtil');
 | `Translation` | `DELETE /:id/permanent`: delete a note's translations along with it |
 | `checkJwtToken` | Auth on every route; sets `req.user.id` |
 | `languageCodeRegex` | Validates the `language` filter in `/fetchNotes` |
+| `DEFAULT_LIMIT`, `MAX_LIMIT` | Pagination defaults (`10` and `50`), **shared** with `translationRoutes.js` from `util/apiUtil.js` |
 
 ```js
-const DEFAULT_LIMIT = 10;// Notes per page when no limit is sent
-const MAX_LIMIT = 50;// Upper bound, so one request can't pull the whole collection
+const { DEFAULT_LIMIT, MAX_LIMIT } = require('../util/apiUtil');// Shared pagination limits (same as the translations list)
 ```
 
 ---
@@ -628,10 +628,7 @@ await newNote.populate([{ path: 'notebook', select: 'name colour' }, { path: 'ta
 
 **a)** The note is deleted **first**, then the translations. If `Translation.deleteMany` fails, the note is already gone, the translations are left orphaned, and the client gets a 500 for a delete that partly worked. Deleting the translations **first** is safer: if the note delete then fails, the note is still in the trash and can be retried. For a strict guarantee, use a MongoDB **transaction** (this needs a replica set; Atlas clusters have one).
 
-**b)** The **30-day TTL purge** deletes notes directly inside MongoDB, so **no Mongoose hooks or route code runs**. Translations of auto-purged notes are never deleted. Options:
-
-- Make sure the translation UI handles a missing note (`t.note?.title || ''`, which `exportRoutes.js` already does).
-- Or replace the TTL index with a scheduled job (e.g. `node-cron`) that deletes expired notes **and** their translations.
+**b)** ✅ **Fixed.** The **30-day TTL purge** deletes notes directly inside MongoDB, so no Mongoose hooks or route code run, and the translation cascade above is skipped. The hourly sweep in `util/archiveUtil.js` now includes `removeOrphanedTranslations()`, which deletes translations whose linked note no longer exists. A translation of a purged note can still exist for up to an hour, so the UI should keep handling a missing note (`t.note?.title || ''`).
 
 ### Gap 5: Tags can be created even when the note fails
 

@@ -4,7 +4,8 @@ ARCHIVE_DAYS after it was archived. A TTL index can only delete documents, not
 change them, so this sweep does the move instead. It runs:
   - for one user before GET /archive/fetchNotes, GET /archive/fetchTranslations and
     GET /notes/trash, so those lists are always accurate
-  - for every user on server start and then every hour (app.js) */
+  - for every user on server start and then every hour (app.js)
+The hourly sweep also deletes translations whose note was purged by the notes TTL index */
 const mongoose = require('mongoose');
 const Note = require('../models/noteSchema');
 const Translation = require('../models/translationSchema');
@@ -40,11 +41,31 @@ const trashExpired = async (Model, extraSet, userId) => {
 const trashExpiredArchivedNotes = (userId) => trashExpired(Note, { isPinned: false }, userId);
 const trashExpiredArchivedTranslations = (userId) => trashExpired(Translation, {}, userId);
 
+/* Deletes translations whose linked note no longer exists. The 30-day TTL index purges
+trashed notes inside MongoDB, so the cascade in DELETE /notes/:id/permanent never runs
+for them. This gives auto-purged notes the same result. Returns the number deleted */
+const removeOrphanedTranslations = async () => {
+    const linkedNoteIds = await Translation.distinct('note', { note: { $ne: null } });
+    if (linkedNoteIds.length === 0) return 0;
+
+    const existingIds = await Note.distinct('_id', { _id: { $in: linkedNoteIds } });
+    const existing = new Set(existingIds.map(String));
+    const missingIds = linkedNoteIds.filter((id) => !existing.has(String(id)));
+    if (missingIds.length === 0) return 0;
+
+    const result = await Translation.deleteMany({ note: { $in: missingIds } });
+    if (result.deletedCount > 0) {
+        console.log(`[INFO: archiveUtil.js] Deleted ${result.deletedCount} translation(s) of purged notes`);
+    }
+    return result.deletedCount;
+};
+
 // Runs the sweep for every user now and then every hour. Errors are logged, never thrown
 const startArchiveSweep = () => {
     const run = () => Promise.all([
         trashExpiredArchivedNotes(),
-        trashExpiredArchivedTranslations()
+        trashExpiredArchivedTranslations(),
+        removeOrphanedTranslations()
     ]).catch((error) => {
         console.error('[ERROR: archiveUtil.js] Archive sweep failed:', error.message);
     });
@@ -54,4 +75,4 @@ const startArchiveSweep = () => {
     return timer;
 };
 
-module.exports = { trashExpiredArchivedNotes, trashExpiredArchivedTranslations, startArchiveSweep };
+module.exports = { trashExpiredArchivedNotes, trashExpiredArchivedTranslations, removeOrphanedTranslations, startArchiveSweep };

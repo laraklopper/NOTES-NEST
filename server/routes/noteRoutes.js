@@ -20,10 +20,8 @@ const Translation = require('../models/translationSchema');// Import the Transla
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the language filter
 const { trashExpiredArchivedNotes } = require('../util/archiveUtil');// 60-day archive rule
+const { DEFAULT_LIMIT, MAX_LIMIT } = require('../util/apiUtil');// Shared pagination limits (same as the translations list)
 const router = express.Router()
-
-const DEFAULT_LIMIT = 10;// Notes per page when no limit is sent
-const MAX_LIMIT = 50;// Upper bound on the page size so one request can't pull the whole collection
 
 /*──────────────────────────── SHARED HELPERS ─────────────────────────────────
    Used by both POST /addNote and PATCH /:id

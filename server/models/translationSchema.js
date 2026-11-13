@@ -23,7 +23,8 @@ const translationSchema = new mongoose.Schema(
     },
     translatedText: {
       type: String,
-      required: [true, 'Translated text is required'] // stored as returned by Langbly
+      required: [true, 'Translated text is required'], // stored as returned by Langbly
+      maxlength: [MAX_TRANSLATION_CHARS * 2, 'Translated text is too long'] // headroom: a translation can run longer than its source
     },
     sourceLanguage: {
       type: String,

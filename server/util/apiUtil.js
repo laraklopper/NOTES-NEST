@@ -5,7 +5,7 @@ const LANGBLY_TIMEOUT_MS = 15000;// Give up on Langbly after 15 seconds (used by
 const LANGUAGES_CACHE_MS = 1000 * 60 * 60 * 24;// The language list rarely changes, so cache it for 24 hours (ms * s * min * h)
  
 
-const DEFAULT_LIMIT = 10;// Translations per page when no limit is sent
+const DEFAULT_LIMIT = 10;// Items per page when no limit is sent (notes and translations lists)
 const MAX_LIMIT = 50;// Upper bound on the page size so one request can't pull the whole collection
 
 const MAX_EXPORT_ROWS = 10000;// Upper bound so one export can't pull an unbounded amount of data

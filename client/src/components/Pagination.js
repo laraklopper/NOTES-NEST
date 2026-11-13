@@ -13,7 +13,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 export const PAGE_SIZES = [10, 20, 50];// Options for the "per page" select (server caps at 50)
 
 /* Pagination controls (per page select, previous/next buttons and page count)
-for NotesList.js, TranslationsList.js and UsersList.js */
+for NotesList.js, TranslationsList.js, TrashedTranslations.js and UsersList.js */
 export default function Pagination(
     {//PROPS PASSED FROM PARENT COMPONENT
         page = 1,// Current page

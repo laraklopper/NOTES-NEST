@@ -1,24 +1,37 @@
 //translationRoutes.js
 /*mounted at /translation by app.js
 GET - /translation/fetch - List the user's active translations (query: note, sourceLanguage, targetLanguage, page, limit)
-GET - /translation/trash - List trashed translations (declare before any GET /:id)
+GET - /translation/trash - List trashed translations (query: page, limit) (declare before any GET /:id)
 POST - /translation/save - Save a translation from the TranslateForm to the user's history
 PATCH - /translation/:id/restore - Restore a translation from the trash
 DELETE - /translation/delete/:id - Soft delete (move to trash)
 DELETE - /translation/:id/permanent - Permanently delete a trashed translation
 */
-require('dotenv').config()
 const express = require('express');
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const Translation = require('../models/translationSchema');// Import the Translation model
 const Note = require('../models/noteSchema');// Import the Note model
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
-const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the targetLanguage filter
-const {DEFAULT_LIMIT, MAX_LIMIT} = require('../util/apiUtil')
+const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the sourceLanguage and targetLanguage filters
+const { DEFAULT_LIMIT, MAX_LIMIT } = require('../util/apiUtil');// Shared pagination limits
 const { trashExpiredArchivedTranslations } = require('../util/archiveUtil');// 60-day archive rule
 const router = express.Router()
 
+/* Turns the page/limit query params into safe numbers, falling back to the defaults
+when they are missing or not positive whole numbers. Used by GET /fetch and GET /trash */
+const parsePagination = (page, limit) => {
+    const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+    const pageSize = Math.min(Math.max(parseInt(limit, 10) || DEFAULT_LIMIT, 1), MAX_LIMIT);
+    return { pageNumber, pageSize, skip: (pageNumber - 1) * pageSize };
+};
 
+// Builds the pagination object sent with every paged list (totalPages is at least 1)
+const paginationInfo = (pageNumber, pageSize, total) => ({
+    page: pageNumber,
+    limit: pageSize,
+    total,
+    totalPages: Math.max(Math.ceil(total / pageSize), 1)
+});
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────
    GET: READ — Used to fetch information from the database
@@ -35,7 +48,7 @@ router.get('/fetch', checkJwtToken, async (req, res) => {
         // $ne: true also matches translations saved before isArchived was added (field missing)
         const filter = { user: userId, isArchived: { $ne: true }, deletedAt: null };
 
-        // Conditional rendering to check the optional note filter is a single valid ObjectId
+        // Guard clause: the optional note filter must be a single valid ObjectId
         if (note !== undefined && note !== '') {
             if (typeof note !== 'string' || !mongoose.Types.ObjectId.isValid(note)) {
                 console.error(`[ERROR: translationRoutes.js, GET /fetch] Invalid note id: ${note}`);// Log an error message in the console for debugging purposes
@@ -44,9 +57,9 @@ router.get('/fetch', checkJwtToken, async (req, res) => {
             filter.note = note;
         }
 
-        // Conditional rendering to check the optional language filters are single valid language codes
+        // Guard clause: the optional language filters must be single valid language codes
         for (const [field, value] of [['sourceLanguage', sourceLanguage], ['targetLanguage', targetLanguage]]) {
-            if (value === undefined || value === '') continue;
+            if (value === undefined || value === '') continue;// Not sent, so no filter
             if (typeof value !== 'string' || !languageCodeRegex.test(value)) {
                 console.error(`[ERROR: translationRoutes.js, GET /fetch] Invalid ${field} code: ${value}`);// Log an error message in the console for debugging purposes
                 return res.status(400).json({ message: 'Invalid language code' });// Return a 400 (Bad Request) status code with a message
@@ -54,14 +67,12 @@ router.get('/fetch', checkJwtToken, async (req, res) => {
             filter[field] = value;
         }
 
-        // Fall back to the defaults when page/limit are missing or not positive whole numbers
-        const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
-        const pageSize = Math.min(Math.max(parseInt(limit, 10) || DEFAULT_LIMIT, 1), MAX_LIMIT);
+        const { pageNumber, pageSize, skip } = parsePagination(page, limit);
 
         const [translations, total] = await Promise.all([
             Translation.find(filter)
                 .sort({ createdAt: -1 })// Matches the { user, createdAt } index
-                .skip((pageNumber - 1) * pageSize)
+                .skip(skip)
                 .limit(pageSize)
                 .populate('note', 'title')// Only the note title is shown in the list
                 .select('-__v')
@@ -72,12 +83,7 @@ router.get('/fetch', checkJwtToken, async (req, res) => {
         console.log(`[SUCCESS: translationRoutes.js, GET /fetch] Fetched ${translations.length} of ${total} translations`);//Log a message in the console for debugging purposes
         return res.status(200).json({// Send a 200 (OK) status code with the translations
             translations,
-            pagination: {
-                page: pageNumber,
-                limit: pageSize,
-                total,
-                totalPages: Math.max(Math.ceil(total / pageSize), 1)
-            }
+            pagination: paginationInfo(pageNumber, pageSize, total)
         });
     } catch (error) {
         console.error('[ERROR: translationRoutes.js, GET /fetch]', error.message);// Log an error message in the console for debugging purposes
@@ -85,22 +91,34 @@ router.get('/fetch', checkJwtToken, async (req, res) => {
     }
 })
 /* GET: /translation/trash : Lists the signed-in user's trashed translations, most
-recently deleted first. Declared before any GET /:id route so "trash" isn't read as an id */
+recently deleted first. Declared before any GET /:id route so "trash" isn't read as an id.
+Query (all optional): page (>= 1), limit (1-50)
+Responds { translations, pagination: { page, limit, total, totalPages } } */
 router.get('/trash', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { pageNumber, pageSize, skip } = parsePagination(req.query.page, req.query.limit);
 
         // Apply the 60-day archive rule first so expired archived translations show in the trash straight away
         await trashExpiredArchivedTranslations(userId);
 
-        const translations = await Translation.find({ user: userId, deletedAt: { $ne: null } })
-            .select('-__v')
-            .populate('note', 'title')
-            .sort({ deletedAt: -1 })
-            .lean();
+        const filter = { user: userId, deletedAt: { $ne: null } };// Anything with a deletion date is in the trash
+        const [translations, total] = await Promise.all([
+            Translation.find(filter)
+                .sort({ deletedAt: -1 })// Most recently trashed first
+                .skip(skip)
+                .limit(pageSize)
+                .populate('note', 'title')
+                .select('-__v')
+                .lean(),
+            Translation.countDocuments(filter)
+        ]);
 
-        console.log(`[SUCCESS: translationRoutes.js, GET /trash] Fetched ${translations.length} trashed translations`);//Log a message in the console for debugging purposes
-        return res.status(200).json({ translations });// Send a 200 (OK) status code with the translations
+        console.log(`[SUCCESS: translationRoutes.js, GET /trash] Fetched ${translations.length} of ${total} trashed translations`);//Log a message in the console for debugging purposes
+        return res.status(200).json({// Send a 200 (OK) status code with the translations
+            translations,
+            pagination: paginationInfo(pageNumber, pageSize, total)
+        });
     } catch (error) {
         console.error('[ERROR: translationRoutes.js, GET /trash]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
@@ -118,25 +136,47 @@ router.post('/save', checkJwtToken, async (req, res) => {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { note, sourceText, translatedText, sourceLanguage, targetLanguage } = req.body || {};// Extract the translation fields from the request body
 
-        // Conditional rendering to check every field is a string (so none can inject query operators)
-        if ([sourceText, translatedText, sourceLanguage, targetLanguage].some((field) => typeof field !== 'string' || !field.trim())) {
+        // Guard clause: the text and target language must be non-empty strings (so none can inject query operators)
+        if ([sourceText, translatedText, targetLanguage].some((field) => typeof field !== 'string' || !field.trim())) {
             console.error('[ERROR: translationRoutes.js, POST /save] Missing translation fields');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Translate some text before saving' });// Return a 400 (Bad Request) status code with a message
         }
 
-        // Conditional rendering to check the optional note exists, belongs to the user and is not archived
+        // Guard clause: checked on its own because auto-detect can return no source language (null)
+        if (typeof sourceLanguage !== 'string' || !sourceLanguage.trim()) {
+            console.error('[ERROR: translationRoutes.js, POST /save] Missing source language');// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Choose the source language before saving' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Guard clause: the optional note must exist, belong to the user and not be archived or trashed
         let noteId = null;
-        if (note !== undefined && note !== null) {
+        if (note !== undefined && note !== null && note !== '') {// '' = "No note", same as the fetch filter
             if (typeof note !== 'string' || !mongoose.Types.ObjectId.isValid(note)) {
                 console.error(`[ERROR: translationRoutes.js, POST /save] Invalid note id: ${note}`);// Log an error message in the console for debugging purposes
-                return res.status(400).json({ message: 'Invalid note id' });
+                return res.status(400).json({ message: 'Invalid note id' });// Return a 400 (Bad Request) status code with a message
             }
             const ownNote = await Note.findOne({ _id: note, user: userId, deletedAt: null }).select('isArchived').exec();
             if (!ownNote || ownNote.isArchived) {
                 console.error(`[ERROR: translationRoutes.js, POST /save] Note not available: ${note}`);// Log an error message in the console for debugging purposes
-                return res.status(400).json({ message: 'That note cannot be translated' });
+                return res.status(400).json({ message: 'That note cannot be translated' });// Return a 400 (Bad Request) status code with a message
             }
             noteId = note;
+        }
+
+        // An identical active translation is already saved: return it instead of creating a duplicate
+        const existing = await Translation.findOne({
+            user: userId,
+            note: noteId,
+            sourceText,
+            translatedText,
+            sourceLanguage,
+            targetLanguage,
+            isArchived: { $ne: true },
+            deletedAt: null
+        }).populate('note', 'title').select('-__v').lean();
+        if (existing) {
+            console.log(`[SUCCESS: translationRoutes.js, POST /save] Translation already saved: ${existing._id}`);//Log a message in the console for debugging purposes
+            return res.status(200).json({ message: 'Translation already saved', created: false, translation: existing });// Send a 200 (OK) status code with the existing translation
         }
 
         const newTranslation = await Translation.create({// Validate and save the translation (characterCount is set by the schema hook)
@@ -147,6 +187,7 @@ router.post('/save', checkJwtToken, async (req, res) => {
             sourceLanguage,
             targetLanguage
         });
+        await newTranslation.populate('note', 'title');// Same note shape as GET /fetch ({ _id, title } or null)
 
         console.log(`[SUCCESS: translationRoutes.js, POST /save] Translation saved: ${newTranslation._id}`);//Log a message in the console for debugging purposes
         return res.status(201).json({// Send a 201 (Created) status code with the new translation
@@ -177,7 +218,7 @@ router.patch('/:id/restore', checkJwtToken, async (req, res) => {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { id } = req.params;// Get the translation ID from the URL
 
-        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        // Guard clause: the id must be a valid ObjectId (avoids a CastError 500)
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.error(`[ERROR: translationRoutes.js, PATCH /:id/restore] Invalid translation id: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid translation id' });// Return a 400 (Bad Request) status code with a message
@@ -189,7 +230,7 @@ router.patch('/:id/restore', checkJwtToken, async (req, res) => {
             { $set: { deletedAt: null, isArchived: false, archivedAt: null } }
         ).select('_id sourceText');
 
-        // Conditional rendering to check the translation was found
+        // Guard clause: the translation must have been found
         if (!translation) {
             console.error(`[ERROR: translationRoutes.js, PATCH /:id/restore] Trashed translation not found: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'Translation not found in trash' });// Return a 404 (Not Found) status code with a message
@@ -214,19 +255,20 @@ router.delete('/delete/:id', checkJwtToken, async (req, res) => {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { id } = req.params;// Get the translation ID from the URL
 
-        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        // Guard clause: the id must be a valid ObjectId (avoids a CastError 500)
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.error(`[ERROR: translationRoutes.js, DELETE /delete/:id] Invalid translation id: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid translation id' });// Return a 400 (Bad Request) status code with a message
         }
 
-        // Only a translation the user owns that is not already in the trash can be moved there
+        /* Only an active translation the user owns can be moved to the trash here.
+        Archived translations use DELETE /archive/translation/:id ($ne also matches older translations without the field) */
         const translation = await Translation.findOneAndUpdate(
-            { _id: id, user: userId, deletedAt: null },
+            { _id: id, user: userId, isArchived: { $ne: true }, deletedAt: null },
             { $set: { deletedAt: new Date(), isArchived: false, archivedAt: null } }
         ).select('_id sourceText');
 
-        // Conditional rendering to check the translation was found
+        // Guard clause: the translation must have been found
         if (!translation) {
             console.error(`[ERROR: translationRoutes.js, DELETE /delete/:id] Translation not found: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'Translation not found' });// Return a 404 (Not Found) status code with a message
@@ -247,7 +289,7 @@ router.delete('/:id/permanent', checkJwtToken, async (req, res) => {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { id } = req.params;// Get the translation ID from the URL
 
-        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        // Guard clause: the id must be a valid ObjectId (avoids a CastError 500)
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.error(`[ERROR: translationRoutes.js, DELETE /:id/permanent] Invalid translation id: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid translation id' });// Return a 400 (Bad Request) status code with a message
@@ -255,7 +297,7 @@ router.delete('/:id/permanent', checkJwtToken, async (req, res) => {
 
         const translation = await Translation.findOneAndDelete({ _id: id, user: userId, deletedAt: { $ne: null } }).select('_id sourceText');
 
-        // Conditional rendering to check the translation was found
+        // Guard clause: the translation must have been found
         if (!translation) {
             console.error(`[ERROR: translationRoutes.js, DELETE /:id/permanent] Trashed translation not found: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'Translation not found in trash' });// Return a 404 (Not Found) status code with a message
