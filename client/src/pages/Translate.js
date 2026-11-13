@@ -119,22 +119,24 @@ export default function Translate(
                     <Col id='toggleTranslationsCol'/>
                   </Row>
                 {showArchive && (
+                  <div id='archivedTranslationPanal'>
                   <Row id='translationsArchiveRow'>
                       <Col id='translationsArchiveCol'>
-                        <div id='archiveDiv'>
-                          <ArchivedTranslations/>
-                        </div>
+                          <ArchivedTranslations/>                
                      </Col>
                   </Row>
+                     </div>
                 )}
                 {showTrash && (
+                  <div id='deletedTranslationPanal'>
                   <Row id='translationTrashRow'>
                     <Col md={12} id='translationTrashCol'>
-                      <div id='deletedTranslationDiv'>
+                      
                         <TrashedTranslations/>
-                      </div>
+                      
                     </Col>
                   </Row>
+                  </div>
                 )}
               </div>
             </Tab>
@@ -142,10 +144,11 @@ export default function Translate(
             <Tab eventKey="languages" title="LANGUAGES">
               <div id='langaugeListPanal'>
                 {/* Langauges */}
+                <div id='languageList'>
                 <Row id='langaugeListRow'>
                   <Col id='languageListCol1' />
                   <Col xs={12} md={8} id='languageListCol'>
-                    <div id='languageList'>
+                    
                       <div id='languageTableWrapper'>
                         <table id='languageTable'>
                           <thead>
@@ -169,13 +172,11 @@ export default function Translate(
                             </tr>
                           </tfoot>
                         </table>
-
-                      </div>
-
                     </div>
                   </Col>
                   <Col id='languageListCol2' />
                 </Row>
+                </div>
               </div>
             </Tab>
           </Tabs>
