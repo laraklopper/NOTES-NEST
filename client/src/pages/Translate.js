@@ -11,11 +11,11 @@ import Tabs from 'react-bootstrap/Tabs';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
-import languageData from '../util/languageData';
-import { BookA, BookOpenCheck } from 'lucide-react';
+import { BookOpenCheck } from 'lucide-react';
 import TranslationsList from '../components/TranslationsList';
 import TrashedTranslations from '../components/TrashedTranslations';
 import ArchivedTranslations from '../components/ArchivedTranslations';
+import LanguagesList from '../components/LanguagesList';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
@@ -148,31 +148,8 @@ export default function Translate(
                 <Row id='langaugeListRow'>
                   <Col id='languageListCol1' />
                   <Col xs={12} md={8} id='languageListCol'>
-                    
-                      <div id='languageTableWrapper'>
-                        <table id='languageTable'>
-                          <thead>
-                            <tr><th colSpan={2} aria-colspan={2}>AVAILABLE LANGUAGES<BookA /></th></tr>
-                            <tr>
-                              <th>LANGUAGE CODE</th>
-                              <th>LANGUAGE</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {languageData.map((language) => (
-                              <tr key={language.code}>
-                                <td>{language.code}</td>
-                                <td className='languageName'>{language.name}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                          <tfoot>
-                            <tr>
-                              <td colSpan={2}><a href='https://langbly.com/docs/languages/#full-language-reference' className='apiLink' target='blank'>LANGUAGES</a></td>
-                            </tr>
-                          </tfoot>
-                        </table>
-                    </div>
+                    <LanguagesList/>
+                 
                   </Col>
                   <Col id='languageListCol2' />
                 </Row>
