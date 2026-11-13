@@ -3,40 +3,47 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const { languageCodeRegex, MAX_TRANSLATION_CHARS, THIRTY_DAYS_IN_SECONDS } = require('../util/schemaUtil');
 
+// Define new translation schema
 const translationSchema = new mongoose.Schema(
   {
+    // Field for userId
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'User',// enables .populate('user')
       required: true,
       index: true // every query is filtered by owner
     },
+    // Field for noteId
     note: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Note',
+      type: mongoose.Schema.Types.ObjectId,// stores the Note's _id
+      ref: 'Note',// enables .populate('note')
       default: null, // null for free text typed into the translate form; when set, the controller checks it belongs to the user and is not archived
       index: true // fetch translations for one note
     },
+    // Field for source text
     sourceText: {
-      type: String,
+      type: String,//Set the data type as a String
       required: [true, 'Source text is required'], // snapshot of note.plainText at translation time
       maxlength: [MAX_TRANSLATION_CHARS, `Text cannot exceed ${MAX_TRANSLATION_CHARS} characters`]
     },
+    // Field for translated text
     translatedText: {
-      type: String,
+      type: String,//Set the data type as a String
       required: [true, 'Translated text is required'], // stored as returned by Langbly
       maxlength: [MAX_TRANSLATION_CHARS * 2, 'Translated text is too long'] // headroom: a translation can run longer than its source
     },
+    // Field for source Language
     sourceLanguage: {
-      type: String,
+      type: String,//Set the data type as a String
       required: [true, 'Source language is required'], // chosen, or Langbly's detectedSourceLanguage
       trim: true,
       match: [languageCodeRegex, 'Invalid language code']
     },
+    // Field for target Language
     targetLanguage: {
-      type: String,
-      required: [true, 'Target language is required'],
-      trim: true,
+      type: String,//Set the data type as a String
+      required: [true, 'Target language is required'],//Mark field as required
+      trim: true,//Remove surrounding whitespace
       match: [languageCodeRegex, 'Invalid language code'],
       validate: {
         validator: function (value) {
@@ -45,30 +52,32 @@ const translationSchema = new mongoose.Schema(
         message: 'Target language must differ from the source language'
       }
     },
-    textHash: {
-      type: String,
+    textHash: {// fingerprint of the source + translated text
+      type: String,//Set the data type as a String
       select: false // set automatically from sourceText + translatedText; only used by the POST /save duplicate check
     },
-    characterCount: {
-      type: Number,
+    characterCount: {// length of sourceText
+      type: Number,//Set the data type as a String
       min: 0 // set automatically from sourceText; tracks usage against the free-tier quota
     },
+    // Field to archivedFlag
     isArchived: {
-      type: Boolean,
+      type: Boolean,//Set the DataType as a boolean
       default: false // true = hidden from the translations list and shown in the archive
     },
     archivedAt: {
-      type: Date,
+      type: Date,//Set the dataType as Date
       default: null // when the translation was archived; moved to the trash ARCHIVE_DAYS (60) later
     },
     deletedAt: {
-      type: Date,
+      type: Date,//Set the dataType as DATE
       default: null // a date = in the trash (soft delete); null = not in the trash
     },
   },
   { timestamps: true } // createdAt / updatedAt
 );
 
+//===================INDEXES==================
 translationSchema.index({ user: 1, createdAt: -1 }); // translations list, newest first
 translationSchema.index({ user: 1, textHash: 1 }); // POST /save duplicate check
 translationSchema.index({ user: 1, isArchived: 1, deletedAt: 1, archivedAt: -1 }); // archive list filter + sort

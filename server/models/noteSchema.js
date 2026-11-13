@@ -6,7 +6,7 @@ const { languageCodeRegex, THIRTY_DAYS_IN_SECONDS } = require('../util/schemaUti
 const ALLOWED_HTML = { // what a note's HTML content is allowed to store
   allowedTags: ['p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'ul', 'ol', 'li',
     'blockquote', 'code', 'pre', 'hr', 'a', 'div', 'span'],
-  allowedAttributes: {
+  allowedAttributes: {// every attribute not listed here is removed
     a: ['href', 'target', 'rel'] // links
   },
   allowedSchemes: ['http', 'https', 'mailto'] // blocks javascript: links
@@ -20,19 +20,22 @@ const toPlainText = (html) => sanitizeHtml(
   { allowedTags: [], allowedAttributes: {} } // remove all tags
 )
   .replace(/\s+/g, ' ') // collapse whitespace
-  .trim();
+  .trim();// remove leading/trailing spaces
 
+//Define new NoteSchema
 const noteSchema = new mongoose.Schema(
   {
+    //User
     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: mongoose.Schema.Types.ObjectId,// stores the User's _id
+      ref: 'User',// enables .populate('user')
       required: true,
       index: true // every query is filtered by owner
     },
+    // Field for Note notebood
     notebook: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Notebook',
+      type: mongoose.Schema.Types.ObjectId,// stores the Notebook's _id
+      ref: 'Notebook',// enables .populate('notebook')
       default: null // null means "No notebook"
     },
     title: {
@@ -41,7 +44,7 @@ const noteSchema = new mongoose.Schema(
       maxlength: [200, 'Title cannot exceed 200 characters'],
       default: 'Untitled'
     },
-    content: {
+    content: {// note body as HTML
       type: String,
       default: '' // HTML built from the note textarea (textToHtml), sanitised before saving
     },
@@ -52,8 +55,8 @@ const noteSchema = new mongoose.Schema(
     language: {
       type: String,
       required: [true, 'Note language is required'], // controller defaults it to the user's noteLanguage
-      trim: true,
-      match: [languageCodeRegex, 'Invalid language code']
+      trim: true,//Remove surrounding whitespace
+      match: [languageCodeRegex, 'Invalid language code']// keeps titles list-friendly
     },
     tags: [{
       type: mongoose.Schema.Types.ObjectId,
@@ -85,7 +88,7 @@ noteSchema.pre('validate', function () { // runs on create and .save()
 });
 
 noteSchema.pre('findOneAndUpdate', function () { // runs on findOneAndUpdate / findByIdAndUpdate (PATCH /notes/:id)
-  const update = this.getUpdate() || {};
+  const update = this.getUpdate() || {};// the update object passed to the query
   [update, update.$set].forEach((target) => { // content can arrive as { content } or { $set: { content } }
     if (target && typeof target.content === 'string') {
       target.content = toSafeHtml(target.content); // block stored XSS
@@ -97,11 +100,12 @@ noteSchema.pre('findOneAndUpdate', function () { // runs on findOneAndUpdate / f
 
 noteSchema.post('findOneAndDelete', async function (note) { // safety net: DELETE /notes/:id/permanent removes the translations first, so this normally finds none
   if (!note) return; // nothing was deleted
-  await mongoose.model('Translation').deleteMany({ note: note._id });
+  await mongoose.model('Translation').deleteMany({ note: note._id });// remove orphaned translations of this note
 });
 
-noteSchema.set('toJSON', {
+noteSchema.set('toJSON', {// controls what res.json() sends to the client
   transform: (doc, ret) => { delete ret.__v; return ret; } // hide version key
 });
 
+//========EXPORT THE SCHEMA===============
 module.exports = mongoose.model('Note', noteSchema);
