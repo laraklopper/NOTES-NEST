@@ -21,6 +21,8 @@ function normalizePhoneSA(phone) {
 
 const languageCodeRegex = /^[a-z]{2,3}(-[A-Za-z]{2,4})?$/; // language codes from Langbly, e.g. en, af, zu, zh-CN
 const hexColourRegex = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/; // #1F4E79 or #fff
+const DEFAULT_NOTEBOOK_COLOUR = '#1F4E79'; // notebookSchema default; PATCH /notebooks/:id resets to it on a blank colour
+const NAME_COLLATION = { locale: 'en', strength: 2 }; // case-insensitive compare/sort: "Work" = "work", "ideas" sorts before "Personal"
 
 const ADMIN_MIN_AGE = 21; // admins must be at least 21
 const ADMIN_MIN_ACCOUNT_AGE_MS = process.env.NODE_ENV === 'production'
@@ -39,6 +41,8 @@ module.exports = {
     normalizePhoneSA,
     languageCodeRegex,
     hexColourRegex,
+    DEFAULT_NOTEBOOK_COLOUR,
+    NAME_COLLATION,
     ADMIN_MIN_AGE,
     ADMIN_MIN_ACCOUNT_AGE_MS,
     THIRTY_DAYS_IN_SECONDS,

@@ -25,7 +25,7 @@ Note { _id, user, notebook, ... }
 7. [DELETE /notebooks/:id](#7-delete-notebooksid)
 8. [How Other Routers Use Notebooks](#8-how-other-routers-use-notebooks)
 9. [Status Code Reference](#9-status-code-reference)
-10. [Known Gaps & Housekeeping](#10-known-gaps--housekeeping)
+10. [Resolved Gaps & Remaining Housekeeping](#10-resolved-gaps--remaining-housekeeping)
 
 ---
 
@@ -35,35 +35,40 @@ The router is mounted at **`/notebooks`** in `app.js`. Every route requires a va
 
 | Method | Full Path | Purpose |
 |---|---|---|
-| `GET` | `/notebooks` | List the user's notebooks A–Z, each with a count of active notes |
+| `GET` | `/notebooks` | List the user's notebooks A–Z (ignoring case), each with a count of active notes |
 | `POST` | `/notebooks` | Create a notebook |
 | `PATCH` | `/notebooks/:id` | Rename and/or recolour a notebook |
 | `DELETE` | `/notebooks/:id` | Delete a notebook; its notes move to "No notebook" |
 
 This is a **RESTful** layout: one resource path (`/notebooks`), with the HTTP method saying what happens.
 
+Notebook names are **unique per user, ignoring case**: a user can't have both `Work` and `work` (409).
+
 ---
 
 ## 2. Imports & Setup
 
 ```js
-require('dotenv').config()
 const express = require('express');
 const mongoose = require('mongoose');
 const Notebook = require('../models/notebookSchema');
 const Note = require('../models/noteSchema');
 const { checkJwtToken } = require('../middleware/securityMiddleware');
-const router = express.Router()
+const { DEFAULT_NOTEBOOK_COLOUR, NAME_COLLATION } = require('../util/schemaUtil');
+const router = express.Router();
 ```
 
 | Import | Used For |
 |---|---|
-| `dotenv` | Loads `.env`. It isn't used directly in this file. |
 | `express` | Creates the `router` |
 | `mongoose` | `ObjectId.isValid()` for `:id`, and `new ObjectId(userId)` in the aggregation |
 | `Notebook` | The model this router manages |
-| `Note` | Only used to **count** notes per notebook in `GET /` |
+| `Note` | Counting notes per notebook in `GET /`, and the moved-notes count in `DELETE /:id` |
 | `checkJwtToken` | Auth on every route; sets `req.user.id` |
+| `DEFAULT_NOTEBOOK_COLOUR` | `'#1F4E79'`. PATCH resets to it on a blank colour. The schema default uses the same constant. |
+| `NAME_COLLATION` | `{ locale: 'en', strength: 2 }`. Case-insensitive sorting in `GET /`. The unique index uses the same collation. |
+
+`dotenv` isn't imported. `app.js` loads it before any router is required.
 
 ### What the routes rely on in `notebookSchema`
 
@@ -71,10 +76,10 @@ The routes depend on these schema features (they aren't defined in this file):
 
 | Schema Feature | Used By |
 |---|---|
-| `name` with `trim: true` and `required` | POST, PATCH |
-| `colour` with `default: '#1F4E79'` and a `hexColourRegex` match | POST, PATCH |
-| A unique compound index `{ user: 1, name: 1 }` | The 409 duplicate-name error |
-| A `findOneAndDelete` hook that sets `notebook: null` on the notebook's notes | DELETE |
+| `name` with `trim: true`, `required` and `maxlength: 80` | POST, PATCH |
+| `colour` with `default: DEFAULT_NOTEBOOK_COLOUR` and a `hexColourRegex` match | POST, PATCH |
+| A unique compound index `{ user: 1, name: 1 }` with `NAME_COLLATION` (named `user_1_name_1_ci`) | The 409 duplicate-name error, and the case-insensitive A–Z sort in GET |
+| A `post('findOneAndDelete')` hook that sets `notebook: null` on the notebook's notes | DELETE |
 
 ---
 
@@ -90,10 +95,10 @@ const notebookSaveError = (error) => {
         return { status: 409, message: 'You already have a notebook with that name' };
     }
     return null;
-}
+};
 ```
 
-POST and PATCH can fail in the same two ways, so this helper turns the error into a response in **one place**.
+POST and PATCH can fail in the same two ways, so this helper turns the error into a response in **one place**. It doesn't log anything; the route logs every error once.
 
 | Error | Comes From | Returns |
 |---|---|---|
@@ -105,7 +110,10 @@ The route uses it like this:
 
 ```js
 const saveError = notebookSaveError(error);
-if (saveError) return res.status(saveError.status).json({ message: saveError.message });
+if (saveError) {
+    console.error('[ERROR: notebookRoutes.js, POST /]', saveError.message);
+    return res.status(saveError.status).json({ message: saveError.message });
+}
 return res.status(500).json({ message: 'Internal Server Error' });// Unexpected
 ```
 
@@ -117,20 +125,40 @@ return res.status(500).json({ message: 'Internal Server Error' });// Unexpected
 
 **Purpose:** Fill the notebook sidebar, the notebook dropdowns, and the notebook filter, each with a note count.
 
-### Step 1: Fetch the notebooks
+### Step 1: Fetch the notebooks and the counts **in parallel**
 
 ```js
-const notebooks = await Notebook.find({ user: userId }).sort({ name: 1 });// A–Z
-```
-
-### Step 2: Count notes per notebook in **one** query
-
-```js
-const counts = await Note.aggregate([
-    { $match: { user: new mongoose.Types.ObjectId(userId), isArchived: false, deletedAt: null, notebook: { $ne: null } } },
-    { $group: { _id: '$notebook', count: { $sum: 1 } } }
+const [notebooks, counts] = await Promise.all([
+    Notebook.find({ user: userId })
+        .select('-__v')
+        .collation(NAME_COLLATION)
+        .sort({ name: 1 })
+        .lean(),
+    Note.aggregate([
+        { $match: { user: new mongoose.Types.ObjectId(userId), isArchived: false, deletedAt: null, notebook: { $ne: null } } },
+        { $group: { _id: '$notebook', count: { $sum: 1 } } }
+    ])
 ]);
 ```
+
+The two queries don't depend on each other, so `Promise.all` runs them at the same time. The route waits for the slower one, not both added together.
+
+| Detail | Why |
+|---|---|
+| `.collation(NAME_COLLATION)` | Sorts A–Z the way people read, ignoring case (see below). It matches the unique index's collation, so MongoDB can use that index for the sort. |
+| `.lean()` | Returns plain objects instead of Mongoose documents. Faster, and no `toJSON()` is needed before spreading them. |
+| `.select('-__v')` | `lean()` skips the schema's `toJSON` transform, so the version key is left out here instead |
+
+**Why the collation?** Without it, `.sort({ name: 1 })` sorts by **character code**, and every uppercase letter comes before every lowercase one:
+
+```
+Without:  "Personal", "Work", "ideas", "recipes"
+With:     "ideas", "Personal", "recipes", "Work"
+```
+
+`strength: 2` means "compare letters and accents, but not case".
+
+### Step 2: The aggregation counts notes per notebook in **one** query
 
 An **aggregation pipeline** processes documents in stages, like an assembly line:
 
@@ -157,8 +185,8 @@ $group → [{ _id: A, count: 2 }, { _id: B, count: 1 }]
 const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));// notebookId -> count
 
 const notebooksWithCounts = notebooks.map((notebook) => ({
-    ...notebook.toJSON(),// Mongoose doc -> plain object
-    noteCount: countMap.get(notebook._id.toString()) || 0// Notebooks with no notes aren't in counts, so default to 0
+    ...notebook,
+    noteCount: countMap.get(notebook._id.toString()) || 0// Empty notebooks aren't in counts
 }));
 ```
 
@@ -166,7 +194,7 @@ const notebooksWithCounts = notebooks.map((notebook) => ({
 |---|---|
 | `Map` | A fast lookup by ID, rather than searching the `counts` array for every notebook |
 | `.toString()` on both sides | ObjectIds are **objects**, so two ObjectIds with the same value are **not** `===`. Converting both to strings makes them comparable as `Map` keys. |
-| `.toJSON()` | Converts the Mongoose document to a plain object, so `...spread` copies only the data and not Mongoose internals |
+| `...notebook` | The notebooks are already plain objects (`lean()`), so spreading copies only the data |
 | `\|\| 0` | An empty notebook has no group in the aggregation, so `get()` returns `undefined` |
 
 ### Response (200)
@@ -174,8 +202,9 @@ const notebooksWithCounts = notebooks.map((notebook) => ({
 ```json
 {
   "notebooks": [
-    { "_id": "6732...", "user": "6731...", "name": "Personal", "colour": "#E11D48", "noteCount": 4, "createdAt": "...", "updatedAt": "..." },
-    { "_id": "6733...", "user": "6731...", "name": "Work", "colour": "#1F4E79", "noteCount": 0, "createdAt": "...", "updatedAt": "..." }
+    { "_id": "6732...", "user": "6731...", "name": "ideas", "colour": "#059669", "noteCount": 2, "createdAt": "...", "updatedAt": "..." },
+    { "_id": "6733...", "user": "6731...", "name": "Personal", "colour": "#E11D48", "noteCount": 4, "createdAt": "...", "updatedAt": "..." },
+    { "_id": "6734...", "user": "6731...", "name": "Work", "colour": "#1F4E79", "noteCount": 0, "createdAt": "...", "updatedAt": "..." }
   ]
 }
 ```
@@ -196,8 +225,8 @@ const notebooksWithCounts = notebooks.map((notebook) => ({
 
 | Field | Required | Rules |
 |---|---|---|
-| `name` | ✅ | A non-empty string. It must be unique among **this user's** notebooks. |
-| `colour` | ❌ | A hex code string. `null`, `''` or missing → the schema default `#1F4E79`. |
+| `name` | ✅ | A non-empty string, up to 80 characters. It must be unique among **this user's** notebooks, ignoring case. |
+| `colour` | ❌ | A hex code string. `null`, `''` or missing → the default `#1F4E79`. |
 
 ### Validation
 
@@ -230,7 +259,7 @@ const newNotebook = await Notebook.create({
 { "message": "Notebook saved successfully", "notebook": { "_id": "...", "user": "...", "name": "Work", "colour": "#4F46E5", "createdAt": "...", "updatedAt": "..." } }
 ```
 
-**Errors:** `400` (validation), `409` (duplicate name), `500`.
+**Errors:** `400` (validation), `409` (duplicate name, including a different case like `work`), `500`.
 
 ---
 
@@ -243,22 +272,35 @@ const newNotebook = await Notebook.create({
 ```json
 { "name": "Work 2026" }
 { "colour": "#059669" }
+{ "colour": "" }
 { "name": "Work 2026", "colour": "#059669" }
 ```
 
 ### Building the update
 
 ```js
+if ((name !== undefined && typeof name !== 'string') ||
+    (colour !== undefined && colour !== null && typeof colour !== 'string')) → 400 "Invalid notebook details"
+
 const updates = {};
 if (name !== undefined) {
     if (!name.trim()) → 400 "Notebook name is required"// Can't rename to blank
     updates.name = name.trim();
 }
-if (colour !== undefined && colour.trim()) {
-    updates.colour = colour.trim();// A blank colour is ignored (no change)
+if (colour !== undefined) {
+    updates.colour = colour?.trim() || DEFAULT_NOTEBOOK_COLOUR;// Blank or null resets to the default
 }
 if (Object.keys(updates).length === 0) → 400 "No changes were sent"
 ```
+
+| `colour` sent | Result |
+|---|---|
+| Missing | Colour unchanged |
+| A hex code | New colour (checked by the schema's regex) |
+| `''` or `null` | **Reset** to the default `#1F4E79` |
+| Anything else (number, object) | 400 |
+
+POST and PATCH now treat a blank or `null` colour the same way: both give the default colour.
 
 ### The update
 
@@ -274,10 +316,10 @@ const notebook = await Notebook.findOneAndUpdate(
 |---|---|
 | `{ _id: id, user: userId }` | Another user's notebook returns **404**, not 403, so IDs can't be probed |
 | `$set` | Only the sent fields change |
-| `returnDocument: 'after'` | Returns the **updated** notebook. The default would be the old one. |
+| `returnDocument: 'after'` | Returns the **updated** notebook. The default would be the old one. (`new: true` is deprecated in Mongoose 9.) |
 | `runValidators: true` | **Update queries skip schema validators by default.** Without this, an invalid colour like `"blue"` would be saved. |
 
-A rename to an existing name hits the unique index → `11000` → **409** through `notebookSaveError`.
+A rename to an existing name (in any case) hits the unique index → `11000` → **409** through `notebookSaveError`. Changing only the case of the notebook's **own** name (`work` → `Work`) is allowed, because it's the same document.
 
 Renaming a notebook **doesn't** touch any notes, because notes store the notebook's **ID**, not its name. Every note in it shows the new name straight away through `populate`.
 
@@ -287,49 +329,58 @@ Renaming a notebook **doesn't** touch any notes, because notes store the noteboo
 
 ## 7. DELETE `/notebooks/:id`
 
-**Purpose:** Delete a notebook **without losing its notes**.
+**Purpose:** Delete a notebook **without losing its notes**, and say how many notes moved.
 
 ```js
+const movedNotes = await Note.countDocuments({ notebook: id, user: userId });
 const notebook = await Notebook.findOneAndDelete({ _id: id, user: userId });
 ```
 
-The route itself only deletes the notebook. The **schema hook** handles the notes:
+The route counts the notes, then deletes the notebook. The **schema hook** moves the notes:
 
 ```
 DELETE /notebooks/:id
       │
+      ├─► Note.countDocuments({ notebook: id, user })   → movedNotes
+      │
       ▼
 Notebook.findOneAndDelete({ _id, user })
       │
-      ├─► notebookSchema findOneAndDelete hook
-      │       Note.updateMany({ notebook: id }, { $set: { notebook: null } })
+      ├─► notebookSchema post('findOneAndDelete') hook
+      │       Note.updateMany({ notebook: id }, { $set: { notebook: null } }, { timestamps: false })
       │       → every note in it (active, archived and trashed) moves to "No notebook"
       ▼
-200 { message, notebook: { _id, name } }
+200 { message, notebook: { _id, name }, movedNotes }
 ```
 
-A typical version of the hook in `notebookSchema` looks like this:
+The hook in `notebookSchema`:
 
 ```js
-notebookSchema.post('findOneAndDelete', async function (doc) {
-    if (doc) {
-        await mongoose.model('Note').updateMany(
-            { notebook: doc._id, user: doc.user },// This notebook's notes, for this user
-            { $set: { notebook: null } }// Move them to "No notebook"
-        );
-    }
+notebookSchema.post('findOneAndDelete', async function (notebook) {
+  if (!notebook) return;// Nothing was deleted
+  await mongoose.model('Note').updateMany(
+    { notebook: notebook._id },
+    { $set: { notebook: null } },// Move notes to "No notebook"
+    { timestamps: false }// Moving a note isn't an edit, so keep its updatedAt (and list order)
+  );
 });
 ```
 
-**Why a hook rather than code in the route?** Putting the cleanup **next to the model** means any code that deletes a notebook with `findOneAndDelete` gets the cleanup automatically. But see [Gap 3](#gap-3-the-cleanup-only-runs-for-findoneanddelete).
+| Detail | Why |
+|---|---|
+| Count **before** deleting | Once the hook has run, the notes no longer point at the notebook, so they can't be counted afterwards. The count covers the same notes the hook moves (active, archived and trashed). |
+| `timestamps: false` | Without it, every moved note would get a new `updatedAt` and jump to the top of the Notes list |
+| A hook, not code in the route | Putting the cleanup **next to the model** means any code that deletes a notebook with `findOneAndDelete` (or `findByIdAndDelete`, which calls it) gets the cleanup automatically |
+
+If the notebook isn't found (or isn't the user's), the count is simply `0` and the route returns 404, so nothing leaks.
 
 **Response (200):**
 
 ```json
-{ "message": "Notebook deleted", "notebook": { "_id": "6733...", "name": "Work" } }
+{ "message": "Notebook deleted", "notebook": { "_id": "6733...", "name": "Work" }, "movedNotes": 7 }
 ```
 
-Only `_id` and `name` are returned, enough for a toast like "'Work' deleted".
+`NoteBookList.js` uses `movedNotes` in its confirmation: `Notebook "Work" successfully deleted. 7 notes were moved to "No notebook".`
 
 ---
 
@@ -341,6 +392,7 @@ Only `_id` and `name` are returned, enough for a toast like "'Work' deleted".
 | `noteRoutes.js`, `archiveRoutes.js` | `.populate('notebook', 'name colour')`, so notes show the notebook name and colour badge |
 | `noteRoutes.js` | `GET /fetchNotes?notebook=<id>` filters notes by notebook |
 | `exportRoutes.js` | The "Notebook" column, and the `notebook` export filter |
+| `userRoutes.js` | Admin user removal deletes the user's notebooks with `deleteMany`, together with all their notes |
 
 ---
 
@@ -350,95 +402,46 @@ Only `_id` and `name` are returned, enough for a toast like "'Work' deleted".
 |---|---|---|
 | `200` | GET, PATCH, DELETE | Success |
 | `201` | POST | Notebook created |
-| `400` | POST, PATCH | Missing or blank name, wrong field types, invalid hex colour, no changes sent |
+| `400` | POST, PATCH | Missing or blank name, wrong field types, invalid hex colour, name over 80 characters, no changes sent |
 | `400` | PATCH, DELETE | `:id` isn't a valid ObjectId |
 | `401` | all | (From `checkJwtToken`) No token, or an invalid or expired one |
 | `404` | PATCH, DELETE | Notebook not found, or not the user's |
-| `409` | POST, PATCH | The user already has a notebook with that name |
+| `409` | POST, PATCH | The user already has a notebook with that name (ignoring case) |
 | `500` | all | Unexpected error |
 
 ---
 
-## 10. Known Gaps & Housekeeping
+## 10. Resolved Gaps & Remaining Housekeeping
 
-### Gap 1: A–Z sorting is case-sensitive
+These gaps were found in an earlier review and have now been fixed.
 
-`.sort({ name: 1 })` sorts by **character code**, and every uppercase letter comes before every lowercase one:
-
-```
-Sorted:   "Personal", "Work", "ideas", "recipes"
-Expected: "ideas", "Personal", "recipes", "Work"
-```
-
-**Fix:** add a **collation** so MongoDB sorts the way people read:
-
-```js
-Notebook.find({ user: userId }).collation({ locale: 'en', strength: 2 }).sort({ name: 1 });// strength 2 = ignore case
-```
-
-**Related:** the unique index `{ user, name }` is also case-sensitive (unless the schema lowercases names), so a user can create both `Work` and `work`. To block that, give the index the same collation:
-
-```js
-notebookSchema.index({ user: 1, name: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });// "Work" = "work"
-```
-
-Rebuild the index after changing it (drop the old one in Atlas or Compass, or call `Notebook.syncIndexes()`).
-
-### Gap 2: Colour rules differ between POST and PATCH
-
-| Input | POST | PATCH |
+| Gap | Fix | Where |
 |---|---|---|
-| `colour: null` | ✅ Uses the default | ❌ **400** "Invalid notebook details" |
-| `colour: ''` | ✅ Uses the default | Ignored, **no change** |
+| 1. A–Z sorting and duplicate names were case-sensitive | `GET /` sorts with `NAME_COLLATION` (`{ locale: 'en', strength: 2 }`). The unique `{ user, name }` index uses the same collation, so `Work` and `work` count as the same name (409). | `notebookRoutes.js` GET `/`, `notebookSchema.js`, `util/schemaUtil.js` |
+| 2. Colour rules differed between POST and PATCH, and a colour couldn't be reset | PATCH accepts `null`, and a blank or `null` colour resets to the default. The default lives in one place, `DEFAULT_NOTEBOOK_COLOUR`, shared by the schema and the route. | `notebookRoutes.js` PATCH `/:id`, `notebookSchema.js`, `util/schemaUtil.js` |
+| 4. The two queries in GET ran one after the other | They run together with `Promise.all`. The notebooks use `.lean()` (with `.select('-__v')`), so the `toJSON()` call is gone. | `notebookRoutes.js` GET `/` |
+| 5. Duplicate errors were logged twice | The `console.error` is removed from `notebookSaveError`. The helper only builds the response; the route does the logging. | `notebookRoutes.js` |
+| 6. DELETE didn't report how many notes moved | The route counts the notebook's notes before deleting and returns `movedNotes`. `NoteBookList.js` shows it in the confirmation. | `notebookRoutes.js` DELETE `/:id`, `NoteBookList.js` |
 
-So once a notebook has a custom colour, there's **no way to reset it** to the default. If you want "reset to default" in the UI, treat blank or `null` in PATCH as the default:
+The housekeeping comments are fixed too:
+- The unused `require('dotenv').config()` is removed (`app.js` loads it).
+- The `mongoose` import has a comment saying what it's used for.
+- The GET section header says "from the database" (there's no provider here).
+- The header block mentions that names are unique per user, ignoring case (409).
+- "Conditional rendering" is now "Guard clause".
+- The DELETE response comment mentions the deleted notebook's id and name and the moved-notes count.
+- The missing semicolons after `express.Router()` and `notebookSaveError` are added.
 
-```js
-if (colour !== undefined) {
-    updates.colour = colour?.trim() || '#1F4E79';// Blank/null resets to the default colour
-}
-// ...and allow null in the type check: (colour !== undefined && colour !== null && typeof colour !== 'string')
-```
+### One-time database step for Gap 1
 
-Better still, export the default from `schemaUtil` (e.g. `DEFAULT_NOTEBOOK_COLOUR`), so the schema and the route share one value.
+The new index is named `user_1_name_1_ci`, so it doesn't clash with the old case-sensitive `user_1_name_1` index. MongoDB builds it on the next server start. After that:
 
-### Gap 3: The cleanup only runs for `findOneAndDelete`
+1. **Drop the old `user_1_name_1` index** (in Atlas or Compass, or with `Notebook.syncIndexes()`). Both indexes are unique, so nothing breaks while both exist; the old one is just redundant.
+2. **If the new index fails to build**, a user already has two notebooks whose names differ only by case (e.g. `Work` and `work`). Mongoose logs the index error at startup. Rename or merge one of them, then restart the server.
 
-Mongoose query hooks are tied to a **specific method**. The notes are only moved to "No notebook" when a notebook is deleted with `findOneAndDelete`. `findByIdAndDelete` is covered, because it calls `findOneAndDelete` internally. But `deleteOne` and `deleteMany` (e.g. in a future "delete my account" feature) **won't run the hook**. Those notes keep pointing at a deleted notebook.
+### Still open
 
-The good news is that this fails **gracefully**: `populate` returns `null` for a missing notebook, and the frontend and export already handle it (`n.notebook?.name || ''`). Still, either:
-- always delete notebooks with `findOneAndDelete`, or
-- add matching `deleteOne` / `deleteMany` hooks.
-
-### Gap 4: The two queries in GET run one after the other
-
-`Notebook.find()` and `Note.aggregate()` don't depend on each other, so they can run **in parallel**, the same way `/notes/fetchNotes` does:
-
-```js
-const [notebooks, counts] = await Promise.all([
-    Notebook.find({ user: userId }).sort({ name: 1 }).lean(),// lean: plain objects, so no toJSON() is needed
-    Note.aggregate([/* same pipeline */])
-]);
-// ...then: ...notebook instead of ...notebook.toJSON()
-```
-
-Using `.lean()` here also makes the `toJSON()` call unnecessary, because the results are already plain objects.
-
-### Gap 5: Duplicate errors are logged twice
-
-`notebookSaveError` logs the 409 **inside the helper**, and then the route logs it **again**. Remove the `console.error` from the helper, so it only turns errors into responses and the route does all the logging.
-
-### Gap 6: DELETE doesn't report how many notes moved
-
-The UI could say "'Work' deleted, 7 notes moved to No notebook", but the hook's `updateMany` result isn't passed back to the route. If you want that message, do the update **in the route** instead of the hook (and return `modifiedCount`), or count the notes before deleting.
-
-### Housekeeping
-
-| Line(s) | Issue | Suggestion |
-|---|---|---|
-| 10 | `require('dotenv').config()` isn't used in this file | Load it once in `app.js` |
-| 12 | The `mongoose` import has no comment | `// Used to validate ObjectIds and cast the user id for aggregate()` |
-| 38 | GET section header: "from the **provider** and the database" | There's no provider here. "from the database". |
-| 2–7 | The header doesn't mention the 409 duplicate-name rule | Add "Names are unique per user (409 on duplicates)" |
-| 78, 83, 122, 128, 138, 149, 162, 191, 199 | "Conditional rendering" | That's a React UI term. These are **guard clauses** / validation checks. |
-| 206 | "Send a 200 (OK) status code with a message", but the response also includes `notebook` | "...with a message and the deleted notebook's id and name" |
+| Item | Notes |
+|---|---|
+| 3. The cleanup only runs for `findOneAndDelete` | Mongoose query hooks are tied to a **specific method**, so `deleteOne` and `deleteMany` don't move the notes. Today the only other place that deletes notebooks is admin user removal in `userRoutes.js`, and it deletes all of the user's notes at the same time, so no notes are left pointing at a deleted notebook. If notebooks are ever deleted with `deleteOne` / `deleteMany` elsewhere, add matching hooks or use `findOneAndDelete`. Even then it fails gracefully: `populate` returns `null` for a missing notebook, and the frontend and export already handle it (`n.notebook?.name \|\| ''`). |
+| The moved-notes count isn't atomic | A note added to the notebook between the count and the delete would be moved but not counted. That only affects the number in the message, never the notes themselves. |

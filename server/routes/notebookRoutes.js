@@ -4,22 +4,21 @@ GET - '/' - List the signed-in user's notebooks with note counts
 POST - '/' - Create a notebook for the signed-in user
 PATCH - '/:id' - Rename or recolour a notebook
 DELETE - '/:id' - Delete a notebook: its notes move to "No notebook"
+Notebook names are unique per user, ignoring case (409 on duplicates)
 */
-/* Load environment variables from a .env
-file using the dotenv package*/
-require('dotenv').config()
 const express = require('express');
-const mongoose = require('mongoose');
+const mongoose = require('mongoose');// Used to validate ObjectIds and cast the user id for aggregate()
 const Notebook = require('../models/notebookSchema');// Import the Notebook model
-const Note = require('../models/noteSchema');// Import the Note model (for notebook note counts)
+const Note = require('../models/noteSchema');// Import the Note model (for note counts)
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
-const router = express.Router()// Create a new router instance
+const { DEFAULT_NOTEBOOK_COLOUR, NAME_COLLATION } = require('../util/schemaUtil');
+const router = express.Router();// Create a new router instance
 
 /*──────────────────────────── SHARED HELPERS ─────────────────────────────────
    Used by POST / and PATCH /:id
 ────────────────────────────────────────────────────────────────────────────────*/
 /* Turns a save error into { status, message } to send back, or null if it is
-an unexpected error (500) */
+an unexpected error (500). It doesn't log: the route logs every error once */
 const notebookSaveError = (error) => {
     // Mongoose schema validation failed: send the first validation message back to the client
     if (error.name === 'ValidationError') {
@@ -28,33 +27,38 @@ const notebookSaveError = (error) => {
     }
     // Duplicate key on the { user, name } unique index
     if (error.code === 11000) {
-        console.error('[ERROR: notebookRoutes.js]: You already have a notebook with that name');//Log the error in the console for debugging purposes
         return { status: 409, message: 'You already have a notebook with that name' };
     }
     return null;
-}
+};
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
-   GET: READ — Used to fetch information from the provider and the database
+   GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/
-/* GET: /notebooks : Lists the signed-in user's notebooks (A-Z) with the number
-of active notes (not archived or trashed) in each one. */
+/* GET: /notebooks : Lists the signed-in user's notebooks (A-Z, ignoring case) with
+the number of active notes (not archived or trashed) in each one. */
 router.get('/', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
 
-        const notebooks = await Notebook.find({ user: userId }).sort({ name: 1 });// Fetch the user's notebooks in alphabetical order
-
-        // Count the active notes per notebook in a single query
-        const counts = await Note.aggregate([
-            { $match: { user: new mongoose.Types.ObjectId(userId), isArchived: false, deletedAt: null, notebook: { $ne: null } } },
-            { $group: { _id: '$notebook', count: { $sum: 1 } } }
+        // The two queries don't depend on each other, so run them at the same time
+        const [notebooks, counts] = await Promise.all([
+            Notebook.find({ user: userId })
+                .select('-__v')
+                .collation(NAME_COLLATION)// A–Z ignoring case: "ideas" before "Personal"
+                .sort({ name: 1 })
+                .lean(),// Plain objects, so no toJSON() is needed
+            // Count the active notes per notebook in a single query
+            Note.aggregate([
+                { $match: { user: new mongoose.Types.ObjectId(userId), isArchived: false, deletedAt: null, notebook: { $ne: null } } },
+                { $group: { _id: '$notebook', count: { $sum: 1 } } }
+            ])
         ]);
-        const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));
+        const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));// notebookId -> count
 
         const notebooksWithCounts = notebooks.map((notebook) => ({
-            ...notebook.toJSON(),
-            noteCount: countMap.get(notebook._id.toString()) || 0
+            ...notebook,
+            noteCount: countMap.get(notebook._id.toString()) || 0// Empty notebooks aren't in counts
         }));
 
         console.log(`[SUCCESS: notebookRoutes.js, GET /] Fetched ${notebooksWithCounts.length} notebooks`);//Log a message in the console for debugging purposes
@@ -75,12 +79,12 @@ router.post('/', checkJwtToken, async (req, res) => {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { name, colour } = req.body || {};// Extract the notebook fields from the request body
 
-        // Conditional rendering to check the name is present (and is a string, so it cannot inject query operators)
+        // Guard clause: check the name is present (and is a string, so it cannot inject query operators)
         if (typeof name !== 'string' || !name.trim()) {
             console.error('[ERROR: notebookRoutes.js, POST /] Notebook name is required');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Notebook name is required' });// Return a 400 (Bad Request) status code with a message
         }
-        // Conditional rendering to check the optional colour is a string
+        // Guard clause: check the optional colour is a string
         if (colour !== undefined && colour !== null && typeof colour !== 'string') {
             console.error('[ERROR: notebookRoutes.js, POST /] Invalid colour');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Colour must be a hex code, e.g. #1F4E79' });// Return a 400 (Bad Request) status code with a message
@@ -119,15 +123,15 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
         const { id } = req.params;// Get the notebook ID from the URL
         const { name, colour } = req.body || {};// Extract the notebook fields from the request body
 
-        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        // Guard clause: check the id is a valid ObjectId (avoids a CastError 500)
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.error(`[ERROR: notebookRoutes.js, PATCH /:id] Invalid notebook id: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid notebook id' });// Return a 400 (Bad Request) status code with a message
         }
 
-        // Conditional rendering to check the sent fields are strings (so they cannot inject query operators)
+        // Guard clause: check the sent fields are strings (so they cannot inject query operators). A null colour is allowed, like POST
         if ((name !== undefined && typeof name !== 'string') ||
-            (colour !== undefined && typeof colour !== 'string')) {
+            (colour !== undefined && colour !== null && typeof colour !== 'string')) {
             console.error('[ERROR: notebookRoutes.js, PATCH /:id] Invalid field types');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid notebook details' });// Return a 400 (Bad Request) status code with a message
         }
@@ -135,18 +139,18 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
         // Build the update from only the fields that were sent
         const updates = {};
         if (name !== undefined) {
-            // Conditional rendering to check the name is not being emptied
+            // Guard clause: check the name is not being emptied
             if (!name.trim()) {
                 console.error('[ERROR: notebookRoutes.js, PATCH /:id] Notebook name is required');// Log an error message in the console for debugging purposes
                 return res.status(400).json({ message: 'Notebook name is required' });// Return a 400 (Bad Request) status code with a message
             }
             updates.name = name.trim();
         }
-        if (colour !== undefined && colour.trim()) {
-            updates.colour = colour.trim();// Format is checked by the schema's hexColourRegex
+        if (colour !== undefined) {
+            updates.colour = colour?.trim() || DEFAULT_NOTEBOOK_COLOUR;// Blank or null resets to the default. Format is checked by the schema's hexColourRegex
         }
 
-        // Conditional rendering to check there is something to update
+        // Guard clause: check there is something to update
         if (Object.keys(updates).length === 0) {
             console.error('[ERROR: notebookRoutes.js, PATCH /:id] No fields to update');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'No changes were sent' });// Return a 400 (Bad Request) status code with a message
@@ -159,7 +163,7 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
             { returnDocument: 'after', runValidators: true }
         );
 
-        // Conditional rendering to check the notebook was found
+        // Guard clause: check the notebook was found
         if (!notebook) {
             console.error(`[ERROR: notebookRoutes.js, PATCH /:id] Notebook not found: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'Notebook not found' });// Return a 404 (Not Found) status code with a message
@@ -188,22 +192,29 @@ router.delete('/:id', checkJwtToken, async (req, res) => {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { id } = req.params;// Get the notebook ID from the URL
 
-        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        // Guard clause: check the id is a valid ObjectId (avoids a CastError 500)
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.error(`[ERROR: notebookRoutes.js, DELETE /:id] Invalid notebook id: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid notebook id' });// Return a 400 (Bad Request) status code with a message
         }
 
+        // Count the notes first: the delete hook moves them to "No notebook", so they can't be counted afterwards
+        const movedNotes = await Note.countDocuments({ notebook: id, user: userId });// Active, archived and trashed, the same notes the hook moves
+
         const notebook = await Notebook.findOneAndDelete({ _id: id, user: userId });// Runs the hook that unsets the notebook on its notes
 
-        // Conditional rendering to check the notebook was found
+        // Guard clause: check the notebook was found
         if (!notebook) {
             console.error(`[ERROR: notebookRoutes.js, DELETE /:id] Notebook not found: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'Notebook not found' });// Return a 404 (Not Found) status code with a message
         }
 
-        console.log(`[SUCCESS: notebookRoutes.js, DELETE /:id] Notebook deleted: ${id}`);//Log a message in the console for debugging purposes
-        return res.status(200).json({ message: 'Notebook deleted', notebook: { _id: notebook._id, name: notebook.name } });// Send a 200 (OK) status code with a message
+        console.log(`[SUCCESS: notebookRoutes.js, DELETE /:id] Notebook deleted: ${id}, ${movedNotes} note(s) moved to No notebook`);//Log a message in the console for debugging purposes
+        return res.status(200).json({// Send a 200 (OK) status code with a message, the deleted notebook's id and name, and how many notes moved
+            message: 'Notebook deleted',
+            notebook: { _id: notebook._id, name: notebook.name },
+            movedNotes
+        });
     } catch (error) {
         console.error('[ERROR: notebookRoutes.js, DELETE /:id]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message

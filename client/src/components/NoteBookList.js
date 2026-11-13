@@ -109,7 +109,9 @@ export default function NoteBookList(
             }
             if (editingId === notebook._id) cancelEdit()
             await Promise.all([fetchNotebooks?.(), fetchNotes?.()])// Refresh the lists so the notebook disappears
-            alert(`Notebook "${notebook.name}" successfully deleted`)
+            const moved = data.movedNotes || 0// How many notes the server moved to "No notebook"
+            alert(`Notebook "${notebook.name}" successfully deleted` +
+                (moved > 0 ? `. ${moved} note${moved === 1 ? ' was' : 's were'} moved to "No notebook".` : ''))
         } catch (error) {
             console.error('[ERROR: NoteBookList.js] Deleting notebook failed:', error.message)
             setError?.('An error occurred while deleting your notebook.')
