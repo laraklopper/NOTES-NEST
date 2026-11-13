@@ -8,7 +8,7 @@ import '../css/componentCss/ListTables.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
-import { formatTimestamp } from '../util/dateFunctions';
+import { dateDisplay } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 import { ARCHIVE_DAYS, archiveDaysLeft, formatDaysLeft, urgentStyle } from '../util/listUtilFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
@@ -129,7 +129,7 @@ export default function ArchivedNotes(
                                 <td>{index + 1}</td>
                                 <td>{note.title}</td>
                                 <td>{languageName(note.language)}</td>
-                                <td>{formatTimestamp(note.createdAt)}</td>
+                                <td>{dateDisplay(note.createdAt)}</td>
                                 {/* 60-day rule: highlight notes with a week or less left */}
                                 <td style={urgentStyle(remaining)}>{formatDaysLeft(remaining)}</td>
                                 <td>

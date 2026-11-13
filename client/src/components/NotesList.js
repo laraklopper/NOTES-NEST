@@ -11,7 +11,7 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack'
 // IMPORT UTILITY FUNCTIONS
-import { formatTimestamp } from '../util/dateFunctions';
+import { dateDisplay } from '../util/dateFunctions';
 import { EMPTY_NOTE_FILTERS } from '../util/formUtil';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
@@ -211,7 +211,7 @@ export default function NotesList(
                             <td>{languageName(note.language)}</td>
                             <td>{note.notebook?.name || '-'}</td>
                             <td>{tagNames(note.tags) || '-'}</td>
-                            <td>{formatTimestamp(note.createdAt)}</td>
+                            <td>{dateDisplay(note.createdAt)}</td>
                             <td>
                                 <div id='tableBtnDiv'>
                                     <Button

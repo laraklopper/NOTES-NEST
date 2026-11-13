@@ -7,7 +7,7 @@ import '../css/componentCss/DetailsPanals.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
-import { formatTimestamp } from '../util/dateFunctions';
+import { dateDisplay } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Archive, ArrowRight, Copy, Trash2, X } from 'lucide-react';
@@ -160,7 +160,7 @@ export default function TranslationPanal(
       <div className="p-2">
           <span className='dataSpan'>
             <p className='dataLabel'>DATE ADDED:</p>
-            <p className='dataValue'>{formatTimestamp(translation.createdAt)}</p>
+            <p className='dataValue'>{dateDisplay(translation.createdAt)}</p>
         </span>
       </div>
     </Stack>

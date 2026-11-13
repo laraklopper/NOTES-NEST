@@ -10,7 +10,7 @@ import Button from 'react-bootstrap/Button';
 // IMPORT COMPONENTS
 import Pagination, { PAGE_SIZES } from './Pagination';
 // IMPORT UTILITY FUNCTIONS
-import { formatTimestamp } from '../util/dateFunctions';
+import { dateDisplay } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 import { PURGE_DAYS, daysLeft } from '../util/listUtilFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
@@ -148,9 +148,9 @@ export default function Trash(//Export default Trash function component
                     <td>{rowNumber(index)}</td>
                     <td>{note.title}</td>
                     <td>{languageName(note.language)}</td>
-                    <td>{formatTimestamp(note.createdAt)}</td>
+                    <td>{dateDisplay(note.createdAt)}</td>
                     <td>
-                      {formatTimestamp(note.deletedAt)}
+                      {dateDisplay(note.deletedAt)}
                       {remaining !== null && <><br/><small>({remaining} {remaining === 1 ? 'DAY' : 'DAYS'} LEFT)</small></>}
                     </td>
                     <td>
