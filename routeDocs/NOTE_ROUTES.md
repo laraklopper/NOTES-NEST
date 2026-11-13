@@ -683,4 +683,4 @@ The housekeeping comments are fixed too:
 |---|---|
 | Permanent delete isn't a transaction | A note restored in another tab **between** the translation delete and the note delete keeps the note but loses its translations. That's very unlikely, and the route returns 404 so the UI resyncs. A strict guarantee needs a MongoDB transaction (this needs a replica set; Atlas clusters have one). |
 | Unused tags still build up | Tags whose notes were all deleted remain (`noteCount: 0` in `GET /tag/fetchTags`). A periodic "remove unused tags" step could clean them up; the `tagSchema` `deleteMany` hook already handles the note cleanup. |
-| `dotenv` in other routers | `authRoutes.js`, `exportRoutes.js` and `apiRoutes.js` still call `require('dotenv').config()`. It's harmless (it's already loaded by `app.js`) and is left for those routers' reviews. |
+| `dotenv` in other routers | `authRoutes.js` and `apiRoutes.js` still call `require('dotenv').config()`. It's harmless (it's already loaded by `app.js`) and is left for those routers' reviews. |

@@ -25,54 +25,15 @@ const paginationInfo = (pageNumber, pageSize, total) => ({
 });
 
 const MAX_EXPORT_ROWS = 10000;// Upper bound so one export can't pull an unbounded amount of data
-const FORMATS = ['csv', 'xlsx'];//Allowed Export formats
-
-/* Stops spreadsheet apps running cell text as a formula (CSV/formula injection).
-A value starting with = + - @ (or tab/carriage return) gets a leading apostrophe */
-const safeCell = (value) => {
-    if (typeof value !== 'string') return value;
-    return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
-};
-
-/*──────────────────────────── FILE BUILDERS ─────────────────────────────────*/
-// Header row followed by one row per document
-const toRows = (docs, columns) => [
-    columns.map(([header]) => header),
-    ...docs.map((doc) => columns.map(([, getValue]) => safeCell(getValue(doc) ?? ''))),
-];
-
-const buildCsv = (rows) => Buffer.from(
-    '﻿' + stringify(rows),// BOM so Excel opens accented/non-Latin text as UTF-8
-    'utf8'
-);
-
-const buildXlsx = (rows, sheetName) => {
-    const sheet = XLSX.utils.aoa_to_sheet(rows);
-    // Column widths based on the longest value in each column (capped so long text doesn't stretch forever)
-    sheet['!cols'] = rows[0].map((_, col) => ({
-        wch: Math.min(Math.max(...rows.map((row) => String(row[col] ?? '').length), 10), 60),
-    }));
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, sheet, sheetName);
-    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-};
-
-const CONTENT_TYPES = {
-    csv: 'text/csv; charset=utf-8',
-    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-};
+const EXPORT_TIME_ZONE = 'Africa/Johannesburg';// Dates in exported files and filenames use South African time (SAST, UTC+2)
 
 module.exports = {
-    LANGBLY_PATH, LANGBLY_TIMEOUT_MS, 
+    LANGBLY_PATH, LANGBLY_TIMEOUT_MS,
     LANGUAGES_CACHE_MS,
     DEFAULT_LIMIT,
     MAX_LIMIT,
     parsePagination,
     paginationInfo,
     MAX_EXPORT_ROWS,
-    FORMATS,
-    toRows,
-    buildCsv,
-    buildXlsx,
-    CONTENT_TYPES
+    EXPORT_TIME_ZONE
 }

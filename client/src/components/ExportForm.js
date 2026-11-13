@@ -72,7 +72,12 @@ export default function ExportForm(
             a.click()// Trigger download.
             a.remove()
             setTimeout(() => URL.revokeObjectURL(url), 0)// free the object URL after the click has been handled
-            setNotice(`${filename} downloaded.`)// Confirm the download to the user
+            // Confirm the download, and warn if the server hit its row limit
+            const truncated = response.headers.get('X-Export-Truncated') === 'true'
+            const rowCount = Number(response.headers.get('X-Export-Rows')) || 0
+            setNotice(truncated
+                ? `${filename} downloaded. Only the first ${rowCount.toLocaleString()} rows were exported. Apply a filter to export the rest.`
+                : `${filename} downloaded.`)
         } catch (error) {
             console.error('[ERROR: ExportForm.js] Export failed:', error.message)
             setError(error.message || 'Export failed.')// Set the error state to display the error in the UI
