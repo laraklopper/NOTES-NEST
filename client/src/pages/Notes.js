@@ -14,13 +14,16 @@ import Button from 'react-bootstrap/Button';
 //IMPORT CUSTOM COMPONENTS
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import NotesList, { NOTE_PAGE_SIZES } from '../components/NotesList';
-import { EMPTY_NOTE_FILTERS } from '../util/formUtil';
 import EditNoteForm from '../components/EditNoteForm';
 import Trash from '../components/Trash';
 import ArchivedNotes from '../components/ArchivedNotes';
 import NoteDataLists from '../components/NoteDataLists';
+// IMPORT ICONS FROM LUCIDE-REACT
 import { NotebookTabs } from 'lucide-react';
+// IMPORT UTILITY FUNCTIONS
+import NotesList, { NOTE_PAGE_SIZES } from '../components/NotesList';
+import { EMPTY_NOTE_FILTERS } from '../util/formUtil';
+
 
 //====MAIN NOTES FUNCTION COMPONENT========
 export default function Notes(//Export the default Notes.js function component
