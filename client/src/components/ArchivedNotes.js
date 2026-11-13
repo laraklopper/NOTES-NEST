@@ -10,7 +10,7 @@ import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
 import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
-import { ARCHIVE_DAYS, archiveDaysLeft } from '../util/listUtilFunc';
+import { ARCHIVE_DAYS, archiveDaysLeft, formatDaysLeft, urgentStyle } from '../util/listUtilFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Archive, ArchiveRestore, Trash } from 'lucide-react';
 
@@ -131,9 +131,7 @@ export default function ArchivedNotes(
                                 <td>{languageName(note.language)}</td>
                                 <td>{formatTimestamp(note.createdAt)}</td>
                                 {/* 60-day rule: highlight notes with a week or less left */}
-                                <td style={remaining !== null && remaining <= 7 ? {color: '#B82C3A', fontWeight: '800'} : undefined}>
-                                    {remaining === null ? '-' : remaining === 0 ? 'TODAY' : `${remaining} DAY${remaining === 1 ? '' : 'S'}`}
-                                </td>
+                                <td style={urgentStyle(remaining)}>{formatDaysLeft(remaining)}</td>
                                 <td>
                                     <div className='archiveTableBtns'>
                                         <Button

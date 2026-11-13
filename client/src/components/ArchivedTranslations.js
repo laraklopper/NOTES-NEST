@@ -10,6 +10,7 @@ import '../css/componentCss/Trash.css'
 import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
 import { languageName } from '../util/languageFunc';
+import { ARCHIVE_DAYS, archiveDaysLeft, formatDaysLeft, urgentStyle } from '../util/listUtilFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { ArchiveIcon, ArchiveRestoreIcon, TrashIcon } from 'lucide-react'
 
@@ -97,7 +98,7 @@ export default function ArchivedTranslations() {
       <table id='archiveTable'>
         <thead>
           <tr>
-            <th colSpan={5}>
+            <th colSpan={6}>
               <p className='tableHeading'>ARCHIVED TRANSLATIONS<ArchiveIcon aria-hidden='true' focusable='false'/></p>
             </th>
           </tr>
@@ -106,6 +107,7 @@ export default function ArchivedTranslations() {
             <th>SOURCE TEXT</th>
             <th>SOURCE LANGUAGE</th>
             <th>TARGET LANGUAGE</th>
+            <th>MOVES TO TRASH IN</th>
             {/* RESTORE + DELETE BUTTONS */}
             <th></th>
           </tr>
@@ -113,19 +115,23 @@ export default function ArchivedTranslations() {
         <tbody>
           {loading && translations.length === 0 ? (
             <tr>
-              <td colSpan={5}>LOADING ARCHIVED TRANSLATIONS...</td>
+              <td colSpan={6}>LOADING ARCHIVED TRANSLATIONS...</td>
             </tr>
           ) : translations.length === 0 ? (
             <tr>
-              <td colSpan={5}>NO ARCHIVED TRANSLATIONS</td>
+              <td colSpan={6}>NO ARCHIVED TRANSLATIONS</td>
             </tr>
           ) : (
-            translations.map((translation, index) => (
+            translations.map((translation, index) => {
+              const remaining = archiveDaysLeft(translation)
+              return (
               <tr key={translation._id}>
                 <td>{index + 1}</td>
                 <td>{preview(translation.sourceText)}</td>
                 <td>{languageName(translation.sourceLanguage)}</td>
                 <td>{languageName(translation.targetLanguage)}</td>
+                {/* 60-day rule: red when a week or less is left */}
+                <td style={urgentStyle(remaining)}>{formatDaysLeft(remaining)}</td>
                 <td style={{ width: '260px' }}>
                   <div className='archiveTableBtns'>
                     <Button
@@ -153,15 +159,16 @@ export default function ArchivedTranslations() {
                   </div>
                 </td>
               </tr>
-            ))
+              )
+            })
           )}
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={5}>RESTORE TO VIEW TRANSLATION DETAILS</td>
+            <td colSpan={6}>RESTORE TO VIEW TRANSLATION DETAILS</td>
           </tr>
           <tr>
-            <td colSpan={5}><i style={{color: "#B82C3A", fontWeight: "800"}}>ARCHIVED TRANSLATIONS WILL BE MOVED TO TRASH IN 60 DAYS</i></td>
+            <td colSpan={6}><i style={{color: "#B82C3A", fontWeight: "800"}}>ARCHIVED TRANSLATIONS ARE MOVED TO TRASH {ARCHIVE_DAYS} DAYS AFTER BEING ARCHIVED</i></td>
           </tr>
         </tfoot>
       </table>

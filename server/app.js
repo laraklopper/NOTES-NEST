@@ -63,7 +63,7 @@ mongoose.set('strictPopulate', false);
 // Connect to MongoDB first; only start listening once the DB is available.
 // This avoids “server started but DB is down” race conditions.
 connectDB().then(() => {
-    startArchiveSweep();// Move archived notes older than 60 days to the trash now, then every hour
+    startArchiveSweep();// Move archived notes/translations older than 60 days to the trash now, then every hour
     app.listen(port, () => {
         console.info(`[INFO:app.js] server is running on ${port}`)// Log a message in the console indicating the server is running
     })

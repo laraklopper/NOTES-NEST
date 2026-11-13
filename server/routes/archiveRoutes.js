@@ -16,7 +16,7 @@ const mongoose = require('mongoose');// Used to validate ObjectIds
 const Note = require('../models/noteSchema');// Import the Note model
 const Translation = require('../models/translationSchema')
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
-const { trashExpiredArchivedNotes } = require('../util/archiveUtil');// 60-day archive rule
+const { trashExpiredArchivedNotes, trashExpiredArchivedTranslations } = require('../util/archiveUtil');// 60-day archive rule
 const router = express.Router()
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
@@ -52,10 +52,13 @@ router.get('/fetchTranslations', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
 
+        // Apply the 60-day rule first so expired translations never show in the archive
+        await trashExpiredArchivedTranslations(userId);
+
         const translations = await Translation.find({ user: userId, isArchived: true, deletedAt: null })
             .select('-__v')
             .populate('note', 'title')
-            .sort({ updatedAt: -1 })// Archiving updates updatedAt, so the latest archived translation is first
+            .sort({ archivedAt: -1, updatedAt: -1 })// Latest archived first (updatedAt for translations archived before archivedAt existed)
             .lean();
 
         console.log(`[SUCCESS: archiveRoutes.js, GET /fetchTranslations] Fetched ${translations.length} archived translations`);//Log a message in the console for debugging purposes
@@ -118,9 +121,9 @@ router.patch('/translation/:id', checkJwtToken, async (req, res) => {
         // Only a translation the user owns that is not in the trash or already archived can be archived
         const translation = await Translation.findOneAndUpdate(
             { _id: id, user: userId, deletedAt: null, isArchived: { $ne: true } },// $ne also matches older translations without the field
-            { $set: { isArchived: true } },
+            { $set: { isArchived: true, archivedAt: new Date() } },// archivedAt starts the 60-day countdown
             { new: true }// Return the document AFTER the update
-        ).select('_id sourceText isArchived');
+        ).select('_id sourceText isArchived archivedAt');
 
         // Conditional rendering to check the translation was found
         if (!translation) {
@@ -151,7 +154,7 @@ router.patch('/translation/:id/restore', checkJwtToken, async (req, res) => {
         // Only an archived translation the user owns that is not in the trash can be restored
         const translation = await Translation.findOneAndUpdate(
             { _id: id, user: userId, deletedAt: null, isArchived: true },
-            { $set: { isArchived: false } }
+            { $set: { isArchived: false, archivedAt: null } }// Clear the 60-day countdown
         ).select('_id sourceText');
 
         // Conditional rendering to check the translation was found
@@ -252,7 +255,7 @@ router.delete('/translation/:id', checkJwtToken, async (req, res) => {
         // Only an archived translation the user owns that is not already in the trash can be moved there
         const translation = await Translation.findOneAndUpdate(
             { _id: id, user: userId, deletedAt: null, isArchived: true },
-            { $set: { deletedAt: new Date(), isArchived: false } }
+            { $set: { deletedAt: new Date(), isArchived: false, archivedAt: null } }
         ).select('_id sourceText');
 
         // Conditional rendering to check the translation was found
