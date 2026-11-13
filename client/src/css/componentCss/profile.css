@@ -1,8 +1,11 @@
+/* Profile.css */
 #userProfile{
      background-color: #b7bdc4;
      width: 100%;
      margin: 0px;
      padding: 5px;
+     display: flex;
+flex-direction: column;
 }
 #userProfileDisplay{
     width: 100%;
@@ -81,11 +84,17 @@
     padding: 0px;
 }
 .userProfileLabel{
+    font-family: "Roboto", sans-serif;
+    display: flex;
     font-weight: 600;
     white-space: nowrap;
 }
 .userProfileValue{
+        font-family: "Roboto", sans-serif;
+    display: flex;
+    font-weight: 600;
     margin: 0px;
+    letter-spacing: 2px;
     word-break: break-word;
 }
 #editUserDataPanal{
@@ -127,7 +136,24 @@
     display: flex;
     justify-content: center;
 }
+
+
+#userProfilePanal{
+    width: 100%;
+    padding: 0px;
+    background-color: #9E9E9E;
+}
+#editPasswordPanal{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0px;
+    padding: 10px;
+      background-color: #9E9E9E;
+
+}
 /* ============================== */
+#deleteAdminBtn,
 #editProfileToggleBtn,
 #editPasswordToggleBtn{
     display: flex;
@@ -142,8 +168,18 @@
     color: #000;
     border: #323A42 solid 2px;
 }
+#deleteAdminBtn{
+    width: 250px;
+}
+#deleteAdminBtn:hover,
 #editProfileToggleBtn:hover,
 #editPasswordToggleBtn:hover{
        color: #E8F0F6;
+    background-color: #323A42;
+}
+#editProfileToggleBtn:active,
+#editPasswordToggleBtn:active{
+      color: #E8F0F6;
+      text-decoration: underline;
     background-color: #323A42;
 }

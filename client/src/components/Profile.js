@@ -63,7 +63,7 @@ export default function Profile(//Export default Profile.js Function component
       },[setError,setCurrentUser ])
     //======JSX RENDERING========
   return (
-    <div id='userProfile'>
+    <div id='userProfile' role='region'>
       {/* PROFILE HEADER */}
       <Stack direction="horizontal" gap={3} id='userProfileHeader'>
         <div className="p-2">
@@ -100,6 +100,7 @@ export default function Profile(//Export default Profile.js Function component
           </Button>
         </div>
       </Stack>
+      {/* BODY */}
       <div id='userProfileBody'>
         {/* PROFILE BODY STACK 1 */}
         <Stack gap={3} id='profileStack1'>

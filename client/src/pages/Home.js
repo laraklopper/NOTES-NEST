@@ -10,8 +10,6 @@ import '../css/componentCss/Tabs.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
 // IMPORT CUSTOM COMPONENTS
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -32,7 +30,6 @@ export default function Home(//Export default Home.js function component
     logout
   }) {
   //===========STATE VARIABLES=======================
-  const [key, setKey] = useState('home')
   const [profile, setProfile] = useState(null)// Full user record for the profile tab
   const [editUser, setEditUser] = useState(false)
   const [editPassword, setEditPassword] = useState(false)
@@ -47,6 +44,7 @@ export default function Home(//Export default Home.js function component
     dismissedForId === userId ||
     localStorage.getItem(dismissKey) === 'true'
   )
+
   /* currentUser only holds userId, fullName and admin,
   so fetch the full profile from the server */
   useEffect(() => {
@@ -126,6 +124,9 @@ export default function Home(//Export default Home.js function component
     }
   }, [setError])
 
+const notProvided = 'Not provided';
+   const firstName = user.fullName?.firstName || notProvided;
+    const lastName = user.fullName?.lastName || notProvided;
 
   //======JSX RENDERING========
   return (
@@ -144,23 +145,22 @@ export default function Home(//Export default Home.js function component
         </Col>
       </Row>
       {/* -----------------------
-      SECTION 1: USERS LIST
+      SECTION 1: 
       ------------ */}
       <section id='homeSection1'>
-        <div id='tabPanal'>
-          <Tabs
-            id="homePageTabs"
-            activeKey={key}
-            onSelect={(k) => setKey(k)}
-          >
-            <Tab eventKey="home" title="Home">
-              {/* Application description */}
+        {/* Application description */}
               <div id='appDescriptionPanal'>
                 <Row id='appDescriptionRow'>
                   <Col id='appDescriptionCol' xs={12} md={10}>
                     <Stack gap={3} id='welcomeStack'>
                       <div className="p-2" id='welcomeBlock'>
-                        <h3 className='appDescriptionHeading'>WELCOME TO NOTE NEST{user?.fullName ? `, ${user.fullName}` : ''}</h3>
+                        <h3 className='appDescriptionHeading'>WELCOME TO NOTE NEST:</h3>
+                        <span id='welcomeSpan'>
+                        <h3 className='welcomeName'>{firstName}</h3>
+                        <h3 className='welcomeName'>{lastName}</h3>
+
+                        </span>
+                        
                       </div>
                       <div className="p-2" id='descriptionListBlock'>
                         <h4 className='appDescriptionSubHeading'>WHAT YOU CAN DO</h4>
@@ -197,8 +197,13 @@ export default function Home(//Export default Home.js function component
                   </Col>
                 </Row>
               </div>
-            </Tab>
-            <Tab eventKey="profile" title="Profile">
+
+      </section>
+      {/* ----------------------
+      SECTION 2: userProfile.js
+      ---------------- */}
+      <section id='homeSection2'>
+        <div id='userProfile'>
               {/* user profile */}
               <div id='userProfilePanal'>
                 <div id='userProfileDisplay'>
@@ -217,8 +222,6 @@ export default function Home(//Export default Home.js function component
                   </Row>
                 </div>
               </div>
-            </Tab>
-          </Tabs>
         </div>
       </section>
       <div id='editUserDataPanal'>
