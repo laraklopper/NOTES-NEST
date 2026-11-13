@@ -5,6 +5,7 @@ import '../css/componentCss/ListTables.css'
 import '../css/componentCss/ListBtns.css'
 import Button from 'react-bootstrap/Button';
 import { PURGE_DAYS } from '../util/listUtilFunc';
+import { ArchiveArrowUp, ArchiveX, Trash2Icon } from 'lucide-react';
 // TrashedTranslations Function component
 export default function TrashedTranslations() {
   return (
@@ -13,7 +14,9 @@ export default function TrashedTranslations() {
             <table id='trashTable'>
                 <thead>
                     <tr>
-                        <th colSpan={5}>DELETED TRANSLATIONS</th>
+                        <th colSpan={5}>
+                            <p className='tableHeading'>DELETED TRANSLATIONS<ArchiveX/></p>
+                        </th>
                     </tr>
                     <tr>
                         <th>#</th>
@@ -34,15 +37,15 @@ export default function TrashedTranslations() {
                             <div className='trashTableBtns'>
                                 <Button
                                 variant='light'
-                                id='restoreBt'
+                                id='restoreBtn'
                                 >
-                                    RESTORE
+                                   <ArchiveArrowUp/> RESTORE
                                 </Button>
                                 <Button
                                 variant='danger'
-                                id='delete'
+                                id='deleteArchiveBtn'
                                 >
-                                    DELETE
+                                    <Trash2Icon/>DELETE
                                 </Button>
                             </div>
                         </td>
@@ -50,7 +53,7 @@ export default function TrashedTranslations() {
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colSpan={5}>NOTES ARE PERMANENTLY DELETED {PURGE_DAYS} DAYS AFTER BEING MOVED TO TRASH</td>
+                        <td colSpan={5}>TRANSLATIONS ARE PERMANENTLY DELETED {PURGE_DAYS} DAYS AFTER BEING MOVED TO TRASH</td>
                     </tr>
                 </tfoot>
             </table>

@@ -21,6 +21,120 @@
     color: #000;
     gap: 5px;
 }
+#deleteArchiveBtn,
+#restoreBtn{
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    border: solid 2px #323A42;
+    width: 120px;
+    height: 40px;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+}
+#restoreBtn:hover,
+#deleteArchiveBtn:hover{
+    background-color: #323A42;
+    color: #E8F0F6;
+}
+tbody tr td {
+    border: solid 2px #404040;
+}
+#noteTagGroup{
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+#noteContentBlock{
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#noteContentDiv{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 5px;
+    width: 100%;
+    border: #404040 solid 1px;
+    border-radius: 5px;
+    background-color: #ced4da;;
+    gap: 5px;
+}
+#notePanalStack1,
+#notePanalStack2{
+    margin: 0px;
+    padding: 0px;
+}
+#noteTags{
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin: 0px;
+    padding: 0px;
+}
+#copyNoteDiv{
+    display: flex;
+    justify-content: flex-end;
+}
+#noteContentPara{
+    text-align: justify;
+    margin: 0px;
+    padding: 0px;
+}
+.viewNoteBtn,
+#copyContentBtn{
+     width: 100px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+    gap: 5px;
+}
+.viewNoteBtn:hover,
+#copyContentBtn:hover{
+    background-color: #323A42;
+    color: #E8F0F6;
+}
+
+#editNoteBtn,
+#archiveNoteBtn,
+#trashNoteBtn,
+#closePanalBtn{
+    width: 150px;
+    height: 40px;
+    color: #000;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    align-items: center;
+    border: solid 2px #323A42;
+    gap: 5px;
+
+}
+.archiveBtnDiv{
+    display: flex;
+    justify-content: center;
+    width: 260px;
+}
 #toggleExportBtn{
     width: 250px;
 }

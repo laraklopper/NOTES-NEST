@@ -158,7 +158,7 @@ export default function ArchivedNotes(
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colSpan={5} style={{color: '#212529'}}>RESTORE TO VIEW NOTE DETAILS</td>
+                        <td colSpan={5}>RESTORE TO VIEW NOTE DETAILS</td>
                     </tr>
                 </tfoot>
             </table>
