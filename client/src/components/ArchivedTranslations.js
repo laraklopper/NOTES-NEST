@@ -60,6 +60,9 @@ export default function ArchivedTranslations() {
                     <tr>
                         <td colSpan={5}>RESTORE TO VIEW TRANSLATION DETAILS</td>
                     </tr>
+                    <tr>
+                      <td colSpan={5}><i style={{color: "#B82C3A", fontWeight: "800"}}>ARCHIVED TRANSLATIONS WILL BE MOVED TO TRASH IN 60 DAYS</i></td>
+                    </tr>
                 </tfoot>
       </table>
     </div>

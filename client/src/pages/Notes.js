@@ -262,7 +262,7 @@ export default function Notes(//Export the default Notes.js function component
               <div id='archiveTrashPanal'>
                 <Row id='toggleNotesRow'>
                   <Col id='toggleNotesCol1' />
-                  <Col xs={5} id='toggleNotesCol'>
+                  <Col xs={5} id='toggleNotesCol' >
                     <Stack gap={2} className="col-md-5 mx-auto" id='toggleNotesStack'>
                       <Button
                         variant="light"
@@ -316,8 +316,7 @@ export default function Notes(//Export the default Notes.js function component
                   {showTrash && (
                     <div id='trashListPanal'>
                       <Row id='trashRow'>
-                        <Col id='trashCol1' />
-                        <Col id='trashCol' md={10} xs={12}>
+                        <Col id='trashCol' md={12}>
                           {/* TRASH */}
                           <div id='trashList'>
                             <Trash
@@ -326,7 +325,6 @@ export default function Notes(//Export the default Notes.js function component
                             />
                           </div>
                         </Col>
-                        <Col id='trashCol2' />
                       </Row>
                     </div>
                   )}

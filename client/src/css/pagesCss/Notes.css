@@ -145,7 +145,11 @@
     padding: 0px;
 }
 
-
+#trashListPanal{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 #toggleArchiveBtn:active,
 #toggleTrashBtn:active{
      background-color: #323A42;

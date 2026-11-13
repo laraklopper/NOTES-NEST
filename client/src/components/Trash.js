@@ -12,7 +12,7 @@ import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 import { PURGE_DAYS, daysLeft } from '../util/listUtilFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArchiveRestore, TrashIcon } from 'lucide-react';
+import { ArchiveRestore, ArchiveX, TrashIcon } from 'lucide-react';
 
 //Trash Function Component
 /* Table of the user's trashed notes
@@ -99,7 +99,7 @@ export default function Trash(//Export default Trash function component
         <table id='trashTable'>
           <thead>
             <tr>
-              <th colSpan={6}>TRASH</th>
+              <th colSpan={6}><p className='tableHeading'>TRASH<ArchiveX/></p></th>
             </tr>
             <tr>
               <th>#</th>
@@ -166,7 +166,7 @@ export default function Trash(//Export default Trash function component
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={6}>NOTES ARE PERMANENTLY DELETED {PURGE_DAYS} DAYS AFTER BEING MOVED TO TRASH</td>
+              <td colSpan={6}><i style={{color: "#B82C3A", fontWeight: "800"}}>NOTES ARE PERMANENTLY DELETED {PURGE_DAYS} DAYS AFTER BEING MOVED TO TRASH</i></td>
             </tr>
           </tfoot>
         </table>

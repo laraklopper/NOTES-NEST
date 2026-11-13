@@ -11,7 +11,7 @@ import Button from 'react-bootstrap/Button';
 import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArchiveRestore, Trash } from 'lucide-react';
+import { Archive, ArchiveRestore, Trash } from 'lucide-react';
 
 // ArchivedNotes component
 /* Table of the user's archived notes
@@ -100,7 +100,7 @@ export default function ArchivedNotes(
             <table id='archiveTable'>
                 <thead>
                     <tr>
-                        <th colSpan={5}>ARCHIVED NOTES</th>
+                        <th colSpan={5}><p className='tableHeading'>ARCHIVED NOTES<Archive/></p></th>
                     </tr>
                     <tr>
                         <th style={{color: '#212529'}}>#</th>
@@ -159,6 +159,9 @@ export default function ArchivedNotes(
                 <tfoot>
                     <tr>
                         <td colSpan={5}>RESTORE TO VIEW NOTE DETAILS</td>
+                    </tr>
+                    <tr>
+                        <td colSpan={5}><i style={{color: "#B82C3A", fontWeight: "800"}}>ARCHIVED NOTES WILL BE MOVED TO TRASH IN 60 DAYS</i></td>
                     </tr>
                 </tfoot>
             </table>
