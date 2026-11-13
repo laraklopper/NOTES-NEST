@@ -20,7 +20,7 @@ export default function LanguageSelector(//Export default LanguageSelector.js co
       <label htmlFor={id} className="form-label visually-hidden">{label}</label>
       <select
         id={id}
-        className="input"
+        className="languageSelect"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}

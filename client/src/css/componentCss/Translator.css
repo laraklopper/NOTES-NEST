@@ -51,31 +51,6 @@ TranslateForm.js*/
 #selectSourceLangBlock{
     justify-content: flex-start;
 }
-#swapLanguageBtn{
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-}
-#copyTranslationBtn{
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    border: solid 2px #323A42;
-    text-transform: uppercase;
-    color: #000;
-    font-family: "Fira Mono", monospace;
-    font-weight: 700;
-    display: flex;
-    letter-spacing: 1px;
-    align-items: center;
-    gap: 5px;
-    margin: 0px 10px 0px 0px;
-}
-
 
 .languageSelectDiv{
          display: flex;
@@ -110,11 +85,22 @@ justify-content: space-between;
 #sourceText,
 #translatedText{
     height: 200px;
-    white-space: pre-wrap;
+    /* white-space: pre-wrap; */
     resize: vertical;
+    margin: 0px;
+    padding: 5px;
       font-family: "Fira Mono", monospace;
     overflow-y: scroll;
     border: solid 2px #323A42;
+}
+.languageSelect{
+    display: flex;
+    justify-content: center;
+    width: 200px;
+    border-radius: 5px;
+    height: 40px;
+    text-align: center;
+    font-weight: 600;
 }
 #translateBtnBlock{
     display: flex;
@@ -132,6 +118,37 @@ justify-content: space-between;
     justify-content: center;
 }
 /* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons */
+#swapLanguageBtn{
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+     border: solid 2px #323A42;
+}
+#swapLanguageBtn:hover{
+    background-color: #323A42;
+    color: #E8F0F6;
+}
+#copyTranslationBtn{
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: solid 2px #323A42;
+    text-transform: uppercase;
+    color: #000;
+    font-family: "Fira Mono", monospace;
+    font-weight: 700;
+    display: flex;
+    letter-spacing: 1px;
+    align-items: center;
+    gap: 5px;
+    margin: 0px 10px 0px 0px;
+}
+
+
 #translateBtn,
 #saveTranslationBtn{
     width: 180px;
