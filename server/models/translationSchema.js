@@ -1,4 +1,5 @@
 //translationSchema.js
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const { languageCodeRegex, MAX_TRANSLATION_CHARS, THIRTY_DAYS_IN_SECONDS } = require('../util/schemaUtil');
 
@@ -44,6 +45,10 @@ const translationSchema = new mongoose.Schema(
         message: 'Target language must differ from the source language'
       }
     },
+    textHash: {
+      type: String,
+      select: false // set automatically from sourceText + translatedText; only used by the POST /save duplicate check
+    },
     characterCount: {
       type: Number,
       min: 0 // set automatically from sourceText; tracks usage against the free-tier quota
@@ -65,12 +70,21 @@ const translationSchema = new mongoose.Schema(
 );
 
 translationSchema.index({ user: 1, createdAt: -1 }); // translations list, newest first
+translationSchema.index({ user: 1, textHash: 1 }); // POST /save duplicate check
 translationSchema.index({ user: 1, isArchived: 1, deletedAt: 1, archivedAt: -1 }); // archive list filter + sort
 translationSchema.index({ isArchived: 1, archivedAt: 1 }); // 60-day archive sweep (util/archiveUtil.js)
 translationSchema.index({ deletedAt: 1 }, { expireAfterSeconds: THIRTY_DAYS_IN_SECONDS }); // TTL purge 30 days after soft delete (same as notes)
 
+// SHA-256 of both texts, so the duplicate check can use a short indexed value instead of comparing full text
+translationSchema.statics.hashText = function (sourceText, translatedText) {
+  return crypto.createHash('sha256').update(`${sourceText}\u0000${translatedText}`).digest('hex'); // \0 separator: "ab"+"c" and "a"+"bc" hash differently
+};
+
 translationSchema.pre('validate', function () {
   if (this.isModified('sourceText')) this.characterCount = this.sourceText.length; // characters sent to Langbly
+  if (this.isModified('sourceText') || this.isModified('translatedText')) {
+    this.textHash = this.constructor.hashText(this.sourceText, this.translatedText);
+  }
 });
 
 translationSchema.statics.getMonthlyUsage = async function (userId) { // characters used this calendar month
@@ -85,7 +99,7 @@ translationSchema.statics.getMonthlyUsage = async function (userId) { // charact
 };
 
 translationSchema.set('toJSON', {
-  transform: (doc, ret) => { delete ret.__v; return ret; } // hide version key
+  transform: (doc, ret) => { delete ret.__v; delete ret.textHash; return ret; } // hide version key and internal hash
 });
 
 module.exports = mongoose.model('Translation', translationSchema);

@@ -13,7 +13,7 @@ import { languageName } from '../util/languageFunc';
 import { Archive, ArrowRight, Copy, Trash2, X } from 'lucide-react';
 
 // PANAL FOR A SELECTED TRANSLATION
-/* DELETE /translation/delete/:id (move to trash), PATCH /archive/translation/:id */
+/* DELETE /translation/:id (move to trash), PATCH /archive/translation/:id */
 export default function TranslationPanal(
     {//PROPS PASSED FROM PARENT COMPONENT (TranslationsList.js)
         translation,// The selected translation
@@ -64,7 +64,7 @@ export default function TranslationPanal(
         setError?.(null)
         setDeleting(true)
         try {
-            const response = await fetch(`/translation/delete/${id}`, {
+            const response = await fetch(`/translation/${id}`, {
                 method: 'DELETE',
                 credentials: 'include',
             })

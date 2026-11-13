@@ -15,7 +15,7 @@ TranslateForm
    ▼
 TranslationsList / TranslationPanal
      GET    /translation/fetch                (this router)
-     DELETE /translation/delete/:id           (this router: move to trash)
+     DELETE /translation/:id                  (this router: move to trash)
      PATCH  /archive/translation/:id          (archiveRoutes.js: archive)
    ▼
 TrashedTranslations
@@ -38,7 +38,7 @@ Keeping **translate** and **save** as separate steps means the user can translat
 6. [GET /translation/trash](#6-get-translationtrash)
 7. [POST /translation/save](#7-post-translationsave)
 8. [PATCH /translation/:id/restore](#8-patch-translationidrestore)
-9. [DELETE /translation/delete/:id](#9-delete-translationdeleteid)
+9. [DELETE /translation/:id](#9-delete-translationid)
 10. [DELETE /translation/:id/permanent](#10-delete-translationidpermanent)
 11. [How Translations Relate to Notes](#11-how-translations-relate-to-notes)
 12. [Status Code Reference](#12-status-code-reference)
@@ -56,10 +56,10 @@ The router is mounted at **`/translation`** in `app.js`. Every route requires a 
 | `GET` | `/translation/trash` | Paginated list of **trashed** translations, most recently deleted first | `TrashedTranslations` |
 | `POST` | `/translation/save` | Save a translation to the user's history | `TranslateForm` |
 | `PATCH` | `/translation/:id/restore` | Move a trashed translation back to the main list | `TrashedTranslations` |
-| `DELETE` | `/translation/delete/:id` | Move an active translation to the trash (soft delete) | `TranslationPanal` |
+| `DELETE` | `/translation/:id` | Move an active translation to the trash (soft delete) | `TranslationPanal` |
 | `DELETE` | `/translation/:id/permanent` | Permanently delete a translation that's **already in the trash** | `TrashedTranslations` |
 
-`GET /trash` is declared right after `GET /fetch` so that, if a `GET /:id` route is ever added, `"trash"` isn't read as an ID.
+`GET /trash` is declared right after `GET /fetch` so that, if a `GET /:id` route is ever added, `"trash"` isn't read as an ID. `DELETE /:id` can't clash with `DELETE /:id/permanent`, because they have a different number of path segments.
 
 ---
 
@@ -75,6 +75,7 @@ Defined in `models/translationSchema.js`:
 | `translatedText` | String, max `MAX_TRANSLATION_CHARS × 2` (translations can run longer than the source) | The client |
 | `sourceLanguage` | Language code (`languageCodeRegex`) | The client |
 | `targetLanguage` | Language code, must differ from `sourceLanguage` | The client |
+| `textHash` | SHA-256 hex string, `select: false` (never sent to the client) | **A schema hook** (`Translation.hashText(sourceText, translatedText)`) |
 | `characterCount` | Number | **A schema hook** (`sourceText.length`) |
 | `isArchived` | Boolean, default `false` | `archiveRoutes.js`; reset by this router |
 | `archivedAt` | Date or `null` | `archiveRoutes.js`; reset by this router |
@@ -87,6 +88,7 @@ Defined in `models/translationSchema.js`:
 |---|---|
 | `{ user: 1 }`, `{ note: 1 }` | Single-field lookups (owner, translations of one note) |
 | `{ user: 1, createdAt: -1 }` | `GET /fetch`: the user's translations, newest first |
+| `{ user: 1, textHash: 1 }` | `POST /save`: the duplicate check |
 | `{ user: 1, isArchived: 1, deletedAt: 1, archivedAt: -1 }` | The archive list |
 | `{ isArchived: 1, archivedAt: 1 }` | The 60-day archive sweep (`util/archiveUtil.js`) |
 | `{ deletedAt: 1 }` with `expireAfterSeconds: THIRTY_DAYS_IN_SECONDS` | **TTL purge**: MongoDB deletes a translation 30 days after it was trashed |
@@ -107,7 +109,7 @@ A translation is always in exactly one of three states, decided by `isArchived` 
             save                    PATCH /archive/translation/:id
    ──────────────► ACTIVE ◄──────────────────────────────────────► ARCHIVED
                    │  ▲      PATCH /archive/translation/:id/restore   │
-DELETE /delete/:id │  │ PATCH /:id/restore                            │ DELETE /archive/translation/:id
+       DELETE /:id │  │ PATCH /:id/restore                            │ DELETE /archive/translation/:id
                    ▼  │                                               │ or 60 days after archiving (sweep)
                    TRASHED ◄──────────────────────────────────────────┘
                      │
@@ -404,12 +406,16 @@ One message covers "doesn't exist", "isn't yours", "is trashed" and "is archived
 
 ```js
 const existing = await Translation.findOne({
-    user: userId, note: noteId,
-    sourceText, translatedText, sourceLanguage, targetLanguage,
+    user: userId,
+    textHash: Translation.hashText(sourceText, translatedText),// Uses the { user, textHash } index
+    note: noteId,
+    sourceText, translatedText, sourceLanguage, targetLanguage,// Guards against a hash collision
     isArchived: { $ne: true }, deletedAt: null// Only active translations count
 }).populate('note', 'title').select('-__v').lean();
 if (existing) → 200 { message: 'Translation already saved', created: false, translation: existing }
 ```
+
+`textHash` is a SHA-256 of `sourceText + '\0' + translatedText`, set by the schema's `pre('validate')` hook whenever either text changes. The `{ user, textHash }` index takes MongoDB straight to the (almost always zero or one) matching translations, so it doesn't have to compare the full text of every translation the user has saved. The full text fields stay in the filter, so a hash collision can never return the wrong translation.
 
 If an identical **active** translation already exists, it's returned instead of saving a second copy. An identical translation that's archived or trashed doesn't count, because the user can't see it in the main list, so saving again creates a new one. `TranslateForm` also disables Save after a successful save, so this mainly protects against direct API calls and other tabs.
 
@@ -424,7 +430,7 @@ const newTranslation = await Translation.create({
 await newTranslation.populate('note', 'title');// Same note shape as GET /fetch
 ```
 
-`characterCount` **isn't** sent by the client. A `pre('validate')` hook works it out from `sourceText`, so the client can't fake usage numbers. Building the document from **named fields** means the client can't set `user`, `characterCount`, `isArchived`, `deletedAt` or anything else.
+`characterCount` and `textHash` **aren't** sent by the client. A `pre('validate')` hook works them out from the text, so the client can't fake usage numbers. Building the document from **named fields** means the client can't set `user`, `characterCount`, `textHash`, `isArchived`, `deletedAt` or anything else.
 
 ### Responses
 
@@ -486,7 +492,7 @@ const translation = await Translation.findOneAndUpdate(
 
 ---
 
-## 9. DELETE `/translation/delete/:id`
+## 9. DELETE `/translation/:id`
 
 **Purpose:** Move an **active** translation to the trash (soft delete). It can be restored for 30 days.
 
@@ -555,11 +561,25 @@ A translation can **optionally** point to the note its text came from.
 The TTL index deletes notes inside MongoDB, so no route code runs and the cascade in `DELETE /notes/:id/permanent` is skipped. `removeOrphanedTranslations()` runs with the hourly archive sweep and gives purged notes the same result:
 
 ```js
-const linkedNoteIds = await Translation.distinct('note', { note: { $ne: null } });// Every note a translation points to
-const existingIds = await Note.distinct('_id', { _id: { $in: linkedNoteIds } });// The ones that still exist
-const missingIds = linkedNoteIds.filter((id) => !existing.has(String(id)));
-await Translation.deleteMany({ note: { $in: missingIds } });
+const missing = await Translation.aggregate([
+    { $match: { note: { $ne: null } } },
+    { $group: { _id: '$note' } },// One entry per linked note
+    { $lookup: {
+        from: Note.collection.name,
+        let: { noteId: '$_id' },
+        pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$noteId'] } } },// Uses the _id index
+            { $project: { _id: 1 } }// Only existence matters
+        ],
+        as: 'found'
+    } },
+    { $match: { found: { $size: 0 } } },// The note no longer exists
+    { $project: { _id: 1 } }
+]).allowDiskUse(true);
+await Translation.deleteMany({ note: { $in: missing.map((doc) => doc._id) } });
 ```
+
+The join runs **inside MongoDB**, so only the IDs of notes that are actually missing come back to Node (usually none), instead of every linked note ID in the collection. `allowDiskUse(true)` lets the `$group` stage spill to disk if the collection grows very large.
 
 A translation of a purged note can still exist for up to an hour before the sweep runs. During that time `populate` gives `note: null`, so the frontend should keep handling a missing note:
 
@@ -590,12 +610,20 @@ A translation of a purged note can still exist for up to an hour before the swee
 
 ### Gap 1: `DELETE /delete/:id` puts the verb in the URL
 
-`DELETE /translation/delete/:id` doesn't match the REST convention (`DELETE /translation/:id`) or the newer `/:id/restore` and `/:id/permanent` routes. It's left as is because renaming it changes the API: `TranslationPanal.js` calls it, and `noteRoutes.js` uses the same `/delete/:id` style. If you rename it, change both routers and their frontend calls together.
+✅ **Fixed.** The soft delete is now `DELETE /translation/:id`, which matches the REST convention and the `/:id/restore` and `/:id/permanent` routes. The notes router was renamed at the same time (`DELETE /notes/:id`), along with their frontend calls (`TranslationPanal.js`, `NotePanal.js`), the `app.js` mount comment and `README.md`.
 
 ### Gap 2: The duplicate check compares full text
 
-Step 3 of `POST /save` matches on `sourceText` and `translatedText`. No index covers these fields, so MongoDB narrows by `user` (indexed) and then compares the text of that user's translations. That's fine at the current scale. If a user ends up with many thousands of translations, add a compound index or store a hash of the text to match on.
+✅ **Fixed.** Translations now store a `textHash` (SHA-256 of both texts), and a `{ user: 1, textHash: 1 }` index covers the duplicate check in `POST /save` (see [Step 3](#step-3-skip-duplicates)).
+
+**Older translations:** documents saved before `textHash` existed don't have one, so the duplicate check can't match them. Saving the exact same translation again creates **one** new copy (which does have a hash), and later saves match that copy. To include old translations too, backfill the hash once:
+
+```js
+for await (const t of Translation.find({ textHash: { $exists: false } }).select('sourceText translatedText')) {
+    await Translation.updateOne({ _id: t._id }, { $set: { textHash: Translation.hashText(t.sourceText, t.translatedText) } });
+}
+```
 
 ### Gap 3: The orphan cleanup scans every linked note
 
-`removeOrphanedTranslations()` reads the distinct `note` IDs across **all** translations every hour. That's cheap while the collection is small. For a large collection, an aggregation with `$lookup` (or tracking purged note IDs) would avoid loading the whole ID list into memory.
+✅ **Fixed.** `removeOrphanedTranslations()` now uses an aggregation with `$lookup`, so the join runs inside MongoDB and only the IDs of missing notes reach Node (see [section 11](#cleaning-up-after-the-ttl-purge)). `$lookup` still checks each linked note once per hour, but against the `_id` index, and nothing is loaded into the server's memory.

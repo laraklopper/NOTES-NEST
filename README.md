@@ -267,7 +267,7 @@ The application implements a defense-in-depth security strategy using:
 | POST | `/notes/addNote` | Create a note |
 | PATCH | `/notes/:id` | Update title, content, language, notebook, tags or pin |
 | PATCH | `/notes/:id/restore` | Restore a note from the trash |
-| DELETE | `/notes/delete/:id` | Move a note to the trash (soft delete) |
+| DELETE | `/notes/:id` | Move a note to the trash (soft delete) |
 | DELETE | `/notes/:id/permanent` | Permanently delete a note and its translations |
 
 **Archive – `/archive`**
@@ -302,7 +302,7 @@ The application implements a defense-in-depth security strategy using:
 |---|---|---|
 | GET | `/translation/fetch` | List saved translations (query: `note`, `sourceLanguage`, `targetLanguage`, `page`, `limit`) |
 | POST | `/translation/save` | Save a translation to the user's history |
-| DELETE | `/translation/delete/:id` | Delete a saved translation |
+| DELETE | `/translation/:id` | Move a saved translation to the trash |
 
 **Export – `/export`**
 

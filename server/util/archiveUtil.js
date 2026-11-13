@@ -43,15 +43,28 @@ const trashExpiredArchivedTranslations = (userId) => trashExpired(Translation, {
 
 /* Deletes translations whose linked note no longer exists. The 30-day TTL index purges
 trashed notes inside MongoDB, so the cascade in DELETE /notes/:id/permanent never runs
-for them. This gives auto-purged notes the same result. Returns the number deleted */
+for them. This gives auto-purged notes the same result. Returns the number deleted.
+The lookup runs inside MongoDB, so only the IDs of missing notes reach Node, not every linked note ID */
 const removeOrphanedTranslations = async () => {
-    const linkedNoteIds = await Translation.distinct('note', { note: { $ne: null } });
-    if (linkedNoteIds.length === 0) return 0;
-
-    const existingIds = await Note.distinct('_id', { _id: { $in: linkedNoteIds } });
-    const existing = new Set(existingIds.map(String));
-    const missingIds = linkedNoteIds.filter((id) => !existing.has(String(id)));
-    if (missingIds.length === 0) return 0;
+    const missing = await Translation.aggregate([
+        { $match: { note: { $ne: null } } },
+        { $group: { _id: '$note' } },// One entry per linked note
+        {
+            $lookup: {
+                from: Note.collection.name,
+                let: { noteId: '$_id' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$noteId'] } } },// Uses the _id index
+                    { $project: { _id: 1 } }// Only existence matters, not the note itself
+                ],
+                as: 'found'
+            }
+        },
+        { $match: { found: { $size: 0 } } },// The note no longer exists
+        { $project: { _id: 1 } }
+    ]).allowDiskUse(true);
+    if (missing.length === 0) return 0;
+    const missingIds = missing.map((doc) => doc._id);
 
     const result = await Translation.deleteMany({ note: { $in: missingIds } });
     if (result.deletedCount > 0) {

@@ -6,7 +6,7 @@ GET - /:id - Get a single note by id (active, archived or trashed)
 POST - /addNote - Create a note (tags sent as names; missing tags are created)
 PATCH - /notes/:id - Update title, content, language, notebook, tags or pin (archive is PATCH /archive/:id)
 PATCH - /notes/:id/restore - Restore from trash
-DELETE - /notes/delete/:id - Soft delete (move to trash)
+DELETE - /notes/:id - Soft delete (move to trash)
 DELETE - `/notes/:id/permanent` - Permanently delete a note and its translations
 */
 require('dotenv').config()
@@ -402,16 +402,16 @@ router.patch('/:id/restore', checkJwtToken, async (req, res) => {
  ────────────────────────────────────────────────────────────────────────────────*/
 //Route to send a DELETE request to the /notes/:id endpoint
 //DELETE request to move item to trash
-/* DELETE: /notes/delete/:id : Soft deletes one of the signed-in user's notes by
+/* DELETE: /notes/:id : Soft deletes one of the signed-in user's notes by
 setting deletedAt. The TTL index on deletedAt (noteSchema) purges it after 30 days */
-router.delete('/delete/:id', checkJwtToken, async (req, res) => {
+router.delete('/:id', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { id } = req.params;// Get the note ID from the URL
 
         // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            console.error(`[ERROR: noteRoutes.js, DELETE /delete/:id] Invalid note id: ${id}`);// Log an error message in the console for debugging purposes
+            console.error(`[ERROR: noteRoutes.js, DELETE /:id] Invalid note id: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid note id' });// Return a 400 (Bad Request) status code with a message
         }
 
@@ -423,14 +423,14 @@ router.delete('/delete/:id', checkJwtToken, async (req, res) => {
 
         // Conditional rendering to check the note was found
         if (!note) {
-            console.error(`[ERROR: noteRoutes.js, DELETE /delete/:id] Note not found: ${id}`);// Log an error message in the console for debugging purposes
+            console.error(`[ERROR: noteRoutes.js, DELETE /:id] Note not found: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'Note not found' });// Return a 404 (Not Found) status code with a message
         }
 
-        console.log(`[SUCCESS: noteRoutes.js, DELETE /delete/:id] Note moved to trash: ${id}`);//Log a message in the console for debugging purposes
+        console.log(`[SUCCESS: noteRoutes.js, DELETE /:id] Note moved to trash: ${id}`);//Log a message in the console for debugging purposes
         return res.status(200).json({ message: 'Note moved to trash', note });// Send a 200 (OK) status code with a message
     } catch (error) {
-        console.error('[ERROR: noteRoutes.js, DELETE /delete/:id]', error.message);// Log an error message in the console for debugging purposes
+        console.error('[ERROR: noteRoutes.js, DELETE /:id]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })

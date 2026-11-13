@@ -4,7 +4,7 @@ GET - /translation/fetch - List the user's active translations (query: note, sou
 GET - /translation/trash - List trashed translations (query: page, limit) (declare before any GET /:id)
 POST - /translation/save - Save a translation from the TranslateForm to the user's history
 PATCH - /translation/:id/restore - Restore a translation from the trash
-DELETE - /translation/delete/:id - Soft delete (move to trash)
+DELETE - /translation/:id - Soft delete (move to trash)
 DELETE - /translation/:id/permanent - Permanently delete a trashed translation
 */
 const express = require('express');
@@ -163,9 +163,11 @@ router.post('/save', checkJwtToken, async (req, res) => {
             noteId = note;
         }
 
-        // An identical active translation is already saved: return it instead of creating a duplicate
+        /* An identical active translation is already saved: return it instead of creating a duplicate.
+        textHash narrows the search through the { user, textHash } index; the full text fields guard against a hash collision */
         const existing = await Translation.findOne({
             user: userId,
+            textHash: Translation.hashText(sourceText, translatedText),
             note: noteId,
             sourceText,
             translatedText,
@@ -247,17 +249,17 @@ router.patch('/:id/restore', checkJwtToken, async (req, res) => {
 /*──────────────────────────── DELETE ROUTES ───────────────────────────────
     DELETE: Used to remove an item from the database
  ───────────────────────────────────────────────────────────────────────────*/
-/* DELETE: /translation/delete/:id : Moves one of the signed-in user's active
+/* DELETE: /translation/:id : Moves one of the signed-in user's active
 translations to the trash (soft delete) by setting deletedAt. The TTL index on
 deletedAt (translationSchema) purges it after 30 days */
-router.delete('/delete/:id', checkJwtToken, async (req, res) => {
+router.delete('/:id', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { id } = req.params;// Get the translation ID from the URL
 
         // Guard clause: the id must be a valid ObjectId (avoids a CastError 500)
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            console.error(`[ERROR: translationRoutes.js, DELETE /delete/:id] Invalid translation id: ${id}`);// Log an error message in the console for debugging purposes
+            console.error(`[ERROR: translationRoutes.js, DELETE /:id] Invalid translation id: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid translation id' });// Return a 400 (Bad Request) status code with a message
         }
 
@@ -270,14 +272,14 @@ router.delete('/delete/:id', checkJwtToken, async (req, res) => {
 
         // Guard clause: the translation must have been found
         if (!translation) {
-            console.error(`[ERROR: translationRoutes.js, DELETE /delete/:id] Translation not found: ${id}`);// Log an error message in the console for debugging purposes
+            console.error(`[ERROR: translationRoutes.js, DELETE /:id] Translation not found: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'Translation not found' });// Return a 404 (Not Found) status code with a message
         }
 
-        console.log(`[SUCCESS: translationRoutes.js, DELETE /delete/:id] Translation moved to trash: ${id}`);//Log a message in the console for debugging purposes
+        console.log(`[SUCCESS: translationRoutes.js, DELETE /:id] Translation moved to trash: ${id}`);//Log a message in the console for debugging purposes
         return res.status(200).json({ message: 'Translation moved to trash', translation });// Send a 200 (OK) status code with a message and the translation
     } catch (error) {
-        console.error('[ERROR: translationRoutes.js, DELETE /delete/:id]', error.message);// Log an error message in the console for debugging purposes
+        console.error('[ERROR: translationRoutes.js, DELETE /:id]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })

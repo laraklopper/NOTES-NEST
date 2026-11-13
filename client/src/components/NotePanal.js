@@ -12,7 +12,7 @@ import { languageName } from '../util/languageFunc';
 import { ArchiveArrowDownIcon, Copy, Edit3Icon, Trash2, X } from 'lucide-react';
 
 // PANAL FOR A SELECTED NOTE
-/* PATCH /archive/:id, DELETE /notes/delete/:id */
+/* PATCH /archive/:id, DELETE /notes/:id */
 export default function NotePanal(
   {//PROPS PASSED FROM PARENT COMPONENT (NotesList.js)
     note,// The selected note
@@ -59,7 +59,7 @@ export default function NotePanal(
 
   //========MOVE NOTE TO TRASH REQUEST===============
   const moveToTrash = useCallback(async (id) => {
-    const success = await runNoteAction(`/notes/delete/${id}`, 'DELETE', 'Error moving note to trash.')
+    const success = await runNoteAction(`/notes/${id}`, 'DELETE', 'Error moving note to trash.')
     if (success) alert('Note successfully moved to trash')
   }, [runNoteAction])
 

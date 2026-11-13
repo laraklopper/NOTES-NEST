@@ -23,7 +23,7 @@
 9. [POST /notes/addNote](#9-post-notesaddnote)
 10. [PATCH /notes/:id](#10-patch-notesid)
 11. [PATCH /notes/:id/restore](#11-patch-notesidrestore)
-12. [DELETE /notes/delete/:id](#12-delete-notesdeleteid)
+12. [DELETE /notes/:id](#12-delete-notesid)
 13. [DELETE /notes/:id/permanent](#13-delete-notesidpermanent)
 14. [Route Order](#14-route-order)
 15. [Status Code Reference](#15-status-code-reference)
@@ -43,7 +43,7 @@ The router is mounted at **`/notes`** in `app.js`. Every route requires a valid 
 | `POST` | `/notes/addNote` | Create a note | — |
 | `PATCH` | `/notes/:id` | Edit title, content, language, notebook, tags or pin | active |
 | `PATCH` | `/notes/:id/restore` | Restore from the trash | trashed |
-| `DELETE` | `/notes/delete/:id` | Move to the trash (soft delete) | not trashed |
+| `DELETE` | `/notes/:id` | Move to the trash (soft delete) | not trashed |
 | `DELETE` | `/notes/:id/permanent` | Delete for good, along with its translations | trashed |
 
 ---
@@ -59,7 +59,7 @@ A note's state comes from two fields: `isArchived` and `deletedAt`.
 | Trashed | any | a `Date` | Trash page |
 
 ```
-              DELETE /notes/delete/:id
+                DELETE /notes/:id
    ┌──────────┐ ─────────────────────► ┌──────────┐  30 days (TTL)   ┌─────────┐
    │  ACTIVE  │                        │  TRASH   │ ───────────────► │  GONE   │
    │          │ ◄───────────────────── │ deletedAt│                  │         │
@@ -489,9 +489,9 @@ Only `deletedAt` is cleared. `isArchived` isn't touched, so the note goes back t
 
 | Trashed From | `isArchived` | Restored To |
 |---|---|---|
-| Notes list (`DELETE /notes/delete/:id`) | `false` | Notes list |
+| Notes list (`DELETE /notes/:id`) | `false` | Notes list |
 | Archive (`DELETE /archive/:id`, which clears `isArchived`) | `false` | Notes list |
-| Archive, but via `DELETE /notes/delete/:id` | `true` | **Archive** (see [Gap 2](#gap-2-two-ways-into-the-trash-behave-differently)) |
+| Archive, but via `DELETE /notes/:id` | `true` | **Archive** (see [Gap 2](#gap-2-two-ways-into-the-trash-behave-differently)) |
 
 `isArchived` is included in the response so the frontend can say "Restored to Notes" or "Restored to Archive". Restoring doesn't change `isArchived`, so the value is accurate even though `findOneAndUpdate` returns the document as it was before the update.
 
@@ -499,7 +499,7 @@ Only `deletedAt` is cleared. `isArchived` isn't touched, so the note goes back t
 
 ---
 
-## 12. DELETE `/notes/delete/:id`
+## 12. DELETE `/notes/:id`
 
 **Purpose:** Move a note to the trash (a **soft delete**). It can be undone for 30 days.
 
@@ -563,7 +563,7 @@ The other routes can't clash, because they have different methods or different n
 |---|---|
 | `PATCH /:id` | 1 |
 | `PATCH /:id/restore` | 2 |
-| `DELETE /delete/:id` | 2 (the first segment is the literal `delete`) |
+| `DELETE /:id` | 1 |
 | `DELETE /:id/permanent` | 2 (the second segment is the literal `permanent`) |
 
 ---
@@ -609,11 +609,11 @@ Note.findOneAndUpdate(filter, { $set: updates }, { new: true, runValidators: tru
 | Route | Clears `isArchived`? | Restore Goes To |
 |---|---|---|
 | `DELETE /archive/:id` | ✅ Yes | Notes list |
-| `DELETE /notes/delete/:id` | ❌ No (and it doesn't exclude archived notes) | **Archive**, if the note was archived |
+| `DELETE /notes/:id` | ❌ No (and it doesn't exclude archived notes) | **Archive**, if the note was archived |
 
 So the same archived note restores to **different places** depending on which delete was used. Pick one rule:
 
-- **Always restore to the Notes list:** add `isArchived: false` to the `$set` in `DELETE /notes/delete/:id`.
+- **Always restore to the Notes list:** add `isArchived: false` to the `$set` in `DELETE /notes/:id`.
 - **Restore to where it came from:** remove `isArchived: false` from `DELETE /archive/:id`.
 
 ### Gap 3: `addNote` returns IDs, `PATCH` returns names
@@ -656,10 +656,10 @@ if (tagNames.some((name) => name.length > MAX_TAG_LENGTH)) ...
 | Line(s) | Issue | Suggestion |
 |---|---|---|
 | 3 | Typo: "fethc" | "fetch" |
-| 7–10 | The header lists `/notes/:id`, `/notes/delete/:id` etc., but lines 3–6 list paths **without** `/notes` | Use one style throughout, e.g. drop the `/notes` prefix since the router is mounted there |
+| 7–10 | The header lists `/notes/:id`, `/notes/:id/restore` etc., but lines 3–6 list paths **without** `/notes` | Use one style throughout, e.g. drop the `/notes` prefix since the router is mounted there |
 | 12 | `require('dotenv').config()` isn't used in this file | Load it once in `app.js` |
 | 59 | GET section header: "fetch information from the **provider** and the database" | There's no external provider in this file. "from the database". |
-| 401–402 | Leftover comments ("DELETE request to the /notes/:id endpoint") | Delete them. The block comment below covers it, and the path is `/delete/:id`. |
-| 405 | `DELETE /delete/:id` puts the verb in the URL | The REST convention is `DELETE /:id`, since the HTTP method already says "delete". (If you change it, update the frontend calls.) |
+| 403–404 | Leftover comments ("DELETE request to the /notes/:id endpoint") | Delete them. The block comment below already covers it. |
+| 407 | ✅ **Fixed.** `DELETE /delete/:id` put the verb in the URL | Renamed to `DELETE /:id` (frontend call in `NotePanal.js` updated) |
 | Throughout | "Conditional rendering" | That's a React UI term. These are **guard clauses** / validation checks. |
 | 391, 429, 461 | "Send a 200 (OK) status code with a message", but the response also includes `note` | e.g. "...with a message and the note" |
