@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
 import { dateDisplay } from '../util/dateFunctions';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { Trash2 } from 'lucide-react';
+import { PencilLineIcon, Trash2 } from 'lucide-react';
 
 // TagsList component
 /* Table of the user's tags. Tags can be deleted but not edited.
@@ -22,8 +22,36 @@ export default function TagsList(
     }
 ) {
     //================STATE VARIABLES=================
+    const [editingId, setEditingId] = useState(null)//Id of tag row being edited
+    const [editName, setEditName] = useState('')
     const [deletingId, setDeletingId] = useState(null)// Id of the tag being deleted
 
+    // Open a row for editing with its current values
+        const startEdit = (tag) => {
+            setEditingId(tag._id)
+            setEditName(tag.name)
+        }
+        const cancelEdit = useCallback(() => {
+            setEditingId(null)
+            setEditName('')
+        }, [])
+    //=========PUT====================
+    /*PUT request to edit tag name
+    use a put request because the tag is the only field.*/
+    const editTagName = useCallback(async (params) => {
+        try {
+            // Send a PUT request to the '/tag/editTag/:id' endpoint
+            const response = await fetch (`http://localhost:3001/tag/`, {
+                method: 'PUT',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+        } catch (error) {
+            
+        }
+    })
     //========DELETE TAG REQUEST===============
     const deleteTag = useCallback(async (tag) => {
         setError?.(null)
@@ -58,6 +86,7 @@ export default function TagsList(
         deleteTag(tag)
     }
 
+     
     //=======================JSX RENDERING=======================================
   return (
     <div id='tagsTableWrapper'>
@@ -86,8 +115,21 @@ export default function TagsList(
                             <td>{tag.name}</td>
                             <td>{tag.noteCount ?? 0}</td>
                             <td>{dateDisplay(tag.createdAt)}</td>
-                            <td style={{width: '200px'}}>
+                            <td style={{width: '280px'}}>
                                 <div id='tagTableBtns'>
+                                {/* SAME FORMAT AS NOTEBOOK EDIT*/}
+                                {/* {isEditing} */}
+                                    <Button
+                                    variant='warning'
+                                    id='editTagName'
+                                    type='button'
+                                    // ARIA ATTRIBUTES:
+                                    >
+                                       <PencilLineIcon/> EDIT TAG NAME
+                                    </Button>
+                                    <Button
+                                    onClick={cancelEdit}
+                                    >CANCEL</Button>
                                     <Button
                                     variant='danger'
                                     id='deleteItemBtn'
