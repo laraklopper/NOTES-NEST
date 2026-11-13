@@ -46,7 +46,11 @@ const translationSchema = new mongoose.Schema(
     characterCount: {
       type: Number,
       min: 0 // set automatically from sourceText; tracks usage against the free-tier quota
-    }
+    },
+     isArchived: { 
+      type: Boolean, 
+      default: false 
+    },
   },
   { timestamps: true } // createdAt / updatedAt
 );

@@ -1,6 +1,7 @@
 //archiveRoutes.js
 /*mounted at '/archive' in app.js
 GET - /archive/fetchNotes - fetch all of the user's archived notes
+GET - /archive/fetchTranslations - fetch all of the user's archived notes
 PATCH - /archive/:id - archive an active note
 PATCH - /archive/:id/restore - restore an archived note to the main notes list
 DELETE - /archive/:id - move an archived note to the trash
@@ -14,6 +15,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const Note = require('../models/noteSchema');// Import the Note model
+const Translation = require('../models/translationSchema')
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const router = express.Router()
 
@@ -38,6 +40,14 @@ router.get('/fetchNotes', checkJwtToken, async (req, res) => {
     } catch (error) {
         console.error('[ERROR: archiveRoutes.js, GET /fetchNotes]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+router.get('/fetchTranslations', checkJwtToken, async (req, res) => {
+    try {
+         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+         const translations = await Translation.find({user: userId, isArchived: true, deletedAt: null})
+    } catch (error) {
+        
     }
 })
 /*──────────────────────────── PATCH ROUTES ───────────────────────────────────
@@ -75,6 +85,38 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
     } catch (error) {
         console.error('[ERROR: archiveRoutes.js, PATCH /:id]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+/* PATCH: /archive/translation/:id : Archives one of the signed-in user's active translations, 
+which hides it from the main translations list.  */
+router.patch('/translation/:id', checkJwtToken, async (params) => {
+    try {
+        const userId = req.user.id
+        const {id} = req.params
+
+         // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: archiveRoutes.js, PATCH /translation/:id/restore] Invalid translation id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid translation id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        const translation = await Translation.findByIdAndUpdate(
+            { _id: id, user: userId, deletedAt: null, isArchived: true },
+            { $set: { isArchived: false } }
+        ).select('id sourceText')
+
+        // Conditional rendering to check the note was found
+        if (!translation) {
+            console.error(`[ERROR: archiveRoutes.js, PATCH /translation/:id/restore] Archived translation not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Archived translation not found' });// Return a 404 (Not Found) status code with a message
+        }
+        console.log(`[SUCCESS: archiveRoutes.js, PATCH /translation/:id/restore] Translation restored from archive: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Translation restored', translation });// Send a 200 (OK) status code with a message
+
+    } catch (error) {
+        console.error('[ERROR: archiveRoutes.js, PATCH /translation/:id/restore]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+
     }
 })
 /* PATCH: /archive/:id/restore : Unarchives one of the signed-in user's archived
