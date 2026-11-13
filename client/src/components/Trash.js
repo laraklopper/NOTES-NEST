@@ -1,12 +1,14 @@
 //Trash.js
 //IMPORT REQUIRED MODULES AND PACKAGES
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 // IMPORT CSS STYLESHEETS
 import '../css/componentCss/Trash.css'
 import '../css/componentCss/ListTables.css'
 import '../css/componentCss/ListBtns.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Button from 'react-bootstrap/Button';
+// IMPORT COMPONENTS
+import Pagination, { PAGE_SIZES } from './Pagination';
 // IMPORT UTILITY FUNCTIONS
 import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
@@ -26,31 +28,49 @@ export default function Trash(//Export default Trash function component
     const [notes, setNotes] = useState([])// The user's trashed notes
     const [loading, setLoading] = useState(false)
     const [actionId, setActionId] = useState(null)// Id of the note a restore/delete request is running for
+    const [pagination, setPagination] = useState({ page: 1, limit: PAGE_SIZES[0], total: 0, totalPages: 1 })
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(PAGE_SIZES[0])
+    const latestRequest = useRef(0)// Id of the most recent fetch, used to ignore stale responses
+    const rowNumber = (index) => (pagination.page - 1) * pagination.limit + index + 1// Numbering carries on across pages
 
     //========FETCH TRASHED NOTES REQUEST===============
     const fetchTrash = useCallback(async () => {
+      // Only the newest request updates the table (a slow earlier page can't overwrite it)
+      const requestId = ++latestRequest.current
+      const isStale = () => requestId !== latestRequest.current
       setLoading(true)
       try {
+        const params = new URLSearchParams({ page: String(page), limit: String(limit) })
         // The browser sends the JWT cookie with the request
-        const response = await fetch('/notes/trash', { method: 'GET' })
+        const response = await fetch(`/notes/trash?${params.toString()}`, { method: 'GET' })
         const data = await response.json().catch(() => ({}))
+        if (isStale()) return// A newer request has replaced this one
         if (!response.ok) throw new Error(data.message || 'Failed to fetch trash')
-        setNotes(data.notes || [])
+        setNotes(Array.isArray(data.notes) ? data.notes : [])
+        if (data.pagination) {
+          setPagination(data.pagination)
+          // A restore/delete can empty the last page; step back to the new last page
+          const lastPage = Math.max(data.pagination.totalPages || 1, 1)
+          if (page > lastPage) setPage(lastPage)
+        }
       } catch (error) {
+        if (isStale()) return
         console.error('[ERROR: Trash.js] Fetching trashed notes failed:', error.message)
         setError?.('An error occurred while loading your trash.')
       } finally {
-        setLoading(false)
+        if (!isStale()) setLoading(false)
       }
-    }, [setError])
+    }, [setError, page, limit])
 
-    // Fetch when the trash list is opened (it mounts each time SHOW TRASH is clicked)
+    // Fetch when the trash list is opened (it mounts each time SHOW TRASH is clicked) and when the page changes
     useEffect(() => {
       fetchTrash()
     }, [fetchTrash])
 
     /* Shared request runner for the restore and delete buttons.
-    Removes the note from the table on success and returns the response data */
+    Removes the note from the table on success, then re-fetches so the page is
+    refilled from the next one and the totals stay correct. Returns the response data */
     const runTrashAction = useCallback(async (id, url, method, fallbackMessage) => {
       setError?.(null)
       setActionId(id)
@@ -64,6 +84,7 @@ export default function Trash(//Export default Trash function component
           return null
         }
         setNotes((prev) => prev.filter((note) => note._id !== id))
+        fetchTrash()
         return data
       } catch (error) {
         console.error(`[ERROR: Trash.js] ${fallbackMessage}`, error)
@@ -124,7 +145,7 @@ export default function Trash(//Export default Trash function component
                 const remaining = daysLeft(note.deletedAt)
                 return (
                   <tr key={note._id}>
-                    <td>{index + 1}</td>
+                    <td>{rowNumber(index)}</td>
                     <td>{note.title}</td>
                     <td>{languageName(note.language)}</td>
                     <td>{formatTimestamp(note.createdAt)}</td>
@@ -165,6 +186,21 @@ export default function Trash(//Export default Trash function component
             )}
           </tbody>
           <tfoot>
+            <tr>
+              <td colSpan={6}>
+                {/* PAGINATION (Pagination.js) */}
+                <Pagination
+                  page={pagination.page}
+                  totalPages={pagination.totalPages}
+                  total={pagination.total}
+                  limit={limit}
+                  setPage={setPage}
+                  setLimit={setLimit}
+                  loading={loading}
+                  controlId='trashedNotePageSize'
+                />
+              </td>
+            </tr>
             <tr>
               <td colSpan={6}><i style={{color: "#B82C3A", fontWeight: "800"}}>NOTES ARE PERMANENTLY DELETED {PURGE_DAYS} DAYS AFTER BEING MOVED TO TRASH</i></td>
             </tr>

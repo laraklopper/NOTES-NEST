@@ -13,25 +13,9 @@ const Translation = require('../models/translationSchema');// Import the Transla
 const Note = require('../models/noteSchema');// Import the Note model
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the sourceLanguage and targetLanguage filters
-const { DEFAULT_LIMIT, MAX_LIMIT } = require('../util/apiUtil');// Shared pagination limits
+const { parsePagination, paginationInfo } = require('../util/apiUtil');// Shared pagination helpers (same as the notes lists)
 const { trashExpiredArchivedTranslations } = require('../util/archiveUtil');// 60-day archive rule
 const router = express.Router()
-
-/* Turns the page/limit query params into safe numbers, falling back to the defaults
-when they are missing or not positive whole numbers. Used by GET /fetch and GET /trash */
-const parsePagination = (page, limit) => {
-    const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
-    const pageSize = Math.min(Math.max(parseInt(limit, 10) || DEFAULT_LIMIT, 1), MAX_LIMIT);
-    return { pageNumber, pageSize, skip: (pageNumber - 1) * pageSize };
-};
-
-// Builds the pagination object sent with every paged list (totalPages is at least 1)
-const paginationInfo = (pageNumber, pageSize, total) => ({
-    page: pageNumber,
-    limit: pageSize,
-    total,
-    totalPages: Math.max(Math.ceil(total / pageSize), 1)
-});
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────
    GET: READ — Used to fetch information from the database

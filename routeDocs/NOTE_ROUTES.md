@@ -27,7 +27,7 @@
 13. [DELETE /notes/:id/permanent](#13-delete-notesidpermanent)
 14. [Route Order](#14-route-order)
 15. [Status Code Reference](#15-status-code-reference)
-16. [Known Gaps & Housekeeping](#16-known-gaps--housekeeping)
+16. [Resolved Gaps & Remaining Housekeeping](#16-resolved-gaps--remaining-housekeeping)
 
 ---
 
@@ -38,7 +38,7 @@ The router is mounted at **`/notes`** in `app.js`. Every route requires a valid 
 | Method | Full Path | Purpose | Note Must Be |
 |---|---|---|---|
 | `GET` | `/notes/fetchNotes` | Paginated, filterable list of active notes | active |
-| `GET` | `/notes/trash` | List trashed notes | trashed |
+| `GET` | `/notes/trash` | Paginated list of trashed notes | trashed |
 | `GET` | `/notes/:id` | One note (for a details view) | **any** state |
 | `POST` | `/notes/addNote` | Create a note | — |
 | `PATCH` | `/notes/:id` | Edit title, content, language, notebook, tags or pin | active |
@@ -50,13 +50,15 @@ The router is mounted at **`/notes`** in `app.js`. Every route requires a valid 
 
 ## 2. Note States
 
-A note's state comes from two fields: `isArchived` and `deletedAt`.
+A note's state comes from two fields: `isArchived` and `deletedAt`. A third field, `archivedAt`, records **when** a note was archived.
 
 | State | `isArchived` | `deletedAt` | Shown In |
 |---|---|---|---|
 | Active | `false` | `null` | Notes list |
 | Archived | `true` | `null` | Archive page |
-| Trashed | any | a `Date` | Trash page |
+| Trashed | `false` | a `Date` | Trash page |
+
+Every way into the trash clears `isArchived`, so a trashed note is never also archived (notes trashed before this rule existed may still have `isArchived: true`).
 
 ```
                 DELETE /notes/:id
@@ -67,17 +69,17 @@ A note's state comes from two fields: `isArchived` and `deletedAt`.
       ▲    │                                ▲      DELETE /:id/permanent
       │    │ /archive routes                │      (+ its translations)
       │    ▼                                │
-   ┌──────────┐  DELETE /archive/:id ───────┘
-   │ ARCHIVED │
+   ┌──────────┐  DELETE /archive/:id ───────┤
+   │ ARCHIVED │  or 60 days after archiving ┘
    └──────────┘
 ```
 
 ### The 30-day TTL purge
 
-`noteSchema` has a **TTL (time-to-live) index** on `deletedAt`, roughly:
+`noteSchema` has a **TTL (time-to-live) index** on `deletedAt`:
 
 ```js
-noteSchema.index({ deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });// MongoDB deletes the note 30 days after deletedAt
+noteSchema.index({ deletedAt: 1 }, { expireAfterSeconds: THIRTY_DAYS_IN_SECONDS });// MongoDB deletes the note 30 days after deletedAt
 ```
 
 | `deletedAt` | TTL Behaviour |
@@ -87,12 +89,15 @@ noteSchema.index({ deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });//
 
 That's why **restoring** a note (`deletedAt: null`) also **stops the countdown**. MongoDB's TTL job runs about every 60 seconds, so the deletion isn't exact to the second.
 
+### The 60-day archive rule
+
+A TTL index can only delete documents, not change them, so archived notes are moved to the trash by a sweep in `util/archiveUtil.js` instead. `trashExpiredArchivedNotes()` moves notes archived more than **60 days** ago to the trash (the same end state as `DELETE /archive/:id`). It runs for every user on server start and every hour, and for the current user before `GET /notes/trash`, so the trash list is always accurate.
+
 ---
 
 ## 3. Imports & Constants
 
 ```js
-require('dotenv').config()
 const express = require('express');
 const mongoose = require('mongoose');
 const Note = require('../models/noteSchema');
@@ -101,7 +106,9 @@ const Tag = require('../models/tagSchema');
 const User = require('../models/userSchema');
 const Translation = require('../models/translationSchema');
 const { checkJwtToken } = require('../middleware/securityMiddleware');
-const { languageCodeRegex } = require('../util/schemaUtil');
+const { languageCodeRegex, MAX_TAG_LENGTH } = require('../util/schemaUtil');
+const { trashExpiredArchivedNotes } = require('../util/archiveUtil');
+const { parsePagination, paginationInfo } = require('../util/apiUtil');
 ```
 
 | Import | Used For |
@@ -114,11 +121,11 @@ const { languageCodeRegex } = require('../util/schemaUtil');
 | `Translation` | `DELETE /:id/permanent`: delete a note's translations along with it |
 | `checkJwtToken` | Auth on every route; sets `req.user.id` |
 | `languageCodeRegex` | Validates the `language` filter in `/fetchNotes` |
-| `DEFAULT_LIMIT`, `MAX_LIMIT` | Pagination defaults (`10` and `50`), **shared** with `translationRoutes.js` from `util/apiUtil.js` |
+| `MAX_TAG_LENGTH` | The longest tag name (`30`), **shared** with `tagSchema` |
+| `trashExpiredArchivedNotes` | Applies the 60-day archive rule before `GET /trash` |
+| `parsePagination`, `paginationInfo` | Page/limit parsing and the `pagination` response object (defaults `10` per page, max `50`), **shared** with `translationRoutes.js` |
 
-```js
-const { DEFAULT_LIMIT, MAX_LIMIT } = require('../util/apiUtil');// Shared pagination limits (same as the translations list)
-```
+`dotenv` isn't loaded here: `app.js` loads it once before any router is required.
 
 ---
 
@@ -188,7 +195,7 @@ This is the **upsert** pattern: "find it, or create it if it's missing", in **on
 | `runValidators: true` | Apply `tagSchema` validation (e.g. max length) on inserts too. Update queries skip validators by default. |
 | `Promise.all` | All tags are looked up **in parallel**, not one after another |
 
-The result is an array of ObjectIds, ready to store in `note.tags`.
+The result is an array of ObjectIds, ready to store in `note.tags`. Both routes that call it check the note first, so a failed save can't leave new, unused tags behind (see [9](#9-post-notesaddnote) and [10](#10-patch-notesid)).
 
 ### 4.4 `populateNote(query)`
 
@@ -210,6 +217,29 @@ This takes a Mongoose **query** (not a result) and adds the standard projection 
 
 Because it returns the query, you can keep chaining: `populateNote(Note.find(filter)).sort(...).lean()`.
 
+### 4.5 `parsePagination(page, limit)` and `paginationInfo(...)` (`util/apiUtil.js`)
+
+```js
+const parsePagination = (page, limit) => {
+    const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+    const pageSize = Math.min(Math.max(parseInt(limit, 10) || DEFAULT_LIMIT, 1), MAX_LIMIT);
+    return { pageNumber, pageSize, skip: (pageNumber - 1) * pageSize };
+};
+```
+
+| Input | `pageNumber` | `pageSize` |
+|---|---|---|
+| missing | 1 | 10 |
+| `page=3&limit=20` | 3 | 20 |
+| `page=-5&limit=999` | 1 | 50 (capped) |
+| `page=abc&limit=0` | 1 | 10 (`0` is falsy, so the default applies) |
+
+`parseInt(x, 10)` always uses base 10, so `'08'` isn't read as octal. It's also lenient: `?page=2abc` is read as page 2, which is harmless.
+
+`paginationInfo(pageNumber, pageSize, total)` builds `{ page, limit, total, totalPages }`. `totalPages` is **at least 1**, so the UI shows "Page 1 of 1" rather than "Page 1 of 0" when there are no notes.
+
+Both helpers are shared by `/notes/fetchNotes`, `/notes/trash`, `/translation/fetch` and `/translation/trash`, so every paged list behaves the same.
+
 ---
 
 ## 5. Patterns Shared by Every Route
@@ -222,7 +252,22 @@ Because it returns the query, you can keep chaining: `populateNote(Note.find(fil
 | State in the filter | `deletedAt: null`, `isArchived: false`, etc. | Each action only works from the right state |
 | Atomic update | `findOneAndUpdate(filter, { $set })` | Check and change in one database operation, with no race between two tabs |
 | Type checks on the body | `typeof x !== 'string'` | Blocks `{ "$gt": "" }`-style **NoSQL injection** |
+| Guard clauses | `if (...) return res.status(4xx)...` | Each check returns early, so the happy path reads top to bottom |
 | Logging | `[SUCCESS/ERROR: noteRoutes.js, <METHOD> <path>]` | Easy to grep |
+
+### The `findOneAndUpdate` hook
+
+`noteSchema` has a `pre('findOneAndUpdate')` hook that runs for **every** `Note.findOneAndUpdate` call (these routes and `archiveRoutes.js`):
+
+```js
+this.setOptions({ runValidators: true, returnDocument: 'after' });// Validate updates and return the updated note
+```
+
+| Effect | Why |
+|---|---|
+| Sanitises `content` and updates `plainText` | Same XSS protection as creating a note |
+| `runValidators: true` | Update queries skip schema validation by default |
+| `returnDocument: 'after'` | Every `findOneAndUpdate` on notes returns the note **after** the change (by default Mongoose returns it as it was before) |
 
 ---
 
@@ -258,29 +303,15 @@ One loop handles **both** ID filters. Each entry is `[Mongo field, query value, 
 
 The `typeof value !== 'string'` check matters because `?tag[$ne]=x` is parsed into `{ $ne: 'x' }`.
 
-### Pagination maths
-
-```js
-const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
-const pageSize = Math.min(Math.max(parseInt(limit, 10) || DEFAULT_LIMIT, 1), MAX_LIMIT);
-```
-
-| Input | `pageNumber` | `pageSize` |
-|---|---|---|
-| missing | 1 | 10 |
-| `page=3&limit=20` | 3 | 20 |
-| `page=-5&limit=999` | 1 | 50 (capped) |
-| `page=abc&limit=0` | 1 | 10 (`0` is falsy, so the default applies) |
-
-`parseInt(x, 10)` always uses base 10, so `'08'` isn't read as octal.
-
 ### Query and count in parallel
 
 ```js
+const { pageNumber, pageSize, skip } = parsePagination(page, limit);
+
 const [notes, total] = await Promise.all([
     populateNote(Note.find(filter))
         .sort({ isPinned: -1, updatedAt: -1 })// Pinned first, then newest
-        .skip((pageNumber - 1) * pageSize)// Page 3 with 10 per page skips 20
+        .skip(skip)// Page 3 with 10 per page skips 20
         .limit(pageSize)
         .lean(),
     Note.countDocuments(filter)// Total for the pagination controls
@@ -298,22 +329,31 @@ The page of notes and the total count are **independent queries**, so `Promise.a
 }
 ```
 
-`totalPages: Math.max(Math.ceil(total / pageSize), 1)` is **at least 1**, so the UI shows "Page 1 of 1" rather than "Page 1 of 0" when there are no notes.
+A page **beyond** `totalPages` returns `notes: []` with a 200. `Notes.js` steps back to the last page when that happens (e.g. after deleting the last note on a page).
 
 ---
 
 ## 7. GET `/notes/trash`
 
-**Purpose:** The Trash page.
+**Purpose:** The Trash page (`Trash.js`), paginated the same way as `/fetchNotes`.
 
 ```js
-Note.find({ user: userId, deletedAt: { $ne: null } })// Anything with a deletion date
-    .sort({ deletedAt: -1 })// Most recently deleted first
+await trashExpiredArchivedNotes(userId);// 60-day archive rule first, so expired archived notes show straight away
+
+const filter = { user: userId, deletedAt: { $ne: null } };// Anything with a deletion date
+const [notes, total] = await Promise.all([
+    populateNote(Note.find(filter)).sort({ deletedAt: -1 }).skip(skip).limit(pageSize).lean(),// Most recently deleted first
+    Note.countDocuments(filter)
+]);
 ```
 
 `$ne: null` means "**not** null", i.e. the note is in the trash. It also leaves out documents with **no** `deletedAt` field, because `null` matches missing fields in MongoDB.
 
-**Response (200):** `{ "notes": [...] }`. This route isn't paginated (see [Gap 6](#gap-6-get-trash-isnt-paginated)).
+**Query (optional):** `page`, `limit` (see [4.5](#45-parsepaginationpage-limit-and-paginationinfo-apiutiljs)).
+
+**Response (200):** `{ "notes": [...], "pagination": { "page", "limit", "total", "totalPages" } }`
+
+`Trash.js` shows the shared `Pagination` controls, re-fetches after each restore or delete so the page refills from the next one, and steps back a page if the last page empties.
 
 ---
 
@@ -356,7 +396,7 @@ The filter has no state conditions on purpose: only **ownership** is checked.
 | `title` | ❌ | A string. Blank → schema default `"Untitled"`. |
 | `language` | ❌ | A string. Blank → the user's default note language, then `'en'`. |
 | `notebook` | ❌ | A string ID, `null` or missing. It must be the user's own notebook. |
-| `tags` | ❌ | An array of strings (**names**, not IDs). Missing tags are created. Max 30 characters each. |
+| `tags` | ❌ | An array of strings (**names**, not IDs). Missing tags are created. Max `MAX_TAG_LENGTH` (30) characters each. |
 | `isPinned` | ❌ | A boolean |
 
 ### Step-by-step
@@ -389,35 +429,42 @@ The fallback order is **form → user's profile default → `'en'`**. The extra 
 
 **Step 4: Notebook ownership.** `checkNotebook()`, see [4.1](#41-checknotebookuserid-notebook).
 
-**Step 5: Tags.** `normaliseTagNames()` → length check (≤ 30) → `findOrCreateTagIds()`.
+**Step 5: Tag names.** `normaliseTagNames()` → length check (≤ `MAX_TAG_LENGTH`).
 
-**Step 6: Create**
+**Step 6: Build and validate the note, then create the tags, then save**
 
 ```js
-const newNote = await Note.create({
+const newNote = new Note({
     user: userId,
     notebook: notebookId,// null = no notebook
     title: title?.trim() || undefined,// undefined lets the schema default ("Untitled") apply
     content,// Sanitised (XSS) and copied to plainText by a noteSchema hook
     language: noteLanguage,
-    tags: tagIds,
     isPinned: isPinned === true
 });
+await newNote.validate();// Fails BEFORE any tags are created
+
+newNote.tags = await findOrCreateTagIds(userId, tagNames);
+await newNote.save();
+await newNote.populate([{ path: 'notebook', select: 'name colour' }, { path: 'tags', select: 'name' }]);
 ```
 
 | Detail | Why |
 |---|---|
+| `validate()` before `findOrCreateTagIds()` | A note that fails validation (e.g. a title over 200 characters) can't leave newly created, unused tags behind |
 | `title: ... \|\| undefined` | Mongoose defaults only apply to `undefined`. `''` would save an empty title. |
 | Named fields only | Protects against **mass assignment**: `user`, `deletedAt` and `isArchived` can't be set from the body |
 | `content` sanitising | A schema hook strips dangerous HTML (e.g. `<script>`) **before** saving, so it can't run when displayed |
+| `populate(...)` | Same shape as `populateNote`, so the response has notebook and tag **names**, like `PATCH` |
 
 **Response (201):**
 
 ```json
-{ "message": "Note saved successfully", "note": { "_id": "...", "notebook": "6732...", "tags": ["6733...", "6734..."] } }
+{
+  "message": "Note saved successfully",
+  "note": { "_id": "...", "notebook": { "_id": "...", "name": "Work", "colour": "#4F46E5" }, "tags": [{ "_id": "...", "name": "meetings" }] }
+}
 ```
-
-Here the note is **not populated**: `notebook` and `tags` are IDs (see [Gap 3](#gap-3-addnote-returns-ids-patch-returns-names)).
 
 **Errors:** `ValidationError` → 400 with the first schema message. Anything else → 500.
 
@@ -443,31 +490,43 @@ Each field is handled only if it was sent (`!== undefined`):
 | `content` | Can't be emptied → 400 | `updates.content` |
 | `language` | Can't be emptied → 400 | `updates.language` (format checked by the schema) |
 | `notebook` | `''` / `null` → no notebook, otherwise `checkNotebook()` | `updates.notebook` |
-| `tags` | Normalise → length check → find or create | `updates.tags` (replaces the whole array) |
 | `isPinned` | Boolean | `updates.isPinned` |
+| `tags` | Normalise → length check → (note check) → find or create | `updates.tags` (replaces the whole array) |
 
 ```js
-if (Object.keys(updates).length === 0) → 400 "No changes were sent"
+if (Object.keys(updates).length === 0 && tagNames === undefined) → 400 "No changes were sent"
 ```
 
 This stops an empty `{}` body from making a pointless database call.
 
 **Why the title is set to `'Untitled'` here, when POST uses `undefined`:** with `$set`, an `undefined` value is simply skipped, so the old title would stay. Writing `'Untitled'` makes "clear the title" actually work.
 
+### Checking the note before creating tags
+
+When `tags` are sent, the route loads the note and validates the other changes **before** calling `findOrCreateTagIds()`:
+
+```js
+const current = await Note.findOne(editableFilter);
+if (!current) → 404 "Note not found"
+current.set(updates);
+await current.validate(Object.keys(updates));// Only the sent fields, so old data in other fields can't block an edit
+updates.tags = await findOrCreateTagIds(userId, tagNames);
+```
+
+So a missing, archived or trashed note, or an invalid title or language, can't leave new, unused tags behind. When no tags are sent, this extra query is skipped.
+
 ### The update
 
 ```js
-const note = await populateNote(Note.findOneAndUpdate(
-    { _id: id, user: userId, isArchived: false, deletedAt: null },// Only ACTIVE notes are editable
-    { $set: updates }
-));
+const editableFilter = { _id: id, user: userId, isArchived: false, deletedAt: null };// Only ACTIVE notes are editable
+const note = await populateNote(Note.findOneAndUpdate(editableFilter, { $set: updates }));
 ```
 
 | Detail | Meaning |
 |---|---|
 | `isArchived: false, deletedAt: null` | Archived and trashed notes can't be edited. Restore them first. |
 | `$set` | Changes only these fields. The rest of the note stays as it is. |
-| Schema hook | According to the code comment, a `noteSchema` `findOneAndUpdate` hook **sanitises** `content`, updates `plainText`, runs validation and makes the query return the **updated** note (see [Gap 1](#gap-1-check-that-the-patch-hook-sets-new-true)) |
+| Schema hook | Sanitises `content`, updates `plainText`, runs validators and returns the **updated** note (see [5](#the-findoneandupdate-hook)) |
 | `populateNote(...)` | The response includes notebook and tag **names** |
 
 **Response (200):** `{ "message": "Note updated successfully", "note": { ...populated } }`
@@ -485,15 +544,16 @@ Note.findOneAndUpdate(
 ).select('_id title isArchived');
 ```
 
-Only `deletedAt` is cleared. `isArchived` isn't touched, so the note goes back to **wherever it was before**:
+Only `deletedAt` is cleared. Every way into the trash clears `isArchived`, so a restored note goes back to the **Notes list**:
 
-| Trashed From | `isArchived` | Restored To |
+| Trashed From | `isArchived` After | Restored To |
 |---|---|---|
 | Notes list (`DELETE /notes/:id`) | `false` | Notes list |
-| Archive (`DELETE /archive/:id`, which clears `isArchived`) | `false` | Notes list |
-| Archive, but via `DELETE /notes/:id` | `true` | **Archive** (see [Gap 2](#gap-2-two-ways-into-the-trash-behave-differently)) |
+| Archive (`DELETE /archive/:id`) | `false` | Notes list |
+| Archive, but via `DELETE /notes/:id` | `false` | Notes list |
+| Archive, 60-day rule (`archiveUtil.js`) | `false` | Notes list |
 
-`isArchived` is included in the response so the frontend can say "Restored to Notes" or "Restored to Archive". Restoring doesn't change `isArchived`, so the value is accurate even though `findOneAndUpdate` returns the document as it was before the update.
+`isArchived` is still included in the response, so `Trash.js` can say "Restored to the archive" for notes that were trashed while archived **before** this rule was added.
 
 **Response (200):** `{ "message": "Note restored", "note": { "_id", "title", "isArchived" } }`
 
@@ -506,7 +566,7 @@ Only `deletedAt` is cleared. `isArchived` isn't touched, so the note goes back t
 ```js
 Note.findOneAndUpdate(
     { _id: id, user: userId, deletedAt: null },// Not already in the trash
-    { $set: { deletedAt: new Date(), isPinned: false } }// Starts the 30-day TTL countdown
+    { $set: { deletedAt: new Date(), isPinned: false, isArchived: false, archivedAt: null } }
 ).select('_id title');
 ```
 
@@ -514,6 +574,7 @@ Note.findOneAndUpdate(
 |---|---|
 | `deletedAt: new Date()` | Moves it to the trash, records **when**, and starts the TTL countdown |
 | `isPinned: false` | A restored note shouldn't jump to the top of the list |
+| `isArchived: false`, `archivedAt: null` | The same end state as `DELETE /archive/:id` and the 60-day sweep, so a restored note always goes back to the Notes list |
 
 **Response (200):** `{ "message": "Note moved to trash", "note": { "_id", "title" } }`
 
@@ -524,18 +585,26 @@ Note.findOneAndUpdate(
 **Purpose:** Delete a note **for good**, along with every translation made from it.
 
 ```js
-const note = await Note.findOneAndDelete({ _id: id, user: userId, deletedAt: { $ne: null } }).select('_id title');
-if (!note) → 404 "Note not found in trash"
-const { deletedCount } = await Translation.deleteMany({ note: id, user: userId });
+const trashedFilter = { _id: id, user: userId, deletedAt: { $ne: null } };
+if (!(await Note.exists(trashedFilter))) → 404 "Note not found in trash"
+
+const { deletedCount } = await Translation.deleteMany({ note: id, user: userId });// Translations FIRST
+const note = await Note.findOneAndDelete(trashedFilter).select('_id title');
+if (!note) → 404 "Note not found in trash"// Restored or deleted in another tab in the meantime
 ```
 
 | Safeguard | How |
 |---|---|
 | **Two-step delete** | `deletedAt: { $ne: null }`: only notes **already in the trash** can be deleted permanently, so an active note can't be wiped by one mistaken click |
 | Ownership | `user: userId` on **both** the note and the translations |
-| Cascade | Translations linked to the note are removed, so none are left pointing at a deleted note |
+| Check first | `Note.exists()` makes sure nothing is deleted for a note that isn't in the user's trash |
+| Translations before the note | If the note delete fails, the note is still in the trash and the delete can be retried. Deleting the note first could leave orphaned translations behind. |
 
 `findOneAndDelete` returns the deleted document, so its title can go back to the client (e.g. "'Shopping list' deleted forever").
+
+`noteSchema` also has a `post('findOneAndDelete')` hook that deletes the note's translations. It's a safety net: because the route removes them first, the hook normally finds none.
+
+Notes purged by the **30-day TTL index** skip this route and every Mongoose hook. The hourly sweep's `removeOrphanedTranslations()` (`util/archiveUtil.js`) deletes their translations instead, so for up to an hour a translation can point at a note that no longer exists. The UI should keep handling a missing note (`t.note?.title || ''`).
 
 **Response (200):**
 
@@ -584,82 +653,34 @@ The other routes can't clash, because they have different methods or different n
 
 ---
 
-## 16. Known Gaps & Housekeeping
+## 16. Resolved Gaps & Remaining Housekeeping
 
-### Gap 1: Check that the PATCH hook sets `new: true`
+These gaps were found in an earlier review and have now been fixed.
 
-`PATCH /:id` calls `findOneAndUpdate` **without** `{ new: true }` and relies on the `noteSchema` hook to return the updated note (according to the comment). By default, `findOneAndUpdate` returns the document **as it was before the update**, and it also skips validators. Check that the hook does something like:
-
-```js
-noteSchema.pre('findOneAndUpdate', function (next) {
-    this.setOptions({ new: true, runValidators: true });// Return the updated doc + validate the update
-    // ...sanitise content, set plainText
-    next();
-});
-```
-
-If it doesn't, the client gets the **old** note after editing. Passing the options in the route makes it explicit either way:
-
-```js
-Note.findOneAndUpdate(filter, { $set: updates }, { new: true, runValidators: true })
-```
-
-### Gap 2: Two ways into the trash behave differently
-
-| Route | Clears `isArchived`? | Restore Goes To |
+| Gap | Fix | Where |
 |---|---|---|
-| `DELETE /archive/:id` | ✅ Yes | Notes list |
-| `DELETE /notes/:id` | ❌ No (and it doesn't exclude archived notes) | **Archive**, if the note was archived |
+| 1. `PATCH /:id` relied on the schema hook to return the updated note | Confirmed: the hook sets `runValidators` and returns the updated note. It now uses `returnDocument: 'after'` instead of `new: true`, which Mongoose 9 deprecates (it logged a warning on every note update). | `noteSchema.js` |
+| 2. The two ways into the trash restored to different places | `DELETE /notes/:id` now clears `isArchived` and `archivedAt`, the same as `DELETE /archive/:id` and the 60-day sweep, so a restore always goes to the Notes list | `noteRoutes.js` DELETE `/:id` |
+| 3. `addNote` returned IDs while `PATCH` returned names | The new note is populated with the same fields as `populateNote` | `noteRoutes.js` POST `/addNote` |
+| 4a. Permanent delete removed the note before its translations | The route checks the note is in the trash, deletes the translations, **then** the note. This also fixes `deletedTranslations`, which was always `0`: the schema's `post('findOneAndDelete')` hook had already removed the translations before the route counted them. | `noteRoutes.js` DELETE `/:id/permanent` |
+| 4b. The 30-day TTL purge skipped the translation cascade | The hourly sweep runs `removeOrphanedTranslations()` | `util/archiveUtil.js` |
+| 5. Tags could be created even when the note failed | `POST` validates the note before creating tags. `PATCH` checks the note is editable and validates the sent fields first. | `noteRoutes.js` POST `/addNote`, PATCH `/:id` |
+| 6. `GET /trash` wasn't paginated | Takes `page`/`limit` and returns `pagination`, like `/fetchNotes`. `Trash.js` shows the shared `Pagination` controls. | `noteRoutes.js` GET `/trash`, `Trash.js` |
+| 7. The tag length limit was hardcoded | Uses `MAX_TAG_LENGTH` from `util/schemaUtil.js` | `noteRoutes.js` |
+| 8. Lenient `page`/`limit` parsing | Harmless. The page/limit logic now lives in one place (`parsePagination` in `util/apiUtil.js`), shared with `translationRoutes.js`. `Notes.js` and `Trash.js` step back to the last page if a page empties. | `util/apiUtil.js` |
 
-So the same archived note restores to **different places** depending on which delete was used. Pick one rule:
+The housekeeping comments are fixed too:
+- The header block lists every path the same way (`/notes/...`) and the "fethc" typo is gone.
+- The unused `dotenv` import is removed (`app.js` loads it).
+- The GET section header says "from the database" (there's no external provider).
+- The leftover "DELETE request to the /notes/:id endpoint" comments are removed.
+- "Conditional rendering" is now "Guard clause".
+- The response comments mention the returned note.
 
-- **Always restore to the Notes list:** add `isArchived: false` to the `$set` in `DELETE /notes/:id`.
-- **Restore to where it came from:** remove `isArchived: false` from `DELETE /archive/:id`.
+### Still open
 
-### Gap 3: `addNote` returns IDs, `PATCH` returns names
-
-`POST /addNote` returns `newNote` **unpopulated** (`notebook: "6732..."`, `tags: ["6733..."]`), while `PATCH` returns it **populated** (`notebook: { name, colour }`). If the frontend adds the new note straight to the list, the notebook and tag columns show IDs or blanks until the page refreshes. **Fix:**
-
-```js
-await newNote.populate([{ path: 'notebook', select: 'name colour' }, { path: 'tags', select: 'name' }]);// Same shape as populateNote
-```
-
-### Gap 4: Permanent delete isn't atomic, and TTL skips the cascade
-
-**a)** The note is deleted **first**, then the translations. If `Translation.deleteMany` fails, the note is already gone, the translations are left orphaned, and the client gets a 500 for a delete that partly worked. Deleting the translations **first** is safer: if the note delete then fails, the note is still in the trash and can be retried. For a strict guarantee, use a MongoDB **transaction** (this needs a replica set; Atlas clusters have one).
-
-**b)** ✅ **Fixed.** The **30-day TTL purge** deletes notes directly inside MongoDB, so no Mongoose hooks or route code run, and the translation cascade above is skipped. The hourly sweep in `util/archiveUtil.js` now includes `removeOrphanedTranslations()`, which deletes translations whose linked note no longer exists. A translation of a purged note can still exist for up to an hour, so the UI should keep handling a missing note (`t.note?.title || ''`).
-
-### Gap 5: Tags can be created even when the note fails
-
-In `POST /addNote` and `PATCH /:id`, `findOrCreateTagIds()` runs **before** the note is saved. If the note then fails validation, the new tags stay in the database with no notes using them. It's harmless, and they're reused next time the same name is typed. To clean up, a "remove unused tags" step can run periodically, or when a tag list is fetched.
-
-### Gap 6: GET /trash isn't paginated
-
-`/fetchNotes` pages its results, but `/trash` returns **every** trashed note. The 30-day purge keeps the list bounded, but a user who trashes many notes at once could still get a large response. Reusing the same `page`/`limit` logic would keep it consistent.
-
-### Gap 7: The magic number `30`
-
-The tag length limit is hardcoded in two places (`name.length > 30`). If `tagSchema` also has a `maxlength`, the three can drift apart. Move it to `schemaUtil`:
-
-```js
-const { languageCodeRegex, MAX_TAG_LENGTH } = require('../util/schemaUtil');// Shared with tagSchema
-if (tagNames.some((name) => name.length > MAX_TAG_LENGTH)) ...
-```
-
-### Gap 8: Lenient `page` / `limit` parsing (minor)
-
-`parseInt('2abc', 10)` returns `2`, so `?page=2abc` is accepted as page 2. That's harmless. A page **beyond** `totalPages` returns `notes: []` with a 200, so the frontend should clamp to `totalPages` after deleting the last note on a page.
-
-### Housekeeping
-
-| Line(s) | Issue | Suggestion |
-|---|---|---|
-| 3 | Typo: "fethc" | "fetch" |
-| 7–10 | The header lists `/notes/:id`, `/notes/:id/restore` etc., but lines 3–6 list paths **without** `/notes` | Use one style throughout, e.g. drop the `/notes` prefix since the router is mounted there |
-| 12 | `require('dotenv').config()` isn't used in this file | Load it once in `app.js` |
-| 59 | GET section header: "fetch information from the **provider** and the database" | There's no external provider in this file. "from the database". |
-| 403–404 | Leftover comments ("DELETE request to the /notes/:id endpoint") | Delete them. The block comment below already covers it. |
-| 407 | ✅ **Fixed.** `DELETE /delete/:id` put the verb in the URL | Renamed to `DELETE /:id` (frontend call in `NotePanal.js` updated) |
-| Throughout | "Conditional rendering" | That's a React UI term. These are **guard clauses** / validation checks. |
-| 391, 429, 461 | "Send a 200 (OK) status code with a message", but the response also includes `note` | e.g. "...with a message and the note" |
+| Item | Notes |
+|---|---|
+| Permanent delete isn't a transaction | A note restored in another tab **between** the translation delete and the note delete keeps the note but loses its translations. That's very unlikely, and the route returns 404 so the UI resyncs. A strict guarantee needs a MongoDB transaction (this needs a replica set; Atlas clusters have one). |
+| Unused tags still build up | Tags whose notes were all deleted remain (`noteCount: 0` in `GET /tag/fetchTags`). A periodic "remove unused tags" step could clean them up; the `tagSchema` `deleteMany` hook already handles the note cleanup. |
+| `dotenv` in other routers | `archiveRoutes.js`, `authRoutes.js`, `exportRoutes.js`, `notebookRoutes.js` and `apiRoutes.js` still call `require('dotenv').config()`. It's harmless (it's already loaded by `app.js`) and is left for those routers' reviews. |

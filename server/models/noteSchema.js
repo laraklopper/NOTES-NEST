@@ -94,10 +94,10 @@ noteSchema.pre('findOneAndUpdate', function () { // runs on findOneAndUpdate / f
       target.plainText = toPlainText(target.content); // keep search text in sync
     }
   });
-  this.setOptions({ runValidators: true, new: true }); // validate updates and return the updated note
+  this.setOptions({ runValidators: true, returnDocument: 'after' }); // validate updates and return the updated note (`new: true` is deprecated in Mongoose 9)
 });
 
-noteSchema.post('findOneAndDelete', async function (note) { // permanent delete also removes translations
+noteSchema.post('findOneAndDelete', async function (note) { // safety net: DELETE /notes/:id/permanent removes the translations first, so this normally finds none
   if (!note) return; // nothing was deleted
   await mongoose.model('Translation').deleteMany({ note: note._id });
 });

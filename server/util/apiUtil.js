@@ -8,6 +8,22 @@ const LANGUAGES_CACHE_MS = 1000 * 60 * 60 * 24;// The language list rarely chang
 const DEFAULT_LIMIT = 10;// Items per page when no limit is sent (notes and translations lists)
 const MAX_LIMIT = 50;// Upper bound on the page size so one request can't pull the whole collection
 
+/* Turns the page/limit query params into safe numbers, falling back to the defaults
+when they are missing or not positive whole numbers. Used by every paged list (notes, translations, trash) */
+const parsePagination = (page, limit) => {
+    const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+    const pageSize = Math.min(Math.max(parseInt(limit, 10) || DEFAULT_LIMIT, 1), MAX_LIMIT);
+    return { pageNumber, pageSize, skip: (pageNumber - 1) * pageSize };
+};
+
+// Builds the pagination object sent with every paged list (totalPages is at least 1)
+const paginationInfo = (pageNumber, pageSize, total) => ({
+    page: pageNumber,
+    limit: pageSize,
+    total,
+    totalPages: Math.max(Math.ceil(total / pageSize), 1)
+});
+
 const MAX_EXPORT_ROWS = 10000;// Upper bound so one export can't pull an unbounded amount of data
 const FORMATS = ['csv', 'xlsx'];//Allowed Export formats
 
@@ -51,6 +67,8 @@ module.exports = {
     LANGUAGES_CACHE_MS,
     DEFAULT_LIMIT,
     MAX_LIMIT,
+    parsePagination,
+    paginationInfo,
     MAX_EXPORT_ROWS,
     FORMATS,
     toRows,
