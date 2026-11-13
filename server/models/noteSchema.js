@@ -75,6 +75,7 @@ const noteSchema = new mongoose.Schema(
 noteSchema.index({ title: 'text', plainText: 'text' }, { weights: { title: 3, plainText: 1 } }); // full-text search; title matches rank higher
 noteSchema.index({ user: 1, isPinned: -1, updatedAt: -1 }); // dashboard sort: pinned first, newest first
 noteSchema.index({ deletedAt: 1 }, { expireAfterSeconds: THIRTY_DAYS_IN_SECONDS }); // TTL purge 30 days after soft delete
+noteSchema.index({ user: 1, isArchived: 1, deletedAt: 1, archivedAt: -1 }); // archive list filter + sort (GET /archive/fetchNotes)
 noteSchema.index({ isArchived: 1, archivedAt: 1 }); // 60-day archive sweep (util/archiveUtil.js)
 
 // ---------- Hooks ----------
