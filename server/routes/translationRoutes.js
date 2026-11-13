@@ -1,6 +1,7 @@
 //translationRoutes.js
 /*mounted at /translation by app.js
 GET - '/translation/fetch' - List the user's saved translations (query: note, sourceLanguage, targetLanguage, page, limit)
+GET - /trash - List trashed translations - (declare route before /:id)
 POST - '/translation//save' - Save a translation from the TranslateForm to the user's history
 DELETE - '/translation/delete/:id' - Delete one of the user's saved translations (softDelete)
 PATCH - /translation//:id/restore - Restore from trash
