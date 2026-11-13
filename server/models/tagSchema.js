@@ -5,14 +5,14 @@ const { MAX_TAG_LENGTH } = require('../util/schemaUtil');// Shared tag name leng
 const tagSchema = new mongoose.Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: mongoose.Schema.Types.ObjectId,// stores the User's _id
+      ref: 'User',// enables .populate('user')
       required: true // every query is filtered by owner
     },
     name: {
-      type: String,
+      type: String,//Set the data type as a String
       required: [true, 'Tag name is required'],
-      trim: true,
+      trim: true,// remove surrounding whitespace
       lowercase: true, // "React", " react " and "REACT" all become "react"
       maxlength: [MAX_TAG_LENGTH, `Tag name cannot exceed ${MAX_TAG_LENGTH} characters`]
     }
