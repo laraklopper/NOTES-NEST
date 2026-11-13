@@ -13,6 +13,7 @@ import languageData from '../util/languageData';
 import { BookA, BookOpenCheck } from 'lucide-react';
 import TranslationsList from '../components/TranslationsList';
 import TrashedTranslations from '../components/TrashedTranslations';
+import ArchivedTranslations from '../components/ArchivedTranslations';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
@@ -77,6 +78,13 @@ export default function Translate(
                   <Col md={12} id='translationTrashCol'>
                     <div id='deletedTranslationDiv'>
                       <TrashedTranslations/>
+                    </div>
+                  </Col>
+                </Row>
+                <Row id='translationsArchiveRow'>
+                  <Col id='translationsArchiveCol'>
+                    <div id='archiveDiv'>
+                      <ArchivedTranslations/>
                     </div>
                   </Col>
                 </Row>
