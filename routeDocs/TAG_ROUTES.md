@@ -42,9 +42,10 @@ The router is mounted at **`/tag`** in `app.js`. Every route requires a valid JW
 |---|---|---|
 | `GET` | `/tag/fetchTags` | List the user's tags A–Z, each with a note count |
 | `POST` | `/tag/addTag` | Create a tag |
+| `PUT` | `/tag/:id` | Rename a tag (body `{ "name": "..." }`; 400 invalid, 404 not found, 409 duplicate name) |
 | `DELETE` | `/tag/:id` | Delete a tag and remove it from every note |
 
-There's no rename route (see [Gap 3](#gap-3-no-rename-route)).
+Because notes store tag **IDs**, a rename only updates the tag document, and every note shows the new name through `populate`.
 
 ---
 

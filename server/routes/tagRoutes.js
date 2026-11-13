@@ -2,6 +2,7 @@
 /*mounted at /tag by app.js
 GET - '/fetchTags' - List the signed-in user's tags with usage counts
 POST - '/addTag' - Create a tag for the signed-in user
+PUT - '/:id' - Rename a tag
 DELETE - '/:id' - Delete a tag: $pull it from notes
 */
 require('dotenv').config()
@@ -82,6 +83,61 @@ router.post('/addTag', checkJwtToken, async (req, res) => {
             return res.status(409).json({ message: 'You already have a tag with that name' });// Return a 409 (Conflict) status code with a message
         }
         console.error('[ERROR: tagRoutes.js, POST /addTag]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+
+/*──────────────────────────── PUT ROUTES ──────────────────────────────────────
+    PUT: UPDATE — Used to replace data in the database (the name is a tag's only editable field)
+ ────────────────────────────────────────────────────────────────────────────────*/
+/* PUT: /tag/:id : Renames one of the signed-in user's tags from the TagsList on
+the Notes page. Notes store tag IDs, so every note shows the new name via populate. */
+router.put('/:id', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the tag ID from the URL
+        const { name } = req.body || {};// Extract the new tag name from the request body
+
+        // Check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: tagRoutes.js, PUT /:id] Invalid tag id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid tag id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Check the name is present (and is a string, so it cannot inject query operators)
+        if (typeof name !== 'string' || !name.trim()) {
+            console.error('[ERROR: tagRoutes.js, PUT /:id] Tag name is required');// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Tag name is required' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only a tag the user owns can be renamed
+        const tag = await Tag.findOneAndUpdate(
+            { _id: id, user: userId },
+            { $set: { name: name.trim().toLowerCase() } },// Same format the schema stores (trim + lowercase)
+            { returnDocument: 'after', runValidators: true }// Return the renamed tag and check the length limit
+        );
+
+        // Check the tag was found
+        if (!tag) {
+            console.error(`[ERROR: tagRoutes.js, PUT /:id] Tag not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Tag not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: tagRoutes.js, PUT /:id] Tag renamed: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Tag updated successfully', tag });// Send a 200 (OK) status code with the updated tag
+    } catch (error) {
+        // Mongoose schema validation failed: send the first validation message back to the client
+        if (error.name === 'ValidationError') {
+            const firstMessage = Object.values(error.errors)[0]?.message;
+            console.error('[ERROR: tagRoutes.js, PUT /:id] Validation failed:', error.message);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: firstMessage || 'Invalid tag name' });// Return a 400 (Bad Request) status code with a message
+        }
+        // Duplicate key on the { user, name } unique index
+        if (error.code === 11000) {
+            console.error('[ERROR: tagRoutes.js, PUT /:id] Duplicate tag name');// Log an error message in the console for debugging purposes
+            return res.status(409).json({ message: 'You already have a tag with that name' });// Return a 409 (Conflict) status code with a message
+        }
+        console.error('[ERROR: tagRoutes.js, PUT /:id]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
