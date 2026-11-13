@@ -64,6 +64,7 @@ const noteSchema = new mongoose.Schema(
     }],
     isPinned: { type: Boolean, default: false }, // shows at top of list
     isArchived: { type: Boolean, default: false }, // hidden from main list; cannot be translated
+    archivedAt: { type: Date, default: null }, // when the note was archived; moved to the trash ARCHIVE_DAYS (60) later
     deletedAt: { type: Date, default: null } // soft-delete marker; null while active
   },
   { timestamps: true } // createdAt / updatedAt
@@ -74,6 +75,7 @@ const noteSchema = new mongoose.Schema(
 noteSchema.index({ title: 'text', plainText: 'text' }, { weights: { title: 3, plainText: 1 } }); // full-text search; title matches rank higher
 noteSchema.index({ user: 1, isPinned: -1, updatedAt: -1 }); // dashboard sort: pinned first, newest first
 noteSchema.index({ deletedAt: 1 }, { expireAfterSeconds: THIRTY_DAYS_IN_SECONDS }); // TTL purge 30 days after soft delete
+noteSchema.index({ isArchived: 1, archivedAt: 1 }); // 60-day archive sweep (util/archiveUtil.js)
 
 // ---------- Hooks ----------
 

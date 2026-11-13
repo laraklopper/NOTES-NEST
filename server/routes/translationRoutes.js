@@ -31,7 +31,9 @@ router.get('/fetch', checkJwtToken, async (req, res) => {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { note, sourceLanguage, targetLanguage, page, limit } = req.query;// Extract the filters from the query string
 
-        const filter = { user: userId };// Only ever return the user's own translations
+        // Only ever return the user's own active translations (not archived or in the trash)
+        // $ne: true also matches translations saved before isArchived was added (field missing)
+        const filter = { user: userId, isArchived: { $ne: true }, deletedAt: null };
 
         // Conditional rendering to check the optional note filter is a single valid ObjectId
         if (note !== undefined && note !== '') {

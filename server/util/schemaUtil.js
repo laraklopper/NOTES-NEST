@@ -28,6 +28,8 @@ const ADMIN_MIN_ACCOUNT_AGE_MS = process.env.NODE_ENV === 'production'
   : 1000 * 60 * 60 * 24; // 1 day during development
 
 const THIRTY_DAYS_IN_SECONDS = 60 * 60 * 24 * 30; // trash retention period
+const ARCHIVE_DAYS = 60; // archived notes are moved to the trash this many days after being archived
+const ARCHIVE_RETENTION_MS = 1000 * 60 * 60 * 24 * ARCHIVE_DAYS;
 const MAX_TRANSLATION_CHARS = 10000; // Langbly free-tier limit per request
 
 module.exports = {
@@ -39,5 +41,7 @@ module.exports = {
     ADMIN_MIN_AGE,
     ADMIN_MIN_ACCOUNT_AGE_MS,
     THIRTY_DAYS_IN_SECONDS,
+    ARCHIVE_DAYS,
+    ARCHIVE_RETENTION_MS,
     MAX_TRANSLATION_CHARS
 };

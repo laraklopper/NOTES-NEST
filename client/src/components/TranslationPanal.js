@@ -10,10 +10,10 @@ import Button from 'react-bootstrap/Button';
 import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { ArrowRight, Copy, Trash2, X } from 'lucide-react';
+import { Archive, ArrowRight, Copy, Trash2, X } from 'lucide-react';
 
 // PANAL FOR A SELECTED TRANSLATION
-/* DELETE /translation/delete/:id */
+/* DELETE /translation/delete/:id, PATCH /archive/translation/:id */
 export default function TranslationPanal(
     {//PROPS PASSED FROM PARENT COMPONENT (TranslationsList.js)
         translation,// The selected translation
@@ -26,6 +26,38 @@ export default function TranslationPanal(
 ) {
     // =======STATE VARIABLES==============
     const [deleting, setDeleting] = useState(false)// True while a delete request is running
+    const [archiving, setArchiving] = useState(false)// True while an archive request is running
+
+    //========ARCHIVE TRANSLATION REQUEST===============
+    // Hides the translation from the list; it can be restored from ARCHIVE & TRASH
+    const archiveTranslation = useCallback(async (id) => {
+        setError?.(null)
+        setArchiving(true)
+        try {
+            const response = await fetch(`/archive/translation/${id}`, {
+                method: 'PATCH',
+                credentials: 'include',
+            })
+            const data = await response.json().catch(() => ({}))
+            if (!response.ok) throw new Error(data?.message || 'Failed to archive translation')
+
+            onClose?.()// Close the panal
+            await fetchTranslations?.()// Refresh the list so the translation disappears from it
+            alert('Translation successfully archived')
+        } catch (error) {
+            console.error('[ERROR: TranslationPanal.js] Archiving translation failed:', error.message)
+            setError?.(error.message || 'Something went wrong while archiving. Please try again.')
+        } finally {
+            setArchiving(false)
+        }
+    }, [setError, onClose, fetchTranslations])
+
+    // Ask before archiving the translation
+    const handleArchive = () => {
+        const confirmArchive = window.confirm('Move this translation to the archive?')
+        if (!confirmArchive) return
+        archiveTranslation(translation._id)
+    }
 
     //========DELETE TRANSLATION REQUEST===============
     const deleteTranslation = useCallback(async (id) => {
@@ -163,6 +195,20 @@ export default function TranslationPanal(
         </Button>
       </div>
       <div className="p-2 ms-auto"></div>
+      <div className="p-2">
+        <Button
+        variant='light'
+        id='archiveTranslationBtn'
+        type='button'
+        onClick={handleArchive}
+        disabled={archiving || deleting}
+        // ARIA ATTRIBUTES:
+        aria-label='Archive translation'
+        aria-disabled={archiving || deleting ? 'true' : 'false'}
+        >
+            ARCHIVE<Archive aria-hidden='true' focusable='false'/>
+        </Button>
+      </div>
       <div className="vr" />
       <div className="p-2">
         <Button
@@ -170,7 +216,7 @@ export default function TranslationPanal(
         id='deleteItemBtn'
         type='button'
         onClick={handleDelete}
-        disabled={deleting}
+        disabled={deleting || archiving}
         // ARIA ATTRIBUTES:
         aria-label='Delete translation'
         aria-disabled={deleting ? 'true': 'false'}

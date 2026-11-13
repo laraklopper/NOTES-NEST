@@ -6,6 +6,7 @@
 #removeUserBtn,
 #toggleExportBtn,
 #deleteItemBtn,
+#archiveTranslationBtn,
 #copyBtn,
 #viewTranslationBtn{
     width: 120px;
@@ -153,6 +154,7 @@ tbody tr td {
 #toggleEditTagBtn:hover,
 #toggleTagsBtn:hover,
 #deleteItemBtn:hover,
+#archiveTranslationBtn:hover,
 #viewTranslationBtn:hover{
     background-color: #323A42;
     color: #E8F0F6;

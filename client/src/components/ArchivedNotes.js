@@ -10,6 +10,7 @@ import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
 import { formatTimestamp } from '../util/dateFunctions';
 import { languageName } from '../util/languageFunc';
+import { ARCHIVE_DAYS, archiveDaysLeft } from '../util/listUtilFunc';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Archive, ArchiveRestore, Trash } from 'lucide-react';
 
@@ -100,32 +101,39 @@ export default function ArchivedNotes(
             <table id='archiveTable'>
                 <thead>
                     <tr>
-                        <th colSpan={5}><p className='tableHeading'>ARCHIVED NOTES<Archive/></p></th>
+                        <th colSpan={6}><p className='tableHeading'>ARCHIVED NOTES<Archive/></p></th>
                     </tr>
                     <tr>
                         <th style={{color: '#212529'}}>#</th>
                         <th style={{color: '#212529'}}>TITLE</th>
                         <th style={{color: '#212529'}}>LANGUAGE</th>
                         <th style={{color: '#212529'}}>DATE ADDED</th>
+                        <th style={{color: '#212529'}}>MOVES TO TRASH IN</th>
                         <th style={{color: '#212529'}}></th>
                     </tr>
                 </thead>
                 <tbody>
                     {loading && notes.length === 0 ? (
                         <tr>
-                            <td colSpan={5}>LOADING ARCHIVED NOTES...</td>
+                            <td colSpan={6}>LOADING ARCHIVED NOTES...</td>
                         </tr>
                     ) : notes.length === 0 ? (
                         <tr>
-                            <td colSpan={5}>NO ARCHIVED NOTES</td>
+                            <td colSpan={6}>NO ARCHIVED NOTES</td>
                         </tr>
                     ) : (
-                        notes.map((note, index) => (
+                        notes.map((note, index) => {
+                            const remaining = archiveDaysLeft(note)
+                            return (
                             <tr key={note._id}>
                                 <td>{index + 1}</td>
                                 <td>{note.title}</td>
                                 <td>{languageName(note.language)}</td>
                                 <td>{formatTimestamp(note.createdAt)}</td>
+                                {/* 60-day rule: highlight notes with a week or less left */}
+                                <td style={remaining !== null && remaining <= 7 ? {color: '#B82C3A', fontWeight: '800'} : undefined}>
+                                    {remaining === null ? '-' : remaining === 0 ? 'TODAY' : `${remaining} DAY${remaining === 1 ? '' : 'S'}`}
+                                </td>
                                 <td>
                                     <div className='archiveTableBtns'>
                                         <Button
@@ -153,15 +161,16 @@ export default function ArchivedNotes(
                                     </div>
                                 </td>
                             </tr>
-                        ))
+                            )
+                        })
                     )}
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colSpan={5}>RESTORE TO VIEW NOTE DETAILS</td>
+                        <td colSpan={6}>RESTORE TO VIEW NOTE DETAILS</td>
                     </tr>
                     <tr>
-                        <td colSpan={5}><i style={{color: "#B82C3A", fontWeight: "800"}}>ARCHIVED NOTES WILL BE MOVED TO TRASH IN 60 DAYS</i></td>
+                        <td colSpan={6}><i style={{color: "#B82C3A", fontWeight: "800"}}>ARCHIVED NOTES ARE MOVED TO TRASH {ARCHIVE_DAYS} DAYS AFTER BEING ARCHIVED</i></td>
                     </tr>
                 </tfoot>
             </table>

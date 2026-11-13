@@ -95,7 +95,7 @@ const EXPORTS = {
             if (!isValidLanguage(sourceLanguage) || !isValidLanguage(targetLanguage)) {
                 return { error: 'Invalid language code' };
             }
-            const filter = { user: userId };
+            const filter = { user: userId, isArchived: { $ne: true }, deletedAt: null };// Never archived or trashed translations ($ne also matches older docs without the field)
             if (sourceLanguage) filter.sourceLanguage = sourceLanguage;
             if (targetLanguage) filter.targetLanguage = targetLanguage;
             return { filter };

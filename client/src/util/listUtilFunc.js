@@ -7,3 +7,13 @@ export const daysLeft = (deletedAt) => {
     if (isNaN(deleted)) return null
     return Math.max(Math.ceil((deleted + PURGE_DAYS * DAY_MS - Date.now()) / DAY_MS), 0)
 }
+
+export const ARCHIVE_DAYS = 60;// Matches ARCHIVE_DAYS in server/util/schemaUtil.js
+
+/* Whole days left before an archived note is moved to the trash (never below 0).
+Notes archived before archivedAt existed fall back to updatedAt, the same as the server */
+export const archiveDaysLeft = (note) => {
+    const archived = new Date(note?.archivedAt || note?.updatedAt).getTime()
+    if (isNaN(archived)) return null
+    return Math.max(Math.ceil((archived + ARCHIVE_DAYS * DAY_MS - Date.now()) / DAY_MS), 0)
+}

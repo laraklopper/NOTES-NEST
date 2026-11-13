@@ -19,6 +19,7 @@ const User = require('../models/userSchema');// Import the User model
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with a permanently deleted note)
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the language filter
+const { trashExpiredArchivedNotes } = require('../util/archiveUtil');// 60-day archive rule
 const router = express.Router()
 
 const DEFAULT_LIMIT = 10;// Notes per page when no limit is sent
@@ -128,6 +129,9 @@ deleted first. Declared before any GET /:id route so "trash" isn't read as an id
 router.get('/trash', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+
+        // Apply the 60-day archive rule first so expired archived notes show in the trash straight away
+        await trashExpiredArchivedNotes(userId);
 
         const notes = await populateNote(
             Note.find({ user: userId, deletedAt: { $ne: null } })

@@ -47,15 +47,20 @@ const translationSchema = new mongoose.Schema(
       type: Number,
       min: 0 // set automatically from sourceText; tracks usage against the free-tier quota
     },
-     isArchived: { 
-      type: Boolean, 
-      default: false 
+    isArchived: {
+      type: Boolean,
+      default: false // true = hidden from the translations list and shown in the archive
+    },
+    deletedAt: {
+      type: Date,
+      default: null // a date = in the trash (soft delete); null = not in the trash
     },
   },
   { timestamps: true } // createdAt / updatedAt
 );
 
 translationSchema.index({ user: 1, createdAt: -1 }); // translations list, newest first
+translationSchema.index({ user: 1, isArchived: 1, deletedAt: 1, updatedAt: -1 }); // archive list filter + sort
 
 translationSchema.pre('validate', function () {
   if (this.isModified('sourceText')) this.characterCount = this.sourceText.length; // characters sent to Langbly
