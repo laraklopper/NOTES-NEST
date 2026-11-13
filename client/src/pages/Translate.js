@@ -87,7 +87,7 @@ export default function Translate(
             <Tab eventKey="trash" title='ARCHIVE & TRASH'>
               <div id='translationTrashPanal'>
                      <Row id='toggleTranslationsRow'>
-                    <Col id='toggleTranslationsCol'/>
+                    <Col id='toggleTranslationsCol1'/>
                     <Col xs={6} id='toggleTranslationsCol'>
                       <Stack gap={3} id='toggleTranslationStack'>
                         <div className="p-2" id='toggleArchiveBlock'>
@@ -116,12 +116,13 @@ export default function Translate(
                         </div>
                       </Stack>
                     </Col>
-                    <Col id='toggleTranslationsCol'/>
+                    <Col id='toggleTranslationsCol2'/>
                   </Row>
+                  <div id='listsDiv'>
                 {showArchive && (
                   <div id='archivedTranslationPanal'>
                   <Row id='translationsArchiveRow'>
-                      <Col id='translationsArchiveCol'>
+                      <Col id='translationsArchiveCol' md='12'>
                           <ArchivedTranslations/>                
                      </Col>
                   </Row>
@@ -138,6 +139,7 @@ export default function Translate(
                   </Row>
                   </div>
                 )}
+                </div>
               </div>
             </Tab>
             {/* API LANGUAGES LIST */}

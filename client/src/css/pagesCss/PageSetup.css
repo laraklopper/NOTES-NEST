@@ -7,6 +7,34 @@
     width: 100%;
     gap: 10px;
 }
+#listsDiv {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    flex-direction: column;
+}
+#toggleArchiveBtn,
+#toggleTrashBtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    height: 40px;
+    width: 180px;
+    color: #000;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border: solid 2px #323A42;
+}
+#toggleArchiveBtn:hover,
+#toggleTrashBtn:hover{
+     background-color: #323A42;
+    color: #E8F0F6;
+}
 .apiLink{
     color: #E8F0F6;
     font-family: "Roboto Mono", monospace;

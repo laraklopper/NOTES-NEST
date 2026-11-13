@@ -7,6 +7,15 @@
     padding: 10px;
     background-color: #946E26;
 }
+#translateSectionPanal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+/* TAB 1: TRANSLATION TABLE */
 #translatorDiv{
     width: 100%;
     margin: 0px;
@@ -31,17 +40,47 @@
     margin: 0px;
     padding: 0px;
 }
-#translateSectionPanal{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* TAB 2: TRANSLATION LIST */
+#translationListPanal{
+    width: 100%;
     margin: 0px;
     padding: 0px;
-    width: 100%;
 }
-#translationListPanal,
-#langaugeListPanal,
+#translationsListRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#translationsFilterCol{
+     width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+/* TAB 3: ARCHIVE AND TRASH */
+#deletedTranslationPanal,
+#archivedTranslationPanal,
 #translationTrashPanal{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+
+
+}
+#toggleTranslationsRow,
+#translationsArchiveRow,
+#translationTrashRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#translationTrashCol,
+#translationsFilterCol{
+     width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+/* TAB 4: LANGUAGES */
+#langaugeListPanal{
     width: 100%;
     margin: 0px;
     padding: 0px;
@@ -52,10 +91,15 @@
     margin: 0px;
     padding: 0px;
 }
+
 #translationsListRow,
-#translationTrashRow,
 #langaugeListRow{
     width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleTranslationsCol1,
+#toggleTranslationsCol2{
     margin: 0px;
     padding: 0px;
 }
@@ -71,8 +115,17 @@
 #toggleArchiveBlock,
 #toggleTrashBlock{
 display: flex;
-    align-items: center;
+align-items: center;
+margin: 0px;
     
+}
+#translationTrashPanal{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin: 0px;
+        padding: 10px 0px;
 }
 #toggleArchiveBtn,
 #toggleTrashBtn{
@@ -120,20 +173,7 @@ display: flex;
 }
 
 
-#languageTable thead tr th{
-    border: solid #383838 2px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-family: "Roboto Condensed", sans-serif;
-    font-weight: 800;
-}
-#languageTable tbody tr td{
-    border: solid #383838 2px;
-    text-align: center;
-    font-family: "Roboto mono", monospace;
-    font-weight: 600;
 
-}
 .languageName{
     text-transform: uppercase;
     letter-spacing: 2px;

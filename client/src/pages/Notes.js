@@ -298,8 +298,8 @@ export default function Notes(//Export the default Notes.js function component
                   {showArchive && (
                     <div id='archiveDiv'>
                       <Row id='archiveRow'>
-                        <Col id='archiveCol1' />
-                        <Col id='archiveCol' md={10} xs={12}>
+                        <Col id='archiveCol1' md='0' />
+                        <Col id='archiveCol' md={12}>
                           <div id='archiveList'>
                             <ArchivedNotes
                               setError={setError}
@@ -309,7 +309,7 @@ export default function Notes(//Export the default Notes.js function component
                           </div>
 
                         </Col>
-                        <Col id='archiveCol1' />
+                        <Col id='archiveCol2' md='0' />
                       </Row>
                     </div>
                   )}

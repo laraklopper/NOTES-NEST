@@ -122,12 +122,21 @@
         
 #notesDataListPanal{
     width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 #notesDataRow{
     width: 100%;
+    margin: 0px;
+    padding: 0p;
 }
 #notesDataCol{
     width: 100%;
+    margin: 0px;
+    padding: 0p;
 }
 #toggleNotesCol{
     display: flex;
@@ -135,26 +144,8 @@
     margin: 0px;
     padding: 0px;
 }
-#toggleArchiveBtn,
-#toggleTrashBtn{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-    height: 40px;
-    width: 180px;
-    color: #000;
-    font-family: "Roboto Mono", monospace;
-    font-weight: 700;
-    letter-spacing: 2px;
-    border: solid 2px #323A42;
-}
-#toggleArchiveBtn:hover,
-#toggleTrashBtn:hover{
-     background-color: #323A42;
-    color: #E8F0F6;
-}
+
+
 #toggleArchiveBtn:active,
 #toggleTrashBtn:active{
      background-color: #323A42;
