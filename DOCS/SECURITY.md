@@ -304,10 +304,10 @@ When a note is linked to a notebook or a translation is linked to a note, the se
 
 ## 10. CROSS-SITE SCRIPTING (XSS) PROTECTION
 
-Notes are written in a rich-text editor and stored as HTML, which is shown with `dangerouslySetInnerHTML` in [NotePanal.js](../client/src/components/NotePanal.js). To make this safe, [noteSchema.js](../server/models/noteSchema.js) cleans the HTML with `sanitize-html` **every time a note is saved or updated**, before it reaches the database (blocking *stored* XSS):
+Notes are written in a textarea, converted to HTML (`<p>` / `<br>`) and stored as HTML, which is shown with `dangerouslySetInnerHTML` in [NotePanal.js](../client/src/components/NotePanal.js). To make this safe, [noteSchema.js](../server/models/noteSchema.js) cleans the HTML with `sanitize-html` **every time a note is saved or updated**, before it reaches the database (blocking *stored* XSS):
 
 - Only an allow-list of formatting tags is kept (`p`, `strong`, `em`, `ul`, `li`, `a`, `code`, etc.). Tags such as `<script>`, `<iframe>` and `<style>` are removed.
-- Only a few attributes are allowed (for links and checklist items). Event handlers like `onclick` are removed.
+- Only link attributes (`href`, `target`, `rel`) are allowed. Event handlers like `onclick` are removed.
 - Links may only use `http`, `https` or `mailto`, which blocks `javascript:` links.
 
 A plain-text copy of each note is also created with all tags removed, and this is the version sent to the translation API.

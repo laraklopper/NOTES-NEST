@@ -3,14 +3,11 @@ const mongoose = require('mongoose');
 const sanitizeHtml = require('sanitize-html');
 const { languageCodeRegex, THIRTY_DAYS_IN_SECONDS } = require('../util/schemaUtil');
 
-const ALLOWED_HTML = { // what the TipTap editor is allowed to store
+const ALLOWED_HTML = { // what a note's HTML content is allowed to store
   allowedTags: ['p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'ul', 'ol', 'li',
-    'blockquote', 'code', 'pre', 'hr', 'a', 'label', 'input', 'div', 'span'],
+    'blockquote', 'code', 'pre', 'hr', 'a', 'div', 'span'],
   allowedAttributes: {
-    a: ['href', 'target', 'rel'], // links
-    input: ['type', 'checked', 'disabled'], // checklist checkboxes
-    li: ['data-type', 'data-checked'], // TipTap task items
-    ul: ['data-type'] // TipTap task lists
+    a: ['href', 'target', 'rel'] // links
   },
   allowedSchemes: ['http', 'https', 'mailto'] // blocks javascript: links
 };
@@ -46,7 +43,7 @@ const noteSchema = new mongoose.Schema(
     },
     content: {
       type: String,
-      default: '' // TipTap HTML, sanitised before saving
+      default: '' // HTML built from the note textarea (textToHtml), sanitised before saving
     },
     plainText: {
       type: String,
