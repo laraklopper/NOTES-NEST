@@ -107,7 +107,7 @@ export default function TagsList(
     // Ask before deleting, and say how many notes will lose the tag
     const handleDelete = (tag) => {
         const usage = tag.noteCount > 0
-            ? ` It will be removed from ${tag.noteCount} note${tag.noteCount === 1 ? '' : 's'}.`
+            ? ` It will be removed from ${tag.noteCount} active note${tag.noteCount === 1 ? '' : 's'} (and any archived or trashed notes).`
             : ''
         const confirmDelete = window.confirm(`Are you sure you want to permanently delete the tag "${tag.name}"?${usage}`)
         if (!confirmDelete) return

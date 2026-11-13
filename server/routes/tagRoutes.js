@@ -1,40 +1,41 @@
 //tagRoutes.js
 /*mounted at /tag by app.js
-GET - '/fetchTags' - List the signed-in user's tags with usage counts
+GET - '/fetchTags' - List the signed-in user's tags with active (not archived or trashed) note counts
 POST - '/addTag' - Create a tag for the signed-in user
 PUT - '/:id' - Rename a tag
 DELETE - '/:id' - Delete a tag: $pull it from notes
 */
-require('dotenv').config()
 const express = require('express');
-const mongoose = require('mongoose');
+const mongoose = require('mongoose');// Used to validate ObjectIds and cast the user id for aggregate()
 const Tag = require('../models/tagSchema');// Import the Tag model
 const Note = require('../models/noteSchema');// Import the Note model (for tag usage counts)
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
 const router = express.Router()
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
-   GET: READ — Used to fetch information from the provider and the database
+   GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/
 /* GET: /tag/fetchTags : Lists the signed-in user's tags (A-Z) with the number
-of active notes that use each tag. */
+of active notes (not archived or trashed) that use each tag, the same notes the
+Notes list shows when filtering by a tag. */
 router.get('/fetchTags', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
 
-        const tags = await Tag.find({ user: userId }).sort({ name: 1 });// Fetch the user's tags in alphabetical order
-
-        // Count the active (not soft-deleted) notes per tag in a single query
-        const counts = await Note.aggregate([
-            { $match: { user: new mongoose.Types.ObjectId(userId), deletedAt: null } },
-            { $unwind: '$tags' },
-            { $group: { _id: '$tags', count: { $sum: 1 } } }
+        // The two queries don't depend on each other, so run them in parallel
+        const [tags, counts] = await Promise.all([
+            Tag.find({ user: userId }).select('-__v').sort({ name: 1 }).lean(),// The user's tags A-Z as plain objects
+            Note.aggregate([// Count the active notes per tag in a single query
+                { $match: { user: new mongoose.Types.ObjectId(userId), isArchived: false, deletedAt: null } },
+                { $unwind: '$tags' },
+                { $group: { _id: '$tags', count: { $sum: 1 } } }
+            ])
         ]);
-        const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));
+        const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));// tagId -> count
 
         const tagsWithCounts = tags.map((tag) => ({
-            ...tag.toJSON(),
-            noteCount: countMap.get(tag._id.toString()) || 0
+            ...tag,
+            noteCount: countMap.get(tag._id.toString()) || 0// Unused tags aren't in counts
         }));
 
         console.log(`[SUCCESS: tagRoutes.js, GET /fetchTags] Fetched ${tagsWithCounts.length} tags`);//Log a message in the console for debugging purposes
@@ -54,7 +55,7 @@ router.post('/addTag', checkJwtToken, async (req, res) => {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { name } = req.body || {};// Extract the tag name from the request body
 
-        // Conditional rendering to check the name is present (and is a string, so it cannot inject query operators)
+        // Guard clause: check the name is present (and is a string, so it cannot inject query operators)
         if (typeof name !== 'string' || !name.trim()) {
             console.error('[ERROR: tagRoutes.js, POST /addTag] Tag name is required');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Tag name is required' });// Return a 400 (Bad Request) status code with a message
@@ -152,7 +153,7 @@ router.delete('/:id', checkJwtToken, async (req, res) => {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { id } = req.params;// Get the tag ID from the URL
 
-        // Conditional rendering to check the id is a valid ObjectId (avoids a CastError 500)
+        // Guard clause: check the id is a valid ObjectId (avoids a CastError 500)
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.error(`[ERROR: tagRoutes.js, DELETE /:id] Invalid tag id: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid tag id' });// Return a 400 (Bad Request) status code with a message
@@ -160,14 +161,14 @@ router.delete('/:id', checkJwtToken, async (req, res) => {
 
         const tag = await Tag.findOneAndDelete({ _id: id, user: userId });// Only a tag the user owns can be deleted; runs the hook that removes it from notes
 
-        // Conditional rendering to check the tag was found
+        // Guard clause: check the tag was found
         if (!tag) {
             console.error(`[ERROR: tagRoutes.js, DELETE /:id] Tag not found: ${id}`);// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'Tag not found' });// Return a 404 (Not Found) status code with a message
         }
 
         console.log(`[SUCCESS: tagRoutes.js, DELETE /:id] Tag deleted: ${id}`);//Log a message in the console for debugging purposes
-        return res.status(200).json({ message: 'Tag deleted', tag: { _id: tag._id, name: tag.name } });// Send a 200 (OK) status code with a message
+        return res.status(200).json({ message: 'Tag deleted', tag: { _id: tag._id, name: tag.name } });// Send a 200 (OK) status code with a message and the deleted tag's id and name
     } catch (error) {
         console.error('[ERROR: tagRoutes.js, DELETE /:id]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message

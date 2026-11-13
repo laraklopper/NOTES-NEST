@@ -30,7 +30,8 @@ notebookSchema.post('findOneAndDelete', async function (notebook) { // keep note
   if (!notebook) return; // nothing was deleted
   await mongoose.model('Note').updateMany(
     { notebook: notebook._id },
-    { $set: { notebook: null } } // move notes to "No notebook"
+    { $set: { notebook: null } }, // move notes to "No notebook"
+    { timestamps: false } // moving a note isn't an edit, so keep its updatedAt (and list order)
   );
 });
  

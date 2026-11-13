@@ -18,7 +18,7 @@ const Tag = require('../models/tagSchema');// Import the Tag model
 const User = require('../models/userSchema');// Import the User model
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with a permanently deleted note)
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
-const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the language filter
+const { languageCodeRegex, MAX_TAG_LENGTH } = require('../util/schemaUtil');// Used to validate the language filter and tag name length
 const { trashExpiredArchivedNotes } = require('../util/archiveUtil');// 60-day archive rule
 const { DEFAULT_LIMIT, MAX_LIMIT } = require('../util/apiUtil');// Shared pagination limits (same as the translations list)
 const router = express.Router()
@@ -220,9 +220,9 @@ router.post('/addNote', checkJwtToken, async (req, res) => {
         }
 
         const tagNames = normaliseTagNames(tags);
-        if (tagNames.some((name) => name.length > 30)) {
+        if (tagNames.some((name) => name.length > MAX_TAG_LENGTH)) {
             console.error('[ERROR: noteRoutes.js, POST /addNote] Tag name too long');// Log an error message in the console for debugging purposes
-            return res.status(400).json({ message: 'Tag names cannot exceed 30 characters' });// Return a 400 (Bad Request) status code with a message
+            return res.status(400).json({ message: `Tag names cannot exceed ${MAX_TAG_LENGTH} characters` });// Return a 400 (Bad Request) status code with a message
         }
         const tagIds = await findOrCreateTagIds(userId, tagNames);// Find each tag, creating the ones the user does not have yet
 
@@ -322,9 +322,9 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
 
         if (tags !== undefined) {
             const tagNames = normaliseTagNames(tags);
-            if (tagNames.some((name) => name.length > 30)) {
+            if (tagNames.some((name) => name.length > MAX_TAG_LENGTH)) {
                 console.error('[ERROR: noteRoutes.js, PATCH /:id] Tag name too long');// Log an error message in the console for debugging purposes
-                return res.status(400).json({ message: 'Tag names cannot exceed 30 characters' });// Return a 400 (Bad Request) status code with a message
+                return res.status(400).json({ message: `Tag names cannot exceed ${MAX_TAG_LENGTH} characters` });// Return a 400 (Bad Request) status code with a message
             }
             updates.tags = await findOrCreateTagIds(userId, tagNames);// Find each tag, creating the ones the user does not have yet
         }
