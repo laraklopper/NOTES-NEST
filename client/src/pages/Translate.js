@@ -43,7 +43,7 @@ export default function Translate(
       {/* ---------Screen Reader Heading------------------ */}
       <p className='visually-hidden' id='pageTitle'>TRANSLATE PAGE</p>
       <Header heading={'TRANSLATE'} currentUser={currentUser} />
-      <Row id='eventRow'>
+      <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
           <div className='eventBar'>
             <div className='eventTrack'>
