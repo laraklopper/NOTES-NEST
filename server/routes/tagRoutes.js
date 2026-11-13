@@ -115,6 +115,7 @@ router.put('/:id', checkJwtToken, async (req, res) => {
         const tag = await Tag.findOneAndUpdate(
             { _id: id, user: userId },
             { $set: { name: name.trim().toLowerCase() } },// Same format the schema stores (trim + lowercase)
+            // The $set operator replaces the value of a field with the specified value
             { returnDocument: 'after', runValidators: true }// Return the renamed tag and check the length limit
         );
 

@@ -57,7 +57,7 @@ router.get('/fetchUsers', checkJwtToken, checkAdmin, async (req, res) => {
         .exec(); // Execute the query
 
         console.log(`[SUCCESS: userRoutes.js, GET /fetchUsers] Returned ${users.length} users`);//Log a message in the console for debugging purposes
-        return res.status(200).json(users);
+        return res.status(200).json(users);//Return all users in the database
     } catch (error) {
         console.error('[ERROR: userRoutes.js, GET /fetchUsers] Error fetching users:', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code
@@ -216,7 +216,7 @@ router.patch('/editPassword', checkJwtToken, checkPasswordChange, checkPassword,
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { currentPassword, newPassword } = req.body;// newPassword has already been hashed by hashPassword
 
-        const user = await User.findById(userId)
+        const user = await User.findById(userId)//Find the current user by id
             .select('+password')// Include the password so the current one can be checked
             .exec();// Execute the query
 
