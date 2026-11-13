@@ -8,6 +8,8 @@ PAGINATION
     justify-content: center;
     font-weight: 700;
 }
+#trashedTranslationPageSize,
+#usersPageSize,
 #notePageSize option{
     text-align: center;
     font-weight: 700;
@@ -16,6 +18,8 @@ PAGINATION
     display: flex;
     flex-direction: column;
     width: 100%;
+    margin: 0px;
+    padding: 0px;
 }
 #paginationBlock1{
     display: flex;
