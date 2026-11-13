@@ -59,6 +59,37 @@
     margin: 0px;
     padding: 0px;
 }
+#toggleTranslationStack{
+    display: flex;
+    align-items: center;
+}
+#toggleArchiveBlock,
+#toggleTrashBlock{
+display: flex;
+    align-items: center;
+}
+#toggleArchiveBtn,
+#toggleTrashBtn{
+       display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    width: 200px;
+    font-family: "Roboto Mono", monospace;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleArchiveBtn:hover,
+#toggleTrashBtn:hover{
+      background-color: #323A42;
+    color: #E8F0F6;
+}
+#toggleArchiveBtn:active,
+#toggleTrashBtn:active{
+    background-color: #323A42;
+    color: #E8F0F6;
+    text-decoration: underline;
+}
 #languageListCol1,
 #languageListCol2{
     margin: 0px;

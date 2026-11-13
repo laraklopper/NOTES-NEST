@@ -50,10 +50,7 @@ export default function TrashedTranslations() {
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>
-                            {/* same as notes trash list */}
-                            <td>NOTES ARE PERMANENTLY DELETED {PURGE_DAYS} DAYS AFTER BEING MOVED TO TRASH</td>
-                        </td>
+                        <td colSpan={5}>NOTES ARE PERMANENTLY DELETED {PURGE_DAYS} DAYS AFTER BEING MOVED TO TRASH</td>
                     </tr>
                 </tfoot>
             </table>

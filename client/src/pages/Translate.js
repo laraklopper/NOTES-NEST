@@ -1,9 +1,11 @@
 //Translate.js
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import '../css/pagesCss/Translate.css'
 import '../css/pagesCss/PageSetup.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import Stack from 'react-bootstrap/Stack';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Header from '../components/Header'
@@ -22,7 +24,19 @@ export default function Translate(
 ) {
   // =========STATE VARIABLES=============
   const [key, setKey] = useState('translator')
+  const [showTrash, setShowTrash] = useState(false)
+  const [showArchive, setShowArchive] = useState(false)
 
+
+  const toggleArchive = useCallback(() => {
+    setShowArchive(prev => (!prev))
+    setShowTrash(false)
+  }, [])
+
+  const toggleTrash = useCallback(() => {
+    setShowTrash(prev => (!prev))
+    setShowArchive(false)
+  }, [])
   //=============JSX RENDERING====================
   return (
     <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
@@ -63,31 +77,65 @@ export default function Translate(
             {/* TRANSLATIONS LIST */}
             <Tab eventKey="translations" title="translations">
               <div id='translationListPanal'>
-
                 <TranslationsList
                   currentUser={currentUser}
                   active={key === 'translations'}// Re-fetches each time the tab opens, so newly saved translations show
                 />
-
               </div>
             </Tab>
             {/* TRASHED TRANLATIONS */}
-            <Tab eventKey="trash" title='TRASH'>
+            <Tab eventKey="trash" title='ARCHIVE & TRASH'>
               <div id='translationTrashPanal'>
-                <Row id='translationTrashRow'>
-                  <Col md={12} id='translationTrashCol'>
-                    <div id='deletedTranslationDiv'>
-                      <TrashedTranslations/>
-                    </div>
-                  </Col>
-                </Row>
-                <Row id='translationsArchiveRow'>
-                  <Col id='translationsArchiveCol'>
-                    <div id='archiveDiv'>
-                      <ArchivedTranslations/>
-                    </div>
-                  </Col>
-                </Row>
+                     <Row id='toggleTranslationsRow'>
+                    <Col id='toggleTranslationsCol'/>
+                    <Col xs={6} id='toggleTranslationsCol'>
+                      <Stack gap={3} id='toggleTranslationStack'>
+                        <div className="p-2" id='toggleArchiveBlock'>
+                          <Button
+                          variant='light'
+                          id='toggleArchiveBtn'
+                          onClick={toggleArchive}
+                          type='button'
+                          // ARIA ATTRIBUTES: 
+                          >
+                            {showArchive ? 'Hide Archive': 'Show Archive' }
+                          </Button>
+                        </div>
+                        <div className="p-2" id='toggleTrashBlock'>
+                          <Button
+                          variant='light'
+                          onClick={toggleTrash}
+                          id='toggleTrashBtn'
+                          type='button'
+                          // ARIA ATTRIBUTES: 
+
+                          >
+                          {showTrash ? 'Hide Trash' : 'SHOW TRASH'}
+                           
+                          </Button>
+                        </div>
+                      </Stack>
+                    </Col>
+                    <Col id='toggleTranslationsCol'/>
+                  </Row>
+                {showArchive && (
+                  <Row id='translationsArchiveRow'>
+                      <Col id='translationsArchiveCol'>
+                        <div id='archiveDiv'>
+                          <ArchivedTranslations/>
+                        </div>
+                     </Col>
+                  </Row>
+                )}
+                {showTrash && (
+                  <Row id='translationTrashRow'>
+                    <Col md={12} id='translationTrashCol'>
+                      <div id='deletedTranslationDiv'>
+                        <TrashedTranslations/>
+                      </div>
+                    </Col>
+                  </Row>
+                )}
               </div>
             </Tab>
             {/* API LANGUAGES LIST */}
