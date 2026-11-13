@@ -4,6 +4,10 @@ GET - /archive/fetchNotes - fetch all of the user's archived notes
 PATCH - /archive/:id - archive an active note
 PATCH - /archive/:id/restore - restore an archived note to the main notes list
 DELETE - /archive/:id - move an archived note to the trash
+GET - /archive/fetchTranslations - fetch all archived translations
+PATCH - /archive/:id - archive an active translation
+PATCH - /archive/translation/:id/restore - restore an archived translation to the main translation list
+DELETE - /archive/translation/:id - move an archived translation to the trash
 */
 require('dotenv').config();
 

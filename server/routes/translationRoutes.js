@@ -1,8 +1,11 @@
 //translationRoutes.js
 /*mounted at /translation by app.js
-GET - '/fetch' - List the user's saved translations (query: note, sourceLanguage, targetLanguage, page, limit)
-POST - '/save' - Save a translation from the TranslateForm to the user's history
-DELETE - '/delete/:id' - Delete one of the user's saved translations
+GET - '/translation/fetch' - List the user's saved translations (query: note, sourceLanguage, targetLanguage, page, limit)
+POST - '/translation//save' - Save a translation from the TranslateForm to the user's history
+DELETE - '/translation/delete/:id' - Delete one of the user's saved translations (softDelete)
+PATCH - /translation//:id/restore - Restore from trash
+DELETE - /translation/delete/:id - Soft delete (move to trash)
+DELETE - `/translation/:id/permanent` - Permanently delete a translation
 */
 require('dotenv').config()
 const express = require('express');
