@@ -1,16 +1,13 @@
-//tagRoutes.js
-/*mounted at /tag by app.js
-GET - '/fetchTags' - List the signed-in user's tags with active (not archived or trashed) note counts
-POST - '/addTag' - Create a tag for the signed-in user
-PUT - '/:id' - Rename a tag
-DELETE - '/:id' - Delete a tag: $pull it from notes
-*/
+/*tagRoutes.js: mounted at /tag by app.js*/
+// IMPORT REQUIRED MODULES AND PACKAGES
 const express = require('express');
 const mongoose = require('mongoose');// Used to validate ObjectIds and cast the user id for aggregate()
+// IMPORT SCHEMAS
 const Tag = require('../models/tagSchema');// Import the Tag model
 const Note = require('../models/noteSchema');// Import the Note model (for tag usage counts)
+// IMPORT CUSTOM MIDDLEWARE
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
-const router = express.Router()
+const router = express.Router()// Create a new router object using Express
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the database
