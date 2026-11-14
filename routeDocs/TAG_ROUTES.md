@@ -20,18 +20,23 @@ Note { _id, user, tags: [ObjectId], ... }
 
 ---
 
-## Table of Contents
+## TABLE OF CONTENTS
 
-1. [Route Summary](#1-route-summary)
-2. [Imports & Setup](#2-imports--setup)
-3. [GET /tag/fetchTags](#3-get-tagfetchtags)
-4. [POST /tag/addTag](#4-post-tagaddtag)
-5. [DELETE /tag/:id](#5-delete-tagid)
-6. [Two Ways Tags Get Created](#6-two-ways-tags-get-created)
-7. [How Other Routers Use Tags](#7-how-other-routers-use-tags)
-8. [Status Code Reference](#8-status-code-reference)
-9. [Resolved Gaps & Remaining Housekeeping](#9-resolved-gaps--remaining-housekeeping)
-
+1. [ROUTE SUMMARY](#1-route-summary)
+  - [1.1. GET /tag/fetchTags]
+  - [1.2. POST /tag/addTag]
+  - [1.3. DELETE /tag/:id]
+2. [IMPORTS AND SETUP](#2-imports--setup)
+3. [SCHEMAS AND UTILITY FUNCTIONS](#3-schemas-and-utility-functions)
+- [3.1. SCHEMAS](#31-schemas)
+  - [3.1.1. ]
+- [3.2. UTILITY FUNCTIONS](#32-utility-functions)
+4. [SECURITY](#4-security)
+5. [STATUS CODE REFERERENCES]
+<!-- 6. [KNOWN GAPS AND HOUSE KEEPING](REMOVE SECTION IF NONE EXISTS)  -->
+<!-- [6.1. GAPS] -->
+<!-- [6.2. HOUSEKEEPING] -->
+7. [REFERENCES]
 ---
 
 ## 1. Route Summary
