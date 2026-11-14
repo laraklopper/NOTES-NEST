@@ -1,6 +1,6 @@
-# NOTEBOOK_ROUTES.md — `notebookRoutes.js` Breakdown
+# NOTEBOOK_ROUTES — [`notebookRoutes.js`](../server/routes/notebookRoutes.js) BREAKDOWN
 
-`notebookRoutes.js` is the Express router for **notebooks**, the coloured folders that group notes. Users can list their notebooks (with how many notes each holds), create, rename or recolour them, and delete them. Deleting a notebook **never deletes its notes**. They move to "No notebook".
+[`notebookRoutes.js`](../server/routes/notebookRoutes.js) is the Express router for **notebooks**, the coloured folders that group notes. Users can list their notebooks (with how many notes each holds), create, rename or recolour them, and delete them. Deleting a notebook **never deletes its notes**. They move to "No notebook".
 
 The relationship is **one-to-many by reference**: a note stores its notebook's ID, and the notebook knows nothing about its notes.
 
@@ -14,18 +14,29 @@ Note { _id, user, notebook, ... }
 
 ---
 
-## Table of Contents
+## TABLE OF CONTENTS
+<!-- 1. [ROUTE SUMMARY] -->
+<!-- subsections -->
+<!--  [1.1. GET /notebooks](#4-get-notebooks) -->
+ <!-- [1.2. POST /notebooks](#5-post-notebooks) -->
+<!--  [1.3. PATCH /notebooks/:id](#6-patch-notebooksid) -->
+<!--  [1.4. DELETE /notebooks/:id](#7-delete-notebooksid) -->
+<!-- 2. [How Other Routers Use Notebooks] -->
+<!-- 3. [IMPORTS AND SETUP] -->
+<!-- 4. [SCHEMAS AND UTILITY FUNCTIONS] -->
+<!-- 4.1. SCHEMAS -->
+<!-- 4.1.1 -->
+<!-- 4.2. UTILITY FUNCTION -->
+<!-- [notebookSaveError() Helper](#3-notebooksaveerror-helper) -->
+<!-- 5. [SECURITY] -->
+<!-- 6. [STATUS CODE REFERERENCES](#7-status-code-refererences) -->
+<!-- 7. [KNOWN GAPS AND HOUSE KEEPING](#6-known-gaps-and-house-keeping)
+REMOVE SECTION IF NONE EXISTS -->
+<!-- - [7.1. GAPS](#61-gaps) -->
+<!-- - [7.2. HOUSE KEEPING](#62-house-keeping) -->
+<!-- 8. [REFERENCES] -->
 
-1. [Route Summary](#1-route-summary)
-2. [Imports & Setup](#2-imports--setup)
-3. [notebookSaveError() Helper](#3-notebooksaveerror-helper)
-4. [GET /notebooks](#4-get-notebooks)
-5. [POST /notebooks](#5-post-notebooks)
-6. [PATCH /notebooks/:id](#6-patch-notebooksid)
-7. [DELETE /notebooks/:id](#7-delete-notebooksid)
-8. [How Other Routers Use Notebooks](#8-how-other-routers-use-notebooks)
-9. [Status Code Reference](#9-status-code-reference)
-10. [Resolved Gaps & Remaining Housekeeping](#10-resolved-gaps--remaining-housekeeping)
+- *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
 
 ---
 
