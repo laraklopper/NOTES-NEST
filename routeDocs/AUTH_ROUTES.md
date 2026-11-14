@@ -1,4 +1,4 @@
-# AUTH_ROUTES.md — `authRoutes.js` Breakdown
+# AUTH ROUTES - [`authRoutes.js`](../server/routes/authRoutes.js) BREAKDOWN
 
 [`authRoutes.js`](../server/routes/authRoutes.js) is the Express router that handles **accounts and sessions**: logging in, registering, logging out, and switching admin status on or off. Sessions use a **JWT stored in an HTTP-only cookie**. The token is never sent in a response body, so client-side JavaScript can never read it.
 
@@ -9,23 +9,28 @@ React (Login / Register / Profile)  ──►  /users/...  ──►  MongoDB (U
 ```
 
 ---
-
-## Table of Contents
+## TABLE OF CONTENTS
 
 1. [ROUTE SUMMARY](#1-route-summary)
+<!-- set each as a subsection -->
+[1.1. POST /login]
+ [POST /register]
+ [POST /logout]
+  [PATCH /setAdmin]
+[PATCH /clearAdmin]
 2. [IMPORTS AND SETUP](#2-imports-and-setup)
-3. [ADMIN RULES (schemaUtil)](#3-admin-rules)
-4. [sessionUser() Helper](#4-sessionuser-helper)
-5. [POST /login](#5-post-userslogin)
-6. [POST /register](#6-post-usersregister)
-7. [POST /logout](#7-post-userslogout)
-8. [PATCH /setAdmin](#8-patch-userssetadmin)
-9. [PATCH /clearAdmin](#9-patch-usersclearadmin)
-10. [Security Measures in This File](#10-security-measures-in-this-file)
-11. [Status Code Reference](#11-status-code-reference)
-12. [REFERENCES](#12-references)
-
-<!-- 12. [Known Gaps & Housekeeping](#12-known-gaps--housekeeping) -->
+3. [SCHEMAS AND UTILITY FUNCTIONS](#3-schemas-and-utility-functions)
+     - [3.1. SCHEMAS](#31-schemas)
+          - [3.1.1. USER SCHEMA](#311-user-schema-userschemajs)
+     - [3.2. UTILITY FUNCTIONS](#32-utility-functions)
+    <!-- ADMIN RULES (schemaUtil)-->
+<!--sessionUser() Helper] -->
+4. [SECURITY](#4-security)
+5. [STATUS CODE REFERERENCES](#5-status-code-refererences)
+<!-- 6. [KNOWN GAPS AND HOUSE KEEPING] (display only existing remove section if none) -->
+<!-- - [6.1. GAPS] -->
+<!-- - [6.2. HOUSE KEEPING] -->
+7. [REFERENCES](#8-references)
 
 ---
 

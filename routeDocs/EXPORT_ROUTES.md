@@ -12,9 +12,24 @@ React  ◄── file download (Content-Disposition: attachment; filename="note-
 ```
 
 ---
+## TABLE OF CONTENTS
 
-## Table of Contents
-
+<!--1. ROUTE SUMMARY -->
+<!--  1.1.  [GET /export — The Route]-->
+<!-- 1.2. calling the route from react -->
+<!-- 2. IMPORTS AND SETUP -->
+<!-- 3. SCHEMAS -->
+<!-- 4. UTILITY FUNCTIONS -->
+<!-- Export config -->
+<!-- filters -->
+<!-- formatting -->
+<!-- [Cell Cleaning: safeCell() and capCell()] -->
+<!-- 5. [SECURITY](#4-security) -->
+<!-- 6. [STATUS CODE REFERENCES](#6-status-code-references) -->
+<!-- 7. [KNOWN GAPS AND HOUSE KEEPING](#7-known-gaps-and-house-keeping) -->
+<!-- - [7.1. GAPS] -->
+ <!-- - [7.2. HOUSE KEEPING] -->
+ <!-- 8. REFERENCES -->
 1. [Route Summary](#1-route-summary)
 2. [Imports & Setup](#2-imports--setup)
 3. [Formatting Helpers](#3-formatting-helpers)
