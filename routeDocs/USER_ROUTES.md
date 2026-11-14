@@ -2,30 +2,36 @@
 
 [`userRoutes.js`](../server/routes/userRoutes.js) is the Express router for **user accounts after sign-in**: a user reading and editing their own profile, changing their password, and the **admin-only** Users page (listing users, viewing one, and removing one along with all their data).
 
-Signing in, registering, logging out and switching admin status on or off live in [`authRoute.js`](../server/routes/authRoutes.js),
+Signing in, registering, logging out and switching admin status on or off live in [`authRoutes.js`](../server/routes/authRoutes.js) (see [AUTH_ROUTES.md](AUTH_ROUTES.md)).
 
 | Router | Handles |
 |---|---|
 | `authRoutes.js` | Login, register, logout, setAdmin, clearAdmin |
-| `userRoutes.js`| Own profile, own password, admin user management |
+| `userRoutes.js` | Own profile, own password, admin user management |
 
 ---
 
 ## TABLE OF CONTENTS
 1. [ROUTE SUMMARY](#1-route-summary)
-     - [1.1. GET '/me'](#11-get-me)
+     - [1.1. GET `/me`](#11-get-me)
      - [1.2. GET `/fetchUsers` (admin)](#12-get-fetchusers-admin)
-     <!-- list all -->
+     - [1.3. GET `/fetchUser/:id` (admin)](#13-get-fetchuserid-admin)
+     - [1.4. PATCH `/editProfile`](#14-patch-editprofile)
+     - [1.5. PATCH `/editPassword`](#15-patch-editpassword)
+     - [1.6. DELETE `/deleteUser/:id` (admin)](#16-delete-deleteuserid-admin)
 2. [IMPORTS AND SETUP](#2-imports-and-setup)
 3. [SCHEMAS AND UTILITY FUNCTIONS](#3-schemas-and-utility-functions)
      - [3.1. SCHEMAS](#31-schemas)
           - [3.1.1. USER SCHEMA](#311-user-schema-userschemajs)
      - [3.2. UTILITY FUNCTIONS](#32-utility-functions)
 4. [SECURITY](#4-security)
-     - [4.1.]
-     - [4.2.]
-5. [STATUS CODE REFERERENCES](#5-status-code-refererences)
+     - [4.1. PACKAGES](#41-packages)
+     - [4.2. MIDDLEWARE](#42-middleware)
+     - [4.3. ACCESS LEVELS](#43-access-levels)
+5. [STATUS CODE REFERENCES](#5-status-code-references)
 6. [KNOWN GAPS AND HOUSE KEEPING](#6-known-gaps-and-house-keeping)
+     - [6.1. GAPS](#61-gaps)
+     - [6.2. HOUSE KEEPING](#62-house-keeping)
 7. [REFERENCES](#7-references)
 
 - *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
@@ -46,10 +52,21 @@ The router is mounted at **`/user`** by `app.js` (e.g. `GET /user/me`), as the h
 | `PATCH` | `/editPassword` | `checkJwtToken`, `checkPasswordChange`, `checkPassword`, `passwordUpdateRateLimiter`, `hashPassword` | Any user | Change own password (signs out other sessions) |
 | `DELETE` | `/deleteUser/:id` | `checkJwtToken`, `checkAdmin` | **Admin** | Remove a non-admin user and **all** their data |
 
+**Client side usage:**
+
+| Method | Full Path | Frontend/Client side files |
+|---|---|---|
+| `GET` | `/user/me` | [App.js](../client/src/App.js), [Home.js](../client/src/pages/Home.js), [NotePad.js](../client/src/pages/NotePad.js) |
+| `GET` | `/user/fetchUsers` | [App.js](../client/src/App.js), [UsersList.js](../client/src/components/UsersList.js) |
+| `GET` | `/user/fetchUser/:id` | [UsersList.js](../client/src/components/UsersList.js) ("View" button) |
+| `PATCH` | `/user/editProfile` | [Home.js](../client/src/pages/Home.js) (EditProfile form) |
+| `PATCH` | `/user/editPassword` | [EditPassword.js](../client/src/components/EditPassword.js) |
+| `DELETE` | `/user/deleteUser/:id` | [UsersList.js](../client/src/components/UsersList.js) (details panel) |
+
 ---
+
 ### 1.1. GET `/me`
 
-<!-- PURPOSE: WHAT THE ROUTE DOES -->
 **Purpose:** Return the signed-in user's own profile. `App.js` calls it on load to fill `currentUser` (this is how the app "remembers" a login, since the JWT itself is in an HTTP-only cookie that JavaScript can't read). The Settings page also uses it.
 
 ```js
@@ -58,11 +75,10 @@ const user = await User.findById(req.user.id)
     .exec();
 ```
 
-
 | Result | Response |
 |---|---|
 | Found | `200` + the user object (everything except the password) |
-| Account deleted or session signed out | `401` from `checkJwtToken` (see [Gap 4](#gap-4-a-deleted-users-token-still-works-fixed)) |
+| Account deleted or session signed out | `401` from `checkJwtToken` (see [4.2. MIDDLEWARE](#42-middleware)) |
 | Not found (rare: the account was removed between the token check and this lookup) | `404 { message: 'User not found' }` |
 | Exception | `500 { message: 'An error occurred while fetching the current user' }` |
 
@@ -84,7 +100,9 @@ const user = await User.findById(req.user.id)
 }
 ```
 
-<!-- Errors use a **`message`** key, the same as every other route (see [Gap 2](#gap-2-inconsistent-error-shapes-fixed)). -->
+**Logging:** only the user ID is logged (`Fetched profile: <id>`), never the email, phone number or date of birth. Under **POPIA**, logging is processing, so personal information isn't written to the server logs.
+
+---
 
 ### 1.2. GET `/fetchUsers` (admin)
 
@@ -105,116 +123,16 @@ const users = await User.find()// Every user
 
 | Detail | Note |
 |---|---|
-| Includes admins | Yes. This list shows **all** accounts, but `/fetchUser/:id` refuses admins (the table disables "View" on admin rows; see [Gap 6](#gap-6-admins-are-listed-but-cant-be-opened-fixed)) |
-| Pagination | None. Every user is returned at once. |
+| Includes admins | Yes. This list shows **all** accounts, but `/fetchUser/:id` refuses admins. `UsersList.js` disables "View" on admin rows (with an aria-label explaining why), and a footer row notes that admin users can't be viewed or removed. |
+| Pagination | None. Every user is returned at once (see [Gap 2](#gap-2-no-pagination-on-fetchusers)). |
 | Consent | Registration requires `adminDataConsent: true`, so every listed user has agreed to admins seeing their details |
+| Errors | A `500` returns only `{ message: 'Internal Server Error' }`. `error.message` is logged on the server, never sent, because it can contain database details. |
 
 ---
 
-### 1.3. `GET`  `/fetchUser/:id`
-### 1.4. PATCH `/editProfile`
-
-
-### 1.5. PATCH `/editPassword`
-
-### 1.6. DELETE `/deleteUser/:id`
-
-
----
-
-
-<!-- SECTION 2 IMPORTS AND SETUP-->
-## 2. IMPORTS AND SETUP
-
-```js
-require('dotenv').config()
-const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const User = require('../models/userSchema');
-const Note = require('../models/noteSchema');
-const Notebook = require('../models/notebookSchema');
-const Tag = require('../models/tagSchema');
-const Translation = require('../models/translationSchema');
-const { checkPassword, checkPasswordChange, hashPassword, isDevelopment } = require('../middleware/passwordMiddleware')
-const { checkJwtToken } = require('../middleware/securityMiddleware')
-const { checkAdmin } = require('../middleware/adminMiddleware')
-const { EDITABLE_PROFILE_FIELDS } = require('../util/userUtil');
-```
-
-| Import | Used For |
-|---|---|
-|`require('dotenv').config()`| |
-| `mongoose` | `ObjectId.isValid()` for `:id` |
-| `bcrypt` | `/editPassword`: compares the **current** password with the stored hash |
-| `User` | The model this router manages |
-| `Note`, `Notebook`, `Tag`, `Translation` | `/deleteUser/:id`: deletes all of the user's data |
-| `checkJwtToken` | Verifies the JWT cookie and sets `req.user` |
-| `checkAdmin` | Only lets admins through; sets **`req.adminUser`** (used in the delete log) |
-| `checkPasswordChange` | `/editPassword`: checks that `currentPassword` and `newPassword` are present and valid |
-| `checkPassword` | `/editPassword`: password strength rules on `newPassword` |
-| `hashPassword` | `/editPassword`: replaces `newPassword` with its bcrypt hash (plaintext in development) |
-| `isDevelopment` | `/editPassword`: plaintext comparison for development accounts |
-| `EDITABLE_PROFILE_FIELDS` | `/editProfile`: maps form fields to schema paths (an **allowlist**) |
-
----
-
-<!-- SECTION 3: SCHEMAS AND UTILITY FUNCTIONS-->
-## 3. SCHEMAS AND UTILITY FUNCTIONS
-
-<!-- EXPLAIN EACH SCHEMA AND UTILITY FUNCTIONS-->
-### 3.1. SCHEMAS
-
-#### 3.1.1. USER SCHEMA [userSchema.js](../server)
-
-
-### 3.2. UTILITY FUNCTIONS
-
-
-<!-- EXPLAIN UTILITY FUNCTIONS-->
-
-<!-- SECTION 4: ROUTER SECURITY -->
-## 4. SECURITY
-
-<!-- EXPLAIN ROUTER SECURITY -->
-### 4.1. PACKAGES
-
-### 4.2. MIDDLEWARE
-
-### 4.3. ACCESS LEVELS
-
-```
-Request
-   │
-   ▼
-checkJwtToken ──► 401 if no token, or an invalid or expired one
-   │                (sets req.user = { id, ... })
-   ├── user routes: /me, /editProfile, /editPassword
-   │      act ONLY on req.user.id (the user can only touch their own account)
-   │
-   ▼
-checkAdmin ─────► 403 if the user isn't an admin
-   │                (sets req.adminUser)
-   └── admin routes: /fetchUsers, /fetchUser/:id, /deleteUser/:id
-          act on :id from the URL (any NON-admin user)
-```
-
-| Rule | Where | Why |
-|---|---|---|
-| User routes take the ID from the **token**, never the body or URL | `/me`, `/editProfile`, `/editPassword` | A user can't read or edit another account |
-| Admin routes take the ID from the **URL** | `/fetchUser/:id`, `/deleteUser/:id` | Admins manage other users |
-| Admin accounts can't be viewed or removed through the admin routes | `/fetchUser/:id`, `/deleteUser/:id` | Admins can't spy on or remove each other, and an admin **can't delete themselves** |
-
----
-
-
-<!-- MOVE TO ROUTE SUMMARY -->
-
-### 6. GET `/fetchUser/:id` (admin)
+### 1.3. GET `/fetchUser/:id` (admin)
 
 **Purpose:** One user's details for the details panel on the Users page.
-
-#### Flow
 
 ```
 isValid(id)? ──── no ──► 400 "Invalid user id"
@@ -227,13 +145,13 @@ Is an admin? ────────► 403 "Admin accounts cannot be viewed."
 200 user
 ```
 
-The **admin check comes after the lookup**, because the route needs the document to know whether it's an admin. The result is logged with `console.warn` (not `error`), since it's an expected refusal, not a failure.
+The **admin check comes after the lookup**, because the route needs the document to know whether it's an admin. The refusal is logged with `console.warn` (not `error`), since it's an expected refusal, not a failure.
 
 **Response (200):** the user object (the same shape as `/me`).
 
 ---
 
-### 7. PATCH `/editProfile`
+### 1.4. PATCH `/editProfile`
 
 **Purpose:** Update the signed-in user's profile from the EditProfile form. **Only fields that are sent and not blank change.** A field left blank on the form keeps its current value.
 
@@ -255,17 +173,22 @@ What **can't** be changed here: password (`/editPassword`), admin status (`/setA
 #### Step 1: Flatten the body
 
 ```js
+const safeFullName = fullName && typeof fullName === 'object' ? fullName : {};
+const safeContact = contactDetails && typeof contactDetails === 'object' ? contactDetails : {};
+
 const submitted = {
     username,
-    firstName: fullName.firstName,
-    lastName: fullName.lastName,
-    email: contactDetails.email,
-    contactNumber: contactDetails.contactNumber,
+    firstName: safeFullName.firstName,
+    lastName: safeFullName.lastName,
+    email: safeContact.email,
+    contactNumber: safeContact.contactNumber,
     defaultSourceLang, defaultTargetLang, defaultNoteLang
 };
 ```
 
 The nested request (`fullName.firstName`) becomes **one flat key per editable field**, so all fields can be filtered and mapped the same way.
+
+`safeFullName` / `safeContact` exist because the `= {}` destructuring default only applies to `undefined`. Without them, `"fullName": null` would make `fullName.firstName` throw (a **500**). Now that request gets the normal 400 "Please change at least one field".
 
 #### Step 2: Filter and map to schema paths
 
@@ -286,20 +209,7 @@ submitted:  { username: 'LaraK', firstName: '', email: { $gt: '' }, defaultNoteL
 .map        → [['username', 'LaraK'], ['defaultLanguages.defaultNoteLanguage', 'af']]
 ```
 
-`EDITABLE_PROFILE_FIELDS` (in `userUtil`) is roughly:
-
-```js
-{
-    username: 'username',
-    firstName: 'fullName.firstName',
-    lastName: 'fullName.lastName',
-    email: 'contactDetails.email',
-    contactNumber: 'contactDetails.contactNumber',
-    defaultSourceLang: 'defaultLanguages.defaultSourceLanguage',
-    defaultTargetLang: 'defaultLanguages.defaultTargetLanguage',
-    defaultNoteLang: 'defaultLanguages.defaultNoteLanguage'
-}
-```
+The form field → schema path map is [`EDITABLE_PROFILE_FIELDS`](#32-utility-functions).
 
 **Security:** only the **eight keys built in `submitted`** can ever be updated. Sending `{ "admin": true }` or `{ "password": "x" }` does nothing, because those keys are never read from the body. This protects against **mass assignment**.
 
@@ -320,12 +230,15 @@ const user = await User.findById(userId).exec();// Not found → 404
 #### Step 5: Source ≠ target language
 
 ```js
-const sourceLang = defaultSourceLang || user.defaultLanguages?.defaultSourceLanguage;// New value, or current
-const targetLang = defaultTargetLang || user.defaultLanguages?.defaultTargetLanguage;
-if ((defaultSourceLang || defaultTargetLang) && sourceLang === targetLang) → 400
+const trimmedLang = (value) => (typeof value === 'string' ? value.trim() : '');
+const newSourceLang = trimmedLang(defaultSourceLang);
+const newTargetLang = trimmedLang(defaultTargetLang);
+const sourceLang = newSourceLang || user.defaultLanguages?.defaultSourceLanguage;// New value, or current
+const targetLang = newTargetLang || user.defaultLanguages?.defaultTargetLanguage;
+if ((newSourceLang || newTargetLang) && sourceLang === targetLang) → 400
 ```
 
-This compares the **result after the update**: a new value if one was sent, otherwise the current one.
+This compares the **result after the update**: a new value if one was sent, otherwise the current one. The values are **trimmed** first (the same values Step 6 saves), so `" af"` and `"af"` count as a match. Non-strings count as "not sent", matching the Step 2 filter, so `{ "$gt": "" }` can't make `.trim()` throw.
 
 | Current | Sent | Result |
 |---|---|---|
@@ -358,7 +271,9 @@ return res.status(200).json({ message: 'Profile updated successfully', user: upd
 
 The response contains the **saved** values, after normalisation (e.g. `username: "larak"`, `contactNumber: "+27821234567"`), so the UI should update from `user`, not from what was typed.
 
-### Errors
+**The JWT doesn't need re-issuing:** `setTokenCookie` only signs `{ id, isAdmin, tokenVersion }`, none of which this route can change. If profile fields are ever added to the token payload, `/editProfile` should call `setTokenCookie(res, user)` after saving.
+
+#### Errors
 
 | Error | Status | Message |
 |---|---|---|
@@ -367,10 +282,11 @@ The response contains the **saved** values, after normalisation (e.g. `username:
 | `ValidationError` | `400` | The first schema message (e.g. invalid SA phone number) |
 | Duplicate (`11000`) | `409` | A message for the duplicated field ("That username is already taken", "That contact number is already registered", "That email is already registered"), or a general fallback |
 | User not found | `404` | "User not found" |
+| Anything else | `500` | "Internal Server Error" |
 
 ---
 
-### 8. PATCH `/editPassword`
+### 1.5. PATCH `/editPassword`
 
 **Purpose:** Change the signed-in user's password. The **current password must be confirmed**, so someone using an unattended logged-in browser can't lock the owner out.
 
@@ -392,6 +308,8 @@ checkJwtToken ──► checkPasswordChange ──► checkPassword ──► pa
 
 By the time the handler runs, **`req.body.newPassword` is already hashed**. `currentPassword` is still plaintext, as typed.
 
+The rate limiter sits **after** the form checks, so a mistyped or weak new password doesn't use up one of the 3 attempts, and **before** the handler compares the current password, so every guess is counted.
+
 #### Step 1: Load the user, **with** the password
 
 ```js
@@ -400,7 +318,7 @@ const user = await User.findById(userId).select('+password').exec();
 
 `password` is `select: false` in the schema, so `+password` is needed to compare it.
 
-### Step 2: Check the current password
+#### Step 2: Check the current password
 
 ```js
 const isHashed = /^\$2[aby]\$/.test(user.password);
@@ -417,9 +335,9 @@ This is **the same logic as `/login`** in `authRoutes.js`, so a password that lo
 if (!isCurrentValid) return res.status(400).json({ message: 'Current password is incorrect' });
 ```
 
-**Why not 401?** The frontend probably treats **401 as "session expired"** and logs the user out. Typing the wrong current password shouldn't log anyone out, so the route uses 400.
+**Why not 401?** The frontend treats **401 as "session expired"** and logs the user out. Typing the wrong current password shouldn't log anyone out, so the route uses 400.
 
-#### Step 4: Save
+#### Step 4: Save and sign out other sessions
 
 ```js
 user.password = newPassword;// Already hashed by the middleware
@@ -428,11 +346,13 @@ await user.save({ validateModifiedOnly: true });// Validate only the changed fie
 setTokenCookie(res, user);// New cookie for this session; every other session is signed out
 ```
 
-**Response (200):** `{ "message": "Password changed successfully" }`, plus a fresh `token` cookie. The password (hashed or not) is never returned. See [Gap 5](#gap-5-changing-the-password-doesnt-sign-out-other-sessions-fixed).
+Increasing `tokenVersion` means `checkJwtToken` rejects every older token, so an attacker's session doesn't survive a password change (see [4.2. MIDDLEWARE](#42-middleware)).
+
+**Response (200):** `{ "message": "Password changed successfully" }`, plus a fresh `token` cookie. The password (hashed or not) is never returned.
 
 ---
 
-### 9. DELETE `/deleteUser/:id` (admin)
+### 1.6. DELETE `/deleteUser/:id` (admin)
 
 **Purpose:** An admin **permanently** removes a user **and everything they own**. This can't be undone.
 
@@ -485,6 +405,10 @@ The four collections don't depend on each other, so they're deleted **in paralle
 
 `deleteMany` **doesn't** run the `findOneAndDelete` hooks that `$pull` tags from notes or unset notebooks. That's fine here, because the user's **notes are deleted too**, so there's nothing left to clean up.
 
+#### What happens to the removed user's session
+
+Their JWT is still validly signed, but `checkJwtToken` looks the account up on every request. Once the account is gone it clears the cookie and returns **401**, so the removed user can't keep creating data.
+
 **Response (200):**
 
 ```json
@@ -492,15 +416,174 @@ The four collections don't depend on each other, so they're deleted **in paralle
 ```
 
 ---
+
+<!-- SECTION 2 IMPORTS AND SETUP-->
+## 2. IMPORTS AND SETUP
+
+```js
+const express = require('express');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const User = require('../models/userSchema');
+const Note = require('../models/noteSchema');
+const Notebook = require('../models/notebookSchema');
+const Tag = require('../models/tagSchema');
+const Translation = require('../models/translationSchema');
+const router = express.Router();
+const { checkPassword, checkPasswordChange, hashPassword, isDevelopment } = require('../middleware/passwordMiddleware');
+const { checkJwtToken, setTokenCookie } = require('../middleware/securityMiddleware');
+const { checkAdmin } = require('../middleware/adminMiddleware');
+const { EDITABLE_PROFILE_FIELDS } = require('../util/userUtil');
+const { passwordUpdateRateLimiter } = require('../middleware/rateLimitMiddleware');
+```
+
+There's no `require('dotenv').config()` here: `app.js` loads it before requiring the routes, and this file reads no environment variables itself.
+
+| Import | From | Used For |
+|---|---|---|
+| `express` | npm | Creates the `router` |
+| `mongoose` | npm | `mongoose.Types.ObjectId.isValid()` for `:id` |
+| `bcrypt` | npm (`bcryptjs`) | `/editPassword`: compares the **current** password with the stored hash |
+| `User` | `models/userSchema` | The model this router manages |
+| `Note`, `Notebook`, `Tag`, `Translation` | `models/` | `/deleteUser/:id`: deletes all of the user's data |
+| `checkJwtToken` | `securityMiddleware` | Verifies the JWT cookie and sets `req.user` |
+| `setTokenCookie` | `securityMiddleware` | `/editPassword`: issues a fresh cookie carrying the new `tokenVersion` |
+| `checkAdmin` | `adminMiddleware` | Only lets admins through; sets **`req.adminUser`** (used in the delete log) |
+| `checkPasswordChange` | `passwordMiddleware` | `/editPassword`: checks that `currentPassword` and `newPassword` are present, are strings, and differ |
+| `checkPassword` | `passwordMiddleware` | `/editPassword`: password strength rules on `newPassword` |
+| `hashPassword` | `passwordMiddleware` | `/editPassword`: replaces `newPassword` with its bcrypt hash (plaintext in development) |
+| `isDevelopment` | `passwordMiddleware` | `/editPassword`: plaintext comparison for development accounts |
+| `passwordUpdateRateLimiter` | `rateLimitMiddleware` | `/editPassword`: 3 attempts per hour per IP |
+| `EDITABLE_PROFILE_FIELDS` | `util/userUtil` | `/editProfile`: maps form fields to schema paths (an **allowlist**) |
+
+---
+
+<!-- SECTION 3: SCHEMAS AND UTILITY FUNCTIONS-->
+## 3. SCHEMAS AND UTILITY FUNCTIONS
+
+### 3.1. SCHEMAS
+
+`Note`, `Notebook`, `Tag` and `Translation` are only used by `/deleteUser/:id` (`deleteMany({ user: id })`). Their schemas are covered in [NOTE_ROUTES.md](NOTE_ROUTES.md), [NOTEBOOK_ROUTES.md](NOTEBOOK_ROUTES.md), [TAG_ROUTES.md](TAG_ROUTES.md) and [TRANSLATION_ROUTES.md](TRANSLATION_ROUTES.md).
+
+#### 3.1.1. USER SCHEMA ([userSchema.js](../server/models/userSchema.js))
+
+| Field | Type | Rules | Changed by |
+|---|---|---|---|
+| `username` | String | Required, **unique**, 3–30 chars, letters/numbers/underscores only; lowercased by the pre-validate hook | `/editProfile` |
+| `fullName.firstName` | String | Required, 2–50 chars | `/editProfile` |
+| `fullName.lastName` | String | Required, 3–50 chars | `/editProfile` |
+| `contactDetails.email` | String | Required, lowercased, must match `emailRegex` | `/editProfile` |
+| `contactDetails.contactNumber` | String | Required, **unique**, must match `phoneRegex` (SA mobile); normalised to `+27...` | `/editProfile` |
+| `dateOfBirth` | Date | Required, not in the future, at least 13 years old | Registration only |
+| `defaultLanguages.defaultSourceLanguage` | String | Default `'auto'`; `'auto'` or a Langbly language code | `/editProfile` |
+| `defaultLanguages.defaultTargetLanguage` | String | Default `'fr'`; a Langbly language code (no `'auto'`) | `/editProfile` |
+| `defaultLanguages.defaultNoteLanguage` | String | Default `'en'`; a Langbly language code | `/editProfile` |
+| `password` | String | Required, 8–1024 chars, **`select: false`** | `/editPassword` |
+| `adminDataConsent` | Boolean | Required, must be `true` | Registration only |
+| `admin` | Boolean | Default `false` | `/setAdmin`, `/clearAdmin` (`authRoutes.js`) |
+| `tokenVersion` | Number | Default `0`; signed into every JWT | `/editPassword` (incremented) |
+| `createdAt`, `updatedAt` | Date | `timestamps: true` | Mongoose |
+
+**What this router relies on:**
+
+| Schema feature | Used by | Effect |
+|---|---|---|
+| `password: { select: false }` | All routes | The password is left out of every query unless asked for with `.select('+password')` (only `/editPassword` does) |
+| `pre('validate')` normalisation hook | `/editProfile` | Lowercases `username` and `email`, and converts `082...` to `+2782...` before the unique checks run. Only runs on `.save()`, which is why `/editProfile` doesn't use `findByIdAndUpdate`. |
+| `unique` on `username` and `contactNumber` | `/editProfile` | A clash throws error code `11000`, which the route turns into a `409` |
+| Language `enum`s (built from `languageData`) | `/editProfile` | An unknown language code is a `ValidationError` → `400` |
+| `tokenVersion` | `/editPassword`, `checkJwtToken` | Increasing it signs out every existing session |
+| Virtuals `fullNameString`, `contactDetailsString` | — | Included in responses (`toJSON: { virtuals: true }`) but not used by this router |
+
+### 3.2. UTILITY FUNCTIONS
+
+#### `EDITABLE_PROFILE_FIELDS` ([userUtil.js](../server/util/userUtil.js))
+
+```js
+const EDITABLE_PROFILE_FIELDS = {
+    username: 'username',
+    firstName: 'fullName.firstName',
+    lastName: 'fullName.lastName',
+    email: 'contactDetails.email',
+    contactNumber: 'contactDetails.contactNumber',
+    defaultSourceLang: 'defaultLanguages.defaultSourceLanguage',
+    defaultTargetLang: 'defaultLanguages.defaultTargetLanguage',
+    defaultNoteLang: 'defaultLanguages.defaultNoteLanguage'
+};
+```
+
+Maps each flat field built by `/editProfile` to its dotted path in `userSchema`, which `user.set(path, value)` accepts. `dateOfBirth`, `password`, `adminDataConsent` and `admin` are **left out on purpose**, so they can't be changed by adding them to the request body.
+
+#### Inline helpers in `userRoutes.js`
+
+| Helper | Route | Purpose |
+|---|---|---|
+| `trimmedLang(value)` | `/editProfile` | Returns the trimmed string, or `''` for non-strings, so the source ≠ target check compares the same values that get saved |
+| `safeFullName` / `safeContact` | `/editProfile` | Treat `null` or non-object `fullName` / `contactDetails` as `{}` |
+
+---
+
+<!-- SECTION 4: ROUTER SECURITY -->
+## 4. SECURITY
+
+### 4.1. PACKAGES
+
+| Package | Where | Security role |
+|---|---|---|
+| `bcryptjs` | `userRoutes.js`, `passwordMiddleware.js` | Hashes new passwords (10 salt rounds) and compares the current password against the stored hash |
+| `jsonwebtoken` | `securityMiddleware.js` | Signs and verifies the session JWT (`{ id, isAdmin, tokenVersion }`) |
+| `express-rate-limit` | `rateLimitMiddleware.js` | `passwordUpdateRateLimiter`: limits current-password guessing |
+| `mongoose` | `userRoutes.js` | `ObjectId.isValid()` rejects malformed `:id` values before they reach a query |
+
+### 4.2. MIDDLEWARE
+
+| Middleware | File | Routes | What it does |
+|---|---|---|---|
+| `checkJwtToken` | [securityMiddleware.js](../server/middleware/securityMiddleware.js) | All | Reads the HTTP-only `token` cookie and verifies it, then loads the account's `tokenVersion`. Returns **401** (and clears the cookie) if there's no token, it's invalid or expired, the account was deleted, or the token's version is out of date. A database failure during the lookup returns **500**, not 401, so a DB hiccup doesn't sign everyone out. Sets `req.user`. |
+| `checkAdmin` | [adminMiddleware.js](../server/middleware/adminMiddleware.js) | `/fetchUsers`, `/fetchUser/:id`, `/deleteUser/:id` | Loads the account (`username admin`) and returns **403** if `admin !== true`. Sets `req.adminUser`. |
+| `checkPasswordChange` | [passwordMiddleware.js](../server/middleware/passwordMiddleware.js) | `/editPassword` | **400** unless both passwords are non-empty strings (so they can't inject query operators) and the new one differs from the current one |
+| `checkPassword` | [passwordMiddleware.js](../server/middleware/passwordMiddleware.js) | `/editPassword` | **400** unless `newPassword` is at least 8 characters with one special character |
+| `passwordUpdateRateLimiter` | [rateLimitMiddleware.js](../server/middleware/rateLimitMiddleware.js) | `/editPassword` | **429** after 3 attempts per hour per IP |
+| `hashPassword` | [passwordMiddleware.js](../server/middleware/passwordMiddleware.js) | `/editPassword` | Replaces `newPassword` with its bcrypt hash (skipped in development, so passwords stay plaintext) |
+
+### 4.3. ACCESS LEVELS
+
+```
+Request
+   │
+   ▼
+checkJwtToken ──► 401 if no token, an invalid or expired one, a deleted account,
+   │                or a signed-out session (sets req.user = { id, isAdmin, tokenVersion })
+   ├── user routes: /me, /editProfile, /editPassword
+   │      act ONLY on req.user.id (the user can only touch their own account)
+   │
+   ▼
+checkAdmin ─────► 403 if the user isn't an admin
+   │                (sets req.adminUser)
+   └── admin routes: /fetchUsers, /fetchUser/:id, /deleteUser/:id
+          act on :id from the URL (any NON-admin user)
+```
+
+| Rule | Where | Why |
+|---|---|---|
+| User routes take the ID from the **token**, never the body or URL | `/me`, `/editProfile`, `/editPassword` | A user can't read or edit another account |
+| Admin routes take the ID from the **URL** | `/fetchUser/:id`, `/deleteUser/:id` | Admins manage other users |
+| Admin accounts can't be viewed or removed through the admin routes | `/fetchUser/:id`, `/deleteUser/:id` | Admins can't spy on or remove each other, and an admin **can't delete themselves** |
+| Only allowlisted fields can be edited | `/editProfile` | Blocks mass assignment (`admin`, `password`, etc.) |
+| Passwords are never returned | All | `select: false` in the schema, `.select('-password')` in queries, and `delete updatedUser.password` in `/editProfile` |
+| Errors return a generic `500` message | All | Internal error details are only logged on the server |
+
+---
+
 <!-- SECTION 5 -->
-## 5. STATUS CODE REFERERENCES
+## 5. STATUS CODE REFERENCES
 
 | Code | Route(s) | When |
 |---|---|---|
 | `200` | all | Success |
 | `400` | fetchUser, deleteUser | `:id` isn't a valid ObjectId |
 | `400` | editProfile | Nothing to update, source = target, schema validation |
-| `400` | editPassword | (From the middleware) missing or weak password; **current password incorrect**; schema validation |
+| `400` | editPassword | (From the middleware) missing, matching or weak passwords; **current password incorrect**; schema validation |
 | `401` | all | (From `checkJwtToken`) No token, an invalid or expired one, the account was deleted, or the session was signed out by a password change |
 | `403` | fetchUsers, fetchUser, deleteUser | (From `checkAdmin`) Not an admin |
 | `403` | fetchUser, deleteUser | The target account is an admin |
@@ -512,112 +595,56 @@ The four collections don't depend on each other, so they're deleted **in paralle
 ---
 
 <!-- SECTION 6 -->
-<!-- SKIP SECTION(REMOVE) IF NONE -->
 ## 6. KNOWN GAPS AND HOUSE KEEPING
-<!-- ONLY LIST EXISTING GAPS AND HOUSE KEEPING -->
-<!-- ## 11. Known Gaps & Housekeeping -->
-<!-- SUB SECTIONS -->
+
 ### 6.1. GAPS
-<!-- #### GAP 1 -->
+
+#### Gap 1: Email isn't unique
+
+`contactDetails.email` has no `unique: true` in `userSchema.js`, so two accounts can register with the same email. `/editProfile` has a `409` message for a duplicate email ("That email is already registered"), but it can never fire, because MongoDB never raises a duplicate key error for that field.
+
+**Fix:** add `unique: true` to `contactDetails.email` (any existing duplicates must be cleaned up before MongoDB can build the index).
+
+#### Gap 2: No pagination on `/fetchUsers`
+
+Every user is returned in one response. This is fine for a small user base, but the response and the Users table grow with every account.
+
+#### Gap 3: First-name validation message doesn't match the rule
+
+`fullName.firstName` has `minlength: [2, 'First name must be at least 3 characters long']`. A one-character name gets a message asking for 3 characters, while a two-character name is accepted.
+
+**Fix:** change the message to "at least 2 characters", or the limit to 3.
 
 ### 6.2. HOUSE KEEPING
-### ~~Gap 1: `/me` logs the whole user to the console~~ (fixed)
 
-`/me` used to log the whole user document, which wrote the user's **email, phone number and date of birth** to the server logs every time the app loaded. Under **POPIA**, logging is processing, so personal information shouldn't be logged beyond what's needed.
+| Issue | Where | Change |
+|---|---|---|
+| "Conditional rendering" comments (a React UI term) are still there | `userRoutes.js`: `/editProfile` (two), `/editPassword` (one) | Change to "Guard clause: check ...", like the other routes in the file |
+| The mount comment lists only two routes | `app.js`: `app.use('/user', userRoutes);// /user/me, /user/fetchUsers` | List all six, or point to the header comment in `userRoutes.js` |
+| "Langauge" typo | `userSchema.js` comments on `defaultSourceLanguage` / `defaultTargetLanguage` | "Language" |
 
-**Fix:** `/me` now logs only the user ID, and its error log prints `error.message` instead of the whole error object:
-
-```js
-console.log(`[SUCCESS: userRoutes.js, GET /me] Fetched profile: ${userId}`);// No personal details in logs
-```
-
-### ~~Gap 2: Inconsistent error shapes~~ (fixed)
-
-`/me` used to return errors as `{ error }` or `{ success: false, error }`, while every other route used `{ message }`. A frontend reading `data.message` would have shown blank errors for `/me`.
-
-**Fix:** every route in this file now returns errors as `{ message: '...' }`.
-
-### ~~Gap 3: `/fetchUsers` leaks the internal error message~~ (fixed)
-
-`/fetchUsers` used to send `error.message` back in its 500 response. That message can contain database details (collection names, or connection strings in some driver errors), and its log label said `GET /` instead of `GET /fetchUsers`.
-
-**Fix:** the details are now only logged on the server, under the correct label. The client gets a generic message:
-
-```js
-console.error('[ERROR: userRoutes.js, GET /fetchUsers] Error fetching users:', error.message);
-return res.status(500).json({ message: 'Internal Server Error' });// Details stay in the server log
-```
-
-### ~~Gap 4: A deleted user's token still works~~ (fixed)
-
-JWTs are **stateless**, so after `/deleteUser/:id` the removed user's cookie used to stay valid until it expired, letting them create data for an account that no longer exists.
-
-**Fix:** `checkJwtToken` (`securityMiddleware.js`) now loads the token's user (`tokenVersion` only, one small query per request). If the account is gone it clears the cookie and returns **401**. A database failure during that lookup returns **500**, not 401, so a DB hiccup doesn't sign everyone out.
-
-### ~~Gap 5: Changing the password doesn't sign out other sessions~~ (fixed)
-
-After `/editPassword`, other logged-in devices used to stay logged in until their JWT expired, so an attacker's session survived a password reset.
-
-**Fix:** the user schema has a `tokenVersion` number (default `0`). `setTokenCookie` signs it into the JWT, and `checkJwtToken` rejects a token whose version doesn't match the stored one (401, cookie cleared). `/editPassword` increments `tokenVersion` and calls `setTokenCookie`, so the current session gets a fresh cookie and every other session is signed out. Tokens and accounts created before this change are treated as version `0`, so existing sessions keep working until the next password change.
-
-### ~~Gap 6: Admins are listed but can't be opened~~ (fixed)
-
-`/fetchUsers` returns **all** users, including admins, but `/fetchUser/:id` refuses admins with **403**, so clicking an admin row used to show an error.
-
-**Fix:** `UsersList.js` disables the "View" button on rows where `admin === true` (with an aria-label explaining why), and a footer row notes that admin users can't be viewed or removed. Admins stay in the list so the table still shows every account.
-
-### ~~Gap 7: No rate limit on `/editPassword`~~ (fixed)
-
-Without a limiter, anyone holding a session cookie (e.g. on a shared computer) could **guess the current password as fast as they liked**.
-
-**Fix:** `/editPassword` uses `passwordUpdateRateLimiter` (`rateLimitMiddleware.js`, 3 attempts per hour per IP, 429 after that):
-
-```js
-router.patch('/editPassword', checkJwtToken, checkPasswordChange, checkPassword, passwordUpdateRateLimiter, hashPassword, ...);
-```
-
-The limiter sits **after** the form checks, so a mistyped or weak new password doesn't use up one of the 3 attempts, and **before** the handler compares the current password, so every guess is counted.
-
-### ~~Gap 8: The language check uses untrimmed values~~ (fixed)
-
-The source ≠ target check used to compare the **raw** `defaultSourceLang` / `defaultTargetLang`, but the update saves the **trimmed** values, so `" af"` and `"af"` passed the check and then both saved as `af`.
-
-**Fix:** `/editProfile` now trims both values before comparing. Non-string values are treated as "not sent", matching how the update filters them, so `{ "$gt": "" }` can't make `.trim()` throw:
-
-```js
-const trimmedLang = (value) => (typeof value === 'string' ? value.trim() : '');
-const newSourceLang = trimmedLang(defaultSourceLang);
-const newTargetLang = trimmedLang(defaultTargetLang);
-const sourceLang = newSourceLang || user.defaultLanguages?.defaultSourceLanguage;
-const targetLang = newTargetLang || user.defaultLanguages?.defaultTargetLanguage;
-if ((newSourceLang || newTargetLang) && sourceLang === targetLang) { /* 400 */ }
-```
-
-### ~~Gap 9: The JWT may hold outdated profile data~~ (not an issue)
-
-If the JWT carried the `username` or `fullName`, editing the profile would leave the old values in the token until the next login.
-
-**Checked:** `setTokenCookie` only signs `{ id, isAdmin, tokenVersion }`, none of which `/editProfile` can change, so there's nothing to go stale. `/setAdmin` and `/clearAdmin` already re-issue the cookie when `isAdmin` changes, and `/editPassword` does when `tokenVersion` changes. If profile fields are ever added to the payload, `/editProfile` should call `setTokenCookie(res, user)` after saving.
-
-### ~~Gap 10: The same duplicate-field and `null` gaps as `authRoutes.js`~~ (fixed)
-
-- **Duplicate message:** any duplicate that wasn't `contactNumber` used to be reported as "username". `/editProfile` now maps each unique field to its own message (`username`, `contactDetails.contactNumber`, `contactDetails.email`), with a general fallback for any field added later.
-- **`null` objects:** `fullName = {}` only applies when the value is `undefined`, so `"fullName": null` made `fullName.firstName` throw (a **500**). `/editProfile` now treats `null` or non-object `fullName` / `contactDetails` as empty (`safeFullName` / `safeContact`), so that request gets the normal 400 "Please change at least one field" instead.
-
-### Housekeeping (done)
-
-| Issue | Change |
-|---|---|
-| No header comment with the mount point and route list | Added `/* mounted at /user by app.js ... */` listing all six routes, matching the other route files |
-| Comments said `/users/...` for the GET routes but `/user/...` elsewhere | All use `/user/...`, the prefix in `app.js` |
-| `require('dotenv').config()` wasn't used in this file | Removed; `app.js` loads it before requiring the routes |
-| `///` comment describing several imports at once; missing spaces, semicolons, `require (` | Each import is formatted consistently with its own comment |
-| "Use middleware to attach user info" above `req.user.id` in `/me` | Replaced with one accurate comment |
-| `[RESPONSE: userRoutes]` log, and `/me` error log without a prefix | Fixed with [Gap 1](#gap-1-me-logs-the-whole-user-to-the-console-fixed) |
-| "Users pagetable" | "Users page table" |
-| `/fetchUsers` log label said `GET /` | Fixed with [Gap 3](#gap-3-fetchusers-leaks-the-internal-error-message-fixed) |
-| Extra blank lines | Removed |
-| "Conditional rendering" comments (a React UI term) | Now "Guard clause: check ..." |
+---
 
 <!-- SECTION 7: REFERENCES -->
 ## 7. REFERENCES
+
+**Project files**
+
+- [userRoutes.js](../server/routes/userRoutes.js)
+- [userSchema.js](../server/models/userSchema.js)
+- [userUtil.js](../server/util/userUtil.js), [schemaUtil.js](../server/util/schemaUtil.js)
+- [securityMiddleware.js](../server/middleware/securityMiddleware.js), [adminMiddleware.js](../server/middleware/adminMiddleware.js), [passwordMiddleware.js](../server/middleware/passwordMiddleware.js), [rateLimitMiddleware.js](../server/middleware/rateLimitMiddleware.js)
+- [AUTH_ROUTES.md](AUTH_ROUTES.md), [GLOSSARY.md](../GLOSSARY.md)
+
+**External documentation**
+
+- [Express: Routing](https://expressjs.com/en/guide/routing.html)
+- [Mongoose: Middleware (hooks)](https://mongoosejs.com/docs/middleware.html)
+- [Mongoose: Validation](https://mongoosejs.com/docs/validation.html)
+- [Mongoose: `Document.prototype.save()`](https://mongoosejs.com/docs/api/document.html#Document.prototype.save())
+- [bcrypt.js](https://github.com/dcodeIO/bcrypt.js)
+- [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
+- [express-rate-limit](https://github.com/express-rate-limit/express-rate-limit)
+- [OWASP: Mass Assignment Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Mass_Assignment_Cheat_Sheet.html)
+- [MDN: HTTP response status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
+- [POPIA (Protection of Personal Information Act)](https://popia.co.za/)
