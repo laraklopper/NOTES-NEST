@@ -127,7 +127,7 @@ const user = await User.findOne({ username: username.trim().toLowerCase() })
 
 | Piece | Why |
 |---|---|
-| `.trim().toLowerCase()` | Usernames are stored in lowercase by the schema's pre-validate hook, so `" LaraK "` finds the record stored as `larak`. |
+| `.trim().toLowerCase()` | Usernames are stored in lowercase by the schema's pre-validate hook, so `" userA "` finds the record stored as `userA`. |
 | `.select('+password')` | The schema hides `password` by default (`select: false`). The `+` adds it back for this query only. |
 | `.exec()` | Returns a real Promise and gives better stack traces. |
 
@@ -172,7 +172,7 @@ The success log includes `userId` and `username` only, **never the password**.
 ```json
 {
   "userId": "6731f0c2a1b2c3d4e5f60718",
-  "fullName": { "firstName": "Lara", "lastName": "K" },
+  "fullName": { "firstName": "user", "lastName": "A" },
   "isAdmin": false
 }
 ```
@@ -206,10 +206,10 @@ So when the handler runs, `req.body.password` is **already hashed**.
 
 ```json
 {
-  "username": "LaraK",
-  "fullName": { "firstName": "Lara", "lastName": "K" },
-  "contactDetails": { "email": "lara@example.com", "contactNumber": "0821234567" },
-  "dateOfBirth": "1995-04-12",
+  "username": "username",
+  "fullName": { "firstName": "user", "lastName": "A" },
+  "contactDetails": { "email": "user@example.com", "contactNumber": "0821234567" },
+  "dateOfBirth": "1993-04-12",
   "defaultSourceLang": "af",
   "defaultTargetLang": "en",
   "defaultNoteLang": "en",
@@ -405,7 +405,7 @@ The JWT payload includes the `isAdmin` claim. The old token still says `isAdmin:
 ```json
 {
   "message": "Admin registration successful",
-  "user": { "userId": "...", "fullName": { "firstName": "Lara", "lastName": "K" }, "isAdmin": true }
+  "user": { "userId": "...", "fullName": { "firstName": "user", "lastName": "A" }, "isAdmin": true }
 }
 ```
 
@@ -439,7 +439,7 @@ There are no age or account-age checks, because giving up a permission never nee
 ```json
 {
   "message": "Admin status removed",
-  "user": { "userId": "...", "fullName": { "firstName": "Lara", "lastName": "K" }, "isAdmin": false }
+  "user": { "userId": "...", "fullName": { "firstName": "User", "lastName": "A" }, "isAdmin": false }
 }
 ```
 

@@ -87,9 +87,9 @@ const user = await User.findById(req.user.id)
 ```json
 {
   "_id": "6731...",
-  "username": "larak",
-  "fullName": { "firstName": "Lara", "lastName": "K" },
-  "contactDetails": { "email": "lara@example.com", "contactNumber": "+27821234567" },
+  "username": "username",
+  "fullName": { "firstName": "user", "lastName": "one" },
+  "contactDetails": { "email": "user@example.com", "contactNumber": "+27821234567" },
   "dateOfBirth": "1995-04-12T00:00:00.000Z",
   "defaultLanguages": { "defaultSourceLanguage": "af", "defaultTargetLanguage": "en", "defaultNoteLanguage": "en" },
   "admin": false,
@@ -159,9 +159,9 @@ The **admin check comes after the lookup**, because the route needs the document
 
 ```json
 {
-  "username": "LaraK",
-  "fullName": { "firstName": "Lara", "lastName": "Kruger" },
-  "contactDetails": { "email": "lara@example.com", "contactNumber": "082 123 4567" },
+  "username": "username",
+  "fullName": { "firstName": "user", "lastName": "one" },
+  "contactDetails": { "email": "user@example.com", "contactNumber": "082 123 4567" },
   "defaultSourceLang": "af",
   "defaultTargetLang": "en",
   "defaultNoteLang": "en"
@@ -201,12 +201,12 @@ const updates = Object.entries(submitted)
 **Example:**
 
 ```
-submitted:  { username: 'LaraK', firstName: '', email: { $gt: '' }, defaultNoteLang: 'af' }
+submitted:  { username: 'username', firstName: '', email: { $gt: '' }, defaultNoteLang: 'af' }
 
-.filter     → [['username', 'LaraK'], ['defaultNoteLang', 'af']]
+.filter     → [['username', 'user'], ['defaultNoteLang', 'af']]
               ('' is blank, so dropped; { $gt: '' } isn't a string, so dropped)
 
-.map        → [['username', 'LaraK'], ['defaultLanguages.defaultNoteLanguage', 'af']]
+.map        → [['username', 'user'], ['defaultLanguages.defaultNoteLanguage', 'af']]
 ```
 
 The form field → schema path map is [`EDITABLE_PROFILE_FIELDS`](#32-utility-functions).
@@ -269,7 +269,7 @@ delete updatedUser.password;// Belt and braces: password is select:false, but ne
 return res.status(200).json({ message: 'Profile updated successfully', user: updatedUser });
 ```
 
-The response contains the **saved** values, after normalisation (e.g. `username: "larak"`, `contactNumber: "+27821234567"`), so the UI should update from `user`, not from what was typed.
+The response contains the **saved** values, after normalisation (e.g. `username: "username"`, `contactNumber: "+27821234567"`), so the UI should update from `user`, not from what was typed.
 
 **The JWT doesn't need re-issuing:** `setTokenCookie` only signs `{ id, isAdmin, tokenVersion }`, none of which this route can change. If profile fields are ever added to the token payload, `/editProfile` should call `setTokenCookie(res, user)` after saving.
 
@@ -396,7 +396,7 @@ Every step is **idempotent** (running `deleteMany` again on data that's already 
 The four collections don't depend on each other, so they're deleted **in parallel**. Destructuring the results gives the `deletedCount` for each, and those go into the **audit log**:
 
 ```
-[SUCCESS: userRoutes.js, DELETE /deleteUser/:id] Removed johndoe (6731...) by admin_lara: 42 notes, 3 notebooks, 11 tags, 18 translations
+[SUCCESS: userRoutes.js, DELETE /deleteUser/:id] Removed johndoe (6731...) by admin_user: 42 notes, 3 notebooks, 11 tags, 18 translations
 ```
 
 `req.adminUser.username` (set by `checkAdmin`) records **which admin** removed the account.
