@@ -1,6 +1,6 @@
-# API_ROUTES.md — `apiRoutes.js` Breakdown
+# API_ROUTES. — [`apiRoutes.js`](../server/routes/apiRoutes.js) BREAKDOWN
 
-`apiRoutes.js` is the Express router that sits between the React frontend and the **Langbly** translation API. The browser never talks to Langbly directly. It calls this server, and this server adds the secret API key, validates the input, forwards the request, and turns Langbly's answer (or error) into a clean response.
+[`apiRoutes.js`](../server/routes/apiRoutes.js) is the Express router that sits between the React frontend and the **Langbly** translation API. The browser never talks to Langbly directly. It calls this server, and this server adds the secret API key, validates the input, forwards the request, and turns Langbly's answer (or error) into a clean response.
 
 ```
 React (TranslateForm)  ──►  /api/language/translate/v2/...  ──►  Langbly API
@@ -10,8 +10,20 @@ React (TranslateForm)  ──►  /api/language/translate/v2/...  ──►  Lan
 
 ---
 
-## Table of Contents
-
+## TABLE OF CONTENTS
+<!-- 1. ROUTE SUMMARY -->
+<!-- list all -->
+<!-- 2. IMPORTS AND SETUP -->
+<!-- 3. CONNECTION SETUP -->
+<!--contraints etc. -->
+<!-- error hanling -->
+<!-- 4. UTILITY FUNCTIONS -->
+<!-- 5. SECURITY -->
+<!-- 6. STATUS CODE REFERERENCES -->
+<!-- 7. KNOWN GAPS AND HOUSE KEEPING (remove section if not applicable)-->
+<!-- 7.1. GAPS -->
+<!-- 7.2. HOUSE KEEPING -->
+<!-- 8. REFERENCES -->
 1. [Route Summary](#1-route-summary)
 2. [Imports & Setup](#2-imports--setup)
 3. [Connection Settings (Constants)](#3-connection-settings-constants)
@@ -29,7 +41,7 @@ React (TranslateForm)  ──►  /api/language/translate/v2/...  ──►  Lan
 15. [Error Handling Flow](#15-error-handling-flow)
 16. [Known Gaps & Housekeeping](#16-known-gaps--housekeeping)
 
-- [apiRoutes.js](../server/routes/apiRoutes.js)
+- *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
 ---
 
 ## 1. Route Summary

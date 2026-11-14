@@ -49,6 +49,7 @@ The router is mounted at **`/user`** by `app.js` (e.g. `GET /user/me`), as the h
 ---
 ### 1.1. GET `/me`
 
+<!-- PURPOSE: WHAT THE ROUTE DOES -->
 **Purpose:** Return the signed-in user's own profile. `App.js` calls it on load to fill `currentUser` (this is how the app "remembers" a login, since the JWT itself is in an HTTP-only cookie that JavaScript can't read). The Settings page also uses it.
 
 ```js
@@ -56,6 +57,7 @@ const user = await User.findById(req.user.id)
     .select('-password')// Never send the password, even hashed
     .exec();
 ```
+
 
 | Result | Response |
 |---|---|
@@ -85,6 +87,7 @@ const user = await User.findById(req.user.id)
 <!-- Errors use a **`message`** key, the same as every other route (see [Gap 2](#gap-2-inconsistent-error-shapes-fixed)). -->
 
 ### 1.2. GET `/fetchUsers` (admin)
+
 **Purpose:** The admin Users page table (`UsersList.js`).
 
 ```js
@@ -107,7 +110,15 @@ const users = await User.find()// Every user
 | Consent | Registration requires `adminDataConsent: true`, so every listed user has agreed to admins seeing their details |
 
 ---
-### 1.3. PATCH `/editProfile`
+
+### 1.3. `GET`  `/fetchUser/:id`
+### 1.4. PATCH `/editProfile`
+
+
+### 1.5. PATCH `/editPassword`
+
+### 1.6. DELETE `/deleteUser/:id`
+
 
 ---
 
