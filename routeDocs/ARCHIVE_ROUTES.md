@@ -659,6 +659,7 @@ These gaps were found in an earlier review and have now been fixed.
 - [Mongoose: Populate](https://mongoosejs.com/docs/populate.html)
 - [Mongoose: Middleware (hooks)](https://mongoosejs.com/docs/middleware.html)
 - [Mongoose: Lean](https://mongoosejs.com/docs/tutorials/lean.html)
+- [MongoDB. sort](https://www.mongodb.com/docs/drivers/rust/current/crud/query/specify-documents/#sort)
 - [MongoDB: TTL Indexes](https://www.mongodb.com/docs/manual/core/index-ttl/)
 - [MongoDB: Compound Indexes](https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/)
 - [MDN: HTTP response status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
