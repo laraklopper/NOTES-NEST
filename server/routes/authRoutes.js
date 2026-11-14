@@ -1,32 +1,26 @@
-//authRoutes.js
-/*auth endpoints : mounted at /users by app.js
-POST: /login - submit user login
-POST: /register - submit registration to add a new user
-PATCH: /setAdmin - upgrade user to admin (21+ and user for 1 day during development)
-PATCH: /clearAdmin - remove admin status from the user
-All passwords are saved in Plaintext for development,
-auth/login auth/register routes do not require a <Bearer> header for user authorization/
-*/
+/*authRoutes.js
+*auth endpoints : mounted at /auth by app.js*/
+/* Load environment variables from a .env 
+file using the dotenv package*/
 require('dotenv').config()
+// IMPORT REQUIRED MODULES AND PACKAGES
 const express = require('express');
-const User = require('../models/userSchema');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');// Import bcrypt for password comparison
+// IMPORT SCHEMAS
+const User = require('../models/userSchema');// Import the user schemas
+// IMPORT CUSTOM MIDDLEWARE
 const {checkJwtToken, setTokenCookie, cookieOptions} = require('../middleware/securityMiddleware')
 const {isDevelopment, hashPassword, checkPassword} = require('../middleware/passwordMiddleware')
 const { loginLimiter, registerLimiter } = require('../middleware/rateLimitMiddleware');
-const router = express.Router()
+// IMPORT UTILITY FUNCTIONS
 const { calculateAge } = require('../util/userUtil')
-
-
 // schemaUtil holds the admin rules: 21+, and an account age of 3 months in production (1 day otherwise)
 const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil');
 
-
+const router = express.Router()// Create a new router object using Express
 //=============ROUTES================
 // Use Plaintext passwords for development
 /*──────────────────────────── HELPERS ──────────────────────────────*/
-
-
 // The user details sent back by /login, /setAdmin and /clearAdmin (the token stays in the cookie)
 const sessionUser = (user) => ({
     userId: user._id,// User's unique ID

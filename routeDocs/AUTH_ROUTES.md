@@ -1,6 +1,6 @@
 # AUTH_ROUTES.md — `authRoutes.js` Breakdown
 
-`authRoutes.js` is the Express router that handles **accounts and sessions**: logging in, registering, logging out, and switching admin status on or off. Sessions use a **JWT stored in an HTTP-only cookie**. The token is never sent in a response body, so client-side JavaScript can never read it.
+[`authRoutes.js`](../server/routes/authRoutes.js) is the Express router that handles **accounts and sessions**: logging in, registering, logging out, and switching admin status on or off. Sessions use a **JWT stored in an HTTP-only cookie**. The token is never sent in a response body, so client-side JavaScript can never read it.
 
 ```
 React (Login / Register / Profile)  ──►  /users/...  ──►  MongoDB (User model)
@@ -12,9 +12,9 @@ React (Login / Register / Profile)  ──►  /users/...  ──►  MongoDB (U
 
 ## Table of Contents
 
-1. [Route Summary](#1-route-summary)
-2. [Imports & Setup](#2-imports--setup)
-3. [Admin Rules (schemaUtil)](#3-admin-rules-schemautil)
+1. [ROUTE SUMMARY](#1-route-summary)
+2. [IMPORTS AND SETUP](#2-imports-and-setup)
+3. [ADMIN RULES (schemaUtil)](#3-admin-rules)
 4. [sessionUser() Helper](#4-sessionuser-helper)
 5. [POST /login](#5-post-userslogin)
 6. [POST /register](#6-post-usersregister)
@@ -23,13 +23,16 @@ React (Login / Register / Profile)  ──►  /users/...  ──►  MongoDB (U
 9. [PATCH /clearAdmin](#9-patch-usersclearadmin)
 10. [Security Measures in This File](#10-security-measures-in-this-file)
 11. [Status Code Reference](#11-status-code-reference)
-12. [Known Gaps & Housekeeping](#12-known-gaps--housekeeping)
+12. [REFERENCES](#12-references)
+
+<!-- 12. [Known Gaps & Housekeeping](#12-known-gaps--housekeeping) -->
 
 ---
 
-## 1. Route Summary
+## 1. ROUTE SUMMARY
 
-According to the header comment, the router is mounted at **`/users`** in `app.js` (see [Housekeeping](#housekeeping) about the `/auth` naming in the route comments).
+The router is mounted at **`/auth`** in [`app.js`](../server/app.js) 
+
 
 | Method | Full Path | Middleware | Purpose |
 |---|---|---|---|
@@ -41,87 +44,19 @@ According to the header comment, the router is mounted at **`/users`** in `app.j
 
 `/login` and `/register` **don't** require a token, because the user doesn't have one yet. `/logout` doesn't either, so an expired cookie can still be cleared.
 
----
-
-## 2. Imports & Setup
-
-```js
-require('dotenv').config()
-const express = require('express');
-const User = require('../models/userSchema');
-const bcrypt = require('bcryptjs');
-const { checkJwtToken, setTokenCookie, cookieOptions } = require('../middleware/securityMiddleware')
-const { isDevelopment, hashPassword, checkPassword } = require('../middleware/passwordMiddleware')
-const { loginLimiter, registerLimiter } = require('../middleware/rateLimitMiddleware');
-const router = express.Router()
-const { calculateAge } = require('../util/userUtil')
-const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil');
-```
-
-| Import | From | Used For |
-|---|---|---|
-| `dotenv` | npm | Loads `.env` (JWT secret, environment flags) |
-| `express` | npm | Creates the `router` |
-| `User` | `models/userSchema` | The Mongoose model for users |
-| `bcrypt` | `bcryptjs` | `bcrypt.compare()` in `/login`. Hashing happens in middleware, not here. |
-| `checkJwtToken` | `securityMiddleware` | Verifies the JWT cookie and sets `req.user` |
-| `setTokenCookie` | `securityMiddleware` | Signs a JWT for a user and sets it as an HTTP-only cookie |
-| `cookieOptions` | `securityMiddleware` | Shared cookie settings. `/logout` needs the same options to clear the cookie. |
-| `isDevelopment` | `passwordMiddleware` | `true` in development, when passwords are stored as plaintext |
-| `checkPassword` | `passwordMiddleware` | Validates the password before registration (strength rules) |
-| `hashPassword` | `passwordMiddleware` | Replaces `req.body.password` with a bcrypt hash (left as plaintext in development) |
-| `loginLimiter`, `registerLimiter` | `rateLimitMiddleware` | Per-IP limits that slow down brute-force and spam signups |
-| `calculateAge` | `util/userUtil` | Works out an age from `dateOfBirth` for the admin age rule |
-| `ADMIN_MIN_AGE`, `ADMIN_MIN_ACCOUNT_AGE_MS` | `util/schemaUtil` | Admin eligibility rules ([section 3](#3-admin-rules-schemautil)) |
-
----
-
-## 3. Admin Rules (schemaUtil)
-
-| Constant | Rule | Development | Production |
-|---|---|---|---|
-| `ADMIN_MIN_AGE` | Minimum age, in years | 21 | 21 |
-| `ADMIN_MIN_ACCOUNT_AGE_MS` | How long the account must have existed | 1 day | 3 months |
-
-Keeping these in `schemaUtil` means the same numbers can be shared by the schema, the routes and the frontend messages.
-
----
-
-## 4. sessionUser() Helper
-
-```js
-const sessionUser = (user) => ({
-    userId: user._id,
-    fullName: user.fullName,
-    isAdmin: user.admin === true
-})
-```
-
-This builds the **safe, public** user object that `/login`, `/setAdmin` and `/clearAdmin` return. It deliberately leaves out the password, contact details, date of birth and the token.
-
-| Field | Source | Notes |
-|---|---|---|
-| `userId` | `user._id` | MongoDB ObjectId |
-| `fullName` | `user.fullName` | The `{ firstName, lastName }` object |
-| `isAdmin` | `user.admin === true` | A strict comparison, so `undefined`, `null` or `"true"` all become `false` |
-
-Because the shape comes from one helper, the frontend always receives the same user object.
-
----
-
-## 5. POST `/users/login`
+### 1.1. POST `/users/login`
 
 **Purpose:** Check the username and password, then start a session by setting the JWT cookie.
-
 **Middleware:** `loginLimiter`. This limits login attempts per IP, which slows down password guessing.
 
 **Request body:**
 
 ```json
-{ "username": "LaraK", "password": "MyP@ssw0rd" }
+{ "username": "username", "password": "MyP@ssw0rd" }
 ```
 
-### Flow
+
+#### REQUEST FLOW
 
 ```
 Missing username/password? ───────────────────────────► 400
@@ -137,8 +72,7 @@ Wrong password? ─────────────────────�
      ▼
 setTokenCookie(res, user) → 200 sessionUser(user)
 ```
-
-### Step-by-step
+Step-by-step
 
 **Step 1: Presence check**
 
@@ -239,7 +173,7 @@ Set-Cookie: token=<JWT>; HttpOnly; ...
 
 ---
 
-## 6. POST `/users/register`
+## 1.2. POST `/users/register`
 
 **Purpose:** Create a new user account. It does **not** log the user in. The client is told to log in afterwards.
 
@@ -382,7 +316,7 @@ Any field not in the map gets the general fallback, so a unique field added late
 
 ---
 
-## 7. POST `/users/logout`
+## 1.3. POST `/users/logout`
 
 ```js
 router.post('/logout', (req, res) => {
@@ -404,7 +338,7 @@ Logging out only removes the cookie from the browser. The JWT itself stays **val
 
 ---
 
-## 8. PATCH `/users/setAdmin`
+### 1.4. PATCH `/users/setAdmin`
 
 **Purpose:** Let the logged-in user upgrade **themselves** to admin, if they meet the rules.
 
@@ -412,7 +346,7 @@ Logging out only removes the cookie from the browser. The JWT itself stays **val
 
 **Request body:** none.
 
-### Flow
+#### Flow
 
 ```
 User.findById(req.user.id)
@@ -429,7 +363,7 @@ setTokenCookie(res, user)   ← new JWT with the admin claim
 200 { message, user: sessionUser(user) }
 ```
 
-### Key details
+#### Key details
 
 **The account age check**
 
@@ -465,7 +399,83 @@ The JWT payload includes the admin claim. The old token still says `admin: false
 
 ---
 
-## 9. PATCH `/users/clearAdmin`
+### 1.5. PATCH `/users/clearAdmin`
+---
+
+## 2. IMPORTS AND SETUP
+
+```js
+require('dotenv').config()
+const express = require('express');
+const User = require('../models/userSchema');
+const bcrypt = require('bcryptjs');
+const { checkJwtToken, setTokenCookie, cookieOptions } = require('../middleware/securityMiddleware')
+const { isDevelopment, hashPassword, checkPassword } = require('../middleware/passwordMiddleware')
+const { loginLimiter, registerLimiter } = require('../middleware/rateLimitMiddleware');
+const router = express.Router()
+const { calculateAge } = require('../util/userUtil')
+const { ADMIN_MIN_AGE, ADMIN_MIN_ACCOUNT_AGE_MS } = require('../util/schemaUtil');
+```
+
+| Import | From | Used For |
+|---|---|---|
+| `dotenv` | npm | Loads `.env` (JWT secret, environment flags) |
+| `express` | npm | Creates the `router` |
+| `User` | `models/userSchema` | The Mongoose model for users |
+| `bcrypt` | `bcryptjs` | `bcrypt.compare()` in `/login`. Hashing happens in middleware, not here. |
+| `checkJwtToken` | `securityMiddleware` | Verifies the JWT cookie and sets `req.user` |
+| `setTokenCookie` | `securityMiddleware` | Signs a JWT for a user and sets it as an HTTP-only cookie |
+| `cookieOptions` | `securityMiddleware` | Shared cookie settings. `/logout` needs the same options to clear the cookie. |
+| `isDevelopment` | `passwordMiddleware` | `true` in development, when passwords are stored as plaintext |
+| `checkPassword` | `passwordMiddleware` | Validates the password before registration (strength rules) |
+| `hashPassword` | `passwordMiddleware` | Replaces `req.body.password` with a bcrypt hash (left as plaintext in development) |
+| `loginLimiter`, `registerLimiter` | `rateLimitMiddleware` | Per-IP limits that slow down brute-force and spam signups |
+| `calculateAge` | `util/userUtil` | Works out an age from `dateOfBirth` for the admin age rule |
+| `ADMIN_MIN_AGE`, `ADMIN_MIN_ACCOUNT_AGE_MS` | [`util/schemaUtil`](../server/util/schemaUtil.js) | Admin eligibility rules ([section 3](#3-admin-rules-schemautil)) |
+
+---
+
+
+
+## 3. UTILITY FUNCTIONS
+### 3.1. ADMIN RULES
+
+Sets requirements for users to become admin users
+
+
+| Constant | Rule | Development | Production |
+|---|---|---|---|
+| `ADMIN_MIN_AGE` | Minimum age, in years | 21 | 21 |
+| `ADMIN_MIN_ACCOUNT_AGE_MS` | How long the account must have existed | 1 day | 3 months |
+
+Keeping these in [`schemaUtil`](../server/util/schemaUtil.js) means the same numbers can be shared by the schema, the routes and the frontend messages.
+
+---
+
+### 3.1. sessionUser() Helper
+
+```js
+const sessionUser = (user) => ({
+    userId: user._id,
+    fullName: user.fullName,
+    isAdmin: user.admin === true
+})
+```
+
+This builds the **safe, public** user object that `/login`, `/setAdmin` and `/clearAdmin` return. It deliberately leaves out the password, contact details, date of birth and the token.
+
+| Field | Source | Notes |
+|---|---|---|
+| `userId` | `user._id` | MongoDB ObjectId |
+| `fullName` | `user.fullName` | The `{ firstName, lastName }` object |
+| `isAdmin` | `user.admin === true` | A strict comparison, so `undefined`, `null` or `"true"` all become `false` |
+
+Because the shape comes from one helper, the frontend always receives the same user object.
+
+---
+
+
+
 
 **Purpose:** Let an admin step down to a regular user.
 
@@ -528,7 +538,11 @@ There are no age or account-age checks, because giving up a permission never nee
 
 ---
 
-## 12. Known Gaps & Housekeeping
+
+## 12. REFERENCES
+
+
+<!-- ## 12. Known Gaps & Housekeeping
 
 ### Gap 1: Plaintext passwords (development)
 
@@ -588,4 +602,4 @@ The route's `typeof password === 'string'` check runs **after** both password mi
 | 62 | `/*/` opening | Should be `/*` |
 | 26 | A stray "Use Plaintext passwords for development" comment above HELPERS | Move it into the header or delete it |
 | 103, 199 vs. 246, 275 | Some 500 responses include `success: false` and some don't | Pick one error shape (`{ message }`) everywhere |
-| 98 vs. 243, 271 | `/login` returns the user object directly; `/setAdmin` and `/clearAdmin` wrap it in `{ message, user }` | It works, but the frontend has to handle two shapes. Consider making them consistent. |
+| 98 vs. 243, 271 | `/login` returns the user object directly; `/setAdmin` and `/clearAdmin` wrap it in `{ message, user }` | It works, but the frontend has to handle two shapes. Consider making them consistent. | -->
