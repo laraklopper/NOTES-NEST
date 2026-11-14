@@ -1,4 +1,4 @@
-# NOTE_ROUTES.md — `noteRoutes.js` Breakdown
+# NOTE_ROUTES — [`noteRoutes.js`](../server/routes/noteRoutes.js) BREAKDOWN
 
 `noteRoutes.js` is the Express router for **notes**: listing, reading, creating, editing, moving to the trash, restoring and permanently deleting. It's the largest router in the app, and it works alongside two others:
 
@@ -10,7 +10,28 @@
 
 ---
 
-## Table of Contents
+## TABLE OF CONTENTS
+<!-- CAPITILISE ALL HEADINGS -->
+<!-- 1. [ROUTE SUMMARY] -->
+<!-- route list subsectionS-->
+<!-- 2. [IMPORTS] -->
+<!-- 3 ROUTE ORDER AND PATTERNS -->
+<!-- 3.1. Route order -->
+<!-- 3.2. route patterns -->
+<!-- 4. [NOTE STATE] -->
+<!-- 5. [SCHEMAS AND UTILITY FUNCTIONS] -->
+<!-- 5.1. schemas -->
+<!-- 5.1.1. notes schema -->
+<!-- 5.1.2 tag schema -->
+ <!--5.1.3.  -->
+<!-- 5.2. utility functions -->
+<!-- 5. [SECURITY]-->
+<!-- 6. [STATUS CODE REFERERENCES] -->
+<!-- 7. [KNOWN GAPS AND HOUSE KEEPING](#7-known-gaps-and-house-keeping) remove section if none only display existing -->
+<!-- - [7.1. GAPS](#71-gaps) -->
+<!-- - [7.2. HOUSE KEEPING](#72-house-keeping) -->
+<!-- 8.[REFERENCES] -->
+
 
 1. [Route Summary](#1-route-summary)
 2. [Note States](#2-note-states)
@@ -31,7 +52,7 @@
 
 ---
 
-## 1. Route Summary
+## 1. ROUTE SUMMARY
 
 The router is mounted at **`/notes`** in `app.js`. Every route requires a valid JWT (`checkJwtToken`).
 
@@ -47,6 +68,8 @@ The router is mounted at **`/notes`** in `app.js`. Every route requires a valid 
 | `DELETE` | `/notes/:id/permanent` | Delete for good, along with its translations | trashed |
 
 ---
+<!-- LIST  -->
+### 1.1 GET  `/notes/fetchNotes`
 
 ## 2. Note States
 
