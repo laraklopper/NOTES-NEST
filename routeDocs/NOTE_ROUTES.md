@@ -4,9 +4,9 @@
 
 | Router | Handles |
 |---|---|
-| `noteRoutes.js` | Active notes, the trash, and permanent deletion |
-| `archiveRoutes.js` | Archiving and unarchiving |
-| `exportRoutes.js` | Downloading notes as CSV / XLSX |
+| [`noteRoutes.js`](../server/routes/noteRoutes.js) | Active notes, the trash, and permanent deletion |
+| [`archiveRoutes.js`](../server/routes/archiveRoutes.js)| Archiving and unarchiving |
+| [`exportRoutes.js`](../server/routes/exportRoutes.js)| Downloading notes as CSV / XLSX |
 
 ---
 
