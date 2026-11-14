@@ -1,4 +1,4 @@
-# USER_ROUTES.md — `userRoutes.js` Breakdown
+# USER ROUTES - [`userRoutes.js`](../server/routes/userRoutes.js) BREAKDOWN
 
 [`userRoutes.js`](../server/routes/userRoutes.js) is the Express router for **user accounts after sign-in**: a user reading and editing their own profile, changing their password, and the **admin-only** Users page (listing users, viewing one, and removing one along with all their data).
 
@@ -11,24 +11,29 @@ Signing in, registering, logging out and switching admin status on or off live i
 
 ---
 
-## Table of Contents
+## TABLE OF CONTENTS
+1. [ROUTE SUMMARY](#1-route-summary)
+     - [1.1. GET '/me'](#11-get-me)
+     - [1.2. GET `/fetchUsers` (admin)](#12-get-fetchusers-admin)
+     <!-- list all -->
+2. [IMPORTS AND SETUP](#2-imports-and-setup)
+3. [SCHEMAS AND UTILITY FUNCTIONS](#3-schemas-and-utility-functions)
+     - [3.1. SCHEMAS](#31-schemas)
+          - [3.1.1. USER SCHEMA](#311-user-schema-userschemajs)
+     - [3.2. UTILITY FUNCTIONS](#32-utility-functions)
+4. [SECURITY](#4-security)
+     - [4.1.]
+     - [4.2.]
+5. [STATUS CODE REFERERENCES](#5-status-code-refererences)
+6. [KNOWN GAPS AND HOUSE KEEPING](#6-known-gaps-and-house-keeping)
+7. [REFERENCES](#7-references)
 
-1. [Route Summary](#1-route-summary)
-2. [Imports & Middleware](#2-imports--middleware)
-3. [Access Levels](#3-access-levels)
-4. [GET /me](#4-get-me)
-5. [GET /fetchUsers (admin)](#5-get-fetchusers-admin)
-6. [GET /fetchUser/:id (admin)](#6-get-fetchuserid-admin)
-7. [PATCH /editProfile](#7-patch-editprofile)
-8. [PATCH /editPassword](#8-patch-editpassword)
-9. [DELETE /deleteUser/:id (admin)](#9-delete-deleteuserid-admin)
-10. [Status Code Reference](#10-status-code-reference)
-11. [Known Gaps & Housekeeping](#11-known-gaps--housekeeping)
+- *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
 
-- [`userRoutes.js`](../server/routes/userRoutes.js)
 ---
 
-## 1. Route Summary
+<!-- SECTION 1 -->
+## 1. ROUTE SUMMARY
 
 The router is mounted at **`/user`** by `app.js` (e.g. `GET /user/me`), as the header comment in `userRoutes.js` says. The paths below are relative to that mount point.
 
@@ -42,68 +47,7 @@ The router is mounted at **`/user`** by `app.js` (e.g. `GET /user/me`), as the h
 | `DELETE` | `/deleteUser/:id` | `checkJwtToken`, `checkAdmin` | **Admin** | Remove a non-admin user and **all** their data |
 
 ---
-
-## 2. Imports & Middleware
-
-```js
-require('dotenv').config()
-const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const User = require('../models/userSchema');
-const Note = require('../models/noteSchema');
-const Notebook = require('../models/notebookSchema');
-const Tag = require('../models/tagSchema');
-const Translation = require('../models/translationSchema');
-const { checkPassword, checkPasswordChange, hashPassword, isDevelopment } = require('../middleware/passwordMiddleware')
-const { checkJwtToken } = require('../middleware/securityMiddleware')
-const { checkAdmin } = require('../middleware/adminMiddleware')
-const { EDITABLE_PROFILE_FIELDS } = require('../util/userUtil');
-```
-
-| Import | Used For |
-|---|---|
-| `mongoose` | `ObjectId.isValid()` for `:id` |
-| `bcrypt` | `/editPassword`: compares the **current** password with the stored hash |
-| `User` | The model this router manages |
-| `Note`, `Notebook`, `Tag`, `Translation` | `/deleteUser/:id`: deletes all of the user's data |
-| `checkJwtToken` | Verifies the JWT cookie and sets `req.user` |
-| `checkAdmin` | Only lets admins through; sets **`req.adminUser`** (used in the delete log) |
-| `checkPasswordChange` | `/editPassword`: checks that `currentPassword` and `newPassword` are present and valid |
-| `checkPassword` | `/editPassword`: password strength rules on `newPassword` |
-| `hashPassword` | `/editPassword`: replaces `newPassword` with its bcrypt hash (plaintext in development) |
-| `isDevelopment` | `/editPassword`: plaintext comparison for development accounts |
-| `EDITABLE_PROFILE_FIELDS` | `/editProfile`: maps form fields to schema paths (an **allowlist**) |
-
----
-
-## 3. Access Levels
-
-```
-Request
-   │
-   ▼
-checkJwtToken ──► 401 if no token, or an invalid or expired one
-   │                (sets req.user = { id, ... })
-   ├── user routes: /me, /editProfile, /editPassword
-   │      act ONLY on req.user.id (the user can only touch their own account)
-   │
-   ▼
-checkAdmin ─────► 403 if the user isn't an admin
-   │                (sets req.adminUser)
-   └── admin routes: /fetchUsers, /fetchUser/:id, /deleteUser/:id
-          act on :id from the URL (any NON-admin user)
-```
-
-| Rule | Where | Why |
-|---|---|---|
-| User routes take the ID from the **token**, never the body or URL | `/me`, `/editProfile`, `/editPassword` | A user can't read or edit another account |
-| Admin routes take the ID from the **URL** | `/fetchUser/:id`, `/deleteUser/:id` | Admins manage other users |
-| Admin accounts can't be viewed or removed through the admin routes | `/fetchUser/:id`, `/deleteUser/:id` | Admins can't spy on or remove each other, and an admin **can't delete themselves** |
-
----
-
-## 4. GET `/me`
+### 1.1. GET `/me`
 
 **Purpose:** Return the signed-in user's own profile. `App.js` calls it on load to fill `currentUser` (this is how the app "remembers" a login, since the JWT itself is in an HTTP-only cookie that JavaScript can't read). The Settings page also uses it.
 
@@ -138,12 +82,9 @@ const user = await User.findById(req.user.id)
 }
 ```
 
-Errors use a **`message`** key, the same as every other route (see [Gap 2](#gap-2-inconsistent-error-shapes-fixed)).
+<!-- Errors use a **`message`** key, the same as every other route (see [Gap 2](#gap-2-inconsistent-error-shapes-fixed)). -->
 
----
-
-## 5. GET `/fetchUsers` (admin)
-
+### 1.2. GET `/fetchUsers` (admin)
 **Purpose:** The admin Users page table (`UsersList.js`).
 
 ```js
@@ -166,12 +107,103 @@ const users = await User.find()// Every user
 | Consent | Registration requires `adminDataConsent: true`, so every listed user has agreed to admins seeing their details |
 
 ---
+### 1.3. PATCH `/editProfile`
 
-## 6. GET `/fetchUser/:id` (admin)
+---
+
+
+<!-- SECTION 2 IMPORTS AND SETUP-->
+## 2. IMPORTS AND SETUP
+
+```js
+require('dotenv').config()
+const express = require('express');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const User = require('../models/userSchema');
+const Note = require('../models/noteSchema');
+const Notebook = require('../models/notebookSchema');
+const Tag = require('../models/tagSchema');
+const Translation = require('../models/translationSchema');
+const { checkPassword, checkPasswordChange, hashPassword, isDevelopment } = require('../middleware/passwordMiddleware')
+const { checkJwtToken } = require('../middleware/securityMiddleware')
+const { checkAdmin } = require('../middleware/adminMiddleware')
+const { EDITABLE_PROFILE_FIELDS } = require('../util/userUtil');
+```
+
+| Import | Used For |
+|---|---|
+|`require('dotenv').config()`| |
+| `mongoose` | `ObjectId.isValid()` for `:id` |
+| `bcrypt` | `/editPassword`: compares the **current** password with the stored hash |
+| `User` | The model this router manages |
+| `Note`, `Notebook`, `Tag`, `Translation` | `/deleteUser/:id`: deletes all of the user's data |
+| `checkJwtToken` | Verifies the JWT cookie and sets `req.user` |
+| `checkAdmin` | Only lets admins through; sets **`req.adminUser`** (used in the delete log) |
+| `checkPasswordChange` | `/editPassword`: checks that `currentPassword` and `newPassword` are present and valid |
+| `checkPassword` | `/editPassword`: password strength rules on `newPassword` |
+| `hashPassword` | `/editPassword`: replaces `newPassword` with its bcrypt hash (plaintext in development) |
+| `isDevelopment` | `/editPassword`: plaintext comparison for development accounts |
+| `EDITABLE_PROFILE_FIELDS` | `/editProfile`: maps form fields to schema paths (an **allowlist**) |
+
+---
+
+<!-- SECTION 3: SCHEMAS AND UTILITY FUNCTIONS-->
+## 3. SCHEMAS AND UTILITY FUNCTIONS
+
+<!-- EXPLAIN EACH SCHEMA AND UTILITY FUNCTIONS-->
+### 3.1. SCHEMAS
+
+#### 3.1.1. USER SCHEMA [userSchema.js](../server)
+
+
+### 3.2. UTILITY FUNCTIONS
+
+
+<!-- EXPLAIN UTILITY FUNCTIONS-->
+
+<!-- SECTION 4: ROUTER SECURITY -->
+## 4. SECURITY
+
+<!-- EXPLAIN ROUTER SECURITY -->
+### 4.1. PACKAGES
+
+### 4.2. MIDDLEWARE
+
+### 4.3. ACCESS LEVELS
+
+```
+Request
+   │
+   ▼
+checkJwtToken ──► 401 if no token, or an invalid or expired one
+   │                (sets req.user = { id, ... })
+   ├── user routes: /me, /editProfile, /editPassword
+   │      act ONLY on req.user.id (the user can only touch their own account)
+   │
+   ▼
+checkAdmin ─────► 403 if the user isn't an admin
+   │                (sets req.adminUser)
+   └── admin routes: /fetchUsers, /fetchUser/:id, /deleteUser/:id
+          act on :id from the URL (any NON-admin user)
+```
+
+| Rule | Where | Why |
+|---|---|---|
+| User routes take the ID from the **token**, never the body or URL | `/me`, `/editProfile`, `/editPassword` | A user can't read or edit another account |
+| Admin routes take the ID from the **URL** | `/fetchUser/:id`, `/deleteUser/:id` | Admins manage other users |
+| Admin accounts can't be viewed or removed through the admin routes | `/fetchUser/:id`, `/deleteUser/:id` | Admins can't spy on or remove each other, and an admin **can't delete themselves** |
+
+---
+
+
+<!-- MOVE TO ROUTE SUMMARY -->
+
+### 6. GET `/fetchUser/:id` (admin)
 
 **Purpose:** One user's details for the details panel on the Users page.
 
-### Flow
+#### Flow
 
 ```
 isValid(id)? ──── no ──► 400 "Invalid user id"
@@ -190,11 +222,11 @@ The **admin check comes after the lookup**, because the route needs the document
 
 ---
 
-## 7. PATCH `/editProfile`
+### 7. PATCH `/editProfile`
 
 **Purpose:** Update the signed-in user's profile from the EditProfile form. **Only fields that are sent and not blank change.** A field left blank on the form keeps its current value.
 
-### Request body (any combination)
+#### Request body (any combination)
 
 ```json
 {
@@ -209,7 +241,7 @@ The **admin check comes after the lookup**, because the route needs the document
 
 What **can't** be changed here: password (`/editPassword`), admin status (`/setAdmin`, `/clearAdmin`), date of birth, consent.
 
-### Step 1: Flatten the body
+#### Step 1: Flatten the body
 
 ```js
 const submitted = {
@@ -224,7 +256,7 @@ const submitted = {
 
 The nested request (`fullName.firstName`) becomes **one flat key per editable field**, so all fields can be filtered and mapped the same way.
 
-### Step 2: Filter and map to schema paths
+#### Step 2: Filter and map to schema paths
 
 ```js
 const updates = Object.entries(submitted)
@@ -262,19 +294,19 @@ submitted:  { username: 'LaraK', firstName: '', email: { $gt: '' }, defaultNoteL
 
 **Note:** because blank values are dropped, a field **can't be cleared** through this route. That's fine here, because every editable field is required.
 
-### Step 3: Nothing to update?
+#### Step 3: Nothing to update?
 
 ```js
 if (updates.length === 0) → 400 "Please change at least one field before updating your profile"
 ```
 
-### Step 4: Load the user
+#### Step 4: Load the user
 
 ```js
 const user = await User.findById(userId).exec();// Not found → 404
 ```
 
-### Step 5: Source ≠ target language
+#### Step 5: Source ≠ target language
 
 ```js
 const sourceLang = defaultSourceLang || user.defaultLanguages?.defaultSourceLanguage;// New value, or current
@@ -292,7 +324,7 @@ This compares the **result after the update**: a new value if one was sent, othe
 
 This **can't** be a schema validator on one field, because it compares **two** fields.
 
-### Step 6: Set and save (rather than `findByIdAndUpdate`)
+#### Step 6: Set and save (rather than `findByIdAndUpdate`)
 
 ```js
 updates.forEach(([path, value]) => user.set(path, value));// Dotted paths work: 'fullName.firstName'
@@ -305,7 +337,7 @@ await user.save({ validateModifiedOnly: true });
 | **Validators run** | `.save()` always validates. Update queries only do so with `runValidators`. |
 | `validateModifiedOnly: true` | Validates **only the changed fields**. If schema rules got stricter after an older account registered, that account can still edit its name without being blocked by an unrelated field. |
 
-### Step 7: Respond
+#### Step 7: Respond
 
 ```js
 const updatedUser = user.toJSON();
@@ -327,17 +359,17 @@ The response contains the **saved** values, after normalisation (e.g. `username:
 
 ---
 
-## 8. PATCH `/editPassword`
+### 8. PATCH `/editPassword`
 
 **Purpose:** Change the signed-in user's password. The **current password must be confirmed**, so someone using an unattended logged-in browser can't lock the owner out.
 
-### Request body
+#### Request body
 
 ```json
 { "currentPassword": "OldP@ss1", "newPassword": "NewP@ss2!" }
 ```
 
-### Middleware chain
+#### Middleware chain
 
 ```
 checkJwtToken ──► checkPasswordChange ──► checkPassword ──► passwordUpdateRateLimiter ──► hashPassword ──► handler
@@ -349,7 +381,7 @@ checkJwtToken ──► checkPasswordChange ──► checkPassword ──► pa
 
 By the time the handler runs, **`req.body.newPassword` is already hashed**. `currentPassword` is still plaintext, as typed.
 
-### Step 1: Load the user, **with** the password
+#### Step 1: Load the user, **with** the password
 
 ```js
 const user = await User.findById(userId).select('+password').exec();
@@ -368,7 +400,7 @@ const isCurrentValid = isDevelopment && !isHashed
 
 This is **the same logic as `/login`** in `authRoutes.js`, so a password that logs in also passes here.
 
-### Step 3: 400, not 401, for a wrong current password
+#### Step 3: 400, not 401, for a wrong current password
 
 ```js
 if (!isCurrentValid) return res.status(400).json({ message: 'Current password is incorrect' });
@@ -376,7 +408,7 @@ if (!isCurrentValid) return res.status(400).json({ message: 'Current password is
 
 **Why not 401?** The frontend probably treats **401 as "session expired"** and logs the user out. Typing the wrong current password shouldn't log anyone out, so the route uses 400.
 
-### Step 4: Save
+#### Step 4: Save
 
 ```js
 user.password = newPassword;// Already hashed by the middleware
@@ -389,11 +421,11 @@ setTokenCookie(res, user);// New cookie for this session; every other session is
 
 ---
 
-## 9. DELETE `/deleteUser/:id` (admin)
+### 9. DELETE `/deleteUser/:id` (admin)
 
 **Purpose:** An admin **permanently** removes a user **and everything they own**. This can't be undone.
 
-### Flow
+#### Flow
 
 ```
 isValid(id)? ─── no ─► 400
@@ -415,7 +447,7 @@ User.deleteOne({ _id: id })// The account LAST
 200 { message, user: { _id, username } }
 ```
 
-### Why the data is deleted first and the account last
+#### Why the data is deleted first and the account last
 
 ```
 Data first, account last (this code):
@@ -428,7 +460,7 @@ Account first (the wrong order):
 
 Every step is **idempotent** (running `deleteMany` again on data that's already gone deletes 0 and succeeds), so a retry is always safe.
 
-### Why `Promise.all`
+#### Why `Promise.all`
 
 The four collections don't depend on each other, so they're deleted **in parallel**. Destructuring the results gives the `deletedCount` for each, and those go into the **audit log**:
 
@@ -438,7 +470,7 @@ The four collections don't depend on each other, so they're deleted **in paralle
 
 `req.adminUser.username` (set by `checkAdmin`) records **which admin** removed the account.
 
-### Why the notebook and tag hooks don't matter here
+#### Why the notebook and tag hooks don't matter here
 
 `deleteMany` **doesn't** run the `findOneAndDelete` hooks that `$pull` tags from notes or unset notebooks. That's fine here, because the user's **notes are deleted too**, so there's nothing left to clean up.
 
@@ -449,8 +481,8 @@ The four collections don't depend on each other, so they're deleted **in paralle
 ```
 
 ---
-
-## 10. Status Code Reference
+<!-- SECTION 5 -->
+## 5. STATUS CODE REFERERENCES
 
 | Code | Route(s) | When |
 |---|---|---|
@@ -468,8 +500,16 @@ The four collections don't depend on each other, so they're deleted **in paralle
 
 ---
 
-## 11. Known Gaps & Housekeeping
+<!-- SECTION 6 -->
+<!-- SKIP SECTION(REMOVE) IF NONE -->
+## 6. KNOWN GAPS AND HOUSE KEEPING
+<!-- ONLY LIST EXISTING GAPS AND HOUSE KEEPING -->
+<!-- ## 11. Known Gaps & Housekeeping -->
+<!-- SUB SECTIONS -->
+### 6.1. GAPS
+<!-- #### GAP 1 -->
 
+### 6.2. HOUSE KEEPING
 ### ~~Gap 1: `/me` logs the whole user to the console~~ (fixed)
 
 `/me` used to log the whole user document, which wrote the user's **email, phone number and date of birth** to the server logs every time the app loaded. Under **POPIA**, logging is processing, so personal information shouldn't be logged beyond what's needed.
@@ -567,3 +607,6 @@ If the JWT carried the `username` or `fullName`, editing the profile would leave
 | `/fetchUsers` log label said `GET /` | Fixed with [Gap 3](#gap-3-fetchusers-leaks-the-internal-error-message-fixed) |
 | Extra blank lines | Removed |
 | "Conditional rendering" comments (a React UI term) | Now "Guard clause: check ..." |
+
+<!-- SECTION 7: REFERENCES -->
+## 7. REFERENCES
