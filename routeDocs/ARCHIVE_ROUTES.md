@@ -1,6 +1,6 @@
-# archiveRoutes.md — `archiveRoutes.js` Breakdown
+# ARCHIVE ROUTES — [`archiveRoutes.js`](../server/routes/archiveRoutes.js) Breakdown
 
-`archiveRoutes.js` is the Express router for the **archive**. It handles two kinds of item: **notes** and **translations**. Archiving hides an item from its main list without deleting it. From the archive, an item can be **restored** to its main list or **moved to the trash** (soft delete). An item left in the archive for **60 days** is moved to the trash automatically.
+[`archiveRoutes.js`](../server/routes/archiveRoutes.js) is the Express router for the **archive**. It handles two kinds of item: **notes** and **translations**. Archiving hides an item from its main list without deleting it. From the archive, an item can be **restored** to its main list or **moved to the trash** (soft delete). An item left in the archive for **60 days** is moved to the trash automatically.
 
 The archive has no collection of its own. It's a **state** on each `Note` and `Translation` document, controlled by these fields:
 
