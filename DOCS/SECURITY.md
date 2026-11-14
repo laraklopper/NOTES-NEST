@@ -2,7 +2,7 @@
 
 ## TABLE OF CONTENTS
 
-- *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
+
 
 1. [Overview](#1-overview)
 2. [Security Packages](#2-security-packages)
@@ -17,7 +17,7 @@
 11. [HTTP Security Headers and CORS](#11-http-security-headers-and-cors)
 12. [Privacy and Consent](#12-privacy-and-consent)
 
-
+- *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
 ---
 
 ## 1. OVERVIEW
@@ -341,18 +341,8 @@ The HTTP-only JWT cookie adds a second layer: even if a script did run, it could
 - Server logs record user IDs and usernames for auditing, but never passwords or tokens.
 
 ---
-<!-- 
-## 13. KNOWN LIMITATIONS
 
-These are areas to address before the application is deployed to production:
-
-- **Plaintext passwords in development**: make sure `NODE_ENV=production` is set in production so passwords are hashed.
-- **Open CORS**: `cors()` currently allows any origin. Restrict it to the client's domain, for example `cors({ origin: 'https://your-domain', credentials: true })`.
-- **Password change is not rate limited**: `passwordUpdateRateLimiter` exists but is not applied to `PATCH /user/editPassword`.
-- **No password reset**: there is no "forgot password" flow yet. A helper for hashing reset tokens (`hashResetToken` in [userUtil.js](../server/util/userUtil.js)) has been started but is not used.
-- **No token revocation**: logging out deletes the cookie, but a copied token stays valid until it expires (default 12 hours).
-- **JWT fallback secret**: [securityMiddleware.js](../server/middleware/securityMiddleware.js) falls back to `'secretKey'` if `JWT_SECRET_KEY` is missing. `ensureJwtSecret` normally prevents this, but the fallback should be removed.
-- **Admin account age**: `ADMIN_MIN_ACCOUNT_AGE_MS` is set to 1 day for development and should be raised (e.g. 3 months) for production. -->
 ## 13. REFERENCES 
 
-- 
+- https://www.geeksforgeeks.org/node-js/npm-bcrypt/
+- https://www.npmjs.com/package/cookie-parser
