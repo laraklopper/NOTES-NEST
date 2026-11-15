@@ -29,6 +29,7 @@ User ─┬─< Notebook
 - A Note can belong to at most one Notebook. `notebook: null` means "No notebook".
 - Notes and Tags are linked many-to-many through the Note's `tags` array.
 - A Translation can point to the Note it came from. `note: null` means the text was typed into the translate form.
+- MongoDB automatically creates a `_id` field in each document and assigns a unique BSON ObjectId to the field.
 
 ## 2. USER
 
