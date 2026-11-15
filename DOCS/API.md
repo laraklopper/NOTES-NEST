@@ -27,10 +27,10 @@ The term `API` can refer to many types of services, and developers have many cho
 
 ## APPLICATION LEVEL REQUESTS
 
-All routes are protected and require a JWT token except the /login, and /register routes/requests.
-
+<!-- list all requests -->
 ### 2.1 AUTH ROUTES:
 
+<!-- - link to .js file -->
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 |POST| `/auth/login` | NONE |
