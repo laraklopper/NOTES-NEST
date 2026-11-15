@@ -1,45 +1,63 @@
-# APPLICATION PROGRAMMING INTERFACE `(API)` INTEGRATION
+# APPLICATION `API` INTEGRATION
 
+## PROCESS
+
+| **CLIENT** |--*Request*->| **API** | --Request--> |**SERVER**|
+
+| **CLIENT** |<--*Response*-| **API** | <--*Response*-- |**SERVER**|
+
+|||
+|---|---|
+|The Client sends a request to the API: | The client sends a request to an API endpoint with information such as the HTTP method, parameters, headers, and request body.| 
+| API processes the request:|   The API validates the request and determines the required operation based on the provided information.|
+| API communicates with the backend:| The API interacts with application logic, databases, or other services to process the request and obtain the required data.|
+|API sends a response to the client: | The API returns the result to the client, usually with an HTTP status code and response data in a format such as JSON or XML.|
+
+----
 
 ## TABLE OF CONTENTS
+
 1. [OVERVIEW](#1-overview)
- - [1.1. ROUTERS](#11-routers)
+- [1.1. ROUTERS](#11-routers)
 2. [APPLICATION ENDPOINTS](#2-application-endpoints)
- - [2.1 AUTH ROUTES](#21-auth-routes)
- - [2.2. USER ROUTES](#22-user-routes)
- - [2.3. NOTE ROUTES](#23-note-routes)
- - [2.4. ARCHIVE ROUTES](#24-archive-routes)
- - [2.5. NOTEBOOK ROUTES](#25-notebook-routes)
- - [2.6 TAG ROUTES](#26-tag-routes)
- - [2.7. API ROUTES](#27-api-routes)
- - [2.8. TRANSLATION ROUTES](#28-translation-routes)
- - [2.9. EXPORT ROUTES](#29-export-routes)
-3. [REFERENCES](#3-references)
+- [2.1 AUTH ROUTES](#21-auth-routes)
+- [2.2. USER ROUTES](#22-user-routes)
+- [2.3. NOTE ROUTES](#23-note-routes)
+- [2.4. ARCHIVE ROUTES](#24-archive-routes)
+- [2.5. NOTEBOOK ROUTES](#25-notebook-routes)
+- [2.6 TAG ROUTES](#26-tag-routes)
+- [2.7. API ROUTES](#27-api-routes)
+- [2.8. TRANSLATION ROUTES](#28-translation-routes)
+- [2.9. EXPORT ROUTES](#29-export-routes)
+3. [HTTP STATUS CODES](#3-http-status-codes)
+4. [REFERENCES](#4-references)
 
 - *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
 ---
 
 ## 1. OVERVIEW 
 
+An API acts as an interface between a client and a server, allowing them to communicate and exchange data. API integration helps connect different systems, automate tasks, share data, and extend application functionality.
 An `API` call is a request by a software application to access data or any other service from another application or any other server.
 The term `API` can refer to many types of services, and developers have many choices for how their *`APIs`* are architected and what protocols and standards they use.
-`REST  APIs` use `JSON` (most common), `XML`, `HTML`, or plain text format. `REST APIs` are the most common APIs used across the web today. `HTTP` is an application-layer protocol for fetching resources such as `HTML` .
 
 **REST API's**
 
-| **HTTP Verb** | **CRUD Operation** | **Description** |
+`REST  APIs` use `JSON` (most common), `XML`, `HTML`, or plain text format. `REST APIs` are the most common APIs used across the web today. `HTTP` is an application-layer protocol for fetching resources such as `HTML` . REST is used for building APIs because it provides a simple, scalable, and standard way for applications to communicate over a network.
+Uses standard HTTP operations such as GET, POST, PUT, PATCH, and DELETE to work with resources.
+
+| **HTTP VERB** | **CRUD OPERATION** | **DESCRIPTION** |
 |--------|-------|------|
-| POST | CREATE | Used to submit data about a specific entity to the server |
-| GET | READ | Used to fetch information from the database |
-| PUT | UPDATE | Full replacement update of a resource on the database |
-| PATCH | UPDATE | Partial update of a resource on the database |
-| DELETE | DELETE | Deletes a specific resource |
+| `POST` | *CREATE* | Used to submit data about a specific entity to the server |
+| `GET` | *READ* | Used to fetch information from the database |
+| `PUT` | *UPDATE* | Full replacement update of a resource on the database |
+| `PATCH` | *UPDATE* | Partial update of a resource on the database |
+| `DELETE` | *DELETE* | Deletes a specific resource |
 
 
 ## 1.1. ROUTERS
 
-A *`router`* object is an instance of middleware and routes.
-The top-level express object has a Router() method that creates a new router object. 
+A *`router`* object is an instance of middleware and routes. The top-level express object has a Router() method that creates a new router object. 
 
 ```js
 const express = require('express');//Express framework for building web applications
@@ -239,6 +257,7 @@ Responses are grouped in five classes:
 
 ## 4. REFERENCES
 
+- https://www.geeksforgeeks.org/software-testing/what-is-an-api/
 - https://expressjs.com/en/5x/api/router/
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status
 - https://blog.postman.com/different-types-of-apis/
