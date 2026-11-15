@@ -80,20 +80,37 @@ module.exports = router;// Export the router to be used in other parts of the ap
 
 ## 2. APPLICATION ENDPOINTS 
 
-<!-- list all requests -->
+Every endpoint below is shown with its **full path** (mount point + route path).
+
+- **AUTH** `NONE` means anyone can call the endpoint. `JWT` means the request must carry a valid JWT cookie, checked by `checkJwtToken`. `JWT + Admin` also needs `checkAdmin`.
+- Every user can only see and change **their own** notes, notebooks, tags and translations. Another user's resource returns `404`, so ids can't be probed.
+- Any `:id` must be a valid MongoDB ObjectId, otherwise the route returns `400`.
+
+**Summary: 49 endpoints**
+
+| Router | Endpoints |
+|--------|-----------|
+| `/auth` | 5 |
+| `/user` | 6 |
+| `/notes` | 8 |
+| `/archive` | 8 |
+| `/notebooks` | 4 |
+| `/tag` | 4 |
+| `/api` | 3 |
+| `/translation` | 6 |
+| `/export` | 1 |
+
 ### 2.1 AUTH ROUTES
 
 The router is mounted at **`/auth`** by [`app.js`](../server/app.js). 
 
-
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
 |--------|----------|------|------------|---|
-|`POST`| `/auth/login` | NONE |`loginLimiter` | Check credentials and set the JWT cookie |
-|`POST`| `/auth/register` | NONE |`registerLimiter`, `checkPassword`, `hashPassword` | Create a new user |
- `POST` | `/logout` | | none | Clear the JWT cookie |
-|`PATCH`| `/auth/setAdmin` | JWT|`checkJwtToken` | Upgrade the logged-in user to admin (21+, minimum account age) |
-|`PATCH`|`auth/clearAdmin` | JWT | |Remove admin status from the logged-in user|
-
+| `POST` | `/auth/login` | NONE | `loginLimiter` | Check credentials and set the JWT cookie |
+| `POST` | `/auth/register` | NONE | `registerLimiter`, `checkPassword`, `hashPassword` | Create a new user |
+| `POST` | `/auth/logout` | NONE | — | Clear the JWT cookie |
+| `PATCH` | `/auth/setAdmin` | JWT | `checkJwtToken` | Upgrade the logged-in user to admin (21+, minimum account age) |
+| `PATCH` | `/auth/clearAdmin` | JWT | `checkJwtToken` | Remove admin status from the logged-in user |
 
 ### 2.2. USER ROUTES
 
@@ -101,69 +118,73 @@ The router is mounted at **`/user`** by [`app.js`](../server/app.js).
 
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
 |--------|----------|------|------------|---|
-| `GET` | `/me` | JWT |`checkJwtToken`, | Own profile (used by `App.js` for `currentUser`, and by Settings) |
-| `GET` | `/fetchUsers` | JWT| `checkJwtToken`, `checkAdmin` | **Admin** | All users, for the Users table |
-| `GET` | `/fetchUser/:id` |JWT| `checkJwtToken`, `checkAdmin` | **Admin** | One non-admin user, for the details panel |
-| `PATCH` | `/editProfile` | JWT |`checkJwtToken` | Any user | Update own profile and default languages |
-| `PATCH` | `/editPassword` | JWT |`checkJwtToken`, `checkPasswordChange`, `checkPassword`, `passwordUpdateRateLimiter`, `hashPassword` | Any user | Change own password (signs out other sessions) |
-| `DELETE` | `/deleteUser/:id` | JWT |`checkJwtToken`, `checkAdmin` | **Admin** | Remove a non-admin user and **all** their data |
+| `GET` | `/user/me` | JWT | `checkJwtToken` | Own profile (used by `App.js` for `currentUser`, and by Settings) |
+| `GET` | `/user/fetchUsers` | JWT + Admin | `checkJwtToken`, `checkAdmin` | All users, for the Users table |
+| `GET` | `/user/fetchUser/:id` | JWT + Admin | `checkJwtToken`, `checkAdmin` | One non-admin user, for the details panel |
+| `PATCH` | `/user/editProfile` | JWT | `checkJwtToken` | Update own profile and default languages |
+| `PATCH` | `/user/editPassword` | JWT | `checkJwtToken`, `checkPasswordChange`, `checkPassword`, `passwordUpdateRateLimiter`, `hashPassword` | Change own password (signs out other sessions) |
+| `DELETE` | `/user/deleteUser/:id` | JWT + Admin | `checkJwtToken`, `checkAdmin` | Remove a non-admin user and **all** their data |
 
 ### 2.3. NOTE ROUTES
 
+The router is mounted at **`/notes`** by [`app.js`](../server/app.js). 
 
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
 |--------|----------|------|------------|---|
-| `GET` | `/fetchNotes`| JWT | `checkJwtToken` | |
-| `GET` | `/trash` | JWT |`checkJwtToken` | |
-| `GET` | `/:id` |JWT |`checkJwtToken` | |
-| `POST` | `/addNote` | JWT |`checkJwtToken` | Creates a note |
-| `PATCH` | `/:id` | JWT |`checkJwtToken` | Edit title, content, language, notebook, tags or pin | 
-| `PATCH` | `/:id/restore`| JWT | `checkJwtToken` | Restore from the trash | trashed |
-| `DELETE` | `/:id` | JWT | `checkJwtToken` |  Move to the trash (soft delete) | 
-| `DELETE` | `/:id/permanent` | JWT | `checkJwtToken` | Delete for good, along with its translations | 
+| `GET` | `/notes/fetchNotes` | JWT | `checkJwtToken` | List the user's active notes (not archived, not trashed). Optional query: `language`, `notebook`, `tag`, `page`, `limit` |
+| `GET` | `/notes/trash` | JWT | `checkJwtToken` | List the user's trashed notes (query: `page`, `limit`). Applies the 60-day archive rule first, so expired archived notes appear here |
+| `GET` | `/notes/:id` | JWT | `checkJwtToken` | Fetch one of the user's notes |
+| `POST` | `/notes/addNote` | JWT | `checkJwtToken` | Create a note (unknown tag names are created automatically) |
+| `PATCH` | `/notes/:id` | JWT | `checkJwtToken` | Edit title, content, language, notebook, tags or pin of an **active** note. Only the fields sent are updated |
+| `PATCH` | `/notes/:id/restore` | JWT | `checkJwtToken` | Restore a note from the trash |
+| `DELETE` | `/notes/:id` | JWT | `checkJwtToken` | Move a note to the trash (soft delete) |
+| `DELETE` | `/notes/:id/permanent` | JWT | `checkJwtToken` | Delete a **trashed** note for good, along with its translations |
 
 ### 2.4. ARCHIVE ROUTES
 
-The router is mounted at **`/archive`** in [`app.js`](../server/app.js). 
+The router is mounted at **`/archive`** by [`app.js`](../server/app.js). 
 
-Archive routes are used for notes and translations.  
+Archive routes are used for notes and translations. Archived items that are older than 60 days are moved to the trash automatically.
 
 **NOTES**
 
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
 |--------|----------|------|------------|---|
-| `GET` | `/archive/fetchNotes` | JWT |`checkJwtToken` | List the user's archived notes | 
-| `PATCH` | `/archive/:id` | JWT | `checkJwtToken` | Archive an active note | **active** (not archived, not trashed) | 
-| `PATCH` | `/archive/:id/restore` | `checkJwtToken` | Return a note to the main list | **archived**, not trashed |
-| `DELETE` | `/archive/:id` | `checkJwtToken` | Move an archived note to the trash | **archived**, not trashed |
+| `GET` | `/archive/fetchNotes` | JWT | `checkJwtToken` | List the user's archived notes |
+| `PATCH` | `/archive/:id` | JWT | `checkJwtToken` | Archive an **active** note (not archived, not trashed) |
+| `PATCH` | `/archive/:id/restore` | JWT | `checkJwtToken` | Return an **archived** note to the main list |
+| `DELETE` | `/archive/:id` | JWT | `checkJwtToken` | Move an **archived** note to the trash |
 
-**Translations**
+**TRANSLATIONS**
 
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
 |--------|----------|------|------------|---|
-| `GET` | `/archive/fetchTranslations` | JWT |`checkJwtToken` | List the user's archived translations | archived, not trashed |
-| `PATCH` | `/archive/translation/:id` | JWT |`checkJwtToken` | Archive an active translation **active** (not archived, not trashed) |
-| `PATCH` | `/archive/translation/:id/restore`| JWT | `checkJwtToken` | Return a translation to the main list, **archived**, not trashed |
-| `DELETE` | `/archive/translation/:id` | JWT |`checkJwtToken` | Move an archived translation to the trash, **archived**, not trashed |
-
+| `GET` | `/archive/fetchTranslations` | JWT | `checkJwtToken` | List the user's archived translations |
+| `PATCH` | `/archive/translation/:id` | JWT | `checkJwtToken` | Archive an **active** translation (not archived, not trashed) |
+| `PATCH` | `/archive/translation/:id/restore` | JWT | `checkJwtToken` | Return an **archived** translation to the main list |
+| `DELETE` | `/archive/translation/:id` | JWT | `checkJwtToken` | Move an **archived** translation to the trash |
 
 ### 2.5. NOTEBOOK ROUTES
 
+The router is mounted at **`/notebooks`** by [`app.js`](../server/app.js). 
+
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
 |--------|----------|------|------------|---|
-| `GET` | `/notebooks` | JWT |`checkJwtToken` | List the user's notebooks A–Z (ignoring case), each with a count of active notes |
+| `GET` | `/notebooks` | JWT | `checkJwtToken` | List the user's notebooks A–Z (ignoring case), each with a count of active notes |
 | `POST` | `/notebooks` | JWT | `checkJwtToken` | Create a notebook |
 | `PATCH` | `/notebooks/:id` | JWT | `checkJwtToken` | Rename and/or recolour a notebook |
-| `DELETE` | `/notebooks/:id` |JWT | `checkJwtToken` | Delete a notebook; its notes move to "No notebook" |
+| `DELETE` | `/notebooks/:id` | JWT | `checkJwtToken` | Delete a notebook; its notes move to "No notebook" |
 
 ### 2.6 TAG ROUTES
 
+The router is mounted at **`/tag`** by [`app.js`](../server/app.js). 
+
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
 |--------|----------|------|------------|---|
-| `GET` | `/tag/fetchTags` |JWT | `checkJwtToken` | List the user's tags A–Z, each with a note count |
-| `POST` | `/tag/addTag` |JWT | `checkJwtToken` | Create a tag |
-| `PUT` | `/tag/:id` |JWT | `checkJwtToken` | Rename a tag |
-| `DELETE` | `/tag/:id` |JWT | `checkJwtToken` | Delete a tag and remove it from every note |
+| `GET` | `/tag/fetchTags` | JWT | `checkJwtToken` | List the user's tags A–Z, each with a note count |
+| `POST` | `/tag/addTag` | JWT | `checkJwtToken` | Create a tag |
+| `PUT` | `/tag/:id` | JWT | `checkJwtToken` | Rename a tag |
+| `DELETE` | `/tag/:id` | JWT | `checkJwtToken` | Delete a tag and remove it from every note |
 
 ### 2.7. API ROUTES
 
@@ -176,17 +197,19 @@ React (TranslateForm)  ──►  /api/language/translate/v2/...  ──►  Lan
        └────────────── clean JSON / safe error message ◄────────────┘
 ```
 
-The router is mounted at **`/api`** by `app.js`, so every path below starts with `/api`.
+The router is mounted at **`/api`** by [`app.js`](../server/app.js), so every path below starts with `/api`.
 
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
 |--------|----------|------|------------|---|
-| `GET` | `/api/language/translate/v2/languages` | `checkJwtToken` | Supported languages for the dropdowns (cached 24h) |
-| `POST` | `/api/language/translate/v2` | `translateLimiter`, `checkJwtToken` | Translate text (does **not** save) |
-| `POST` | `/api/language/translate/v2/detect` | `detectLimiter`, `checkJwtToken` | Detect the language while the user types |
+| `GET` | `/api/language/translate/v2/languages` | JWT | `checkJwtToken` | Supported languages for the dropdowns (cached 24h) |
+| `POST` | `/api/language/translate/v2` | JWT | `translateLimiter`, `checkJwtToken` | Translate text (does **not** save) |
+| `POST` | `/api/language/translate/v2/detect` | JWT | `detectLimiter`, `checkJwtToken` | Detect the language while the user types |
+
+The rate limiters run **before** `checkJwtToken`, so floods are rejected before any JWT check or Langbly call.
 
 #### Langbly connection settings:
 
-Langbly uses API keys for the translate endpoint. for authentication. 
+Langbly uses API keys for authentication on the translate endpoint. 
 The base URL and key are stored in `.env` as `LANGBLY_BASE_URL` and `LANGBLY_API_KEY`.
 
 ```js
@@ -209,12 +232,18 @@ const LANGBLY_API_KEY = process.env.LANGBLY_API_KEY;
 
 ### 2.8. TRANSLATION ROUTES
 
-| Method | Full Path | Middleware | Purpose | Translation Must Be | Sets |
-|---|---|---|---|---|---|
-| `GET` | `/archive/fetchTranslations` | `checkJwtToken` | List the user's archived translations | archived, not trashed | — |
-| `PATCH` | `/archive/translation/:id` | `checkJwtToken` | Archive an active translation | **active** (not archived, not trashed) | `isArchived: true`, `archivedAt: now` |
-| `PATCH` | `/archive/translation/:id/restore` | `checkJwtToken` | Return a translation to the main list | **archived**, not trashed | `isArchived: false`, `archivedAt: null` |
-| `DELETE` | `/archive/translation/:id` | `checkJwtToken` | Move an archived translation to the trash | **archived**, not trashed | `deletedAt: now`, `isArchived: false`, `archivedAt: null` |
+The router is mounted at **`/translation`** by [`app.js`](../server/app.js). 
+
+These routes manage **saved** translations in the database. Translating text itself is done by the [API routes](#27-api-routes); the result is then saved here with `/translation/save`. Archiving translations is handled by the [archive routes](#24-archive-routes).
+
+| METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
+|--------|----------|------|------------|---|
+| `GET` | `/translation/fetch` | JWT | `checkJwtToken` | List the user's active translations (not archived, not trashed). Optional query: `note`, `sourceLanguage`, `targetLanguage`, `page`, `limit` |
+| `GET` | `/translation/trash` | JWT | `checkJwtToken` | List the user's trashed translations (query: `page`, `limit`). Applies the 60-day archive rule first |
+| `POST` | `/translation/save` | JWT | `checkJwtToken` | Save a translation (`sourceText`, `translatedText`, `targetLanguage`, optional `sourceLanguage` and linked `note`) |
+| `PATCH` | `/translation/:id/restore` | JWT | `checkJwtToken` | Restore a translation from the trash |
+| `DELETE` | `/translation/:id` | JWT | `checkJwtToken` | Move an **active** translation to the trash (soft delete). Archived translations use `DELETE /archive/translation/:id` |
+| `DELETE` | `/translation/:id/permanent` | JWT | `checkJwtToken` | Delete a **trashed** translation for good |
 
 ### 2.9. EXPORT ROUTES
 
@@ -222,9 +251,16 @@ The router is mounted at **`/export`** by [`app.js`](../server/app.js). There's 
 
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
 |--------|----------|------|------------|---|
-| `GET` | `/export` | JWT  |`exportLimiter`, `checkJwtToken` | Download notes or translations as `.csv` / `.xlsx` |
+| `GET` | `/export` | JWT | `exportLimiter`, `checkJwtToken` | Download notes or translations as `.csv` / `.xlsx` |
 
- - Download data as a file (query: type = notes \| translations, format = csv \| xlsx, + filters) 
+**Query parameters**
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `type` | `notes` \| `translations` | Which data to export |
+| `format` | `csv` \| `xlsx` | File format |
+| filters | same as `/notes/fetchNotes` or `/translation/fetch` | Optional. Export only the filtered list |
+
 Files are built with `xlsx` (SheetJS) and `csv-stringify`, and sent with a `Content-Disposition: attachment` header, e.g. `note-nest-notes-2026-11-09.xlsx` or `note-nest-translations-filtered-2026-11-09.csv`.
 
 ## 3. HTTP STATUS CODES
@@ -251,7 +287,7 @@ Responses are grouped in five classes:
 | 403 | Forbidden | Logged in but not allowed (non-admin on an admin route, not eligible for admin, or viewing an admin account through `/user/fetchUser/:id`) |
 | 404 | Not Found | Resource doesn't exist or belongs to another user |
 | 409 | Conflict | Duplicate username, contact number, notebook name or tag; already an admin (`setAdmin`) or not an admin (`clearAdmin`) |
-| 429 | Too Many Requests | `/auth/login` or `/auth/register` rate limit hit, or Langbly quota or rate limit reached |
+| 429 | Too Many Requests | A rate limiter was hit (`loginLimiter`, `registerLimiter`, `passwordUpdateRateLimiter`, `translateLimiter`, `detectLimiter`, `exportLimiter`), or Langbly quota or rate limit reached |
 | 500 | Server Error | Unexpected error. Each route catches its own errors; there is no shared error-handler middleware yet |
 | 502 | Bad Gateway | Langbly returned an error, timed out, couldn't be reached, or the API key is missing |
 
