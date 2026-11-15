@@ -1,12 +1,4 @@
 // userRoutes.js
-/*mounted at /user by app.js
-GET - '/me' - The signed-in user's own profile
-GET - '/fetchUsers' - Every user, for the admin Users page
-GET - '/fetchUser/:id' - One non-admin user, for the admin details panel
-PATCH - '/editProfile' - Update the signed-in user's profile and default languages
-PATCH - '/editPassword' - Change the signed-in user's password (signs out other sessions)
-DELETE - '/deleteUser/:id' - Remove a non-admin user and all their data (admin)
-*/
 const express = require('express');// Import the Express.js library
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const bcrypt = require('bcryptjs');// Used to check the current password against the stored hash
