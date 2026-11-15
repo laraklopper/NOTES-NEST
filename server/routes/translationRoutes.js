@@ -7,15 +7,20 @@ PATCH - /translation/:id/restore - Restore a translation from the trash
 DELETE - /translation/:id - Soft delete (move to trash)
 DELETE - /translation/:id/permanent - Permanently delete a trashed translation
 */
-const express = require('express');
+// IMPORT REQUIRED MODULES AND PACKAGES
+const express = require('express');// Import the Express.js library
 const mongoose = require('mongoose');// Used to validate ObjectIds
+// IMPORT SCHEMAS
 const Translation = require('../models/translationSchema');// Import the Translation model
 const Note = require('../models/noteSchema');// Import the Note model
+// IMPORT MIDDLEWARE
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
+// IMPORT UTILITY FUNCTIONS
 const { languageCodeRegex } = require('../util/schemaUtil');// Used to validate the sourceLanguage and targetLanguage filters
 const { parsePagination, paginationInfo } = require('../util/apiUtil');// Shared pagination helpers (same as the notes lists)
 const { trashExpiredArchivedTranslations } = require('../util/archiveUtil');// 60-day archive rule
-const router = express.Router()
+const router = express.Router()// Create a new router object using Express
+
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────
    GET: READ — Used to fetch information from the database
