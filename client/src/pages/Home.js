@@ -237,6 +237,7 @@ const notProvided = 'Not provided';
                   </Row>
                 </div>
                 <div id='editUserDataPanal'>
+                {/* TOGFL */}
                      {editUser && (
             <div id='editProfileBlock'>
               <Row id='editProfileRow'>
@@ -256,7 +257,6 @@ const notProvided = 'Not provided';
         )}
         {/* TOGGLE EDIT PASSWORD FORM */}
         {editPassword && (
-          
             <div id='editPasswordBlock'>
               <Row id='editPasswordRow'>
                 <Col id='editPasswordCol1' />
