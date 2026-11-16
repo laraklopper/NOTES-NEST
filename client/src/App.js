@@ -163,31 +163,42 @@ export default function App() {
             {/* Protected Route to Home page */}
               <Route path='/' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                  <Home currentUser={currentUser} setError={setError} setCurrentUser={setCurrentUser} logout={logout}/>
+                  <Home 
+                    currentUser={currentUser} 
+                    setError={setError} 
+                    setCurrentUser={setCurrentUser} 
+                    logout={logout}
+                      loggedIn={loggedIn}
+                    />
                 </ProtectedUserRoute>
               }/>
               {/*Protected Route to NotePad page */}
               <Route path='/notepad' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                  <NotePad currentUser={currentUser} logout={logout} setError={setError}/>
+                  <NotePad 
+                    currentUser={currentUser} 
+                    logout={logout} 
+                    setError={setError}
+                      loggedIn={loggedIn}
+                    />
                 </ProtectedUserRoute>
               }/>
               {/* Protected Route to Notes page */}
               <Route path='/notes' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                  <Notes currentUser={currentUser} logout={logout} setError={setError}/>
+                  <Notes currentUser={currentUser} loggedIn={loggedIn} logout={logout} setError={setError}/>
                 </ProtectedUserRoute>
               }/>
               {/* Protected Route to Translate page */}
               <Route path='/translate' element={
                 <ProtectedUserRoute currentUser={currentUser}>
-                <Translate currentUser={currentUser} logout={logout}/>
+                <Translate currentUser={currentUser} logout={logout} loggedIn={loggedIn}/>
                 </ProtectedUserRoute>
               }/> 
               {/* Protected (Admin Only) Route to Users Page */}
               <Route path='/users' element={
                 <ProtectedAdminRoute currentUser={currentUser}>
-                  <Users currentUser={currentUser} users={users} logout={logout}/>
+                  <Users currentUser={currentUser} users={users} logout={logout} loggedIn={loggedIn}/>
                 </ProtectedAdminRoute>
               }/>
                {/* FALL BACK ROUTE: Response 404 PAGE NOT FOUND */}
@@ -203,9 +214,10 @@ export default function App() {
                 setError={setError}
                 setLoggedIn={setLoggedIn}
                 setCurrentUser={setCurrentUser}
+                loggedIn={loggedIn}
               />}/>
               {/* Route to Registration page */}
-              <Route path='/reg' element={<Register setError={setError}/>}/>
+              <Route path='/reg' element={<Register loggedIn={loggedIn} setError={setError}/>}/>
                {/* FALL BACK ROUTE: Response 404 PAGE NOT FOUND */}
         {/* <Route path='*' element={<h2 id='pageNotFound'>404: Page Not Found</h2>}/> */}
               <Route path='*' element={<Navigate to='/' replace/>}/>
