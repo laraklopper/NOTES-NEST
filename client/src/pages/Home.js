@@ -11,14 +11,14 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 // IMPORT CUSTOM COMPONENTS
-import Header from '../components/Header'
+import MainHeader from '../components/MainHeader'
 import Footer from '../components/Footer'
 import Profile from '../components/Profile';
 import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
 import AdminRegisForm from '../components/AdminRegisForm'
 import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText } from 'lucide-react'
-import MainHeader from '../components/MainHeader'
+
 // IMPORT UTILITY FUNCTIONS
 const { ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 

@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import Header from '../components/Header'
+// import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
 import { BookOpenCheck } from 'lucide-react';
@@ -16,6 +16,7 @@ import TranslationsList from '../components/TranslationsList';
 import TrashedTranslations from '../components/TrashedTranslations';
 import ArchivedTranslations from '../components/ArchivedTranslations';
 import LanguagesList from '../components/LanguagesList';
+import MainHeader from '../components/MainHeader';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
@@ -43,7 +44,7 @@ export default function Translate(
     <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
       {/* ---------Screen Reader Heading------------------ */}
       <p className='visually-hidden' id='pageTitle'>TRANSLATE PAGE</p>
-      <Header heading={'TRANSLATE'} currentUser={currentUser} />
+      <MainHeader heading={'TRANSLATE'} currentUser={currentUser} loggedIn={loggedIn}/>
       <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
           <div className='eventBar'>

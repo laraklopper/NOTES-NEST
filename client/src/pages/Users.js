@@ -8,10 +8,10 @@ import '../css/pagesCss/Users.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 //IMPORT CUSTOM COMPONENTS
-import Header from '../components/Header'
 import Footer from '../components/Footer'
 import UsersList from '../components/UsersList'
 import { User } from 'lucide-react';
+import MainHeader from '../components/MainHeader';
 
 
 //=======MAIN (admin only) USERS PAGE========
@@ -27,7 +27,7 @@ export default function Users(//Export default Users.js function Component
     {/* ---------Screen Reader Page Heading------------- */}
       <p className='visually-hidden' id='pageTitle'>ADMIN RESTRICTED USERS PAGE</p>
       {/* Render the Header.js component with 'USERS' as the Heading  */}
-      <Header heading={'USERS'} currentUser={currentUser} />
+      <MainHeader heading={'USERS'} currentUser={currentUser} loggedIn={loggedIn}/>
       {/* =====EVENT/ANIMATION======== */}
       <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
@@ -47,7 +47,7 @@ export default function Users(//Export default Users.js function Component
         </div>
       </section>
       {/* =====FOOTER============= */}
-      <Footer logout={logout}/>
+      <Footer logout={logout} loggedIn={loggedIn}/>
     </div>
   )
 }
