@@ -172,7 +172,26 @@ const notProvided = 'Not provided';
         Tab content for Home
       </Tab>
       <Tab eventKey="profile" title="Profile">
-        Tab content for Profile
+        <div id='userProfile'>
+              {/* user profile */}
+              <div id='userProfilePanal'>
+                <div id='userProfileDisplay'>
+                  <Row id='userProfileRow'>
+                    <Col id='userProfileCol'>
+                      <Profile
+                        user={user}
+                        editUser={editUser}
+                        editPassword={editPassword}
+                        toggleEditUser={toggleEditUser}
+                        toggleEditPassword={toggleEditPassword}
+                        setCurrentUser={setCurrentUser}
+                        setError={setError}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </div>
+        </div>
       </Tab>
       <Tab eventKey="calender" title="CALENDER">
         {/* Calendar of the user's notes by day; clicking a note opens the Notes page */}
@@ -243,26 +262,7 @@ const notProvided = 'Not provided';
       SECTION 2: userProfile.js
       ---------------- */}
       <section id='homeSection2'>
-        <div id='userProfile'>
-              {/* user profile */}
-              <div id='userProfilePanal'>
-                <div id='userProfileDisplay'>
-                  <Row id='userProfileRow'>
-                    <Col id='userProfileCol'>
-                      <Profile
-                        user={user}
-                        editUser={editUser}
-                        editPassword={editPassword}
-                        toggleEditUser={toggleEditUser}
-                        toggleEditPassword={toggleEditPassword}
-                        setCurrentUser={setCurrentUser}
-                        setError={setError}
-                      />
-                    </Col>
-                  </Row>
-                </div>
-              </div>
-        </div>
+        
       </section>
       <div id='editUserDataPanal'>
         {/* TOGGLE EDITPROFILE FORM */}

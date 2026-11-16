@@ -14,12 +14,13 @@
 1. [ROUTE SUMMARY](#1-route-summary)
      - [1.1. GET `/fetchNotes`](#11-get-fetchnotes)
      - [1.2. GET `/trash`](#12-get-trash)
-     - [1.3. GET `/:id`](#13-get-id)
-     - [1.4. POST `/addNote`](#14-post-addnote)
-     - [1.5. PATCH `/:id`](#15-patch-id)
-     - [1.6. PATCH `/:id/restore`](#16-patch-idrestore)
-     - [1.7. DELETE `/:id`](#17-delete-id)
-     - [1.8. DELETE `/:id/permanent`](#18-delete-idpermanent)
+     - [1.3. GET `/fetchCalendar`](#13-get-fetchcalendar)
+     - [1.4. GET `/:id`](#14-get-id)
+     - [1.5. POST `/addNote`](#15-post-addnote)
+     - [1.6. PATCH `/:id`](#16-patch-id)
+     - [1.7. PATCH `/:id/restore`](#17-patch-idrestore)
+     - [1.8. DELETE `/:id`](#18-delete-id)
+     - [1.9. DELETE `/:id/permanent`](#19-delete-idpermanent)
 2. [IMPORTS](#2-imports)
 3. [ROUTE ORDER AND PATTERNS](#3-route-order-and-patterns)
      - [3.1. ROUTE ORDER](#31-route-order)
@@ -51,6 +52,7 @@ The router is mounted at **`/notes`** by [`app.js`](../server/app.js) (e.g. `GET
 |---|---|---|---|---|
 | `GET` | `/fetchNotes` | `checkJwtToken` | Paginated, filterable list of active notes | active |
 | `GET` | `/trash` | `checkJwtToken` | Paginated list of trashed notes | trashed |
+| `GET` | `/fetchCalendar` | `checkJwtToken` | One month of notes grouped by day, for the calendar | active |
 | `GET` | `/:id` | `checkJwtToken` | One note (for a details view) | **any** state |
 | `POST` | `/addNote` | `checkJwtToken` | Create a note | n/a |
 | `PATCH` | `/:id` | `checkJwtToken` | Edit title, content, language, notebook, tags or pin | active |
@@ -64,7 +66,8 @@ The router is mounted at **`/notes`** by [`app.js`](../server/app.js) (e.g. `GET
 |---|---|---|
 | `GET` | `/notes/fetchNotes` | [Notes.js](../client/src/pages/Notes.js) |
 | `GET` | `/notes/trash` | [Trash.js](../client/src/components/Trash.js) |
-| `GET` | `/notes/:id` | Not called by the client yet (see [8.2](#82-house-keeping)) |
+| `GET` | `/notes/fetchCalendar` | [Calendar.js](../client/src/components/Calendar.js) (via `fetchCalendar` in [apiUtil.js](../client/src/util/apiUtil.js)), shown on [Home.js](../client/src/pages/Home.js) |
+| `GET` | `/notes/:id` | [Notes.js](../client/src/pages/Notes.js) (opens a note picked on the Home page calendar) |
 | `POST` | `/notes/addNote` | [NotePad.js](../client/src/pages/NotePad.js) (NotePadForm) |
 | `PATCH` | `/notes/:id` | [Notes.js](../client/src/pages/Notes.js) (EditNoteForm) |
 | `PATCH` | `/notes/:id/restore` | [Trash.js](../client/src/components/Trash.js) |
@@ -167,7 +170,73 @@ const [notes, total] = await Promise.all([
 
 ---
 
-### 1.3. GET `/:id`
+### 1.3. GET `/fetchCalendar`
+
+**Purpose:** The calendar on the Home page (`Calendar.js`). Returns the user's **active** notes for one month, grouped by the day they were created.
+
+#### QUERY PARAMETERS
+
+| Param | Validation | Notes |
+|---|---|---|
+| `year` | **Required.** Whole number, 1970–9999 | |
+| `month` | **Required.** Whole number, 1–12 | The client converts from JavaScript's 0–11 |
+| `tz` | Optional. A valid IANA time zone name, default `UTC` | Sent by the client from `Intl.DateTimeFormat().resolvedOptions().timeZone` |
+
+```
+GET /notes/fetchCalendar?year=2026&month=11&tz=Africa/Johannesburg
+```
+
+The time zone is checked with `new Intl.DateTimeFormat('en', { timeZone: tz })`, which throws a `RangeError` for an unknown name. A non-string value (`?tz[$ne]=x`) is rejected as well.
+
+#### WHY THE TIME ZONE MATTERS
+
+`createdAt` is stored in UTC. A note written at 01:00 on 16 November in South Africa (UTC+2) is stored as 23:00 on **15** November. Grouping in UTC would put it on the wrong day, so the date is worked out in the user's own time zone.
+
+#### THE AGGREGATION
+
+```js
+// One extra day either side of the UTC month (time zones are at most ±14h)
+const rangeStart = new Date(Date.UTC(yearNumber, monthNumber - 1, 1) - DAY_MS);
+const rangeEnd = new Date(Date.UTC(yearNumber, monthNumber, 1) + DAY_MS);
+const monthPrefix = '2026-11-';
+
+Note.aggregate([
+    { $match: { user: new mongoose.Types.ObjectId(userId), isArchived: false, deletedAt: null,
+                createdAt: { $gte: rangeStart, $lt: rangeEnd } } },
+    { $addFields: { date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: tz } } } },// Local day
+    { $match: { date: { $regex: `^${monthPrefix}` } } },// Drop the extra days either side
+    { $sort: { createdAt: 1 } },// Notes in the order they were written
+    { $group: { _id: '$date', count: { $sum: 1 }, notes: { $push: { _id: '$_id', title: '$title' } } } },
+    { $sort: { _id: 1 } },
+    { $project: { _id: 0, date: '$_id', count: 1, notes: 1 } }
+]);
+```
+
+| Stage | Why |
+|---|---|
+| First `$match` | Only the user's active notes (the same as the Notes list). The wide `createdAt` range lets MongoDB skip every other month, while still catching notes near the month edges. |
+| `$addFields` | Works out each note's **local** date as `'YYYY-MM-DD'` |
+| Second `$match` | Keeps only the dates in the requested month |
+| `$group` | One entry per day, with a count and the `_id` and `title` of each note |
+| `$project` | Renames `_id` to `date` so the client gets a clean shape |
+
+`aggregate()` doesn't cast types the way `find()` does, so the user ID has to be turned into an `ObjectId` by hand. Without that, nothing would match.
+
+#### RESPONSE (200)
+
+```json
+[
+  { "date": "2026-11-16", "count": 3, "notes": [ { "_id": "...", "title": "Shopping list" } ] }
+]
+```
+
+Days with no notes are left out. An empty month returns `[]`. The response is a **plain array**, not an object like the other GET routes, because the calendar turns it straight into a lookup object (`{ '2026-11-16': {...} }`).
+
+**400** "Invalid year or month", or **400** "Invalid time zone".
+
+---
+
+### 1.4. GET `/:id`
 
 **Purpose:** Fetch one note for a details panel. It works for **active, archived and trashed** notes, so any list can open a note's details.
 
@@ -183,7 +252,7 @@ The filter has no state conditions on purpose: only **ownership** is checked.
 
 ---
 
-### 1.4. POST `/addNote`
+### 1.5. POST `/addNote`
 
 **Purpose:** Create a note from the NotePadForm on the NotePad page.
 
@@ -301,7 +370,7 @@ await newNote.populate([{ path: 'notebook', select: 'name colour' }, { path: 'ta
 
 ---
 
-### 1.5. PATCH `/:id`
+### 1.6. PATCH `/:id`
 
 **Purpose:** Edit a note from the EditNoteForm on the Notes page. **Only the fields that are sent are changed.** Archiving has its own route (`PATCH /archive/:id`).
 
@@ -368,7 +437,7 @@ const note = await populateNote(Note.findOneAndUpdate(editableFilter, { $set: up
 
 ---
 
-### 1.6. PATCH `/:id/restore`
+### 1.7. PATCH `/:id/restore`
 
 **Purpose:** Take a note out of the trash.
 
@@ -396,7 +465,7 @@ Only `deletedAt` is cleared. Every way into the trash clears `isArchived`, so a 
 
 ---
 
-### 1.7. DELETE `/:id`
+### 1.8. DELETE `/:id`
 
 **Purpose:** Move a note to the trash (a **soft delete**). It can be undone for 30 days.
 
@@ -419,7 +488,7 @@ Note.findOneAndUpdate(
 
 ---
 
-### 1.8. DELETE `/:id/permanent`
+### 1.9. DELETE `/:id/permanent`
 
 **Purpose:** Delete a note **for good**, along with every translation made from it.
 
@@ -501,10 +570,11 @@ Express checks routes **in the order they're declared**, and `/:id` matches **an
 ```js
 router.get('/fetchNotes', ...)// 1. specific path
 router.get('/trash', ...)// 2. specific path
-router.get('/:id', ...)// 3. catch-all — MUST come last
+router.get('/fetchCalendar', ...)// 3. specific path
+router.get('/:id', ...)// 4. catch-all — MUST come last
 ```
 
-If `/:id` came first, `GET /notes/trash` would match it with `id = 'trash'`, fail the ObjectId check, and return **400 "Invalid note id"**.
+If `/:id` came first, `GET /notes/trash` (or `/notes/fetchCalendar`) would match it with `id = 'trash'`, fail the ObjectId check, and return **400 "Invalid note id"**.
 
 The other routes can't clash, because they have different methods or different numbers of segments:
 
@@ -732,7 +802,7 @@ This is the **upsert** pattern: "find it, or create it if it's missing", in **on
 | `runValidators: true` | Apply `tagSchema` validation (e.g. max length) on inserts too. Update queries skip validators by default. |
 | `Promise.all` | All tags are looked up **in parallel**, not one after another |
 
-The result is an array of ObjectIds, ready to store in `note.tags`. Both routes that call it check the note first, so a failed save can't leave new, unused tags behind (see [1.4](#14-post-addnote) and [1.5](#15-patch-id)).
+The result is an array of ObjectIds, ready to store in `note.tags`. Both routes that call it check the note first, so a failed save can't leave new, unused tags behind (see [1.5](#15-post-addnote) and [1.6](#16-patch-id)).
 
 #### `populateNote(query)`
 
@@ -829,6 +899,7 @@ These routes have **no rate limiter**. They only touch the user's own documents 
 | `201` | addNote | Note created |
 | `400` | all with `:id` | Invalid ObjectId |
 | `400` | fetchNotes | Invalid language, notebook or tag filter |
+| `400` | fetchCalendar | Missing or invalid year or month, or an unknown time zone |
 | `400` | addNote, PATCH | Missing content, wrong field types, tag > 30 characters, emptied language, invalid notebook ID, schema validation, no changes sent |
 | `401` | all | (From `checkJwtToken`) Not logged in, or the token is invalid, expired or signed out |
 | `404` | addNote, PATCH | The notebook doesn't exist or isn't the user's |
@@ -875,12 +946,12 @@ These gaps were found in an earlier review and have now been fixed.
 | Leftover "DELETE request to the /notes/:id endpoint" comments | Removed |
 | "Conditional rendering" comments | Changed to "Guard clause" |
 | Response comments | Now mention the returned note |
+| `GET /notes/:id` wasn't called by the client | `Notes.js` uses it to open a note picked on the Home page calendar |
 
 **Still to do:**
 
 | Issue | Where | Change |
 |---|---|---|
-| `GET /notes/:id` isn't called by the client | `client/src` | Use it for a note details view (e.g. from the Archive or Trash pages), or remove the route |
 | Missing semicolon | `noteRoutes.js` line 23: `const router = express.Router()` | Add `;` |
 | `dotenv` in other routers | `authRoutes.js` and `apiRoutes.js` still call `require('dotenv').config()` | Harmless (it's already loaded by `app.js`); left for those routers' reviews |
 
@@ -896,6 +967,7 @@ These gaps were found in an earlier review and have now been fixed.
 - [securityMiddleware.js](../server/middleware/securityMiddleware.js)
 - [apiUtil.js](../server/util/apiUtil.js), [archiveUtil.js](../server/util/archiveUtil.js), [schemaUtil.js](../server/util/schemaUtil.js)
 - [Notes.js](../client/src/pages/Notes.js), [NotePad.js](../client/src/pages/NotePad.js), [Trash.js](../client/src/components/Trash.js), [NotePanal.js](../client/src/components/NotePanal.js)
+- [Home.js](../client/src/pages/Home.js), [Calendar.js](../client/src/components/Calendar.js), [NotesCalender.js](../client/src/components/NotesCalender.js), [calenderUtil.js](../client/src/util/calenderUtil.js), [apiUtil.js (client)](../client/src/util/apiUtil.js)
 - [ARCHIVE_ROUTES.md](ARCHIVE_ROUTES.md), [TAG_ROUTES.md](TAG_ROUTES.md), [NOTEBOOK_ROUTES.md](NOTEBOOK_ROUTES.md), [TRANSLATION_ROUTES.md](TRANSLATION_ROUTES.md), [EXPORT_ROUTES.md](EXPORT_ROUTES.md), [GLOSSARY.md](../GLOSSARY.md)
 
 **External documentation**
