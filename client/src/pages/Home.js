@@ -10,6 +10,8 @@ import '../css/componentCss/Tabs.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 // IMPORT CUSTOM COMPONENTS
 import MainHeader from '../components/MainHeader'
 import Footer from '../components/Footer'
@@ -18,6 +20,7 @@ import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
 import AdminRegisForm from '../components/AdminRegisForm'
 import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText } from 'lucide-react'
+import Calender from '../components/Calender'
 
 // IMPORT UTILITY FUNCTIONS
 const { ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
@@ -35,6 +38,7 @@ export default function Home(//Export default Home.js function component
   const [profile, setProfile] = useState(null)// Full user record for the profile tab
   const [editUser, setEditUser] = useState(false)
   const [editPassword, setEditPassword] = useState(false)
+  const [key, setKey] = useState('home')
   const [profileLoading, setProfileLoading] = useState(false)// Disables the edit profile buttons while the update is saving
   const userId = currentUser?.userId// currentUser is { userId, fullName, admin } (see Login.js)
   const dismissKey = `adminFormDismissed_${userId}`
@@ -149,6 +153,33 @@ const notProvided = 'Not provided';
       {/* -----------------------
       SECTION 1: 
       ------------ */}
+      <section>
+        <div id='tabPanal'>
+           <Tabs
+      id="controlled-tab-example"
+      activeKey={key}
+      onSelect={(k) => setKey(k)}
+      className="mb-3"
+    >
+      <Tab eventKey="home" title="Home">
+        Tab content for Home
+      </Tab>
+      <Tab eventKey="profile" title="Profile">
+        Tab content for Profile
+      </Tab>
+      <Tab eventKey="calender" title="CALENDER">
+        <div>
+          <Row>
+            <Col>
+              <Calender/>
+            </Col>
+          </Row>
+        </div>
+      </Tab>
+    </Tabs>
+
+        </div>
+      </section>
       <section id='homeSection1'>
         {/* Application description */}
               <div id='appDescriptionPanal'>
