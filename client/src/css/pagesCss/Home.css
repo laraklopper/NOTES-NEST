@@ -10,19 +10,13 @@ Home.js */
     padding: 0px;
     background-color: #946E26;
 }
-/* LAYOUT */
+/* ======HOME TAB============= */
 #appDescriptionPanal{
     display: flex;
     flex-direction: column;
     width: 100%;
     overflow: hidden;
     padding: 10px 0px;
-}
-#welcomeSpan{
-    display: flex;
-    gap: 5px;
-    margin: 0px;
-    padding: 0px;
 }
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #appDescriptionRow{
@@ -32,52 +26,48 @@ Home.js */
     margin: 0px;
 }
 #appDescriptionCol{
-    padding: 0px;
     margin: 0px;
     padding: 0px;
-
-    
 }
-/* ======BOOTSTRAP LAYOUT============= */
-/* STACK: https://react-bootstrap.netlify.app/docs/layout/stack/ */    
+/* STACK: https://react-bootstrap.netlify.app/docs/layout/stack/ */
 #welcomeStack{
-    display: flex;
     width: 100%;
     background-color: #f2f2f2;
     margin: 0px;
-    padding: 5px;
+    padding: 10px;
     border: #323A42 solid 2px;
     border-radius: 6px;
 }
-
 #welcomeBlock{
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 5px;
     width: 100%;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+#welcomeSpan{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
     margin: 0px;
     padding: 0px;
 }
 #descriptionListBlock{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     width: 100%;
-    background-color: #b3b3b3;
     margin: 0px;
-    padding: 0px;
-    border-radius: 6px;
+    padding: 10px;
+    background-color: #b3b3b3;
     border: #323A42 solid 2px;
+    border-radius: 6px;
 }
 /* Text */
-.welcomeName{
-    text-transform: uppercase;
-    font-family: "Comic Relief", system-ui;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin: 0px;
-  padding: 0px;
-  text-decoration: underline;
-}
-
-/* DESCRIPTION LIST */
 .appDescriptionHeading{
     font-family: "Roboto", sans-serif;
     font-weight: 800;
@@ -86,75 +76,101 @@ Home.js */
     margin: 0px;
     padding: 0px;
 }
+.welcomeName{
+    text-transform: uppercase;
+    font-family: "Comic Relief", system-ui;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 0px;
+    padding: 0px;
+    text-decoration: underline;
+}
 .appDescriptionSubHeading{
     font-family: "Roboto", sans-serif;
     font-size: 24px;
+    font-weight: 800;
     text-align: center;
     letter-spacing: 2px;
     text-decoration: underline;
-    font-weight: 800;
+    margin: 0px;
 }
-#descriptionListBlock{
+/* DESCRIPTION LIST: label column + description column, so the text lines up */
+.appDescriptionList{
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin: 0px;
-    padding: 0px;
-}
-.appDescriptionList{
-        display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 0px 5px 2px 0px;
-    margin: 0px;
-}
-.listLabel{
-     font-family: "Comic Relief", system-ui;
-  font-weight: 700;
-  text-decoration: underline;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+    padding: 0px 5px;
 }
 .listSpan{
-    display: flex;
-        align-items: center;
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    align-items: center;
+    gap: 10px;
     margin: 0px;
     padding: 0px;
     font-size: 16px;
+}
+.listLabel{
+    display: flex;
+    align-items: center;
     gap: 5px;
-    
+    margin: 0px;
+    font-family: "Comic Relief", system-ui;
+    font-weight: 700;
+    text-decoration: underline;
+}
+.listLabel svg{
+    flex-shrink: 0;
 }
 .listSpan p{
-     font-family: "Comic Relief", system-ui;
-  font-weight: 400;
-  font-size: 14px;
-  margin: 0px;
+    font-family: "Comic Relief", system-ui;
+    font-weight: 400;
+    font-size: 14px;
+    margin: 0px;
 }
-/* SECTION 2 */
-#homeSection2{
-     display: flex;
+/* ======CALENDAR TAB============= */
+#calendarPanal{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0px;
+    padding: 10px 0px;
+}
+/* ======ADMIN REGISTRATION FORM============= */
+#adminRegisPanal{
+    display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     margin: 0px;
     padding: 0px;
-    background-color: #B38705;;
 }
-/* SECTION 3 */
 .userEditSection{
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     margin: 0px;
-    padding: 0px;
+    padding: 10px 0px;
     background-color: #946E26;
 }
-
-
-
-#calenderTab{
-    display: flex;
+#adminRegisDiv,
+#adminRegisDiv > .row{
     width: 100%;
+    margin: 0px;
+}
+/* ======PHONES============= */
+@media (max-width: 767.98px) {
+    .appDescriptionHeading{
+        font-size: 22px;
+    }
+    .appDescriptionSubHeading{
+        font-size: 18px;
+    }
+    /* Stack the label above its description */
+    .listSpan{
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
 }

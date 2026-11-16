@@ -22,11 +22,6 @@
 #notesTabs-tab-archive{
     width: 250px;
 }
-#tabPanal{
-    display: block;
-    overflow: hidden;
-    width: 100%;
-}
 .nav-tabs .nav-link {
     color: #000;
     text-transform: uppercase;
@@ -47,13 +42,9 @@
     padding: 0px;
 }
 
-.nav-link > .active{
-        width: 100%;
-    margin: 0px;
-    padding: 0px;
-   text-decoration: underline;
-    display: flex;
-    justify-content: center;
+/* Bootstrap puts .active on the .nav-link itself, not on a child */
+.nav-tabs .nav-link.active{
+    text-decoration: underline;
 }
 /* #homePageTabs-tab-profile */
 .tab-content{

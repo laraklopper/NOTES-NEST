@@ -145,7 +145,7 @@ const notProvided = 'Not provided';
   return (
     <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
     {/* ---------Screen Reader Heading------------- */}
-    <p className='visually-hidden' id='pageTitle'>ADMIN ONLY USERS PAGE</p>
+    <p className='visually-hidden' id='pageTitle'>HOME PAGE</p>
       <MainHeader currentUser={currentUser} loggedIn={loggedIn}/>
       {/* ====EVENT/ANIMATION======== */}
       <Row id='eventRow'>
@@ -185,8 +185,7 @@ const notProvided = 'Not provided';
                         <h4 className='appDescriptionSubHeading'>WHAT YOU CAN DO</h4>
                         <div className='appDescriptionList'>
                           <span className='listSpan'>
-                          <NotepadText/>
-                            <label className='listLabel'>NOTE PAD:</label><p>Write new notes and file them in
+                            <label className='listLabel'><NotepadText/>NOTE PAD:</label><p>Write new notes and file them in
                               notebooks and tags so they are easy to find later.</p>
                           </span>
                           <span className='listSpan'>
@@ -260,7 +259,7 @@ const notProvided = 'Not provided';
             <div id='editPasswordBlock'>
               <Row id='editPasswordRow'>
                 <Col id='editPasswordCol1' />
-                <Col xs={6} id='editPasswordCol'>
+                <Col xs={12} md={6} id='editPasswordCol'>
                   <div id='editPasswordPanal'>
                     <EditPassword setError={setError} />
                   </div>
@@ -276,7 +275,7 @@ const notProvided = 'Not provided';
       <Tab eventKey="calendar" title="CALENDAR">
         {/* Calendar of the user's notes by day; clicking a note opens the Notes page */}
         <div id='calendarPanal'>
-          {key === 'calender' && (// Only mount (and fetch) when the tab is open
+          {key === 'calendar' && (// Only mount (and fetch) when the tab is open
             <NotesCalender onOpenNote={openNote}/>
           )}
         </div>
@@ -285,7 +284,7 @@ const notProvided = 'Not provided';
 
         </div>
       </section>
-      <div id='editUserDataPanal'>
+      <div id='adminRegisPanal'>
 
         {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not
         an admin user  and matches the age requirement of 21 years and has

@@ -23,7 +23,7 @@ export default function NotesCalender({ onOpenNote }) {
           />
         </Col>
         {/* ----- NOTES FOR THE SELECTED DAY ----- */}
-        <Col xs={12} md={10}>
+        <Col xs={12} lg={4}>
           <div id='calendarDayPanal' aria-live='polite'>
             {!selected.date ? (
               <p className='text-muted mb-0'>Select a day to see its notes.</p> // nothing picked yet

@@ -13,6 +13,10 @@ than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
   padding: 0px;
   display: flex;
 }
+#calendarRow{
+  width: 100%;
+  margin: 0px;
+}
 .calendarTable {
   table-layout: fixed; /* seven equal columns */
   width: 100%;
