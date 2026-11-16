@@ -1,0 +1,25 @@
+/* Calender.css */
+.calendarTable {
+  table-layout: fixed;
+}
+
+.calendarDay {
+  height: 80px;
+  vertical-align: top;
+  cursor: pointer;
+}
+
+.calendarDay:hover,
+.calendarDay:focus-visible {
+  background-color: #eef3f8;
+}
+
+.calendarSelected {
+  outline: 2px solid #1F4E79;
+  outline-offset: -2px;
+  background-color: #e2ebf3;
+}
+
+.calendarBlank {
+  background-color: #f8f9fa;
+}

@@ -1,6 +1,7 @@
 //Home.js
 //IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 // IMPORT CSS STYLESHEETS
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/Home.css'
@@ -39,6 +40,7 @@ export default function Home(//Export default Home.js function component
   const [editUser, setEditUser] = useState(false)
   const [editPassword, setEditPassword] = useState(false)
   const [key, setKey] = useState('home')
+  const navigate = useNavigate()
   const [profileLoading, setProfileLoading] = useState(false)// Disables the edit profile buttons while the update is saving
   const userId = currentUser?.userId// currentUser is { userId, fullName, admin } (see Login.js)
   const dismissKey = `adminFormDismissed_${userId}`
@@ -77,6 +79,11 @@ export default function Home(//Export default Home.js function component
     setEditUser(false)
   }, [])
   const user = profile || currentUser || {};
+
+  // Opens a note picked on the calendar (noteId is passed in route state for Notes.js)
+  const openNote = useCallback((noteId) => {
+    navigate('/notes', { state: { noteId } })
+  }, [navigate])
 
   // Hide the form and remember the choice so it is not displayed again
   const exitAdminForm = useCallback(() => {
@@ -168,8 +175,11 @@ const notProvided = 'Not provided';
         Tab content for Profile
       </Tab>
       <Tab eventKey="calender" title="CALENDER">
-        <div>
-          <NotesCalender/>
+        {/* Calendar of the user's notes by day; clicking a note opens the Notes page */}
+        <div id='calenderTab'>
+          {key === 'calender' && (// Only mount (and fetch) when the tab is open
+            <NotesCalender onOpenNote={openNote}/>
+          )}
         </div>
       </Tab>
     </Tabs>

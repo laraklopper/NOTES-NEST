@@ -1,5 +1,5 @@
 export const fetchCalendar = async (year, month) => { // month is 1–12
-  const res = await fetch(`http://localhod/notes/fetchCalendar?year=${year}&month=${month}`, {
+  const res = await fetch(`/notes/fetchCalendar?year=${year}&month=${month}`, {
     method: 'GET',
     credentials: 'include' // sends the httpOnly JWT cookie
   });

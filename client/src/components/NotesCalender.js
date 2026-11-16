@@ -2,29 +2,52 @@
 import React, { useState } from 'react'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import ListGroup from 'react-bootstrap/ListGroup';
 import Calendar from './Calendar';
+import { longDate } from '../util/calenderUtil'
 
-
-export default function NotesCalender() {
-    const [selected, setSelected] = useState({ date: '', notes: [] }); // day picked on the calendar
-
-
+export default function NotesCalender({ onOpenNote }) {
+  const [selected, setSelected] = useState({ date: '', notes: [] }); // day picked on the calendar
 
   return (
     <div id='calenderDisplay'>
-      <Row>
-        <Col></Col>
-        <Col xs={12} md={10}>
-          <div>
-           <Calendar
-           selectedDate={selected.date}
-            onSelectDay={(date, notes) => setSelected({date, notes})}
-           />
-        </div>
+      <Row className='g-3'>
+        {/* ----- CALENDAR ----- */}
+        <Col xs={12} lg={8}>
+          <Calendar
+            selectedDate={selected.date}
+            onSelectDay={(date, notes) => setSelected({ date, notes })}
+          />
         </Col>
-        <Col/>
+
+        {/* ----- NOTES FOR THE SELECTED DAY ----- */}
+        <Col xs={12} lg={4}>
+          <div className='card p-3 h-100' id='calendarDayPanal' aria-live='polite'>
+            {!selected.date ? (
+              <p className='text-muted mb-0'>Select a day to see its notes.</p> // nothing picked yet
+            ) : (
+              <>
+                <h6 className='mb-2'>{longDate(selected.date)}</h6>
+                {selected.notes.length === 0 ? (
+                  <p className='text-muted mb-0'>No notes on this day.</p>
+                ) : (
+                  <ListGroup>
+                    {selected.notes.map(n => (
+                      <ListGroup.Item
+                        key={n._id}
+                        action
+                        onClick={() => onOpenNote?.(n._id)} // parent decides how to open it
+                      >
+                        {n.title}
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                )}
+              </>
+            )}
+          </div>
+        </Col>
       </Row>
-        
     </div>
   )
 }
