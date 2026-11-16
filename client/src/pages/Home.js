@@ -285,7 +285,7 @@ const notProvided = 'Not provided';
           </section>
         )}
       </div>
-      <Footer logout={logout} />
+      <Footer logout={logout} loggedIn={loggedIn}/>
     </div>
   )
 }

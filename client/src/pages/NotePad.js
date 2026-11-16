@@ -263,7 +263,7 @@ export default function NotePad(//Export default NotePad.js function component
           </Tabs>
         </div>
       </section>
-      <Footer logout={logout} />
+      <Footer logout={logout} loggedIn={loggedIn}/>
 
     </div>
   )

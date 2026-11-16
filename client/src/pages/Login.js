@@ -14,6 +14,7 @@ import LoginForm from '../components/LoginForm';
 import { useNavigate } from 'react-router-dom'
 // IMPORT ICONS FROM LUCIDE-REACT
 import { UserKey } from 'lucide-react'
+import Footer from '../components/Footer';
 
 //============MAIN LOGIN COMPONENT===========
 export default function Login(//Export the default Login function component
@@ -109,6 +110,7 @@ export default function Login(//Export the default Login function component
           </Row>
         </div>
       </section>
+      <Footer loggedIn={loggedIn}/>
     </div>
   )
 }

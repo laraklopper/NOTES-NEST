@@ -11,6 +11,11 @@ Footer.js*/
     background-color: #B78830;
     gap: 10px;
 }
+.footerDiv{
+        width: 100%;
+    margin: 0px;
+    padding: 5px 0px
+}
 /* BOOTSTRAP: https://react-bootstrap.netlify.app/ */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 /* ROW 1: CLOCK */

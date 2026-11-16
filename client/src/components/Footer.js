@@ -30,8 +30,10 @@ export default function Footer(//Export default Footer component
   //====================JSX RENDERING========================
   return (
     <footer id='pageFooter' role="contentinfo">
-    
-      {/* Row 1 */}
+    {loggedIn ? (
+        <div className='footerDiv'>
+         {/* loggedIn = true */}
+          {/* Row 1 */}
       <Row id='footerRow1'>
         <Col id='footerTimeCol' md='12'>
         {/* STACK 1: CLOCK (date and time) */}
@@ -93,6 +95,58 @@ export default function Footer(//Export default Footer component
         </Col>
         <Col xs={0} md id='copyRightCol2'/>
       </Row>
+        </div>
+    ):(
+      <div className='footerDiv'>
+      {/* loggedIn === false */}
+      <Row id='footerRow1'>
+              <Col>
+                {/* STACK 1: CLOCK (date and time) */}
+                <Stack direction="horizontal" gap={3} id='footerTimeStack'>
+                <div className="p-2"/>
+            <div className="p-2 ms-auto"/>
+            <div className="p-2" id='footerClockBlock'>
+            <ListGroup id='footerClockList'>
+                      <ListGroup.Item id='footerDate' aria-labelledby='dateLabel'>
+                      {/* DATE: dateDisplay  -> formats Date into readable date string */}
+                        <p id='dateLabel' className='visually-hidden'>Current Date:</p>
+                        <span className='footerClockSpan'>
+                        <CalendarRange aria-hidden='true' focusable='false'/>
+                          
+                          <h5 className='clockItem'>{dateDisplay(date)}</h5>
+                        </span>
+                      </ListGroup.Item>
+                      <ListGroup.Item id='footerTime' aria-labelledby='timeLabel'>
+                        {/* TIME: timeDisplay  -> formats Date into readable time string */}
+                        <p id='timeLabel' className='visually-hidden'>Current Time:</p>
+                        <span className='footerClockSpan'>
+                          <Clock12Icon aria-hidden='true' focusable='false'/>
+                          <h5 className='clockItem'>{timeDisplay(date)}</h5>
+                        </span>
+                      </ListGroup.Item>
+                    </ListGroup>
+            </div>
+          </Stack>
+              </Col>
+            </Row>
+        <Row id='footerRow2'>
+              <Col xs={0} md id='copyRightCol1'/>
+              <Col xs={12} md={8} id='copyRightCol'>
+              <Stack gap={3}>
+            <div className="p-2"></div>
+            <div className="p-2">
+              <p></p>
+            </div>
+            <div id='copyrightDiv'>
+              {/* COPY RIGHT MESSAGE */}
+                  <p id='copyrightText' aria-label='copy right details' aria-live='polite' >© 2026 Text Translator App. All rights reserved.</p>
+            </div>
+          </Stack>
+              </Col>
+              <Col xs={0} md id='copyRightCol2'/>
+            </Row>
+      </div>
+    )}
     </footer>
   )
 }

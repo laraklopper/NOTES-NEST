@@ -309,9 +309,7 @@ export default function Notes(//Export the default Notes.js function component
                               setError={setError}
                               fetchNotes={fetchNotes}// Refreshes the NOTES tab when a note is restored
                             />
-
                           </div>
-
                         </Col>
                         <Col id='archiveCol2' md='0' />
                       </Row>
@@ -333,18 +331,12 @@ export default function Notes(//Export the default Notes.js function component
                     </div>
                   )}
                 </div>
-
-
               </div>
             </Tab>
           </Tabs>
         </div>
-
       </section>
-      <section>
-
-      </section>
-      <Footer logout={logout} />
+      <Footer logout={logout} loggedIn={loggedIn}/>
     </div>
   )
 }
