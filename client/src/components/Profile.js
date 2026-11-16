@@ -94,7 +94,7 @@ export default function Profile(//Export default Profile.js Function component
           aria-label={editPassword ? 'Hide Form': 'Edit Password'}
           aria-expanded={editPassword}
           aria-pressed={editPassword}
-          aria-controls='editPswdSection'
+          aria-controls='editPasswordBlock'
           >
             {editPassword ? 'Hide Form': 'Edit Password'}
           </Button>

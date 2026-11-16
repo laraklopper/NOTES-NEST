@@ -29,7 +29,7 @@ export default function NotesCalender({ onOpenNote }) {
               <p className='text-muted mb-0'>Select a day to see its notes.</p> // nothing picked yet
             ) : (
               <>
-                <h6 className='mb-2'>{longDate(selected.date)}</h6>
+                <h6 className='date'>{longDate(selected.date)}</h6>
                 {selected.notes.length === 0 ? (
                   <p className='text-muted mb-0'>No notes on this day.</p>
                 ) : (

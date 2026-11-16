@@ -166,7 +166,6 @@ const notProvided = 'Not provided';
       id="homePageTabs"// Styled by Tabs.css
       activeKey={key}
       onSelect={(k) => setKey(k)}
-      className="mb-3"
     >
       <Tab eventKey="home" title="Home">
           <div id='appDescriptionPanal'>
@@ -218,12 +217,10 @@ const notProvided = 'Not provided';
                   </Col>
                 </Row>
               </div>
-
       </Tab>
-      <Tab eventKey="profile" title="Profile">
-        <div id='userProfile'>
-              {/* user profile */}
-              <div id='userProfilePanal'>
+      <Tab eventKey="profile" title="PROFILE">
+          {/* user profile */}
+          <div id='userProfilePanal'>
                 <div id='userProfileDisplay'>
                   <Row id='userProfileRow'>
                     <Col id='userProfileCol'>
@@ -239,32 +236,8 @@ const notProvided = 'Not provided';
                     </Col>
                   </Row>
                 </div>
-              </div>
-        </div>
-      </Tab>
-      <Tab eventKey="calender" title="CALENDAR">
-        {/* Calendar of the user's notes by day; clicking a note opens the Notes page */}
-        <div id='calenderTab'>
-          {key === 'calender' && (// Only mount (and fetch) when the tab is open
-            <NotesCalender onOpenNote={openNote}/>
-          )}
-        </div>
-      </Tab>
-    </Tabs>
-
-        </div>
-      </section>
-     
-      {/* ----------------------
-      SECTION 2: userProfile.js
-      ---------------- */}
-      <section id='homeSection2'>
-        
-      </section>
-      <div id='editUserDataPanal'>
-        {/* TOGGLE EDITPROFILE FORM */}
-        {editUser && (
-          <section id='editUserSec' className='userEditSection'>
+                <div id='editUserDataPanal'>
+                     {editUser && (
             <div id='editProfileBlock'>
               <Row id='editProfileRow'>
                 <Col id='editProfileCol1' />
@@ -280,11 +253,10 @@ const notProvided = 'Not provided';
                 <Col id='editProfileCol2' />
               </Row>
             </div>
-          </section>
         )}
         {/* TOGGLE EDIT PASSWORD FORM */}
         {editPassword && (
-          <section id='editPswdSection' className='userEditSection'>
+          
             <div id='editPasswordBlock'>
               <Row id='editPasswordRow'>
                 <Col id='editPasswordCol1' />
@@ -296,14 +268,31 @@ const notProvided = 'Not provided';
                 <Col id='editPasswordCol2' />
               </Row>
             </div>
-          </section>
         )}
+
+                </div>
+          </div>
+      </Tab>
+      <Tab eventKey="calendar" title="CALENDAR">
+        {/* Calendar of the user's notes by day; clicking a note opens the Notes page */}
+        <div id='calendarPanal'>
+          {key === 'calender' && (// Only mount (and fetch) when the tab is open
+            <NotesCalender onOpenNote={openNote}/>
+          )}
+        </div>
+      </Tab>
+    </Tabs>
+
+        </div>
+      </section>
+      <div id='editUserDataPanal'>
+
         {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not
         an admin user  and matches the age requirement of 21 years and has
         been a user for 3 months (1 day during development) */}
         {showAdminForm && (
           <section id='adminRegisSec' className='userEditSection'>
-            <div>
+            <div id='adminRegisDiv'>
               <Row>
                 <Col id='adminFormCol1' />
                 <Col id='adminFormCol' xs={12} md={10}>

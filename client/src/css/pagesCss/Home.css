@@ -154,3 +154,7 @@ Home.js */
 
 
 
+#calenderTab{
+    display: flex;
+    width: 100%;
+}

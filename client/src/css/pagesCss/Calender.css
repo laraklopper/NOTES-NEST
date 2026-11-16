@@ -7,6 +7,12 @@ Bootstrap 5.3 paints table cells with `.table > :not(caption) > * > *`, using th
 than background-color. The `.calendarTable td/th` selectors are also more specific
 than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
 
+#calenderDisplay{
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+  display: flex;
+}
 .calendarTable {
   table-layout: fixed; /* seven equal columns */
   width: 100%;
