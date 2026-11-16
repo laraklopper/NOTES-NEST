@@ -41,12 +41,37 @@
     padding: 0px;
     gap: 5px;
 }
+#usernameHelpId{
+       display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 0px;
+    text-transform: uppercase;
+}
+#loginUsernameError{
+        display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 0px;
+    text-transform: uppercase;
+}
 .loginLabel{
   font-family: "Roboto Mono", monospace;
   font-weight: 700;
   margin: 0px;
   letter-spacing: 1px;
   padding: 0px;
+}
+
+.loginErrorMsg{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0px;
+    padding: 0px;
+    text-transform: uppercase;
 }
 #pswdInputDiv{
     display: flex;

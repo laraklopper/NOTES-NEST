@@ -112,14 +112,14 @@ export default function LoginForm(//Export default LoginForm component
           </div>
           {/* Username error message */}
           {showUsernameError && (
-            <div className="p-2" id={usernameErrorId} aria-live='assertive'>
-              <p className='loginErrorMsg'><Bug />Username is required</p>
+            <div  id={usernameErrorId} aria-live='assertive'>
+              <Bug /><p className='loginErrorMsg'>USERNAME IS REQUIRED</p>
             </div>
           )}
           {/* Username help message */}
           {usernameMsg && (
-            <div className="p-2" id={usernameHelpId} aria-live='polite'>
-              <p className='loginHelpMessage'>Enter Your Username</p>
+            <div  id={usernameHelpId} aria-live='polite'>
+              <p className='loginHelpMessage'>ENTER YOUR USERNAME</p>
             </div>
           )}
         </Stack>
