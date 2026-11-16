@@ -46,7 +46,7 @@ export default function MainHeader(//Export default MainHeader function componen
   return (
     <header id='mainHeader' role='banner'>
     {loggedIn ? (
-      <div>
+      <div id='headerDiv'>
            {/* Row 1 */}
       <Row id='headerRow1'>
         <Col id='headerCol1'/>

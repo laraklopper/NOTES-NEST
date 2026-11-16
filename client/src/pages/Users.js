@@ -26,7 +26,7 @@ export default function Users(//Export default Users.js function Component
     <div id='pageContainer' role='main' aria-labelledby=''>
     {/* ---------Screen Reader Page Heading------------- */}
       <p className='visually-hidden' id='pageTitle'>ADMIN RESTRICTED USERS PAGE</p>
-      {/* Render the Header.js component with 'USERS' as the Heading  */}
+      {/* Render the MainHeader.js component with 'USERS' as the Heading  */}
       <MainHeader heading={'USERS'} currentUser={currentUser} loggedIn={loggedIn}/>
       {/* =====EVENT/ANIMATION======== */}
       <Row id='eventRow' role='presentation'>

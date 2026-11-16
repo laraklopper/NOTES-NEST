@@ -71,14 +71,21 @@ export default function Register(
 
   //===========JSX RENDERING===========
   return (
-    <div id='pageContainer'>
+    <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
+    {/* ---------Screen Reader Heading------------------ */}
+    <p className='pageTitle'>Registration Page</p>
+    {/* Render the MainHeader.js component with 'REGISTRATION' as the mainHeading */}
         <MainHeader mainHeading={'REGISTRATION'} loggedIn={loggedIn}/>
+        {/* =====================
+        Section 1: Registration form
+        ========================= */}
         <section id='regisSection'>
-          <div id='registrationBlock'>
+          <div id='registrationBlock' role='region'>
             <Row id='registrationRow'>
               <Col id='registrationCol1'/>
               <Col md={10} xs={12} id='registrationCol'>
                 <div id='registrationPanal'>
+                {/* Render the RegistrationForm.js function component */}
                   <RegistrationForm
                     newUserData={newUserData}
                     setNewUserData={setNewUserData}

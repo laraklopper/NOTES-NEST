@@ -101,6 +101,13 @@ Home.js */
     margin: 0px;
     padding: 0px;
 }
+.appDescriptionList{
+        display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0px 5px 2px 0px;
+    margin: 0px;
+}
 .listLabel{
      font-family: "Comic Relief", system-ui;
   font-weight: 700;
@@ -111,11 +118,12 @@ Home.js */
 }
 .listSpan{
     display: flex;
-    align-items: baseline;
+        align-items: center;
     margin: 0px;
     padding: 0px;
     font-size: 16px;
     gap: 5px;
+    
 }
 .listSpan p{
      font-family: "Comic Relief", system-ui;

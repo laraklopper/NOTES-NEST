@@ -44,6 +44,7 @@ export default function Translate(
     <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
       {/* ---------Screen Reader Heading------------------ */}
       <p className='visually-hidden' id='pageTitle'>TRANSLATE PAGE</p>
+      {/* Render the MainHeader.js component with 'TRANSLATE' as the Heading */}
       <MainHeader heading={'TRANSLATE'} currentUser={currentUser} loggedIn={loggedIn}/>
       <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
@@ -134,9 +135,7 @@ export default function Translate(
                   <div id='deletedTranslationPanal'>
                   <Row id='translationTrashRow'>
                     <Col md={12} id='translationTrashCol'>
-                      
                         <TrashedTranslations/>
-                      
                     </Col>
                   </Row>
                   </div>
@@ -163,7 +162,7 @@ export default function Translate(
           </Tabs>
         </div>
       </section>
-      <Footer logout={logout} />
+      <Footer logout={logout} loggedIn={loggedIn} />
     </div>
   )
 }
