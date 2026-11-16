@@ -18,13 +18,24 @@
     margin: 0px;
     padding: 0px
 }
+#loginCol1,
+#loginCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#loginCol{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
 #loginDiv{
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100;
+    width: 100%;
     margin: 0px;
-    padding: 0px;
+    padding: 10px 0px;
 }
 #regisSection{
     display: flex;
