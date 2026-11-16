@@ -40,6 +40,7 @@ export default function NotesList(
         fetchNotes,
         selectedId,// Id of the note shown in the details panal (state lives in Notes.js so EditNoteForm can use it)
         setSelectedId,
+        linkedNote = null,// Note opened from the Home page calendar (may not be on this page)
         notebooks = [],// For the notebook filter select
         tags = [],// For the tag filter select
         // Paging and filter state lives in Notes.js so fetchNotes() always reloads the current view
@@ -59,7 +60,8 @@ export default function NotesList(
     /* The selected note is looked up from the list (rather than stored as a copy)
     so it always shows the latest data after fetchNotes runs */
     const selectedIndex = notes.findIndex((note) => note._id === selectedId)
-    const selectedNote = selectedIndex === -1 ? null : notes[selectedIndex]
+    const selectedNote = selectedIndex !== -1 ? notes[selectedIndex]
+        : (linkedNote?._id === selectedId ? linkedNote : null)// Calendar note not on this page
     const rowNumber = (index) => (pagination.page - 1) * pagination.limit + index + 1// Numbering carries on across pages
     const { language, notebook, tag } = filters
     const filtersActive = Boolean(language || notebook || tag)
@@ -301,7 +303,7 @@ export default function NotesList(
     {selectedNote && (
         <NotePanal
             note={selectedNote}
-            rowNumber={rowNumber(selectedIndex)}
+            rowNumber={selectedIndex === -1 ? '-' : rowNumber(selectedIndex)}
             editNote={editNote}
             onToggleEdit={toggleEditNote}
             onClose={closePanal}

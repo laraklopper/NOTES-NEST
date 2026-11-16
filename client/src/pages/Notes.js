@@ -1,6 +1,7 @@
 //Note.js
 //IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 // IMPORT CSS STYLESHEETS
 import '../css/pagesCss/Notes.css'
 import '../css/pagesCss/PageSetup.css'
@@ -51,6 +52,43 @@ export default function Notes(//Export the default Notes.js function component
   const [noteFilters, setNoteFilters] = useState(EMPTY_NOTE_FILTERS)// Applied filters; '' = all
   const [notesPagination, setNotesPagination] = useState({ page: 1, limit: NOTE_PAGE_SIZES[0], total: 0, totalPages: 1 })
   const latestNotesRequest = useRef(0)// Id of the most recent notes fetch, used to ignore stale responses
+  /* A note opened from the Home page calendar. It may not be on the current page
+  of the list, so it is fetched on its own and used when it is the selected note */
+  const [linkedNote, setLinkedNote] = useState(null)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const linkedNoteId = location.state?.noteId// Set by Home.js: navigate('/notes', { state: { noteId } })
+
+  //========OPEN A NOTE FROM THE CALENDAR===============
+  /* GET /notes/:id for the note picked on the calendar, then select it so the
+  details panal (NotePanal.js) opens. The route state is cleared afterwards so a
+  page refresh or going back does not reopen it */
+  useEffect(() => {
+    if (!linkedNoteId) return
+    let ignore = false
+    const openLinkedNote = async () => {
+      try {
+        // The browser sends the JWT cookie with the request
+        const response = await fetch(`/notes/${linkedNoteId}`, { method: 'GET' });
+        const data = await response.json().catch(() => ({}));
+        if (ignore) return
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to fetch note');
+        }
+        setKey('notes')
+        setLinkedNote(data.note)
+        setSelectedId(data.note._id)
+      } catch (error) {
+        if (ignore) return
+        console.error('Error opening note:', error);
+        setError?.('That note could not be opened. It may have been archived or deleted.')
+      } finally {
+        if (!ignore) navigate(location.pathname, { replace: true, state: null })
+      }
+    }
+    openLinkedNote()
+    return () => { ignore = true }
+  }, [linkedNoteId, navigate, location.pathname, setError])
 
 
 
@@ -107,7 +145,9 @@ export default function Notes(//Export the default Notes.js function component
   }, [])
 
   // The note being edited, looked up from the list so it always has the latest data
-  const selectedNote = notes.find((note) => note._id === selectedId) || null
+  // (falls back to the note opened from the calendar when it is not on the current page)
+  const selectedNote = notes.find((note) => note._id === selectedId)
+    || (linkedNote?._id === selectedId ? linkedNote : null)
   //========FETCH TAGS REQUEST===============
   /* Fetches the user's tags for the EditNoteForm's ADD TAG dropdown */
   const fetchTags = useCallback(async () => {
@@ -170,6 +210,7 @@ export default function Notes(//Export the default Notes.js function component
       }
       // Swap the updated note into the list, then refetch so pinned order and any new tags are current
       setNotes((prev) => prev.map((note) => note._id === id ? data.note : note))
+      setLinkedNote((prev) => prev?._id === id ? data.note : prev)// Keep a calendar-opened note current too
       fetchNotes()
       if (changes.tags) fetchTags()
       if (changes.notebook !== undefined) fetchNotebooks()// Keep the notebook note counts current
@@ -219,6 +260,7 @@ export default function Notes(//Export the default Notes.js function component
                     fetchNotes={fetchNotes}
                     selectedId={selectedId}
                     setSelectedId={setSelectedId}
+                    linkedNote={linkedNote}
                     notebooks={notebooks}
                     tags={tags}
                     pagination={notesPagination}

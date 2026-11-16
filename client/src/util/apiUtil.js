@@ -1,5 +1,12 @@
+// apiUtil.js
+/* GET /notes/fetchCalendar : the user's active notes for one month, grouped by day.
+The browser's time zone is sent so notes land on the day they were written locally */
 export const fetchCalendar = async (year, month) => { // month is 1–12
-  const res = await fetch(`/notes/fetchCalendar?year=${year}&month=${month}`, {
+  const params = new URLSearchParams({ year: String(year), month: String(month) });
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;// e.g. 'Africa/Johannesburg'
+  if (tz) params.set('tz', tz);
+
+  const res = await fetch(`/notes/fetchCalendar?${params.toString()}`, {
     method: 'GET',
     credentials: 'include' // sends the httpOnly JWT cookie
   });

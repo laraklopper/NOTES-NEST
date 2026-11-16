@@ -2,6 +2,7 @@
 /*mounted at /notes by app.js
 GET - /notes/fetchNotes - List the user's active notes (query: language, notebook, tag, page, limit)
 GET - /notes/trash - List trashed notes (query: page, limit) (declare before /:id)
+GET - /notes/fetchCalendar - Active notes for one month grouped by day (query: year, month, tz) (declare before /:id)
 GET - /notes/:id - Get a single note by id (active, archived or trashed)
 POST - /notes/addNote - Create a note (tags sent as names; missing tags are created)
 PATCH - /notes/:id - Update title, content, language, notebook, tags or pin (archive is PATCH /archive/:id)
@@ -144,6 +145,71 @@ router.get('/trash', checkJwtToken, async (req, res) => {
         });
     } catch (error) {
         console.error('[ERROR: noteRoutes.js, GET /trash]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+/* GET: /notes/fetchCalendar : The signed-in user's active notes for one month,
+grouped by the day they were created (in the user's time zone), for the Home page calendar.
+Declared before GET /:id so "fetchCalendar" isn't read as an id.
+Query: year (1970-9999), month (1-12), tz (optional IANA time zone, e.g. Africa/Johannesburg; default UTC)
+Responds [{ date: 'YYYY-MM-DD', count, notes: [{ _id, title }] }] sorted by date */
+router.get('/fetchCalendar', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { year, month, tz = 'UTC' } = req.query;// Extract the month and time zone from the query string
+
+        // Guard clause: check year and month are whole numbers in range
+        const yearNumber = Number(year);
+        const monthNumber = Number(month);
+        if (!Number.isInteger(yearNumber) || yearNumber < 1970 || yearNumber > 9999 ||
+            !Number.isInteger(monthNumber) || monthNumber < 1 || monthNumber > 12) {
+            console.error(`[ERROR: noteRoutes.js, GET /fetchCalendar] Invalid year/month: ${year}/${month}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid year or month' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Guard clause: check the time zone is a single valid IANA name (Intl throws a RangeError otherwise)
+        try {
+            if (typeof tz !== 'string') throw new RangeError('Invalid time zone');
+            new Intl.DateTimeFormat('en', { timeZone: tz });
+        } catch {
+            console.error(`[ERROR: noteRoutes.js, GET /fetchCalendar] Invalid time zone: ${tz}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid time zone' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        /* Search one extra day either side of the UTC month (time zones are at most ±14h),
+        then keep only the notes whose LOCAL date falls in the requested month */
+        const DAY_MS = 24 * 60 * 60 * 1000;
+        const rangeStart = new Date(Date.UTC(yearNumber, monthNumber - 1, 1) - DAY_MS);
+        const rangeEnd = new Date(Date.UTC(yearNumber, monthNumber, 1) + DAY_MS);
+        const monthPrefix = `${yearNumber}-${String(monthNumber).padStart(2, '0')}-`;// e.g. '2026-11-'
+
+        const days = await Note.aggregate([
+            {
+                $match: {// Only the user's own active notes (same as the NOTES list)
+                    user: new mongoose.Types.ObjectId(userId),
+                    isArchived: false,
+                    deletedAt: null,
+                    createdAt: { $gte: rangeStart, $lt: rangeEnd }
+                }
+            },
+            { $addFields: { date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: tz } } } },// Local day
+            { $match: { date: { $regex: `^${monthPrefix}` } } },// Drop the extra days either side
+            { $sort: { createdAt: 1 } },// Notes listed in the order they were written
+            {
+                $group: {
+                    _id: '$date',
+                    count: { $sum: 1 },
+                    notes: { $push: { _id: '$_id', title: '$title' } }
+                }
+            },
+            { $sort: { _id: 1 } },
+            { $project: { _id: 0, date: '$_id', count: 1, notes: 1 } }
+        ]);
+
+        console.log(`[SUCCESS: noteRoutes.js, GET /fetchCalendar] Fetched ${days.length} days for ${monthPrefix.slice(0, -1)}`);//Log a message in the console for debugging purposes
+        return res.status(200).json(days);// Send a 200 (OK) status code with the days
+    } catch (error) {
+        console.error('[ERROR: noteRoutes.js, GET /fetchCalendar]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
