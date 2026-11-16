@@ -26,6 +26,7 @@ than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
 
 .calendarTable th {
   text-align: center;
+  
 }
 
 .calendarDay {
