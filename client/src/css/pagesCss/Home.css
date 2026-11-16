@@ -10,6 +10,20 @@ Home.js */
     padding: 0px;
     background-color: #946E26;
 }
+#homeSection2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: #946E26;
+}
+#toggleCalendarRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 /* ======HOME TAB============= */
 #appDescriptionPanal{
     display: flex;
@@ -55,6 +69,13 @@ Home.js */
     gap: 10px;
     margin: 0px;
     padding: 0px;
+}
+#calendarDayPanal{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 10px;
 }
 #descriptionListBlock{
     display: flex;
@@ -159,6 +180,11 @@ Home.js */
 #adminRegisDiv > .row{
     width: 100%;
     margin: 0px;
+}
+#toggleProfileRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
 }
 /* ======PHONES============= */
 @media (max-width: 767.98px) {

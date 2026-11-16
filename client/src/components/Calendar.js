@@ -62,9 +62,9 @@ export default function Calendar({ onSelectDay, selectedDate }) {
 
   //======JSX RENDERING========
   return (
-    <div id='calendar' className='card p-3'>
+    <div id='calendarWrapper'>
       {/* ----- HEADER: month navigation ----- */}
-      <div className='d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2'>
+      <div id='calenderHeadBlock'>
         <Button variant='outline-secondary' size='sm' onClick={() => changeMonth(-1)} aria-label='Previous month'>‹</Button>
         <div className='text-center'>
           <h5 className='mb-0' id='calendarTitle'>{monthTitle(view.year, view.month)}</h5>

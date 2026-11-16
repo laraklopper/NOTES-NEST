@@ -15,15 +15,17 @@ export default function NotesCalender({ onOpenNote }) {
   
   return (
     <div id='calenderDisplay'>
-      <Row id='calendarRow'>
+      <Row id='calendarRow1'>
         {/* ----- CALENDAR ----- */}
-        <Col xs={12} lg={8}>
+        <Col xs={12} md={12} style={{width: '100%'}} id='calenderCol1'>
           <Calendar
             selectedDate={selected.date} onSelectDay={handleSelectDay}
           />
         </Col>
+        </Row>
         {/* ----- NOTES FOR THE SELECTED DAY ----- */}
-        <Col xs={12} lg={4}>
+        <Row id='calenderRow2'>
+        <Col xs={12} md={12} style={{width: '100%'}} id='calenderCol1'>
           <div id='calendarDayPanal' aria-live='polite'>
             {!selected.date ? (
               <p className='text-muted mb-0'>Select a day to see its notes.</p> // nothing picked yet

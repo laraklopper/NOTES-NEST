@@ -6,13 +6,12 @@ import { useNavigate } from 'react-router-dom'
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/Home.css'
 import '../css/componentCss/Profile.css'
-import '../css/componentCss/Tabs.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+
 import Stack from 'react-bootstrap/Stack';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
 // IMPORT CUSTOM COMPONENTS
 import MainHeader from '../components/MainHeader'
 import Footer from '../components/Footer'
@@ -39,7 +38,8 @@ export default function Home(//Export default Home.js function component
   const [profile, setProfile] = useState(null)// Full user record for the profile tab
   const [editUser, setEditUser] = useState(false)
   const [editPassword, setEditPassword] = useState(false)
-  const [key, setKey] = useState('home')
+  const [showCalendar, setShowCalendar] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
   const navigate = useNavigate()
   const [profileLoading, setProfileLoading] = useState(false)// Disables the edit profile buttons while the update is saving
   const userId = currentUser?.userId// currentUser is { userId, fullName, admin } (see Login.js)
@@ -70,6 +70,14 @@ export default function Home(//Export default Home.js function component
     fetchProfile();
   }, [currentUser?.userId]);
 
+    const toggleCalendar = useCallback(() => {
+     setShowCalendar(prev => (!prev))
+    setShowProfile(false)
+  },[])
+  const toggleProfile = useCallback(() => {
+     setShowProfile(prev => (!prev))
+    setShowCalendar(false)
+  },[])
   const toggleEditUser = useCallback(() => {
     setEditUser(prev => (!prev))
     setEditPassword(false)
@@ -160,7 +168,7 @@ const notProvided = 'Not provided';
       {/* -----------------------
       SECTION 1: 
       ------------ */}
-      <section>
+      <section id='homeSection1'>
        <div id='appDescriptionPanal'>
                 <Row id='appDescriptionRow'>
                   <Col id='appDescriptionCol' xs={12} md={10}>
@@ -207,20 +215,46 @@ const notProvided = 'Not provided';
                       </div>
                     </Stack>
                   </Col>
-                </Row>
-              </div>
+                </Row>  </div>
+                 <Row id='toggleCalendarRow'>
+        <Col/>
+        <Col xs={5}>
+          <Button
+          variant='light'
+          onClick={toggleCalendar}
+          >
+          {showCalendar ? 'HIDE CALENDAR': 'SHOW CALENDAR'}
+            
+          </Button>
+        </Col>
+        <Col/>
+      </Row>
+      {showCalendar && (
+<div id='calendarPanal'>
+            <NotesCalender onOpenNote={openNote}/>
+       
+        </div>
+      )}
+                
+            
       </section>
-      <section id='homeSection1'>
-        <div id='tabPanal'>
-           <Tabs
-      id="homePageTabs"// Styled by Tabs.css
-      activeKey={key}
-      onSelect={(k) => setKey(k)}
-    >
-     
-      <Tab eventKey="profile" title="PROFILE">
-          {/* user profile */}
-          <div id='userProfilePanal'>
+      <section id='homeSection2'>
+     <Row id='toggleProfileRow'>
+        <Col/>
+        <Col xs={5}>
+          <Button
+          variant='light'
+          onClick={toggleProfile}
+          id='showProfileBn'
+          >
+            SHOW PROFILE
+          </Button>
+        </Col>
+        <Col/>
+      </Row>
+       {/* user profile */}
+       {showProfile && (
+ <div id='userProfilePanal'>
                 <div id='userProfileDisplay'>
                   <Row id='userProfileRow'>
                     <Col id='userProfileCol'>
@@ -272,22 +306,11 @@ const notProvided = 'Not provided';
 
                 </div>
           </div>
-      </Tab>
-      <Tab eventKey="calendar" title="CALENDAR">
-        {/* Calendar of the user's notes by day; clicking a note opens the Notes page */}
-        <div id='calendarPanal'>
-          {key === 'calendar' && (// Only mount (and fetch) when the tab is open
-            <NotesCalender onOpenNote={openNote}/>
-          )}
-        </div>
-      </Tab>
-    </Tabs>
+       )}
+         
 
-        </div>
       </section>
-      <section>
-        
-      </section>
+
       <div id='adminRegisPanal'>
 
         {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not
