@@ -25,6 +25,8 @@ export default function NotePanal(
   }
 ) {
   const [actionLoading, setActionLoading] = useState(false)// True while an archive/trash request is running
+  /*State to disable addToCalender Btn if the note is already in the calender*/
+  // const [inCalender, setInCalender] = useState(false)
 
   /* Shared request runner for the archive and trash buttons.
   Refreshes the list and closes the panal on success */
@@ -62,6 +64,9 @@ export default function NotePanal(
     const success = await runNoteAction(`/notes/${id}`, 'DELETE', 'Error moving note to trash.')
     if (success) alert('Note successfully moved to trash')
   }, [runNoteAction])
+
+  // Function to add note to calender
+  // const addToCalender = () => {}*/
 
   // Ask before archiving the note
   const handleArchive = () => {
@@ -178,12 +183,17 @@ export default function NotePanal(
         </Stack>
         {/* STACK 2: */}
         <Stack gap={3} id='notePanalStack2'>
-          <div className="p-2">
+          <div className="p-2" id='noteDateBlock'>
             {/* Date added */}
             <span className='dataSpan'>
               <p className='dataLabel'>DATE ADDED:</p>
               <p className='dataValue'>{formatTimestamp(note.createdAt)}</p>
             </span>
+            <Button
+            variant='success'
+            id='addToCalenderBtn'
+            type='button'
+            >ADD TO CALENDAR</Button>
           </div>
           <div className="p-2" id='noteBookBlock'>
             {/* Notebook */}

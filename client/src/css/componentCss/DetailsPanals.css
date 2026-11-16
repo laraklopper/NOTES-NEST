@@ -70,7 +70,13 @@
     padding: 0px;
     gap: 10px;
 }
-
+#noteDateBlock{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    /* gap: 10px; */
+    margin: 0px;
+}
 /* PANAL DATA */
 .dataSpan{
     display: flex;
@@ -110,6 +116,7 @@
     padding: 0px;
 }
 /* BUTTON */
+#addToCalenderBtn,
 #closePanalBtn{
     width: 150px;
     height: 40px;
@@ -125,7 +132,10 @@
     border: solid 2px #323A42;
     gap: 5px;
 }
-
+#addToCalenderBtn{
+    width: 200px;
+}
+#addToCalenderBtn:hover,
 #closePanalBtn:hover{
     color: #E8F0F6;
     background:#323A42;
