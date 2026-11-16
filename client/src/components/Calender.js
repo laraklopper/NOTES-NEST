@@ -3,7 +3,7 @@ import '../css/pagesCss/Calender.css'
 
 export default function Calender() {
   return (
-    <div id='calender'>
+    <div id='calendar'>
       
         
 

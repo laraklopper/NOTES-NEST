@@ -1,5 +1,4 @@
 //calenderUtil.js
-
 export const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; // Monday-first week
 
 export const buildMonthGrid = (year, month) => { // month is 0–11 (JS Date style)

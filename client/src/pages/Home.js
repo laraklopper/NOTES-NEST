@@ -20,7 +20,7 @@ import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
 import AdminRegisForm from '../components/AdminRegisForm'
 import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText } from 'lucide-react'
-import Calender from '../components/Calender'
+import NotesCalender from '../components/NotesCalender'
 
 // IMPORT UTILITY FUNCTIONS
 const { ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
@@ -169,11 +169,7 @@ const notProvided = 'Not provided';
       </Tab>
       <Tab eventKey="calender" title="CALENDER">
         <div>
-          <Row>
-            <Col>
-              <Calender/>
-            </Col>
-          </Row>
+          <NotesCalender/>
         </div>
       </Tab>
     </Tabs>
