@@ -1,6 +1,25 @@
-/* Calender.css */
+/* Calender.css
+- Calendar.js
+- NotesCalender.js
+
+Bootstrap 5.3 paints table cells with `.table > :not(caption) > * > *`, using the
+--bs-table-bg variable, so cell colours are set through that variable rather
+than background-color. The `.calendarTable td/th` selectors are also more specific
+than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
+
 .calendarTable {
-  table-layout: fixed;
+  table-layout: fixed; /* seven equal columns */
+  width: 100%;
+}
+
+.calendarTable th,
+.calendarTable td {
+  border: 1px solid #dee2e6;
+  padding: 0.25rem;
+}
+
+.calendarTable th {
+  text-align: center;
 }
 
 .calendarDay {
@@ -9,17 +28,29 @@
   cursor: pointer;
 }
 
-.calendarDay:hover,
-.calendarDay:focus-visible {
-  background-color: #eef3f8;
+.calendarTable .calendarDay:hover,
+.calendarTable .calendarDay:focus-visible {
+  --bs-table-bg: #eef3f8;
 }
 
-.calendarSelected {
+.calendarTable .calendarSelected {
+  --bs-table-bg: #e2ebf3;
   outline: 2px solid #1F4E79;
   outline-offset: -2px;
-  background-color: #e2ebf3;
 }
 
-.calendarBlank {
-  background-color: #f8f9fa;
+.calendarTable .calendarBlank {
+  --bs-table-bg: #f8f9fa;
+}
+
+/* Phones: smaller cells (only the note count badge is shown) */
+@media (max-width: 767.98px) {
+  .calendarDay {
+    height: 56px;
+  }
+  .calendarTable th,
+  .calendarTable td {
+    padding: 0.15rem;
+    font-size: 0.8rem;
+  }
 }

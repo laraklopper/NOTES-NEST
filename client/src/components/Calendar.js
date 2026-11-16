@@ -1,11 +1,11 @@
 //Calendar.js
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import '../css/pagesCss/Calender.css'
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Badge from 'react-bootstrap/Badge';
 import Alert from 'react-bootstrap/Alert';
-import { DAY_NAMES, buildMonthGrid, toKey, monthTitle } from '../util/calenderUtil'
+import { DAY_NAMES, buildMonthGrid, toKey, monthTitle, longDate } from '../util/calenderUtil'
 import { fetchCalendar } from '../util/apiUtil'
 
 export default function Calendar({ onSelectDay, selectedDate }) {
@@ -17,12 +17,29 @@ export default function Calendar({ onSelectDay, selectedDate }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  /* Latest props, read inside the fetch without re-running it when they change */
+  const selectedRef = useRef(selectedDate)
+  const onSelectRef = useRef(onSelectDay)
+  selectedRef.current = selectedDate
+  onSelectRef.current = onSelectDay
+
   useEffect(() => {
     let ignore = false; // drops stale responses when the month is changed quickly
     setLoading(true);
     setError('');
+    const monthPrefix = toKey(view.year, view.month, 1).slice(0, 8); // e.g. '2026-11-'
     fetchCalendar(view.year, view.month + 1) // server expects 1–12
-      .then(data => { if (!ignore) setDays(Object.fromEntries(data.map(d => [d.date, d]))); }) // array → lookup object
+      .then(data => {
+        if (ignore) return;
+        const lookup = Object.fromEntries(data.map(d => [d.date, d])); // array → lookup object
+        setDays(lookup);
+        /* If the selected day is in this month, send its fresh notes to the side panel
+        (e.g. "Today" pressed from another month, or notes added since it was picked) */
+        const selected = selectedRef.current;
+        if (selected?.startsWith(monthPrefix)) {
+          onSelectRef.current?.(selected, lookup[selected]?.notes || []);
+        }
+      })
       .catch(() => { if (!ignore) { setDays({}); setError('Could not load calendar'); } })
       .finally(() => { if (!ignore) setLoading(false); });
     return () => { ignore = true; }; // cleanup runs before the next fetch
@@ -34,8 +51,9 @@ export default function Calendar({ onSelectDay, selectedDate }) {
   });
 
   const goToday = () => {
-    setView({ year: today.getFullYear(), month: today.getMonth() });
-    onSelectDay?.(todayKey, days[todayKey]?.notes || []); // also select today
+    selectedRef.current = todayKey; // so the fetch below fills in today's notes
+    onSelectDay?.(todayKey, days[todayKey]?.notes || []); // select today now (corrected once the month loads)
+    setView({ year: today.getFullYear(), month: today.getMonth() }); // new object, so the month always reloads
   };
 
   const selectDay = (key, info) => onSelectDay?.(key, info?.notes || [])
@@ -46,7 +64,7 @@ export default function Calendar({ onSelectDay, selectedDate }) {
   return (
     <div id='calendar' className='card p-3'>
       {/* ----- HEADER: month navigation ----- */}
-      <div className='d-flex justify-content-between align-items-center mb-2'>
+      <div className='d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2'>
         <Button variant='outline-secondary' size='sm' onClick={() => changeMonth(-1)} aria-label='Previous month'>‹</Button>
         <div className='text-center'>
           <h5 className='mb-0' id='calendarTitle'>{monthTitle(view.year, view.month)}</h5>
@@ -85,7 +103,7 @@ export default function Calendar({ onSelectDay, selectedDate }) {
                     key={i}
                     role='button'
                     tabIndex={0} // keyboard accessible
-                    aria-label={`${key}${info ? `, ${info.count} note${info.count === 1 ? '' : 's'}` : ''}`}
+                    aria-label={`${longDate(key)}${info ?`, ${info.count} note${info.count === 1 ? '' : 's'}` : ''}`}
                     aria-pressed={isSelected}
                     onClick={() => selectDay(key, info)}
                     onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), selectDay(key, info))}

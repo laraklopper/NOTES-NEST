@@ -163,51 +163,13 @@ const notProvided = 'Not provided';
       <section>
         <div id='tabPanal'>
            <Tabs
-      id="controlled-tab-example"
+      id="homePageTabs"// Styled by Tabs.css
       activeKey={key}
       onSelect={(k) => setKey(k)}
       className="mb-3"
     >
       <Tab eventKey="home" title="Home">
-        Tab content for Home
-      </Tab>
-      <Tab eventKey="profile" title="Profile">
-        <div id='userProfile'>
-              {/* user profile */}
-              <div id='userProfilePanal'>
-                <div id='userProfileDisplay'>
-                  <Row id='userProfileRow'>
-                    <Col id='userProfileCol'>
-                      <Profile
-                        user={user}
-                        editUser={editUser}
-                        editPassword={editPassword}
-                        toggleEditUser={toggleEditUser}
-                        toggleEditPassword={toggleEditPassword}
-                        setCurrentUser={setCurrentUser}
-                        setError={setError}
-                      />
-                    </Col>
-                  </Row>
-                </div>
-              </div>
-        </div>
-      </Tab>
-      <Tab eventKey="calender" title="CALENDER">
-        {/* Calendar of the user's notes by day; clicking a note opens the Notes page */}
-        <div id='calenderTab'>
-          {key === 'calender' && (// Only mount (and fetch) when the tab is open
-            <NotesCalender onOpenNote={openNote}/>
-          )}
-        </div>
-      </Tab>
-    </Tabs>
-
-        </div>
-      </section>
-      <section id='homeSection1'>
-        {/* Application description */}
-              <div id='appDescriptionPanal'>
+          <div id='appDescriptionPanal'>
                 <Row id='appDescriptionRow'>
                   <Col id='appDescriptionCol' xs={12} md={10}>
                     <Stack gap={3} id='welcomeStack'>
@@ -257,6 +219,44 @@ const notProvided = 'Not provided';
                 </Row>
               </div>
 
+      </Tab>
+      <Tab eventKey="profile" title="Profile">
+        <div id='userProfile'>
+              {/* user profile */}
+              <div id='userProfilePanal'>
+                <div id='userProfileDisplay'>
+                  <Row id='userProfileRow'>
+                    <Col id='userProfileCol'>
+                      <Profile
+                        user={user}
+                        editUser={editUser}
+                        editPassword={editPassword}
+                        toggleEditUser={toggleEditUser}
+                        toggleEditPassword={toggleEditPassword}
+                        setCurrentUser={setCurrentUser}
+                        setError={setError}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </div>
+        </div>
+      </Tab>
+      <Tab eventKey="calender" title="CALENDAR">
+        {/* Calendar of the user's notes by day; clicking a note opens the Notes page */}
+        <div id='calenderTab'>
+          {key === 'calender' && (// Only mount (and fetch) when the tab is open
+            <NotesCalender onOpenNote={openNote}/>
+          )}
+        </div>
+      </Tab>
+    </Tabs>
+
+        </div>
+      </section>
+      <section id='homeSection1'>
+        {/* Application description */}
+            
       </section>
       {/* ----------------------
       SECTION 2: userProfile.js
