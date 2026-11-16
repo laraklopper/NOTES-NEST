@@ -15,7 +15,7 @@ export default function NotesCalender({ onOpenNote }) {
   
   return (
     <div id='calenderDisplay'>
-      <Row className='g-3'>
+      <Row id='calendarRow'>
         {/* ----- CALENDAR ----- */}
         <Col xs={12} lg={8}>
           <Calendar
