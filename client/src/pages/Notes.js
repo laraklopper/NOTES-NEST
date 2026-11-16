@@ -30,6 +30,7 @@ export default function Notes(//Export the default Notes.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
     logout,
+    loggedIn, 
     setError
   }) {
   //==========STATE VARIABLES=================

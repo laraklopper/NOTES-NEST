@@ -21,7 +21,8 @@ export default function NotePad(//Export default NotePad.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
     setError,
-    logout
+    logout,
+    loggedIn
 
   }) {
   //===============STATE VARIABLES=====================

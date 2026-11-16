@@ -27,7 +27,8 @@ export default function Home(//Export default Home.js function component
     currentUser,
     setCurrentUser,
     setError,
-    logout
+    logout,
+    loggedIn
   }) {
   //===========STATE VARIABLES=======================
   const [profile, setProfile] = useState(null)// Full user record for the profile tab

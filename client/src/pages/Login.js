@@ -22,6 +22,7 @@ export default function Login(//Export the default Login function component
     setUserData,
     setError,
     setLoggedIn,
+    loggedIn,
     setCurrentUser
   }) {
   //=============STATE VARIABLES=============

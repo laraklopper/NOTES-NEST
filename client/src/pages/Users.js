@@ -18,6 +18,7 @@ import { User } from 'lucide-react';
 export default function Users(//Export default Users.js function Component
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser, 
+    loggedIn,
     logout
   }) {
     //========JSX RENDERING===========

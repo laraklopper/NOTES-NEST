@@ -16,7 +16,8 @@ import { dateDisplay, timeDisplay } from '../util/dateFunctions';
 //Footer Funtion component
 export default function Footer(//Export default Footer component
   {//PROPS PASSED FROM PARENT COMPONENT
-    logout
+    logout,
+    loggedIn
   }) {
     const [date, setDate] = useState(new Date());
 
@@ -29,6 +30,7 @@ export default function Footer(//Export default Footer component
   //====================JSX RENDERING========================
   return (
     <footer id='pageFooter' role="contentinfo">
+    
       {/* Row 1 */}
       <Row id='footerRow1'>
         <Col id='footerTimeCol' md='12'>

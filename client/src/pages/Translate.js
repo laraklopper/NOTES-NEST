@@ -19,7 +19,8 @@ import LanguagesList from '../components/LanguagesList';
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
-    logout
+    logout,
+    loggedIn
   }
 ) {
   // =========STATE VARIABLES=============

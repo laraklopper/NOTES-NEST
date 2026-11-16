@@ -32,7 +32,8 @@ export const emptyNewUser = {
 //============MAIN REGISTER COMPONENT===========
 export default function Register(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
-    setError
+    setError,
+    loggedIn
   }) {
   //=============STATE VARIABLES=============
   const [newUserData, setNewUserData] = useState(emptyNewUser)
