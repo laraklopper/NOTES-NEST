@@ -12,7 +12,6 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Button from 'react-bootstrap/Button';
 //IMPORT CUSTOM COMPONENTS
-import Header from '../components/Header'
 import Footer from '../components/Footer'
 import EditNoteForm from '../components/EditNoteForm';
 import Trash from '../components/Trash';
@@ -23,6 +22,7 @@ import { NotebookTabs } from 'lucide-react';
 // IMPORT UTILITY FUNCTIONS
 import NotesList, { NOTE_PAGE_SIZES } from '../components/NotesList';
 import { EMPTY_NOTE_FILTERS } from '../util/formUtil';
+import MainHeader from '../components/MainHeader';
 
 
 //====MAIN NOTES FUNCTION COMPONENT========
@@ -188,7 +188,7 @@ export default function Notes(//Export the default Notes.js function component
   //===================JSX RENDERING===============
   return (
     <div id='pageContainer' role='main'>
-      <Header heading={'NOTES'} currentUser={currentUser} />
+    <MainHeader heading={'NOTES'} currentUser={currentUser} loggedIn={loggedIn}/>
       <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
           <div className='eventBar'>

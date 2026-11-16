@@ -18,6 +18,7 @@ import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
 import AdminRegisForm from '../components/AdminRegisForm'
 import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText } from 'lucide-react'
+import MainHeader from '../components/MainHeader'
 // IMPORT UTILITY FUNCTIONS
 const { ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 
@@ -134,7 +135,7 @@ const notProvided = 'Not provided';
     <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
     {/* ---------Screen Reader Heading------------- */}
     <p className='visually-hidden' id='pageTitle'>ADMIN ONLY USERS PAGE</p>
-      <Header currentUser={currentUser} />
+      <MainHeader currentUser={currentUser} loggedIn={loggedIn}/>
       {/* ====EVENT/ANIMATION======== */}
       <Row id='eventRow'>
         <Col id='eventCol'>

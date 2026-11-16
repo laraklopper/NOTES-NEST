@@ -7,6 +7,7 @@ import '../css/pagesCss/PageSetup.css';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import RegistrationForm from '../components/RegistrationForm';
+import Footer from '../components/Footer';
 
 // Empty form values, shared by the initial state and the CLEAR FORM button
 export const emptyNewUser = {
@@ -71,7 +72,7 @@ export default function Register(
   //===========JSX RENDERING===========
   return (
     <div id='pageContainer'>
-        <MainHeader mainHeading={'REGISTRATION'}/>
+        <MainHeader mainHeading={'REGISTRATION'} loggedIn={loggedIn}/>
         <section id='regisSection'>
           <div id='registrationBlock'>
             <Row id='registrationRow'>
@@ -90,6 +91,7 @@ export default function Register(
             </Row>
           </div>
         </section>
+        <Footer loggedIn={loggedIn}/>
     </div>
   )
 }

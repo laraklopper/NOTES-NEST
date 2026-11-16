@@ -9,6 +9,22 @@
     background-color: #B78830;
     gap: 10px;
 }
+#mainHeaderDiv{
+   display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+.headerDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 5px 0px;
+    width: 100%;
+}
 #headerRow1,
 #headerRow2,
 #headerRow3{

@@ -8,13 +8,13 @@ import Col from 'react-bootstrap/Col';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 // IMPORT CUSTOM COMPONENTS
-import Header from '../components/Header'
 import Footer from '../components/Footer'
 import NotePadForm from '../components/NotePadForm';
 import AddNoteBook from '../components/AddNoteBook';
 import AddTag from '../components/AddTag';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { NotepadText } from 'lucide-react';
+import MainHeader from '../components/MainHeader';
 
 // =========MAIN NOTEPAD FUNCTION COMPONENT
 export default function NotePad(//Export default NotePad.js function component
@@ -194,7 +194,7 @@ export default function NotePad(//Export default NotePad.js function component
       {/* ------Screen Reader Heading-------------- */}
       <p className='visually-hidden' id='pageTitle'>NOTE PAD PAGE</p>
       {/* Render the  */}
-      <Header currentUser={currentUser} heading={'NOTE PAD'} />
+      <MainHeader currentUser={currentUser} heading={'NOTE PAD'} loggedIn={loggedIn}/>
       {/* ========EVENT/ANIMATION========== */}
       <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
