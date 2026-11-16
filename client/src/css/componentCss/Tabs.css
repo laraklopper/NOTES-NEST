@@ -22,12 +22,18 @@
 #notesTabs-tab-archive{
     width: 250px;
 }
+#tabPanal{
+    display: block;
+    overflow: hidden;
+    width: 100%;
+}
 .nav-tabs .nav-link {
     color: #000;
     text-transform: uppercase;
      height: 40px;
     font-family: "Roboto Mono", monospace;
     letter-spacing:2px ;
+    width: 100%;
     font-weight: 700;
 }
 .nav-link{
@@ -49,6 +55,7 @@
     display: flex;
     justify-content: center;
 }
+/* #homePageTabs-tab-profile */
 .tab-content{
     width: 100%;
     margin: 0px;
@@ -69,9 +76,4 @@
         flex-direction: column;
     align-items: center;
     background-color: silver;
-}
-#homePageTabs-tabpane-profile{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
