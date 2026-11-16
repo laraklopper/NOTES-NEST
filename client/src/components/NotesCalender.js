@@ -9,14 +9,17 @@ import { longDate } from '../util/calenderUtil'
 export default function NotesCalender({ onOpenNote }) {
   const [selected, setSelected] = useState({ date: '', notes: [] }); // day picked on the calendar
 
+  const handleSelectDay = (date, notes) => { // date: '2026-11-16', notes: [{ _id, title }]
+  setSelected({ date, notes }); // shows that day's notes in the side panel
+};
+  
   return (
     <div id='calenderDisplay'>
       <Row className='g-3'>
         {/* ----- CALENDAR ----- */}
         <Col xs={12} lg={8}>
           <Calendar
-            selectedDate={selected.date}
-            onSelectDay={(date, notes) => setSelected({ date, notes })}
+            selectedDate={selected.date} onSelectDay={handleSelectDay}
           />
         </Col>
 

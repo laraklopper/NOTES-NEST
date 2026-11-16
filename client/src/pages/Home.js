@@ -160,7 +160,7 @@ const notProvided = 'Not provided';
       {/* -----------------------
       SECTION 1: 
       ------------ */}
-      <section>
+      <section id='homeSection1'>
         <div id='tabPanal'>
            <Tabs
       id="homePageTabs"// Styled by Tabs.css
@@ -254,10 +254,7 @@ const notProvided = 'Not provided';
 
         </div>
       </section>
-      <section id='homeSection1'>
-        {/* Application description */}
-            
-      </section>
+     
       {/* ----------------------
       SECTION 2: userProfile.js
       ---------------- */}
