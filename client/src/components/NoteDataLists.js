@@ -1,6 +1,6 @@
 //NoteDataLists.js
 //IMPORT REQUIRED MODULES AND PACKAGES
-import React, { useCallback, useState } from 'react'
+import React from 'react'
 // IMPORT CSS STYLESHEETS
 import '../css/componentCss/ListLayout.css'
 import '../css/componentCss/ListBtns.css'
@@ -9,7 +9,7 @@ import '../css/componentCss/ListTables.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
-import Button from 'react-bootstrap/Button';
+
 //IMPORT CUSTOM COMPONENTS
 import NoteBookList from './NoteBookList';
 import TagsList from './TagsList';
@@ -27,21 +27,9 @@ export default function NoteDataLists(
     setError
   }
 ) {
-  //=========STATE VARIABLES==================
-  const [showNoteBooks, setShowNoteBooks] = useState(false)//State to Toggle the Notebook List
-  const [showTags, setShowTags] = useState(false);//State to toggle the Tags List
 
-  //===========EVENT HANDLERS/CALLBACKS=====================
-  // Function to toggle the NoteBookList
-  const toggleNoteBooks = useCallback(() => {
-    setShowNoteBooks(prev => (!prev))
-    setShowTags(false)//Hide TagsList
-  }, [])
-  // Function to toggle the Tags List
-  const toggleTags = useCallback(() => {
-    setShowTags(prev => (!prev))
-    setShowNoteBooks(false)//Hide notebook list
-  }, [])
+
+ 
 
   //=================JSX RENDERING==============//
   return (
@@ -51,36 +39,8 @@ export default function NoteDataLists(
         <Col id='toggleListDataCol1' />
         <Col xs={5}>
           <Stack gap={1} id='toggleNoteBooksStack'>
-            <div className="p-2" id='toggleBtnBlock1'>
-              <Button
-                variant='light'
-                onClick={toggleNoteBooks}
-                id='toggleNoteBooksBtn'
-                type='button'
-                // ARIA ATTRIBUTES:
-                aria-label={showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
-                aria-pressed={showNoteBooks}
-                aria-expanded={showNoteBooks}
-                aria-controls='noteBookListPanal'
-              >
-                {showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
-              </Button>
-            </div>
-            <div className="p-2" id='toggleBtnBlock2'>
-              <Button
-                variant='light'
-                id='toggleTagsBtn'
-                onClick={toggleTags}
-                type='button'
-                // ARIA ATTRIBUTES:
-                aria-label={showTags ? 'Hide Tags' : 'Show Tags'}
-                aria-pressed={showTags}
-                aria-expanded={showTags}
-                aria-controls='tagsListPanal'
-              >
-                {showTags ? 'Hide Tags' : 'Show Tags'}
-              </Button>
-            </div>
+          
+         
           </Stack>
         </Col>
         <Col id='toggleListDataCol2' />

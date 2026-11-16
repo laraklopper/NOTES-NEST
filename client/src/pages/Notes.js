@@ -9,21 +9,22 @@ import '../css/pagesCss/PageSetup.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
+
 import Button from 'react-bootstrap/Button';
 //IMPORT CUSTOM COMPONENTS
+import NoteBookList from '../components/NoteBookList';
 import Footer from '../components/Footer'
 import EditNoteForm from '../components/EditNoteForm';
 import Trash from '../components/Trash';
 import ArchivedNotes from '../components/ArchivedNotes';
-import NoteDataLists from '../components/NoteDataLists';
+
 // IMPORT ICONS FROM LUCIDE-REACT
 import { NotebookTabs } from 'lucide-react';
 // IMPORT UTILITY FUNCTIONS
 import NotesList, { NOTE_PAGE_SIZES } from '../components/NotesList';
 import { EMPTY_NOTE_FILTERS } from '../util/formUtil';
 import MainHeader from '../components/MainHeader';
+import TagsList from '../components/TagsList';
 
 
 //====MAIN NOTES FUNCTION COMPONENT========
@@ -36,8 +37,8 @@ export default function Notes(//Export the default Notes.js function component
   }) {
   //==========STATE VARIABLES=================
   /*Navigation state: Tabs and toggle buttons*/
-  const [key, setKey] = useState('notes')
   const [editNote, setEditNote] = useState(false)
+  // const [showNotes, setShowNotes] = useState
   const [showArchive, setShowArchive] = useState(false)
   const [showTrash, setShowTrash] = useState(false)
   const [selectedId, setSelectedId] = useState(null)// Id of the note open in the NotesList details panal (and the EditNoteForm)
@@ -55,9 +56,39 @@ export default function Notes(//Export the default Notes.js function component
   /* A note opened from the Home page calendar. It may not be on the current page
   of the list, so it is fetched on its own and used when it is the selected note */
   const [linkedNote, setLinkedNote] = useState(null)
+  // State to handle toggle buttons
+  const [viewNotes, setViewNotes] = useState(false)
+  const [showNoteBooks, setShowNoteBooks] = useState(false)//State to Toggle the Notebook List
+  const [showTags, setShowTags] = useState(false);//State to toggle the Tags List
+  
   const location = useLocation()
   const navigate = useNavigate()
   const linkedNoteId = location.state?.noteId// Set by Home.js: navigate('/notes', { state: { noteId } })
+
+   //===========EVENT HANDLERS/CALLBACKS=====================
+  //  Function to toggle Notes list
+const toggleNotes = useCallback(() => {
+    setViewNotes(prev => (!prev))
+    setShowTags(false)//Hide TagsList
+    setShowNoteBooks(false)
+  }, [])
+  // Function to toggle the NoteBookList
+  const toggleNoteBooks = useCallback(() => {
+    setShowNoteBooks(prev => (!prev))
+    setViewNotes(false)
+    setShowTags(false)//Hide TagsList
+     setShowArchive(false)
+    setShowTrash(false)
+  }, [])
+
+  // Function to toggle the Tags List
+  const toggleTags = useCallback(() => {
+    setShowTags(prev => (!prev))
+    setViewNotes(false)//Hide Notes list
+    setShowNoteBooks(false)//Hide notebook list
+    setShowArchive(false)
+    setShowTrash(false)
+  }, [])
 
   //========OPEN A NOTE FROM THE CALENDAR===============
   /* GET /notes/:id for the note picked on the calendar, then select it so the
@@ -75,7 +106,6 @@ export default function Notes(//Export the default Notes.js function component
         if (!response.ok) {
           throw new Error(data.message || 'Failed to fetch note');
         }
-        setKey('notes')
         setLinkedNote(data.note)
         setSelectedId(data.note._id)
       } catch (error) {
@@ -137,11 +167,17 @@ export default function Notes(//Export the default Notes.js function component
   const toggleArchive = useCallback(() => {
     setShowArchive((prev) => !prev)
     setShowTrash(false)
+    setViewNotes(false)
+    setShowNoteBooks(false)
+    setShowTags(false)
   }, [])
 
   const toggleTrash = useCallback(() => {
     setShowTrash((prev) => !prev)
     setShowArchive(false)
+    setViewNotes(false)
+    setShowNoteBooks(false)
+    setShowTags(false)
   }, [])
 
   // The note being edited, looked up from the list so it always has the latest data
@@ -239,18 +275,63 @@ export default function Notes(//Export the default Notes.js function component
           </div>
         </Col>
       </Row>
+      {/* ---------------------------
+      section 1
+      ----------------- */}
       <section id='notesSection1'>
-        <div id='notesTabPanal'>
-          <Tabs
-            id="notesTabs"
-            activeKey={key}
-            onSelect={(k) => setKey(k)}
-            className="mb-3"
-          >
-            <Tab eventKey="notes" title="NOTES">
-              <div id='notesListDiv'>
-                <div id='notesListPanal'>
-                  <NotesList
+        <div id='notesListDiv'>
+         <Row id='toggleNotesRow'>
+        <Col id='toggleListCol1'/>
+        <Col xs={5} id='toggleListCol'>
+            <Stack gap={3} id='toggleNotesStack'>
+      <div className="p-2" id='toggleBtnBlock2'>
+        <Button
+        variant='light'
+        onClick={toggleNotes}
+        id='toggleNotesBtn'
+        type='button'
+        >
+          {viewNotes ? ('Hide Notes'):( 'Show Notes')}
+        </Button>
+      </div>
+        <div className="p-2" id='toggleBtnBlock1'>
+              <Button
+                variant='light'
+                onClick={toggleNoteBooks}
+                id='toggleNoteBooksBtn'
+                type='button'
+                // ARIA ATTRIBUTES:
+                aria-label={showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
+                aria-pressed={showNoteBooks}
+                aria-expanded={showNoteBooks}
+                aria-controls='noteBookListPanal'
+              >
+                {showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
+              </Button>
+            </div>
+         <div className="p-2" id='toggleBtnBlock2'>
+              <Button
+                variant='light'
+                id='toggleTagsBtn'
+                onClick={toggleTags}
+                type='button'
+                // ARIA ATTRIBUTES:
+                aria-label={showTags ? 'Hide Tags' : 'Show Tags'}
+                aria-pressed={showTags}
+                aria-expanded={showTags}
+                aria-controls='tagsListPanal'
+              >
+                {showTags ? 'Hide Tags' : 'Show Tags'}
+              </Button>
+            </div>
+    </Stack>
+        </Col>
+        <Col id='toggleListCol2'/>
+      </Row>  
+       <div id='notesDataListPanal'>
+        {viewNotes && (
+            <div id='notesListPanal'>
+             <NotesList
                     currentUser={currentUser}
                     editNote={editNote}
                     toggleEditNote={toggleEditNote}
@@ -270,7 +351,7 @@ export default function Notes(//Export the default Notes.js function component
                     filters={noteFilters}
                     setFilters={setNoteFilters}
                   />
-                </div>
+                  <div id='editNoteDiv'>
                 {/* TOGGLE EDIT NOTE FORM */}
                 {editNote && selectedNote && (
                   <div id='editNoteBlock'>
@@ -289,22 +370,51 @@ export default function Notes(//Export the default Notes.js function component
                     </Row>
                   </div>
                 )}
+                <div/>
               </div>
-            </Tab>
-            <Tab eventKey="notesData" title="NOTEBOOKS AND TAGS">
-              {/* Notebook list + tags list */}
-              <div id='notesDataListPanal'>
-                <NoteDataLists
-                  tags={tags}
+            </div>
+        )}
+        {/* Toggle the NoteBook  */}
+        {showNoteBooks && (
+          <div id='noteBookListPanal'>
+            <Row id='notebookDataRow'>
+              <Col id='noteBooksCol1' />
+              <Col id='noteBooksCol' xs={12} md={10}>
+                <NoteBookList
                   notebooks={notebooks}
-                  fetchTags={fetchTags}
                   fetchNotebooks={fetchNotebooks}
-                  fetchNotes={fetchNotes}// Notes show their notebook and tags, so refresh them after a change
+                  fetchNotes={fetchNotes}
                   setError={setError}
                 />
+              </Col>
+              <Col id='noteBooksCol2' />
+              </Row>
+          </div>
+        )}
+        {/* TOGGLE TAGS LIST */}
+        {showTags && (
+          <div id='tagsListPanal'>
+            <Row id='tagsDataRow'>
+              <Col id='tagsDataCol1' />
+              <Col md={10} id='tagsDataCol'>
+                <TagsList
+                tags={tags}
+                fetchNotes={fetchNotes}
+                fetchTags={fetchTags}
+                setError={setError}/>
+              </Col>
+              <Col id='tagsDataCol2' />
+            </Row>
+          </div>
+        )}
+                
               </div>
-            </Tab>
-            <Tab eventKey="archive" title="ARCHIVE & TRASH">
+                </div>
+      </section>
+      {/* =============
+      SECTION 2:
+      ========== */}
+      <section id='notesSection2'>
               <div id='archiveTrashPanal'>
                 <Row id='toggleNotesRow'>
                   <Col id='toggleNotesCol1' />
@@ -374,9 +484,8 @@ export default function Notes(//Export the default Notes.js function component
                   )}
                 </div>
               </div>
-            </Tab>
-          </Tabs>
-        </div>
+            
+       
       </section>
       <Footer logout={logout} loggedIn={loggedIn}/>
     </div>

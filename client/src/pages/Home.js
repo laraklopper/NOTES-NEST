@@ -160,15 +160,8 @@ const notProvided = 'Not provided';
       {/* -----------------------
       SECTION 1: 
       ------------ */}
-      <section id='homeSection1'>
-        <div id='tabPanal'>
-           <Tabs
-      id="homePageTabs"// Styled by Tabs.css
-      activeKey={key}
-      onSelect={(k) => setKey(k)}
-    >
-      <Tab eventKey="home" title="Home">
-          <div id='appDescriptionPanal'>
+      <section>
+       <div id='appDescriptionPanal'>
                 <Row id='appDescriptionRow'>
                   <Col id='appDescriptionCol' xs={12} md={10}>
                     <Stack gap={3} id='welcomeStack'>
@@ -216,7 +209,15 @@ const notProvided = 'Not provided';
                   </Col>
                 </Row>
               </div>
-      </Tab>
+      </section>
+      <section id='homeSection1'>
+        <div id='tabPanal'>
+           <Tabs
+      id="homePageTabs"// Styled by Tabs.css
+      activeKey={key}
+      onSelect={(k) => setKey(k)}
+    >
+     
       <Tab eventKey="profile" title="PROFILE">
           {/* user profile */}
           <div id='userProfilePanal'>
@@ -283,6 +284,9 @@ const notProvided = 'Not provided';
     </Tabs>
 
         </div>
+      </section>
+      <section>
+        
       </section>
       <div id='adminRegisPanal'>
 

@@ -2,6 +2,7 @@
 #toggleEditNoteBookBtn,
 #toggleEditTagBtn,
 #toggleNoteBooksBtn,
+#toggleNotesBtn,
 #toggleTagsBtn,
 #removeUserBtn,
 #toggleExportBtn,
@@ -139,6 +140,7 @@ tbody tr td {
 #toggleExportBtn{
     width: 250px;
 }
+#toggleNotesBtn,
 #toggleEditNoteBookBtn,
 #toggleEditTagBtn,
 #toggleNoteBooksBtn,
@@ -147,6 +149,7 @@ tbody tr td {
     width: 180px;
     text-transform: uppercase;
 }
+#toggleNotesBtn:hover,
 #toggleExportBtn:hover,
 #copyBtn:hover,
 #removeUserBtn:hover,

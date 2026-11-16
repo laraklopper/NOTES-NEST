@@ -1,3 +1,6 @@
+/* ----------------------
+SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
+-------------*/
 #notesSection1{
     display: flex;
     flex-direction: column;
@@ -6,11 +9,46 @@
     margin: 0px;
     padding: 10px;
     background-color: #946E26;
+        gap: 10px;
 }
+#toggleListCol{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleListCol1,
+#toggleListCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#notesListDiv{
+    flex-direction: column;
+    display: flex;
+    margin: 0px;
+    width: 100%;
+    padding: 0px;
+    gap: 10px;
+}
+/* BOOTSTRAP */
 #notesListRow{
     width: 100%;
     margin: 0px;
     padding: 0px;
+}
+#editNoteDiv{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+ #notesDataListPanal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+    width: 100%;
 }
 #notesListPanal,
 #archiveTrashPanal{
@@ -22,6 +60,7 @@
     padding: 0px;
     gap: 10px;
 }
+
 #notesList{
     display: flex;
     flex-direction: column;
@@ -119,7 +158,30 @@
     padding: 0px;
     width: 100%;
 }
-        
+#notesSection2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 10px;
+    background-color: #946E26;
+}
+#toggleNotesBtn{
+        width: 180px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    border: solid 2px #323A42;
+    color: #000;
+    gap: 5px;
+}
+
 #notesDataListPanal{
     width: 100%;
     margin: 0px;
@@ -150,6 +212,7 @@
     margin: 0px;
     padding: 0px;
 }
+/* BUTTON */
 #toggleArchiveBtn:active,
 #toggleTrashBtn:active{
      background-color: #323A42;
