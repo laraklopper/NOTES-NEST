@@ -15,6 +15,10 @@
     padding: 0px;
     flex-direction: column;
 }
+/* =======================
+BUTTONS
+https://react-bootstrap.netlify.app/docs/components/buttons
+================ */
 #toggleArchiveBtn,
 #toggleTrashBtn{
     display: flex;
