@@ -33,30 +33,34 @@ export default function Register(//Export default Registration function componen
   const navigate = useNavigate();
 
   //================REQUESTS/CALLBACKS====================
+  //Function to register a new user
   const submitRegistration = useCallback(async () => {
     try {
-      setError(null)
+      setError(null)// Clear previous error before trying again
       setLoading(true)
+       // Send a POST request to the auth/register endpoint to register a new user
       const response = await fetch('/auth/register', {
-        method: 'POST',
+        method: 'POST',// HTTP request method
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json',//Specify the Content-Type in the payload as JSON
         },
-        body: JSON.stringify(newUserData)
+        body: JSON.stringify(newUserData)// Convert payload to JSON string
       })
 
-      const data = await response.json().catch(() => ({}));
+      const data = await response.json().catch(() => ({}));// Safely parse JSON (avoid crash if server returns non-JSON)
+       /* Conditional rendering to check if the response
+       is not successful (status code is not in the range 200-299)*/
       if (response.ok) {
         setNewUserData(emptyNewUser)
         navigate('/')// Send the new user to the login page (lives at '/' when logged out)
       } else {
-        setError(data.message || 'Registration failed. Please try again')
+        setError(data.message || 'Registration failed. Please try again')// Set the error state to display the error in the UI
       }
     } catch (error) {
-      setError('An error occurred during registration. Please try again.');
-      console.error('Registration error:', error);
+      setError('An error occurred during registration. Please try again.');// Set a generic error message for any unexpected errors
+      console.error('Registration error:', error);//Log an error message in the console for debugging purposes
     } finally {
-      setLoading(false)
+      setLoading(false)// Stop loading state
     }
   }, [newUserData, setError, navigate])
 
