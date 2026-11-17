@@ -7,6 +7,15 @@
     padding: 10px;
     background-color: #946E26;
 }
+#translateSec2{
+     display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 10px;
+    background-color: #946E26;
+}
 #translateSectionPanal{
     display: flex;
     flex-direction: column;
@@ -46,7 +55,8 @@
     margin: 0px;
     padding: 0px;
 }
-#translationsListRow{
+#translationsListRow,
+#toggleTranslationsRow{
     width: 100%;
     margin: 0px;
     padding: 0px;
@@ -56,6 +66,10 @@
     margin: 0px;
     padding: 0px;
 }
+#translationsListDiv{
+    width: 100%;
+}
+
 /* TAB 3: ARCHIVE AND TRASH */
 #deletedTranslationPanal,
 #archivedTranslationPanal,
@@ -66,8 +80,14 @@
 
 
 }
+#translationsList{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 #toggleTranslationsRow,
 #translationsArchiveRow,
+#toggleLanguagesRow,
 #translationTrashRow{
     width: 100%;
     margin: 0px;
@@ -98,8 +118,16 @@
     margin: 0px;
     padding: 0px;
 }
+#toggleLangCol1,
+#toggleLangCol1,
 #toggleTranslationsCol1,
 #toggleTranslationsCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#toggleLangCol{
+    display: flex;
+    justify-content: center;
     margin: 0px;
     padding: 0px;
 }
@@ -119,7 +147,7 @@ align-items: center;
 margin: 0px;
     
 }
-#translationTrashPanal{
+#translationListsPanal{
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -127,17 +155,31 @@ margin: 0px;
     margin: 0px;
         padding: 10px 0px;
 }
-#toggleArchiveBtn,
-#toggleTrashBtn{
-       display: flex;
+#toggleLangBtn,
+#showTranslationsBtn,
+#toggleTranslateArchiveBtn,
+#toggleTranslateTrashBtn{
+      display: flex;
     justify-content: center;
     align-items: center;
-    text-transform: uppercase;
-    width: 200px;
-    font-family: "Roboto Mono", monospace;
     margin: 0px;
     padding: 0px;
+    height: 40px;
+    width: 200px;
+    text-transform: uppercase;
+    color: #000;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border: solid 2px #323A42;
 }
+#toggleLangBtn{
+    width: 300px;
+}
+#showTranslationsBtn{
+    width: 250px;
+}
+#showTranslationsBtn:hover,
 #toggleArchiveBtn:hover,
 #toggleTrashBtn:hover{
       background-color: #323A42;

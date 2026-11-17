@@ -6,9 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
-// import Header from '../components/Header'
+// IMPORT CUSTOM COMPONENTS
 import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
 import { BookOpenCheck } from 'lucide-react';
@@ -25,19 +23,32 @@ export default function Translate(
   }
 ) {
   // =========STATE VARIABLES=============
-  const [key, setKey] = useState('translator')
+ 
+  const [showTranslations, setShowTranslations] =useState(false)
   const [showTrash, setShowTrash] = useState(false)
   const [showArchive, setShowArchive] = useState(false)
+  const [showLang, setShowLang] = useState(false)
 
 
+  const toggleLang = useCallback(() => {
+    setShowLang(prev => (!prev))
+  }, [])
+  const toggleTranslations =useCallback(() => {
+    setShowTranslations(prev => (!prev))
+    setShowTrash(false)
+    setShowArchive(false)
+  }, [])
   const toggleArchive = useCallback(() => {
     setShowArchive(prev => (!prev))
     setShowTrash(false)
+    setShowTranslations(false)
   }, [])
 
   const toggleTrash = useCallback(() => {
     setShowTrash(prev => (!prev))
     setShowArchive(false)
+        setShowTranslations(false)
+
   }, [])
   //=============JSX RENDERING====================
   return (
@@ -46,6 +57,7 @@ export default function Translate(
       <p className='visually-hidden' id='pageTitle'>TRANSLATE PAGE</p>
       {/* Render the MainHeader.js component with 'TRANSLATE' as the Heading */}
       <MainHeader heading={'TRANSLATE'} currentUser={currentUser} loggedIn={loggedIn}/>
+      {/* ==========EVENT/ANIMATION=========== */}
       <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
           <div className='eventBar'>
@@ -55,17 +67,13 @@ export default function Translate(
           </div>
         </Col>
       </Row>
+      {/* -----------------
+      SECTION 1: TranslationsList
+      --------------- */}
       <section id='translateSec1'>
         <div id='translateSectionPanal'>
-          <Tabs
-            id="translateTabs"
-            activeKey={key}
-            onSelect={(k) => setKey(k)}
-            className="mb-3"
-          >
-            {/* TRANSLATE FORM */}
-            <Tab eventKey="translator" title="translate">
-              <div id='translatorDiv'>
+         {/* TRANSLATE FORM */}
+        <div id='translatorDiv'>
                 <Row id='translatorRow'>
                   <Col xs={12} md={12} id='translatorCol'>
                     <div id='translatorPanal'>
@@ -75,31 +83,60 @@ export default function Translate(
                     </div>
                   </Col>
                 </Row>
+           <Row id='toggleLanguagesRow'>
+        <Col id='toggleLangCol1'/>
+        <Col xs={5} id='toggleLangCol'>
+          <Button
+          variant='light'
+          id='toggleLangBtn'
+          onClick={toggleLang}
+          >
+            {showLang ? 'HIDE AVAILABLE LANGUAGES' : 'SHOW AVAILABLE LANGUAGES'}
+          </Button>
+        </Col>
+        <Col id='toggleLangCol2'/>
+      </Row>
+       {/* API LANGUAGES LIST */}
+      {showLang && (
+         <div id='langaugeListPanal'>
+                {/* Langauges */}
+                <div id='languageList'>
+                <Row id='langaugeListRow'>
+                  <Col id='languageListCol1' />
+                  <Col xs={12} md={8} id='languageListCol'>
+                    <LanguagesList/>
+                  </Col>
+                  <Col id='languageListCol2' />
+                </Row>
+                </div>
               </div>
-            </Tab>
-            {/* TRANSLATIONS LIST */}
-            <Tab eventKey="translations" title="translations">
-              <div id='translationListPanal'>
-                <TranslationsList
-                  currentUser={currentUser}
-                  active={key === 'translations'}// Re-fetches each time the tab opens, so newly saved translations show
-                />
+      )}
               </div>
-            </Tab>
-            {/* TRASHED TRANLATIONS */}
-            <Tab eventKey="trash" title='ARCHIVE & TRASH'>
-              <div id='translationTrashPanal'>
-                     <Row id='toggleTranslationsRow'>
-                    <Col id='toggleTranslationsCol1'/>
-                    <Col xs={6} id='toggleTranslationsCol'>
-                      <Stack gap={3} id='toggleTranslationStack'>
+        </div>
+      </section>
+      <section id='translateSec2'>
+            <div id='translationsListDiv'>
+               <Row id='toggleTranslationsRow'>
+        <Col id='toggleTranslationsCol1'/>
+        <Col xs={5} id='toggleTranslationsCol'>
+             <Stack gap={3} id='toggleTranslationStack'>
+             <div className="p-2" id='toggleTranslationsBlock'>
+ <Button
+ variant='light'
+         id='showTranslationsBtn'
+         onClick={toggleTranslations}
+         >
+          SHOW TRANSLATIONS
+         </Button>
+             </div>
                         <div className="p-2" id='toggleArchiveBlock'>
                           <Button
                           variant='light'
-                          id='toggleArchiveBtn'
+                          id='toggleTranslateArchiveBtn'
                           onClick={toggleArchive}
                           type='button'
-                          // ARIA ATTRIBUTES: 
+                          // ARIA ATTRIBUTES:
+                          aria-label={showArchive ? 'Hide Archive': 'Show Archive' }
                           >
                             {showArchive ? 'Hide Archive': 'Show Archive' }
                           </Button>
@@ -108,9 +145,12 @@ export default function Translate(
                           <Button
                           variant='light'
                           onClick={toggleTrash}
-                          id='toggleTrashBtn'
+                          id='toggleTranslateTrashBtn'
                           type='button'
                           // ARIA ATTRIBUTES: 
+                          aria-label={showTrash ? 'Hide Trash' : 'SHOW TRASH'}
+                          aria-pressed={showTrash}
+                          aria-expanded={showTrash}
 
                           >
                           {showTrash ? 'Hide Trash' : 'SHOW TRASH'}
@@ -118,9 +158,19 @@ export default function Translate(
                           </Button>
                         </div>
                       </Stack>
-                    </Col>
-                    <Col id='toggleTranslationsCol2'/>
-                  </Row>
+          
+        </Col>
+         <Col id='toggleTranslationsCol2'/>
+        </Row>
+          <div id='translationListsPanal'>
+        {showTranslations && (
+               <div id='translationListPanal'>
+                <TranslationsList
+                  currentUser={currentUser}
+                />
+              </div>
+        )}
+     
                   <div id='listsDiv'>
                 {showArchive && (
                   <div id='archivedTranslationPanal'>
@@ -142,25 +192,7 @@ export default function Translate(
                 )}
                 </div>
               </div>
-            </Tab>
-            {/* API LANGUAGES LIST */}
-            <Tab eventKey="languages" title="LANGUAGES">
-              <div id='langaugeListPanal'>
-                {/* Langauges */}
-                <div id='languageList'>
-                <Row id='langaugeListRow'>
-                  <Col id='languageListCol1' />
-                  <Col xs={12} md={8} id='languageListCol'>
-                    <LanguagesList/>
-                 
-                  </Col>
-                  <Col id='languageListCol2' />
-                </Row>
-                </div>
-              </div>
-            </Tab>
-          </Tabs>
-        </div>
+            </div>
       </section>
       <Footer logout={logout} loggedIn={loggedIn} />
     </div>

@@ -310,6 +310,9 @@ export default function TranslateForm(//Export default TranslateForm.js function
   return (
     <div id='translatorDiv' role='region'>
       <form id='translatorForm' onSubmit={handleSubmit}>
+      <div id='formHeadingBlock'>
+        <h3 id='formHeading'>TEXT TRANSLATOR</h3>
+      </div>
         <div id='translatorInputDetails'>
           <Stack gap={3} id='translateInputStack'>
             <div className="p-2" id='languageSelectBlock'>

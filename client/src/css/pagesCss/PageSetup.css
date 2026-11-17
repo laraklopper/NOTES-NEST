@@ -23,8 +23,9 @@
     margin: 0px;
     padding: 0px;
     height: 40px;
-    width: 180px;
+    width: 200px;
     color: #000;
+    text-transform: uppercase;
     font-family: "Roboto Mono", monospace;
     font-weight: 700;
     letter-spacing: 2px;
