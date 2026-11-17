@@ -5,8 +5,8 @@ import '../css/pagesCss/NotePad.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
+import Stack from 'react-bootstrap/Stack';
+import Button from 'react-bootstrap/Button';
 // IMPORT CUSTOM COMPONENTS
 import MainHeader from '../components/MainHeader';
 import Footer from '../components/Footer'
@@ -27,13 +27,23 @@ export default function NotePad(//Export default NotePad.js function component
 
   }) {
   //===============STATE VARIABLES=====================
-  const [key, setKey] = useState('notepad')
+  const [newNotebookForm, setNewNotebookForm] = useState(false)
+  const [newTagForm, setNewTagForm] = useState(false)
   const [profile, setProfile] = useState(null)
   const [noteLoading, setNoteLoading] = useState(false)
   const [tagLoading, setTagLoading] = useState(false)
   const [tags, setTags] = useState([])
   const [notebookLoading, setNotebookLoading] = useState(false)
   const [notebooks, setNotebooks] = useState([])
+
+  const toggleNoteBookForm = useCallback(() => {
+    setNewNotebookForm(prev => (!prev))
+    setNewTagForm(false)
+  },[])
+  const toggleAddTagForm = useCallback(() => {
+    setNewTagForm(prev => (!prev))
+    setNewNotebookForm(false)
+  },[])
 
   /* currentUser only holds userId, fullName and admin, so fetch the
   profile for the username and default note language shown on the form */
@@ -209,16 +219,8 @@ export default function NotePad(//Export default NotePad.js function component
       {/* -----------------
       SECTION 1:
       ------------- */}
-      <section id='notePadSection'>
-        <div id='notepadFormsPanal'>
-          <Tabs
-            id="notePadTabs"
-            activeKey={key}
-            onSelect={(k) => setKey(k)}
-            className="mb-3"
-          >
-            <Tab eventKey="notepad" title="NOTE PAD">
-              <div id='notePadBlock'>
+      <section  id='notePadSection1'>
+         <div id='notePadBlock'>
                 <Row id='notePadRow'>
                   <Col id='notePadCol'>
                     <div id='notePadPanal'>
@@ -234,9 +236,38 @@ export default function NotePad(//Export default NotePad.js function component
                   </Col>
                 </Row>
               </div>
-            </Tab>
-            <Tab eventKey="notebook" title="NOTEBOOK">
-              <div id='addNoteBookDiv'>
+      </section>
+      <section  id='notePadSection2'>
+        <div id='notepadFormsPanal'>
+            <Row  id='toggleNoteFormsRow'>
+        <Col id='toggleNoteFormsCol1'/>
+        <Col xs={6} id='toggleNoteFormsCol'>
+          <Stack gap={3} id='toggleNoteFormsStack'>
+      <div className="p-2">
+        <Button
+        variant='light'
+        id='toggleAddNotebookBtn'
+        onClick={toggleNoteBookForm}
+        >
+          Create notebook form
+        </Button>
+      </div>
+      <div className="p-2">
+        <Button
+        variant='light'
+        id='toggleAddTagBtn'
+        onClick={toggleAddTagForm}
+        >
+          Create tag form
+        </Button>
+      </div>
+    </Stack>
+        </Col>
+        <Col id='toggleNoteFormsCol2'/>
+      </Row>
+      <div id='notesFormsPanal'>
+        {newNotebookForm && (
+           <div id='addNoteBookDiv'>
                 <Row id='addNoteBookRow'>
                   <Col id='addNoteBookCol1' />
                   <Col xs={5} id='addNoteBookCol'>
@@ -247,9 +278,9 @@ export default function NotePad(//Export default NotePad.js function component
                   <Col id='addNoteBookCol2' />
                 </Row>
               </div>
-            </Tab>
-            <Tab eventKey="contact" title="TAGS">
-              <div id='addTagDiv'>
+        )}
+        {newTagForm && (
+             <div id='addTagDiv'>
                 <Row id='addTagRow'>
                   <Col />
                   <Col xs={5}>
@@ -260,12 +291,12 @@ export default function NotePad(//Export default NotePad.js function component
                   <Col />
                 </Row>
               </div>
-            </Tab>
-          </Tabs>
+        )}
+
+      </div>
         </div>
       </section>
       <Footer logout={logout} loggedIn={loggedIn}/>
-
     </div>
   )
 }
