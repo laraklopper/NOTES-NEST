@@ -10,6 +10,7 @@ Home.js */
     padding: 0px;
     background-color: #946E26;
 }
+/* SECTION 2 */
 #homeSection2{
     display: flex;
     flex-direction: column;
@@ -24,7 +25,7 @@ Home.js */
     margin: 0px;
     padding: 0px;
 }
-/* ======HOME TAB============= */
+
 #appDescriptionPanal{
     display: flex;
     flex-direction: column;
