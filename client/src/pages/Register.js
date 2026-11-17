@@ -1,37 +1,24 @@
 //Register.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import MainHeader from '../components/MainHeader'
+// IMPORT CSS STYLESHEETS
 import '../css/pagesCss/LoggedOut.css'
 import '../css/pagesCss/PageSetup.css';
+// IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+// IMPORT BOOTSTRAP COMPONENTS
+import MainHeader from '../components/MainHeader'
 import RegistrationForm from '../components/RegistrationForm';
 import Footer from '../components/Footer';
+//IMPORT REACT-ROUTER-DOM COMPENTS
+import { useNavigate } from 'react-router-dom';
+//IMPORT UTILITY FUNCTIONS
+import { emptyNewUser } from '../util/userFunc';
 
-// Empty form values, shared by the initial state and the CLEAR FORM button
-export const emptyNewUser = {
-  username: '',
-  fullName: {
-    firstName: '',
-    lastName: ''
-  },
-  contactDetails: {
-    email: '',
-    contactNumber: '',
-  },
-  dateOfBirth: '',
-  defaultSourceLang: '',
-  defaultTargetLang: '',
-  defaultNoteLang: '',
-  password: '',
-  /* Consent for admin users to see this account's details. Starts false so
-  the checkbox is unticked, and registration is refused until it is given. */
-  adminDataConsent: false
-}
 
 //============MAIN REGISTER COMPONENT===========
-export default function Register(
+export default function Register(//Export default Registration function component
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     setError,
     loggedIn
@@ -39,6 +26,10 @@ export default function Register(
   //=============STATE VARIABLES=============
   const [newUserData, setNewUserData] = useState(emptyNewUser)
   const [loading, setLoading] = useState(false);// State used to disable the button and show loading text
+
+  
+    //=======NAViGATE=======
+  // Hook to navigate between different routes
   const navigate = useNavigate();
 
   //================REQUESTS/CALLBACKS====================
