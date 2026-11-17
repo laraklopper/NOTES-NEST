@@ -10,22 +10,6 @@ Home.js */
     padding: 0px;
     background-color: #946E26;
 }
-/* SECTION 2 */
-#homeSection2{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    background-color: #946E26;
-}
-#toggleCalendarRow{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-
 #appDescriptionPanal{
     display: flex;
     flex-direction: column;
@@ -41,6 +25,17 @@ Home.js */
     margin: 0px;
 }
 #appDescriptionCol{
+    margin: 0px;
+    padding: 0px;
+}
+#toggleCalendarCol{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleCalendarCol1,
+#toggleCalendarCol2{
     margin: 0px;
     padding: 0px;
 }
@@ -151,6 +146,57 @@ Home.js */
     font-size: 14px;
     margin: 0px;
 }
+#toggleCalendarRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+/* SECTION 2 */
+#homeSection2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: #946E26;
+}
+#toggleProfileRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleProfileCol{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+
+}
+#toggleProfileBlock{
+    width: 100%;
+    margin: 0px;
+    padding: 5px 0px;
+    display: flex;
+    justify-content: center;
+}
+
+#showProfileBtn{
+       display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    height: 40px;
+    width: 180px;
+    text-transform: uppercase;
+    color: #000;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border: solid 2px #323A42;
+
+}
 /* ======CALENDAR TAB============= */
 #calendarPanal{
     display: flex;
@@ -168,7 +214,7 @@ Home.js */
     margin: 0px;
     padding: 0px;
 }
-.userEditSection{
+/* .userEditSection{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -176,17 +222,13 @@ Home.js */
     margin: 0px;
     padding: 10px 0px;
     background-color: #946E26;
-}
+} */
 #adminRegisDiv,
 #adminRegisDiv > .row{
     width: 100%;
     margin: 0px;
 }
-#toggleProfileRow{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
+
 /* ======PHONES============= */
 @media (max-width: 767.98px) {
     .appDescriptionHeading{

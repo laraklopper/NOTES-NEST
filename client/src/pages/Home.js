@@ -215,19 +215,25 @@ const notProvided = 'Not provided';
                       </div>
                     </Stack>
                   </Col>
-                </Row>  </div>
+                </Row>  
+                </div>
                  <Row id='toggleCalendarRow'>
-        <Col/>
-        <Col xs={5}>
-          <Button
+        <Col id='toggleCalendarCol1'/>
+        <Col xs={5} id='toggleCalendarCol'>
+        <div>
+            <Button
           variant='light'
           onClick={toggleCalendar}
+          id='toggleCalendarBtn'
           >
           {showCalendar ? 'HIDE CALENDAR': 'SHOW CALENDAR'}
             
           </Button>
+
+        </div>
+      
         </Col>
-        <Col/>
+        <Col id='toggleCalendarCol2'/>
       </Row>
       {showCalendar && (
 <div id='calendarPanal'>
@@ -235,22 +241,21 @@ const notProvided = 'Not provided';
        
         </div>
       )}
-                
-            
-      </section>
-      <section id='homeSection2'>
      <Row id='toggleProfileRow'>
-        <Col/>
-        <Col xs={5}>
-          <Button
+        <Col id='toggleProfileCol1'/>
+        <Col xs={5} id='toggleProfileCol'>
+        <div id='toggleProfileBlock'>
+      <Button
           variant='light'
           onClick={toggleProfile}
-          id='showProfileBn'
+          id='showProfileBtn'
           >
             SHOW PROFILE
           </Button>
+        </div>
+    
         </Col>
-        <Col/>
+        <Col id='toggleProfileCol2'/>
       </Row>
        {/* user profile */}
        {showProfile && (
@@ -307,12 +312,8 @@ const notProvided = 'Not provided';
                 </div>
           </div>
        )}
-         
-
       </section>
-
       <div id='adminRegisPanal'>
-
         {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not
         an admin user  and matches the age requirement of 21 years and has
         been a user for 3 months (1 day during development) */}
