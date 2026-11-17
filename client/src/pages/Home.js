@@ -177,9 +177,11 @@ const notProvided = 'Not provided';
       SECTION 1: 
       ------------ */}
       <section id='homeSection1'>
-       <div id='appDescriptionPanal'>
+       <div id='appDescriptionPanal' role='region'>
                 <Row id='appDescriptionRow'>
+                <Col id='appdescripCol1'/>
                   <Col id='appDescriptionCol' xs={12} md={10}>
+                  {/* STACK 1: */}
                     <Stack gap={3} id='welcomeStack'>
                       <div className="p-2" id='welcomeBlock'>
                         <h3 className='appDescriptionHeading'>WELCOME TO NOTE NEST:</h3>
@@ -222,6 +224,7 @@ const notProvided = 'Not provided';
                       </div>
                     </Stack>
                   </Col>
+                  <Col id='appdescripCol2'/>
                 </Row>  
                 </div>
                 </section>
@@ -233,6 +236,7 @@ const notProvided = 'Not provided';
 <Row id='homeToggleRow'>
         <Col id='homeToggleCol1'/>
         <Col xs={5} id='homeToggleCol'>
+        {/* STACK 2: */}
         <Stack gap={3} id='homeToggleStack'>
       <div className="p-2" id='toggleCalendarBlock'>
            <Button
@@ -267,18 +271,21 @@ const notProvided = 'Not provided';
         </Col>
         <Col id='homeToggleCol2'/>
       </Row>
+      {/* TOGGLE NOTES CALENDAR */}
       {showCalendar && (
 <div id='calendarPanal'>
             <NotesCalender onOpenNote={openNote}/>
         </div>
       )} 
+      {/* TOGGLE USER PROFILE (Edit Profile + EditPassword) */}
       <div id='showProfileDiv'>
-        {/* user profile */}
+        {/* PROFILE */}
        {showProfile && (
  <div id='userProfilePanal'>
                 <div id='userProfileDisplay'>
                   <Row id='userProfileRow'>
                     <Col id='userProfileCol'>
+                    {/* Render Profile.js component */}
                       <Profile
                         user={user}
                         editUser={editUser}
@@ -299,6 +306,7 @@ const notProvided = 'Not provided';
                 <Col id='editProfileCol1' />
                 <Col id='editProfileCol' xs={12} md={10}>
                   <div id='editProfilePanal'>
+                  {/* Render the EditProfile.js component */}
                     <EditProfile
                       user={user}
                       editUserProfile={editUserProfile}
@@ -317,6 +325,7 @@ const notProvided = 'Not provided';
                 <Col id='editPasswordCol1' />
                 <Col xs={12} md={6} id='editPasswordCol'>
                   <div id='editPasswordPanal'>
+                  {/* Render the EditPassword.js component*/}
                     <EditPassword setError={setError} />
                   </div>
                 </Col>

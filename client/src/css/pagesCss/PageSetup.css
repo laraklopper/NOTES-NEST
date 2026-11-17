@@ -40,6 +40,7 @@ https://react-bootstrap.netlify.app/docs/components/buttons
      background-color: #323A42;
     color: #E8F0F6;
 }
+/* LINKS */
 .apiLink{
     color: #E8F0F6;
     font-family: "Roboto Mono", monospace;
@@ -50,4 +51,20 @@ https://react-bootstrap.netlify.app/docs/components/buttons
 .apiLink:hover{
     color: #E8F0F6;
     background-color: #323A42;
+}
+/* ========================= 
+Accessibility helpers 
+ ARIA : Accessible Rich Internet Applications
+ https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA
+/* ========================= */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

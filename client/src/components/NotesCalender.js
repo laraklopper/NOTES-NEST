@@ -1,5 +1,6 @@
 //NotesCalender.js
 import React, { useState } from 'react'
+import '../css/componentCss/Calender.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -17,7 +18,7 @@ export default function NotesCalender({ onOpenNote }) {
     <div id='calenderDisplay'>
       <Row id='calendarRow1'>
         {/* ----- CALENDAR ----- */}
-        <Col xs={12} md={12} style={{width: '100%'}} id='calenderCol1'>
+        <Col xs={12} md={12} style={{width: '100%'}} id='calendarCol'>
           <Calendar
             selectedDate={selected.date} onSelectDay={handleSelectDay}
           />
