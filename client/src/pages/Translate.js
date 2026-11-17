@@ -1,7 +1,10 @@
 //Translate.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/pagesCss/Translate.css'
 import '../css/pagesCss/PageSetup.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -9,12 +12,15 @@ import Stack from 'react-bootstrap/Stack';
 // IMPORT CUSTOM COMPONENTS
 import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
-import { Archive, ArchiveX, BookOpenCheck, BookOpenText, BookX, LanguagesIcon, Trash2Icon, TrashOff } from 'lucide-react';
 import TranslationsList from '../components/TranslationsList';
 import TrashedTranslations from '../components/TrashedTranslations';
 import ArchivedTranslations from '../components/ArchivedTranslations';
 import LanguagesList from '../components/LanguagesList';
 import MainHeader from '../components/MainHeader';
+// IMPORT ICONS FROM LUCIDE-REACT
+import { Archive, ArchiveX, BookOpenCheck, BookOpenText, BookX, LanguagesIcon, Trash2Icon, TrashOff } from 'lucide-react';
+
+// =======MAIN TRANSLATE COMPONENT============
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
@@ -23,13 +29,13 @@ export default function Translate(
   }
 ) {
   // =========STATE VARIABLES=============
-
   const [showTranslations, setShowTranslations] = useState(false)
   const [showTrash, setShowTrash] = useState(false)
   const [showArchive, setShowArchive] = useState(false)
   const [showLang, setShowLang] = useState(false)
 
 
+  // ============EVENT LISTENERS====================
   const toggleLang = useCallback(() => {
     setShowLang(prev => (!prev))
   }, [])
