@@ -14,6 +14,7 @@ import Footer from '../components/Footer';
 //IMPORT REACT-ROUTER-DOM COMPENTS
 import { useNavigate } from 'react-router-dom';
 //IMPORT UTILITY FUNCTIONS
+import { emptyNewUser } from '../util/userFunc';
 
 
 // userFunc.js

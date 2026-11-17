@@ -220,7 +220,7 @@ const notProvided = 'Not provided';
                 SECTION 2:
                 ------------ */}
                 <section id='homeSection2'>
-                <div id='section'>
+                <div id='section2Panal'>
 <Row id='toggleCalendarRow'>
         <Col id='toggleCalendarCol1'/>
         <Col xs={5} id='toggleCalendarCol'>

@@ -11,7 +11,7 @@ import Button from 'react-bootstrap/Button';
 import { Asterisk, Eye, EyeOff } from 'lucide-react';
 // IMPORT UTILITY FUNCTIONS
 import { languageData } from '../util/languageData';
-import { emptyNewUser } from '../pages/Register';
+import { emptyNewUser } from '../util/userFunc';
 
 //RegistrationForm Function component
 export default function RegistrationForm(//Export default RegistrationForm.js function component
