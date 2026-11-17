@@ -230,9 +230,9 @@ const notProvided = 'Not provided';
                 ------------ */}
                 <section id='homeSection2'>
                 <div id='section2Panal'>
-<Row id='toggleCalendarRow'>
-        <Col id='toggleCalendarCol1'/>
-        <Col xs={5} id='toggleCalendarCol'>
+<Row id='homeToggleRow'>
+        <Col id='homeToggleCol1'/>
+        <Col xs={5} id='homeToggleCol'>
         <Stack gap={3} id='homeToggleStack'>
       <div className="p-2" id='toggleCalendarBlock'>
            <Button
@@ -265,7 +265,7 @@ const notProvided = 'Not provided';
       </div>
     </Stack>
         </Col>
-        <Col id='toggleCalendarCol2'/>
+        <Col id='homeToggleCol2'/>
       </Row>
       {showCalendar && (
 <div id='calendarPanal'>
