@@ -69,22 +69,29 @@ export default function Home(//Export default Home.js function component
     fetchProfile();
   }, [currentUser?.userId]);
 
+  //========EVENT LISTENERS============
+  // Toggle Functions
+  // Function to toggles calendar
     const toggleCalendar = useCallback(() => {
      setShowCalendar(prev => (!prev))
     setShowProfile(false)
   },[])
+  // Function to toggle userProfile
   const toggleProfile = useCallback(() => {
      setShowProfile(prev => (!prev))
     setShowCalendar(false)
   },[])
+  // Function to toggle editUser/profile form
   const toggleEditUser = useCallback(() => {
     setEditUser(prev => (!prev))
     setEditPassword(false)
   }, [])
+  // Function to toggle edit password form
   const toggleEditPassword = useCallback(() => {
     setEditPassword(prev => (!prev))
     setEditUser(false)
   }, [])
+
   const user = profile || currentUser || {};
 
   // Opens a note picked on the calendar (noteId is passed in route state for Notes.js)
@@ -114,19 +121,21 @@ export default function Home(//Export default Home.js function component
   //========EDIT USER REQUEST===============
   /* Sends only the changed fields (built by EditProfile.js).
   Returns true on success so the form knows to clear itself */
-  const editUserProfile = useCallback(async (changes) => {
-    setError?.(null)
-    setProfileLoading(true)
+  const editUserProfile = useCallback(async (changes) => {//Define an async function to edit user details
+    setError?.(null)// Clear old errors
+    setProfileLoading(true)// Display loading state while saving
     try {
       // The browser sends the JWT cookie with the request
       const response = await fetch('/user/editProfile', {
-        method: 'PATCH',
+        method: 'PATCH',//HTTP Request method
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json',//Specify the Content-Type in the payload as JSON
         },
-        body: JSON.stringify(changes)
+        body: JSON.stringify(changes)// Convert payload to JSON string
       })
-      const data = await response.json().catch(() => ({}));
+      const data = await response.json().catch(() => ({}));// Safely parse JSON (avoid crash if server returns non-JSON)
+      /* Conditional rendering to check if the response
+         is not successful (status code is not in the range 200-299)*/
       if (!response.ok) {
         setError?.(data.message || 'Failed to update profile.')
         return false
@@ -136,11 +145,11 @@ export default function Home(//Export default Home.js function component
       alert('Profile updated successfully.')
       return true
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setError?.('An error occurred while updating your profile.')
+      console.error('Error updating profile:', error);//Log an error message in the console for debugging purposes
+      setError?.('An error occurred while updating your profile.')// Set the error state to display the error in the UI
       return false
     } finally {
-      setProfileLoading(false)
+      setProfileLoading(false)// Stop loading state
     }
   }, [setError])
 
@@ -244,8 +253,14 @@ const notProvided = 'Not provided';
           variant='light'
           onClick={toggleProfile}
           id='showProfileBtn'
+          type='button'
+          // ARIA ATTRIBUTES:
+          aria-label={showProfile ? 'Hide Profile': 'Show Profile'}
+          aria-pressed={showProfile}
+          aria-expanded={showProfile}
+          aria-controls='userProfilePanal'
           >
-            SHOW PROFILE
+            {showProfile ? 'Hide Profile': 'Show Profile'}
           </Button>
       </div>
     </Stack>
@@ -314,7 +329,6 @@ const notProvided = 'Not provided';
        )}
       </div>       
         </div>
-                 
       </section>
       <div id='adminRegisPanal'>
         {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not
