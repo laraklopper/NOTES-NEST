@@ -92,8 +92,8 @@ export default function NotePadForm(
         <fieldset id='notePadGroup1'>
           <legend>TITLE</legend>
           {/* STACK ONE */}
-          <Stack direction="horizontal" gap={3} id='notePadStack1'>
-            <div className="p-2" id='notePadBlock1'>
+           <Stack gap={3} id='notePadStack1'>
+      <div className="p-2" id='notePadBlock1'>
               <label className='notePadLabel' htmlFor='noteTitleInput'>TITLE:</label>
               <div className='inputDiv'>
                 <input
@@ -112,28 +112,10 @@ export default function NotePadForm(
                 />
                 <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
               </div>
+              
             </div>
-            {/* Hidden Readonly input */}
-            <div className="p-2 ms-auto" id='notePadBlock2'>
-              {/* USERNAME */}
-              <div className='inputDiv' hidden>
-                <label className='notePadLabel' htmlFor='noteUsername'>USERNAME:</label>
-                <input
-                  className='input'
-                  id='noteUsername'
-                  readOnly
-                  placeholder='USERNAME'
-                  name='username'
-                  value={username}
-                  // ARIA ATTRIBUTES:
-                  aria-label='Hidden Readonly Username Input'
-                  aria-required='true'
-                  aria-readonly='true'
-                />
-                <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
-              </div>
-            </div>
-            <div className="p-2" id='notePadBlock3'>
+         
+     <div className="p-2" id='notePadBlock2'>
               <label className='notePadLabel' htmlFor='newNoteDate' hidden>DATE:</label>
               <div className='inputDiv'>
                 <input
@@ -152,15 +134,38 @@ export default function NotePadForm(
                 <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
               </div>
             </div>
-          </Stack>
+            {/* Hidden Readonly input */}
+            <div className="p-2" id='notePadBlock3' hidden>
+              {/* USERNAME */}
+              <label className='notePadLabel' htmlFor='noteUsername'>USERNAME:</label>
+              <div className='inputDiv'>
+                
+                <input
+                  className='input'
+                  id='noteUsername'
+                  readOnly
+                  placeholder='USERNAME'
+                  name='username'
+                  value={username}
+                  // ARIA ATTRIBUTES:
+                  aria-label='Hidden Readonly Username Input'
+                  aria-required='true'
+                  aria-readonly='true'
+                />
+                <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+              </div>
+            </div>
+      
+    </Stack>
         </fieldset>
         {/* GROUP 2: NoteText + Language + */}
         <fieldset id='notePadGroup2'>
           <legend>Notes Details</legend>
-          <Stack direction="horizontal" gap={3} id='notePadStack2'>
-            {/* NOTE: value={formData.content} */}
-            <div className="p-2" id='noteTextBlock'>
+              <Stack gap={3}>
+      <div className="p-2" id='noteText'>
               <label className='notePadLabel' htmlFor='noteTextInput'>NOTE:</label>
+              {/* NOTE: value={formData.content} */}
+              <div className='inputDiv'>
               <textarea
                 className='input notesTextArea'
                 id='noteTextInput'
@@ -174,9 +179,10 @@ export default function NotePadForm(
               />
               <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
             </div>
-            <div className="vr" style={{ width: '2px', color: '#000', }} />
-            <div className="p-2 ms-auto">
-              {/* LANGUAGE: value={formData.language || defaultLanguage}*/}
+            
+              </div>
+      <div className="p-2" id='noteLanguageBlock'>
+         {/* LANGUAGE: value={formData.language || defaultLanguage}*/}
               <label className='notePadLabel' htmlFor='noteLanguageInput'>LANGAUGE:</label>
               <div className='inputDiv'>
                 <select
@@ -199,11 +205,23 @@ export default function NotePadForm(
                 </select>
                 <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
               </div>
+      </div>
+    </Stack>
+
+          
+        </fieldset>
+        {/* GROUP 3: optional input */}
+        <fieldset id='notePadGroup3'>
+          <legend>Optional Input</legend>
+          {/* STACK 3 */}
+          <Stack  gap={3} id='notePadStack3'>
+            <div className="p-2" id='notebookBlock'>
+             <label className='notePadLabel' htmlFor='noteNotebookInput'>NOTE BOOK:</label>
               {/* NOTEBOOK:
               select: value={formData.notebook}
               option: value={notebook._id} */}
               <div className='noteInputDiv'>
-                <label className='notePadLabel' htmlFor='noteNotebookInput'>NOTE BOOK:</label>
+                
                 <select
                   className='input'
                   id='noteNotebookInput'
@@ -220,11 +238,15 @@ export default function NotePadForm(
                   ))}
                 </select>
               </div>
-              {/* TAGS:
+            
+              
+            </div>
+            <div className="p-2" id='noteTagBlock'>  {/* TAGS:
               input: value={formData.tags}
               option: value={tag.name}*/}
+              <label className='notePadLabel' htmlFor='noteTagsInput'>TAGS:</label>
               <div className='noteInputDiv'>
-                <label className='notePadLabel' htmlFor='noteTagsInput'>TAGS:</label>
+                
                 <input
                   className='input'
                   id='noteTagsInput'
@@ -253,10 +275,12 @@ export default function NotePadForm(
                       </option>
                     ))}
                 </select>
-              </div>
-              {/* IS PINNED: checked={formData.isPinned} */}
-              <div id='checkBoxInputDiv'>
+              </div></div>
+               <div className="p-2" id='checkBoxInputDiv'>
+                {/* IS PINNED: checked={formData.isPinned} */}
+           
                 <label className='notePadLabel' htmlFor='notePinnedInput'>IS PINNED:</label>
+                <div>
                 <input
                   type='checkbox'
                   id='notePinnedInput'
@@ -265,21 +289,21 @@ export default function NotePadForm(
                   onChange={handleInputChange}
                 />
               </div>
-            </div>
+               </div>
           </Stack>
         </fieldset>
       </div>
       {/* -------------END OF INPUT-------------------- */}
-      <Stack direction="horizontal" gap={3}>
+      <div id='notePadGroup4'>
+ <Stack direction="horizontal" gap={3} id='notesFormStack4'>
         <div className="p-2" id='reqInfoMsgBlock'>
           <span id='reqInfoSpan'>
             <small><Asterisk style={{ display: 'flex', margin: '0px', padding: '0px' }} color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
             <p className='infoMsg' aria-live='polite' aria-hidden='true'> Indicates required information</p>
           </span>
         </div>
-        <div className="p-2 ms-auto" />
-        <div className="p-2" id='notePadBtnBlock'>
-          <Button
+        <div className="p-2 ms-auto" id='submitNoteBtnBlock'>
+  <Button
             variant='light'
             type='submit'
             id='saveNoteBtn'
@@ -290,6 +314,11 @@ export default function NotePadForm(
           >
             {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false' />
           </Button>
+        </div>
+        <div className="vr" />
+
+        <div id='notePadBtnBlock'>
+        
           <Button
             variant='danger'
             id='clearFormBtn'
@@ -304,6 +333,8 @@ export default function NotePadForm(
           </Button>
         </div>
       </Stack>
+      </div>
+     
     </form>
   )
 }

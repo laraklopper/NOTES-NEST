@@ -1,5 +1,5 @@
 #notePadForm{
-    width: 100%;
+   width: 80%;
     background-color: #777d83;
     border: #323A42 solid 2px;
     display: flex;
@@ -23,10 +23,11 @@ LAYOUT
 #notePadInput{
     display: flex;
     flex-direction: column;
-    width: 95%;
+    width: 90%;
     padding: 10px;
      background-color: #BFBFBF;
      border-radius: 5px ;
+     overflow-y: scroll;
 
 }
 /* GROUP 1: Title and readOnly date */
@@ -53,16 +54,18 @@ LAYOUT
 }
 /* STACK 1: https://react-bootstrap.netlify.app/docs/layout/stack */
 #notePadStack1{
-    display: flex;
-    align-items: baseline;
+     display: flex;
+    align-items: center;
     margin: 0px;
     padding: 0px;
     width: 100%;
 }
 #notePadBlock1,
-#notePadBlock2{
+#notePadBlock2,
+#notePadBlock3{
     display: flex;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: center;
     gap: 10px;
     padding: 0px;
     margin: 0px;
@@ -118,12 +121,24 @@ LAYOUT
     padding: 0px;
 }
 #checkBoxInputDiv{
-        width: 65%;
-        justify-content: space-between;
+        width: 100%;
     display: flex;
+    justify-content: center;
     margin: 0px;
     padding: 0px;
     align-items: baseline;
+}
+#noteTagBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+#noteLanguageBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 #notePadBlock3{
   display: flex;
@@ -133,23 +148,67 @@ LAYOUT
     display: flex;
     gap: 10px;
 }
-/* Input */
-/* ======END OF INPUT========== */
-#notePadBtnBlock{
+#noteLanguageBlock{
+    display: flex;
+}
+/* GROUP 3 */
+#notePadGroup3{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #999999;
+    gap: 0px;
+    border: #323A42 solid 2px;
+    border-radius: 5px;
+}
+#notePadGroup3 > legend{
+        float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+}
+/* STACK 3 */
+#notePadStack3{
     display: flex;
     align-items: center;
-    gap: 10px;
     margin: 0px;
-    padding: 0px;
-
-}
-/* STACK 3: https://react-bootstrap.netlify.app/docs/layout/stack  */
-#notesFormStack3{
-    display: flex;
-    align-items: baseline;
-    margin: 0px;
-    padding: 0px;
+    padding: 0px 0px 2px 0px;
     width: 100%;
+}
+#notebookBlock{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+}
+/* Input */
+/* ======END OF INPUT========== */
+
+/* END OF INPUT */
+/* GROUP 4 */
+#notePadGroup4{
+    width: 100%;
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+    padding: 0px;
+}
+/* STACK 4: https://react-bootstrap.netlify.app/docs/layout/stack  */
+#notesFormStack4{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 90%;
+    align-items: center;
 }
 #reqInfoMsgBlock{
     display: flex;
@@ -171,6 +230,15 @@ LAYOUT
     font-family: "Open Sans", sans-serif;
     font-weight: 700;
     letter-spacing: 2px;
+
+}
+#submitNoteBtnBlock,
+#notePadBtnBlock{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
 
 }
 /* BUTTON: https://react-bootstrap.netlify.app/docs/components/buttons*/
