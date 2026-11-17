@@ -177,16 +177,15 @@ const notProvided = 'Not provided';
                         <span id='welcomeSpan'>
                         <h3 className='welcomeName'>{firstName}</h3>
                         <h3 className='welcomeName'>{lastName}</h3>
-
                         </span>
-                        
                       </div>
                       <div className="p-2" id='descriptionListBlock'>
                         <h4 className='appDescriptionSubHeading'>WHAT YOU CAN DO</h4>
                         <div className='appDescriptionList'>
                           <span className='listSpan'>
-                            <label className='listLabel'><NotepadText/>NOTE PAD:</label><p>Write new notes and file them in
-                              notebooks and tags so they are easy to find later.</p>
+                            <label className='listLabel'><NotepadText/>NOTE PAD:</label>
+                            <p>Write new notes and file them in notebooks and tags so they 
+                            are easy to find later.</p>
                           </span>
                           <span className='listSpan'>
                             <label className='listLabel'><ClipboardPenIcon/>NOTES:</label>
@@ -217,8 +216,11 @@ const notProvided = 'Not provided';
                 </Row>  
                 </div>
                 </section>
+                {/* -----------------
+                SECTION 2:
+                ------------ */}
                 <section id='homeSection2'>
-                <div>
+                <div id='section'>
 <Row id='toggleCalendarRow'>
         <Col id='toggleCalendarCol1'/>
         <Col xs={5} id='toggleCalendarCol'>
@@ -254,9 +256,8 @@ const notProvided = 'Not provided';
 <div id='calendarPanal'>
             <NotesCalender onOpenNote={openNote}/>
         </div>
-      )}
-  
-      <div>
+      )} 
+      <div id='showProfileDiv'>
         {/* user profile */}
        {showProfile && (
  <div id='userProfilePanal'>

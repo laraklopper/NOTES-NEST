@@ -39,6 +39,12 @@ Home.js */
     margin: 0px;
     padding: 0px;
 }
+#toggleCalendarRow{
+    width: 100%;
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+}
 /* STACK: https://react-bootstrap.netlify.app/docs/layout/stack/ */
 #welcomeStack{
     width: 100%;
@@ -58,6 +64,7 @@ Home.js */
     padding: 0px;
     text-align: center;
 }
+
 #welcomeSpan{
     display: flex;
     flex-wrap: wrap;
