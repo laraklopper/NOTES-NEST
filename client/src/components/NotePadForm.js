@@ -12,10 +12,12 @@ import { TODAY } from '../util/dateFunctions';
 import { emptyNoteForm, textToHtml } from '../util/notesUtil';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Asterisk, RotateCcw, Save } from 'lucide-react';
+
+
 // NotePadForm component
 /*Form to create a new note
 POST request*/
-export default function NotePadForm(
+export default function NotePadForm(//Export default NotePadForm.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (NotePad.js)
     addNote,
     loading,
@@ -161,8 +163,9 @@ export default function NotePadForm(
         {/* GROUP 2: NoteText + Language + */}
         <fieldset id='notePadGroup2'>
           <legend>Notes Details</legend>
-              <Stack gap={3}>
-      <div className="p-2" id='noteText'>
+          {/* STACK 2 */}
+              <Stack gap={3} id='notePadStack2'>
+      <div className="p-2" id='noteTextBlock'>
               <label className='notePadLabel' htmlFor='noteTextInput'>NOTE:</label>
               {/* NOTE: value={formData.content} */}
               <div className='inputDiv'>
@@ -179,7 +182,6 @@ export default function NotePadForm(
               />
               <small> <Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
             </div>
-            
               </div>
       <div className="p-2" id='noteLanguageBlock'>
          {/* LANGUAGE: value={formData.language || defaultLanguage}*/}
@@ -207,8 +209,6 @@ export default function NotePadForm(
               </div>
       </div>
     </Stack>
-
-          
         </fieldset>
         {/* GROUP 3: optional input */}
         <fieldset id='notePadGroup3'>
@@ -295,10 +295,11 @@ export default function NotePadForm(
       </div>
       {/* -------------END OF INPUT-------------------- */}
       <div id='notePadGroup4'>
+      {/* STACK 4 */}
  <Stack direction="horizontal" gap={3} id='notesFormStack4'>
         <div className="p-2" id='reqInfoMsgBlock'>
           <span id='reqInfoSpan'>
-            <small><Asterisk style={{ display: 'flex', margin: '0px', padding: '0px' }} color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
+            <small><Asterisk  color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /></small>
             <p className='infoMsg' aria-live='polite' aria-hidden='true'> Indicates required information</p>
           </span>
         </div>
