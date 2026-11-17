@@ -17,10 +17,10 @@ import Footer from '../components/Footer'
 import Profile from '../components/Profile';
 import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
-import AdminRegisForm from '../components/AdminRegisForm'
-import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText } from 'lucide-react'
 import NotesCalender from '../components/NotesCalender'
-
+import AdminRegisForm from '../components/AdminRegisForm'
+// IMPORT ICONS FROM LUCIDE-REACT
+import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText } from 'lucide-react'
 // IMPORT UTILITY FUNCTIONS
 const { ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 
@@ -39,7 +39,6 @@ export default function Home(//Export default Home.js function component
   const [editPassword, setEditPassword] = useState(false)
   const [showCalendar, setShowCalendar] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
-  const navigate = useNavigate()
   const [profileLoading, setProfileLoading] = useState(false)// Disables the edit profile buttons while the update is saving
   const userId = currentUser?.userId// currentUser is { userId, fullName, admin } (see Login.js)
   const dismissKey = `adminFormDismissed_${userId}`
@@ -52,6 +51,7 @@ export default function Home(//Export default Home.js function component
     localStorage.getItem(dismissKey) === 'true'
   )
 
+    const navigate = useNavigate()
   /* currentUser only holds userId, fullName and admin,
   so fetch the full profile from the server */
   useEffect(() => {
