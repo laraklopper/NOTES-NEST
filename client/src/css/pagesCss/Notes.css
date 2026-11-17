@@ -11,6 +11,8 @@ SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
     background-color: #946E26;
         gap: 10px;
 }
+/* ======BOOTSTRAP LAYOUT============= */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #toggleListCol{
     display: flex;
     justify-content: center;

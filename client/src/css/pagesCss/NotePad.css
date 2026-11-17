@@ -7,7 +7,9 @@
     gap: 10px;
     background-color: #946E26;
 }
-/* LAYOUT */
+/* ======================
+LAYOUT
+========================*/
 #notePadPanal{
     padding: 10px;
     margin: 0px;
@@ -21,7 +23,8 @@
     padding: 0px;
 }
 
-/* BOOTSTRAP */
+/* ======BOOTSTRAP LAYOUT============= */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #notePadRow{
     width: 100%;
     margin: 0px;
@@ -42,12 +45,18 @@
     gap: 10px;
     background-color: #946E26;
 }
-
+/* ---------------------
+LAYOUT
+-----------*/
 #notesFormsPanal{
     width: 100%;
 }
-/* BOOTSTRAP */
+/* ======BOOTSTRAP LAYOUT============= */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #toggleNoteFormsRow{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
     width: 100%;
 }
 #toggleNoteFormsCol{
@@ -61,6 +70,7 @@
     margin: 0px;
     padding: 0px;
 }
+/* STACK: https://react-bootstrap.netlify.app/docs/layout/stack */
 #toggleNoteFormsStack{
     display: flex;
     align-items: center;

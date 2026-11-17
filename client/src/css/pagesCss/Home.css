@@ -166,6 +166,11 @@ Home.js */
     margin: 0px;
     padding: 0px;
 }
+#homeToggleStack{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 #toggleProfileCol{
     margin: 0px;
     padding: 0px;
@@ -173,6 +178,8 @@ Home.js */
     justify-content: center;
 
 }
+
+#toggleCalendarBlock,
 #toggleProfileBlock{
     width: 100%;
     margin: 0px;
@@ -181,14 +188,15 @@ Home.js */
     justify-content: center;
 }
 
-#showProfileBtn{
+#showProfileBtn,
+#toggleCalendarBtn{
        display: flex;
     justify-content: center;
     align-items: center;
     margin: 0px;
     padding: 0px;
     height: 40px;
-    width: 180px;
+    width: 240px;
     text-transform: uppercase;
     color: #000;
     font-family: "Roboto Mono", monospace;
@@ -196,6 +204,11 @@ Home.js */
     letter-spacing: 2px;
     border: solid 2px #323A42;
 
+}
+#showProfileBtn:hover,
+#toggleCalendarBtn:hover{
+    background-color: #323A42;
+    color: #E8F0F6;
 }
 /* ======CALENDAR TAB============= */
 #calendarPanal{

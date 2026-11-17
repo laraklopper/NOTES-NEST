@@ -217,19 +217,34 @@ const notProvided = 'Not provided';
                   </Col>
                 </Row>  
                 </div>
-                 <Row id='toggleCalendarRow'>
+                </section>
+                <section id='homeSection2'>
+                <div>
+<Row id='toggleCalendarRow'>
         <Col id='toggleCalendarCol1'/>
         <Col xs={5} id='toggleCalendarCol'>
-        <div>
-            <Button
+        <Stack gap={3} id='homeToggleStack'>
+      <div className="p-2" id='toggleCalendarBlock'>
+           <Button
           variant='light'
           onClick={toggleCalendar}
           id='toggleCalendarBtn'
           >
           {showCalendar ? 'HIDE CALENDAR': 'SHOW CALENDAR'}
-            
           </Button>
-
+      </div>
+      <div className="p-2" id='toggleProfileBlock'>
+         <Button
+          variant='light'
+          onClick={toggleProfile}
+          id='showProfileBtn'
+          >
+            SHOW PROFILE
+          </Button>
+      </div>
+    </Stack>
+        <div>
+         
         </div>
       
         </Col>
@@ -238,26 +253,11 @@ const notProvided = 'Not provided';
       {showCalendar && (
 <div id='calendarPanal'>
             <NotesCalender onOpenNote={openNote}/>
-       
         </div>
       )}
-     <Row id='toggleProfileRow'>
-        <Col id='toggleProfileCol1'/>
-        <Col xs={5} id='toggleProfileCol'>
-        <div id='toggleProfileBlock'>
-      <Button
-          variant='light'
-          onClick={toggleProfile}
-          id='showProfileBtn'
-          >
-            SHOW PROFILE
-          </Button>
-        </div>
-    
-        </Col>
-        <Col id='toggleProfileCol2'/>
-      </Row>
-       {/* user profile */}
+  
+      <div>
+        {/* user profile */}
        {showProfile && (
  <div id='userProfilePanal'>
                 <div id='userProfileDisplay'>
@@ -308,10 +308,13 @@ const notProvided = 'Not provided';
               </Row>
             </div>
         )}
-
                 </div>
           </div>
        )}
+      </div>
+       
+        </div>
+                 
       </section>
       <div id='adminRegisPanal'>
         {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not
