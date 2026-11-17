@@ -7,6 +7,7 @@
     align-items: center;
     margin: 0px;
     padding: 10px 5px;
+    gap: 10px;
 }
 .notePadLabel{
   font-family: "Roboto Mono", monospace;
@@ -24,6 +25,9 @@ LAYOUT
     flex-direction: column;
     width: 95%;
     padding: 10px;
+     background-color: #BFBFBF;
+     border-radius: 5px ;
+
 }
 /* GROUP 1: Title and readOnly date */
 #notePadGroup1{
@@ -164,6 +168,9 @@ LAYOUT
     text-transform: uppercase;
     margin: 0px;
     padding: 0px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
 
 }
 /* BUTTON: https://react-bootstrap.netlify.app/docs/components/buttons*/

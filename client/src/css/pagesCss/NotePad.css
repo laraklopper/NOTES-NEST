@@ -1,3 +1,8 @@
+/* NotePad.css
+NotePad.js */
+/* ================
+SECTION 1: ADD NOTE FORM
+============*/
 #notePadSection1{
     display: flex;
     flex-direction: column;
@@ -11,16 +16,20 @@
 LAYOUT
 ========================*/
 #notePadPanal{
+    display: flex;
     padding: 10px;
     margin: 0px;
     width: 100%;
+    margin: 0px;
+    background-color: #9E9E9E;
+    border-radius: 5px;
 }
 #notePadBlock{
     display: flex;
     justify-content: center;
     width: 100%;
     margin: 0px;
-    padding: 0px;
+    padding: 10px;
 }
 
 /* ======BOOTSTRAP LAYOUT============= */
@@ -35,7 +44,7 @@ LAYOUT
     padding: 0px;
     margin: 0px;
 }
-/* SECTION 2 */
+/* SECTION 2: AddNotebookForm + Add TagForm */
 #notePadSection2{
         display: flex;
     flex-direction: column;
@@ -50,6 +59,12 @@ LAYOUT
 -----------*/
 #notesFormsPanal{
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    
 }
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
@@ -58,6 +73,7 @@ LAYOUT
     padding: 0px;
     display: flex;
     width: 100%;
+    
 }
 #toggleNoteFormsCol{
     display: flex;
@@ -88,14 +104,12 @@ LAYOUT
 }
 
 
-#notepadFormsPanal{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-#notePadPanal,
+
+
 #addNoteBookPanal,
 #addTagPanal{
+    display: flex;
+    background-color: #9E9E9E;
     padding: 10px;
     margin: 0px;
     width: 100%;
