@@ -17,27 +17,6 @@ import { useNavigate } from 'react-router-dom';
 import { emptyNewUser } from '../util/userFunc';
 
 
-// userFunc.js
-// Empty form values, shared by the initial state and the CLEAR FORM button
-const emptyNewUser = {
-  username: '',
-  fullName: {
-    firstName: '',
-    lastName: ''
-  },
-  contactDetails: {
-    email: '',
-    contactNumber: '',
-  },
-  dateOfBirth: '',
-  defaultSourceLang: '',
-  defaultTargetLang: '',
-  defaultNoteLang: '',
-  password: '',
-  /* Consent for admin users to see this account's details. Starts false so
-  the checkbox is unticked, and registration is refused until it is given. */
-  adminDataConsent: false
-}
 
 //============MAIN REGISTER COMPONENT===========
 export default function Register(//Export default Registration function component

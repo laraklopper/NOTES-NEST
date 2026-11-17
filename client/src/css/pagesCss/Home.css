@@ -73,6 +73,17 @@ Home.js */
     margin: 0px;
     padding: 0px;
 }
+#section2Panal{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#showProfileDiv{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
 #calendarDayPanal{
     width: 100%;
     display: flex;
