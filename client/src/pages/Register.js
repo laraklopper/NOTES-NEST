@@ -69,7 +69,7 @@ export default function Register(//Export default Registration function componen
   return (
     <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
     {/* ---------Screen Reader Heading------------------ */}
-    <p className='pageTitle'>Registration Page</p>
+    <p className='visually-hidden' id='pageTitle'>Registration Page</p>
     {/* Render the MainHeader.js component with 'REGISTRATION' as the mainHeading */}
         <MainHeader mainHeading={'REGISTRATION'} loggedIn={loggedIn}/>
         {/* =====================

@@ -1,3 +1,9 @@
+/* LoggedOut.css
+Login.js,
+Registration.js
+*/
+/* LOGIN: Login.js */
+/* Section 1: LoginForm */
 #loginSection{
     display: flex;
     flex-direction: column;
@@ -7,12 +13,15 @@
     padding: 0px;
     background-color: #946E26;
 }
+/* LAYOUT */
 #loginPanal{
     width: 100%;
     margin: 0px;
     padding: 0px;
     display: flex;
 }
+/* BOOTSTRAP */
+/* GRID */
 #loginRow{
         width: 100%;
     margin: 0px;
@@ -37,6 +46,8 @@
     margin: 0px;
     padding: 10px 0px;
 }
+/* REGISTRATION: Registration.js*/
+/* SECTION 1: RegistrationForm.js */
 #regisSection{
     display: flex;
     flex-direction: column;
@@ -46,10 +57,28 @@
     padding: 0px;
     background-color: #946E26;
 }
+/* LAYOUT */
+#registrationPanal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin:0px;
+    padding: 0px;
+       
+}
 #registrationBlock{
     display: flex;
     flex-direction: column;
-     width: 100%;
+    width: 100%;
+    margin: 0px;
+        padding: 10px 0px;
+}
+/* BOOTSTRAP */
+/* GRID */
+#registrationRow{
+    display: flex;
+    width: 100%;
     margin: 0px;
     padding: 0px;
 }
@@ -63,13 +92,5 @@
     flex-direction: column;
     align-items: center;
     margin: 0px;
-    padding: 0px;
-}
-#registrationPanal{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin:0px;
     padding: 0px;
 }

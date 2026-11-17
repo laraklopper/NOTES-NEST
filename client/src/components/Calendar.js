@@ -1,6 +1,6 @@
 //Calendar.js
 import React, { useEffect, useRef, useState } from 'react'
-import '../css/pagesCss/Calender.css'
+import '../css/componentCss/Calender.css'
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Badge from 'react-bootstrap/Badge';
