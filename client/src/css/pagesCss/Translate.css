@@ -174,7 +174,8 @@ margin: 0px;
     border: solid 2px #323A42;
 }
 #toggleLangBtn{
-    width: 300px;
+        width: 330px;
+
 }
 #showTranslationsBtn{
     width: 250px;

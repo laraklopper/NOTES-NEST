@@ -9,7 +9,7 @@ import Stack from 'react-bootstrap/Stack';
 // IMPORT CUSTOM COMPONENTS
 import Footer from '../components/Footer'
 import TranslateForm from '../components/TranslateForm';
-import { BookOpenCheck } from 'lucide-react';
+import { Archive, ArchiveX, BookOpenCheck, BookOpenText, BookX, LanguagesIcon, Trash2Icon, TrashOff } from 'lucide-react';
 import TranslationsList from '../components/TranslationsList';
 import TrashedTranslations from '../components/TrashedTranslations';
 import ArchivedTranslations from '../components/ArchivedTranslations';
@@ -23,7 +23,7 @@ export default function Translate(
   }
 ) {
   // =========STATE VARIABLES=============
- 
+
   const [showTranslations, setShowTranslations] =useState(false)
   const [showTrash, setShowTrash] = useState(false)
   const [showArchive, setShowArchive] = useState(false)
@@ -90,8 +90,10 @@ export default function Translate(
           variant='light'
           id='toggleLangBtn'
           onClick={toggleLang}
+          type='button'
+          aria-label={showLang ? 'HIDE AVAILABLE LANGUAGES' : 'SHOW AVAILABLE LANGUAGES'}
           >
-            {showLang ? 'HIDE AVAILABLE LANGUAGES' : 'SHOW AVAILABLE LANGUAGES'}
+            {showLang ? (<>Hide Available Languages<BookX/></>) : <>Show Available Languages<LanguagesIcon/></>}
           </Button>
         </Col>
         <Col id='toggleLangCol2'/>
@@ -125,8 +127,13 @@ export default function Translate(
  variant='light'
          id='showTranslationsBtn'
          onClick={toggleTranslations}
+         type='button'
+         aria-label={showTranslations ? 'HIDE TRANSLATIONS': 'SHOW TRANSLATIONS'}
+         aria-pressed={showTranslations}
+         aria-expanded={showTranslations}
+         aria-controls='translationListPanal'
          >
-          SHOW TRANSLATIONS
+          {showTranslations ? (<>Hide Translations<BookX/></>): (<>Show Translations<BookOpenText/></>)}
          </Button>
              </div>
                         <div className="p-2" id='toggleArchiveBlock'>
@@ -137,8 +144,11 @@ export default function Translate(
                           type='button'
                           // ARIA ATTRIBUTES:
                           aria-label={showArchive ? 'Hide Archive': 'Show Archive' }
+                          aria-pressed={showArchive}
+                          aria-expanded={showArchive}
+                          aria-controls='archivedTranslationPanal'
                           >
-                            {showArchive ? 'Hide Archive': 'Show Archive' }
+                            {showArchive ? (<>Hide Archive<ArchiveX/></>): (<>Show Archive<Archive/></>) }
                           </Button>
                         </div>
                         <div className="p-2" id='toggleTrashBlock'>
@@ -151,27 +161,29 @@ export default function Translate(
                           aria-label={showTrash ? 'Hide Trash' : 'SHOW TRASH'}
                           aria-pressed={showTrash}
                           aria-expanded={showTrash}
-
+                          aria-controls='deletedTranslationPanal'
                           >
-                          {showTrash ? 'Hide Trash' : 'SHOW TRASH'}
-                           
+                          {showTrash ? (<>Hide Trash <TrashOff/> </>) : (<>Show Trash<Trash2Icon/></>)}                           
                           </Button>
                         </div>
                       </Stack>
-          
         </Col>
          <Col id='toggleTranslationsCol2'/>
         </Row>
+        {/* TRANSLATIONS LIST + TRANSLATIONS ARCHIVE + TRANSLATIONS TRASH */}
           <div id='translationListsPanal'>
+          {/* TOGGLE TRANSLATIONS LIST */}
         {showTranslations && (
                <div id='translationListPanal'>
                 <TranslationsList
                   currentUser={currentUser}
                 />
+                <Row>
+                  
+                </Row>
               </div>
         )}
-     
-                  <div id='listsDiv'>
+                 {/* TOGGLE ARCHIVED TRANSLATIONS */}
                 {showArchive && (
                   <div id='archivedTranslationPanal'>
                   <Row id='translationsArchiveRow'>
@@ -181,6 +193,7 @@ export default function Translate(
                   </Row>
                      </div>
                 )}
+                {/* TOGGLE TRASHED TRANSLATIONS */}
                 {showTrash && (
                   <div id='deletedTranslationPanal'>
                   <Row id='translationTrashRow'>
@@ -189,8 +202,7 @@ export default function Translate(
                     </Col>
                   </Row>
                   </div>
-                )}
-                </div>
+                )}    
               </div>
             </div>
       </section>
