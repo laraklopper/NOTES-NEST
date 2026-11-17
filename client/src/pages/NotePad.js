@@ -14,7 +14,7 @@ import NotePadForm from '../components/NotePadForm';
 import AddNoteBook from '../components/AddNoteBook';
 import AddTag from '../components/AddTag';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { NotepadText } from 'lucide-react';
+import { NotebookPen, NotepadText, TagPlus, X } from 'lucide-react';
 
 
 // =========MAIN NOTEPAD FUNCTION COMPONENT
@@ -248,8 +248,9 @@ export default function NotePad(//Export default NotePad.js function component
         variant='light'
         id='toggleAddNotebookBtn'
         onClick={toggleNoteBookForm}
+        aria-label= {newNotebookForm ? 'Hide Form': 'Add NoteBook'}
         >
-          Create notebook form
+          {newNotebookForm ? (<>HIDE FORM<X/></>): (<>ADD NOTEBOOK<NotebookPen/></>)}
         </Button>
       </div>
       <div className="p-2">
@@ -257,8 +258,11 @@ export default function NotePad(//Export default NotePad.js function component
         variant='light'
         id='toggleAddTagBtn'
         onClick={toggleAddTagForm}
+        type='button'
+        // ARIA ATTRIBUTES:
+        aria-label={newTagForm ? 'Hide form' : 'Add New Tag'}
         >
-          Create tag form
+          {newTagForm ? (<>Hide Form <X/></>) : (<>ADD NEW TAG <TagPlus/></>)}
         </Button>
       </div>
     </Stack>
