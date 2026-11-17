@@ -10,7 +10,6 @@ import '../css/componentCss/Profile.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-
 import Stack from 'react-bootstrap/Stack';
 // IMPORT CUSTOM COMPONENTS
 import MainHeader from '../components/MainHeader'
@@ -229,6 +228,11 @@ const notProvided = 'Not provided';
           variant='light'
           onClick={toggleCalendar}
           id='toggleCalendarBtn'
+          // ARIA ATTRIBUTES:
+          aria-label={showCalendar ? 'HIDE CALENDAR': 'SHOW CALENDAR'}
+          aria-pressed={showCalendar}
+          aria-expanded={showCalendar}
+          aria-controls='calendarPanal'
           >
           {showCalendar ? 'HIDE CALENDAR': 'SHOW CALENDAR'}
           </Button>
@@ -243,10 +247,6 @@ const notProvided = 'Not provided';
           </Button>
       </div>
     </Stack>
-        <div>
-         
-        </div>
-      
         </Col>
         <Col id='toggleCalendarCol2'/>
       </Row>
@@ -276,7 +276,7 @@ const notProvided = 'Not provided';
                   </Row>
                 </div>
                 <div id='editUserDataPanal'>
-                {/* TOGFL */}
+                {/* TOGGLE EDIT PROFILE */}
                      {editUser && (
             <div id='editProfileBlock'>
               <Row id='editProfileRow'>
@@ -308,11 +308,10 @@ const notProvided = 'Not provided';
               </Row>
             </div>
         )}
-                </div>
           </div>
+        </div>
        )}
-      </div>
-       
+      </div>       
         </div>
                  
       </section>
