@@ -97,6 +97,9 @@ export default function Translate(
                   onClick={toggleLang}
                   type='button'
                   aria-label={showLang ? 'HIDE AVAILABLE LANGUAGES' : 'SHOW AVAILABLE LANGUAGES'}
+                  aria-pressed={showLang}
+                  aria-expanded={showLang}
+                  aria-controls='langaugeListPanal'
                 >
                   {showLang ? (<>Hide Available Languages<BookX/></>) : <>Show Available Languages<LanguagesIcon/></>}
                 </Button>
