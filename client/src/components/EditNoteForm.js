@@ -11,7 +11,7 @@ import Button from 'react-bootstrap/Button';
 import languageData from '../util/languageData';
 import { noteToForm, textToHtml } from '../util/notesUtil';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { Asterisk, RotateCw } from 'lucide-react';
+import { Pin, RotateCw } from 'lucide-react';
 
 // Splits the comma separated TAG input into lowercase names (how the server stores them)
 const splitTags = (tags) => tags.split(',').map((tag) => tag.trim().toLowerCase()).filter(Boolean)
@@ -119,14 +119,14 @@ export default function EditNoteForm(
                 <fieldset id='editNoteGroup1' aria-describedby='editNoteGroup1Desc'>
                     {/* -----Screen Reader Heading */}
                     <p className='visually-hidden' id='editNoteGroup1Desc'>Edit note title</p>
-                    <legend>EDIT TITLE</legend>
+                    <legend id='editNoteGroup1Desc'>EDIT TITLE OR DATE</legend>
                     {/* STACK 1 */}
-                    <Stack direction="horizontal" gap={3} id='editNoteStack1'>
-                        {/* TITLE: value={editNoteData.title} */}
+                    <Stack gap={3} id='editNoteStack1'>
+           {/* TITLE: value={editNoteData.title} */}
                         <div className="p-2" id='editTitleBlock'>
                             <label className='editNoteLabel' htmlFor='editNoteTitleInput'>TITLE:</label>
                             <input
-                                className='input'
+                                className='editNoteInput'
                                 type='text'
                                 id='editNoteTitleInput'
                                 maxLength={200}
@@ -135,49 +135,51 @@ export default function EditNoteForm(
                                 value={editNoteData.title}
                                 onChange={handleInputChange}
                                 // ARIA ATTRIBUTES:
-                                // aria-label=''
+                                aria-label='Edit Note Title'
                                 aria-required='false'
                             />
                         </div>
-                        <div className="p-2 ms-auto"/>
-                        <div className="p-2">
-                        {/* DATE: value={createdDate} */}
+      <div className="p-2" id='editNoteDateBlock'>
+                        {/* DATE: value={createdDate}: edit the day the note was created only allow
+                        past and current dates */}
+                        <label className='notePadLabel' htmlFor='editNoteDate'>DATE:</label>
                             <div className='inputDiv'>
-                                <label className='notePadLabel' htmlFor='editNoteDate'>DATE:</label>
+                                
                                 <input
                                     type='date'
-                                    className='input'
+                                    className='editNoteInput'
                                     id='editNoteDate'
-                                    readOnly
-                                    // The date the note was created; it cannot be edited
+                                    placeholder={createdDate}//Set the date created as the placeholder
+                                    // name=''
                                     value={createdDate}
+                                    // onChange={}
                                     // ARIA ATTRIBUTES:
+                                    aria-required='false'
                                     aria-label='Date added'
-                                    aria-readonly='true'
                                 />
                             </div>
                         </div>
-                    </Stack>
+    </Stack>
                 </fieldset>
                 {/* GROUP 2 */}
                 <fieldset id='editNoteGroup2'>
                     <legend>EDIT NOTE DETAILS</legend>
-                    <Stack direction="horizontal" gap={3} id='editNoteStack2'>
+                    <Stack gap={3} id='editNoteStack2'>
                         {/* EDIT NOTE: value={editNoteData.content} */}
                         <div className="p-2" id='editNoteTextBlock'>
                             <label className='notePadLabel' htmlFor='editNoteTextInput'>NOTE:</label>
                             <textarea
-                                className='input notesTextArea'
                                 id='editNoteTextInput'
                                 placeholder='NOTE TEXT'
                                 name='content'
+                                rows={5}
                                 value={editNoteData.content}
                                 onChange={handleInputChange}
                                 // ARIA ATTRIBUTES:
                                 aria-required='false'
                             />
                         </div>
-                        <div className="ms-auto" id='editNoteDetailsBlock'>
+                        <div className="p-2" id='editNoteDetailsBlock'>
                         {/* EDIT LANGUAGE:
                         select: value={editNoteData.language} 
                         mappedLanguages: value={lang.code}
@@ -186,7 +188,7 @@ export default function EditNoteForm(
                                 <label className='notePadLabel' htmlFor='editLanguageInput'>EDIT LANGUAGE:</label>
                                 <div className='inputDiv'>
                                     <select
-                                        className='input'
+                                        className='editNoteInput'
                                         id='editLanguageInput'
                                         autoComplete=''
                                         name='language'
@@ -204,7 +206,16 @@ export default function EditNoteForm(
                                     </select>
                                 </div>
                             </div>
-                            {/* NOTEBOOK:  
+                        </div>
+                    </Stack>
+                </fieldset>
+                {/* GROUP 3 */}
+                <fieldset id='editNoteGroup3' aria-labelledby='optionalInputGroup'>
+                <legend id='optionalInputGroup'>Optional Input</legend>
+                {/* STACK 3: */}
+                  <Stack gap={3} id='editNoteStack3'>
+      <div className="p-2" id='optEditNoteBlock1'>
+         {/* NOTEBOOK:  
                             select: value={editNoteData.notebook}
                             mappedNotebook options: value={notebook._id}*/}
                             <div className='noteInputDiv'>
@@ -215,7 +226,11 @@ export default function EditNoteForm(
                                     name='notebook'
                                     value={editNoteData.notebook}
                                     onChange={handleInputChange}
+                                    // ARIA ATTRIBUTES:
+                                    aria-required='false'
+                                    aria-label='Edit Note Notebook'
                                 >
+                                {/* MAP NOTEBOOKS */}
                                     <option value=''>NO NOTEBOOK</option>
                                     {notebookOptions.map((notebook) => (
                                         <option key={notebook._id} value={notebook._id}>
@@ -224,13 +239,15 @@ export default function EditNoteForm(
                                     ))}
                                 </select>
                             </div>
-                            {/* TAG: 
+      </div>
+      <div className="p-2" id='optEditNoteBlock2'>
+           {/* TAG: 
                             Input:value={editNoteData.tags}
                             mappedTagOptions: value={tag.name}*/}
                             <div className='noteInputDiv'>
                                 <label className='notePadLabel' htmlFor='editNoteTagsInput'>TAG:</label>
                                 <input
-                                    className='input'
+                                    className='editNoteInput'
                                     id='editNoteTagsInput'
                                     type='text'
                                     placeholder='TAG, TAG'
@@ -238,9 +255,12 @@ export default function EditNoteForm(
                                     name='tags'
                                     value={editNoteData.tags}
                                     onChange={handleInputChange}
+                                    // ARIA ATTRIBUTES:
+                                    aria-required='false'
+                                    aria-label='Edit Note Tag'
                                 />
                                 <select
-                                    className='input'
+                                    className='editNoteInput'
                                     id='editNoteTagSelect'
                                     value=''// Always shows "ADD TAG"; picking a tag appends it to the input above
                                     onChange={handleTagSelect}
@@ -248,6 +268,7 @@ export default function EditNoteForm(
                                     // ARIA ATTRIBUTES:
                                     aria-label='ADD AN EXISTING TAG'
                                 >
+                                {/* MAP ALL AVAILABLE TAGS */}
                                     <option value=''>ADD TAG</option>
                                     {tags
                                         .filter((tag) => !selectedTagNames.includes(tag.name))
@@ -258,7 +279,9 @@ export default function EditNoteForm(
                                         ))}
                                 </select>
                             </div>
-                            {/* IS PINNED: checked={editNoteData.isPinned} */}
+      </div>
+      <div className="p-2" id='editPinnedBlock'>
+         {/* IS PINNED: checked={editNoteData.isPinned} */}
                             <div id='checkBoxInputDiv'>
                                 <label className='notePadLabel' htmlFor='editNotePinnedInput'>IS PINNED:</label>
                                 <input
@@ -271,18 +294,16 @@ export default function EditNoteForm(
                                     aria-label='edit pinned note'
                                     aria-required='false'
                                 />
+                                <Pin size={16}/>
                             </div>
-                        </div>
-                    </Stack>
+      </div>
+    </Stack>
+
                 </fieldset>
             </div>
             {/* STACK 3 */}
             <Stack direction="horizontal" gap={3} id='editNoteBtnStack'>
-                <div className="p-2">
-                    <p className='infoMsg' aria-hidden='true'>
-                        <small><Asterisk color="#C22419" fontWeight={700} size={12} aria-hidden='true' focusable='false' /> Indicates required information</small>
-                    </p>
-                </div>
+                <div className="p-2"/>
                 <div className="p-2 ms-auto">
                     <Button
                         variant='warning'

@@ -77,8 +77,11 @@ SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
     width: 100%;
 }
 #editNotePanal{
+        display: flex;
+    justify-content: center;
         width: 100%;
     margin: 0px;
+    background-color: #9E9E9E;
     padding: 5px;
 }
 #editNoteRow{
@@ -86,10 +89,14 @@ SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
     margin: 0px;
     padding: 0px;
 }
+#editNoteCol1,
+#editNoteCol2{
+    margin: 0px;
+    padding: 0px;
+}
 #editNoteCol{
     display: flex;
     align-items: center;
-    width: 100%;
     margin: 0px;
     padding: 0px;
 }

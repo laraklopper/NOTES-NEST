@@ -290,6 +290,11 @@ const toggleNotes = useCallback(() => {
         onClick={toggleNotes}
         id='toggleNotesBtn'
         type='button'
+        // ARIA ATTRIBUTES:
+        aria-label={viewNotes ? ('Hide Notes'):( 'Show Notes')}
+        aria-pressed={viewNotes}
+        aria-expanded={viewNotes}
+        aria-controls='notesListPanal'
         >
           {viewNotes ? ('Hide Notes'):( 'Show Notes')}
         </Button>
@@ -329,6 +334,7 @@ const toggleNotes = useCallback(() => {
         <Col id='toggleListCol2'/>
       </Row>  
        <div id='notesDataListPanal'>
+       {/* TOGGLE NOTES LIST */}
         {viewNotes && (
             <div id='notesListPanal'>
              <NotesList
@@ -356,7 +362,8 @@ const toggleNotes = useCallback(() => {
                 {editNote && selectedNote && (
                   <div id='editNoteBlock'>
                     <Row id='editNoteRow'>
-                      <Col id='editNoteCol'>
+                      <Col id='editNoteCol1'/>
+                      <Col id='editNoteCol' md='8'>
                         <div id='editNotePanal'>
                           <EditNoteForm
                             note={selectedNote}
@@ -367,6 +374,7 @@ const toggleNotes = useCallback(() => {
                           />
                         </div>
                       </Col>
+                      <Col id='editNoteCol2'/>
                     </Row>
                   </div>
                 )}

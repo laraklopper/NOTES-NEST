@@ -1,5 +1,5 @@
 #updateNoteForm{
-        width: 100%;
+        width: 90%;
     margin: 0px;
     padding: 10px;
     display: flex;
@@ -8,18 +8,27 @@
     background-color: #777d83;
     gap: 10px;
 }
+.editNoteInput{
+    display: flex;
+    justify-content: center;
+    width: 200px;
+    border-radius: 5px;
+    height: 40px;
+    text-align: center;
+    /* font-family: ; */
+    font-weight: 700;
+}
 /* LAYOUT */
-
 #editNoteInput{
     display: flex;
+    width: 90%;
     flex-direction: column;
     margin: 0px;
     padding: 10px 5px;
-    width: 100%;
     background-color: #BFBFBF;
-    display: flex;
     overflow-y: scroll;
 }
+/* GROUP 1: Edit Title + Date */
 #editNoteGroup1 {
     display: flex;
     flex-direction: column;
@@ -41,17 +50,20 @@
      font-weight: 700;
      letter-spacing: 2px;
 }
-/* STACK 1: */
+/* BOOTSTRAP LAYOUT */
+/* STACK 1: https://react-bootstrap.netlify.app/docs/layout/stack */
 #editNoteStack1{
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     margin: 0px;
     padding: 0px;
     width: 100%;
 }
-#editTitleBlock{
+#editTitleBlock,
+#editNoteDateBlock{
     display: flex;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: center;
     margin: 0px;
     padding: 0px;
 }
@@ -77,26 +89,75 @@
      font-weight: 700;
      letter-spacing: 2px;
 }
-/* STACK 2 */
+/* BOOTSTRAP LAYOUT */
+/* STACK 2: https://react-bootstrap.netlify.app/docs/layout/stack */
 #editNoteStack2{
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     margin: 0px;
     padding: 0px;
 }
 #editNoteTextBlock{
     display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 10px;
     margin: 0px;
     padding: 0px;
 }
 
+#editNoteTextInput{
+    width: 500px;
+    padding: 3px 5px;
+        border-radius: 5px;
+        margin: 0px;
+        border: solid 2px #323A42;
+            font-family: "Roboto Mono", monospace;
+            font-weight: 600;
+}
+#editNoteTextInput:focus-visible{
+    outline: none;
+    box-shadow: 0 0 0 3px #323a4266;
+}
 #editNoteDetailsBlock{
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
     margin: 0px;
+}
+/* GROUP 3: OPTIONAL INPUT
+Input not initially required when the note was
+created*/
+#editNoteGroup3{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #999999;
+    gap: 0px;
+    border: #323A42 solid 2px;
+    border-radius: 5px;
+}
+#editNoteGroup3 > legend{
+        float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+     font-family: "Roboto Condensed", sans-serif;
+     font-weight: 700;
+     letter-spacing: 2px;
+     text-transform: uppercase;
+}
+/* BOOTSTRAP LAYOUT */
+/* STACK: https://react-bootstrap.netlify.app/docs/layout/stack */
+#editNoteStack3 {
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
 }
 /* ======END OF INPUT========== */
 .editNoteLabel{
@@ -114,9 +175,9 @@
     display: flex;
     align-items: center;
 }
-/* BUTTON */
+/*BUTTON: https://react-bootstrap.netlify.app/docs/components/buttons*/
 #submitEditNoteBtn{
-         width: 180px;
+    width: 180px;
     height: 40px;
     color: #000;
     font-weight: 700;
