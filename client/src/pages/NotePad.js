@@ -214,7 +214,8 @@ export default function NotePad(//Export default NotePad.js function component
     <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
       {/* ------Screen Reader Heading-------------- */}
       <p className='visually-hidden' id='pageTitle'>NOTE PAD PAGE</p>
-      {/* Render the  */}
+      {/* ===============HEADER============== */}
+      {/* Render the MainHeader.js component with "NOTE PAD" as the heading */}
       <MainHeader currentUser={currentUser} heading={'NOTE PAD'} loggedIn={loggedIn}/>
       {/* ========EVENT/ANIMATION========== */}
       <Row id='eventRow' role='presentation'>
@@ -231,6 +232,7 @@ export default function NotePad(//Export default NotePad.js function component
       ------------- */}
       <section  id='notePadSection1'>
          <div id='notePadDiv'>
+         {/* Row 1: Toggle NotePad*/}
                       <Row id='toggleNotePadRow'>
         <Col id='toggleNotePadCol1'/>
         <Col xs={5} id='toggleNotePadCol'>
@@ -243,20 +245,22 @@ export default function NotePad(//Export default NotePad.js function component
             // ARIA ATTRIBUTES:
             aria-label={showNotePad ? 'HIDE NOTE PAD': 'SHOW NOTE PAD'}
             >
-            {showNotePad ? (
-              <>Hide Note Pad<X/></>
-            ):(
-              <>Show NotePad <NotepadText/></>
+            {showNotePad ? (<>
+              Hide Note Pad
+              <X fontWeight={700}  aria-hidden='true' focusable='false'/>
+              </>):(<>Show NotePad <NotepadText fontWeight={700}  aria-hidden='true' focusable='false'/></>
             )}
             </Button>
           </div>
         </Col>
         <Col id='toggleNotePadCol2'/>
       </Row>
+      {/* Row 2: TOGGLE NOTEPADFORM */}
       {showNotePad && (
  <div id='notePadBlock'>
   <Row id='notePadRow'>
-                  <Col id='notePadCol'>
+  <Col id='notePadCol1' xs='0'/>
+                  <Col xs={12} md={10} id='notePadCol'>
                     <div id='notePadPanal'>
                       <NotePadForm
                         addNote={addNote}
@@ -268,13 +272,18 @@ export default function NotePad(//Export default NotePad.js function component
                       />
                     </div>
                   </Col>
+                  <Col id='notePadCol' xs='0'/>
                 </Row>
       </div>
       )}             
               </div>
       </section>
+      {/* ====================
+      SECTION 2:
+      ================== */}
       <section  id='notePadSection2'>
         <div id='notepadFormsPanal'>
+        {/* Row 3: Toggle Notes Form Buttons (toggleNotebookForm + toggleTagForm)*/}
             <Row  id='toggleNoteFormsRow'>
         <Col id='toggleNoteFormsCol1'/>
         <Col xs={6} id='toggleNoteFormsCol'>
@@ -284,9 +293,22 @@ export default function NotePad(//Export default NotePad.js function component
         variant='light'
         id='toggleAddNotebookBtn'
         onClick={toggleNoteBookForm}
+        type='button'
+        // ARIA ATTRIBUTES:
         aria-label= {newNotebookForm ? 'Hide Form': 'Add NoteBook'}
+        aria-pressed={newNotebookForm}
+        aria-expanded={newNotebookForm}
+        aria-controls='addNoteBookDiv'
         >
-          {newNotebookForm ? (<>HIDE FORM<X/></>): (<>ADD NOTEBOOK<NotebookPen/></>)}
+          {newNotebookForm ? (<>
+            HIDE FORM
+            <X fontWeight={700} aria-hidden='true' focusable='false'/>
+            </>):(<>
+            ADD NOTEBOOK
+            <NotebookPen 
+              fontWeight={700}  
+              aria-hidden='true' focusable='false'/>
+            </>)}
         </Button>
       </div>
       <div className="p-2">
@@ -297,8 +319,17 @@ export default function NotePad(//Export default NotePad.js function component
         type='button'
         // ARIA ATTRIBUTES:
         aria-label={newTagForm ? 'Hide form' : 'Add New Tag'}
+        aria-pressed={newTagForm}
+        aria-expanded={newTagForm}
+        aria-controls='addTagDiv'
         >
-          {newTagForm ? (<>Hide Form <X/></>) : (<>ADD NEW TAG <TagPlus/></>)}
+          {newTagForm ? (<>
+              Hide Form 
+              <X fontWeight={700}  aria-hidden='true' focusable='false'/>
+            </>) : (<>
+              ADD NEW TAG 
+              <TagPlus fontWeight={700}  aria-hidden='true' focusable='false'/>
+            </>)}
         </Button>
       </div>
     </Stack>
@@ -306,6 +337,7 @@ export default function NotePad(//Export default NotePad.js function component
         <Col id='toggleNoteFormsCol2'/>
       </Row>
       <div id='notesFormsPanal'>
+      {/* Row 4: TOGGLE NOTE BOOK FORM */}
         {newNotebookForm && (
            <div id='addNoteBookDiv'>
                 <Row id='addNoteBookRow'>
@@ -319,23 +351,24 @@ export default function NotePad(//Export default NotePad.js function component
                 </Row>
               </div>
         )}
+        {/* Row 5: TOGGLE TAGS FORM */}
         {newTagForm && (
              <div id='addTagDiv'>
                 <Row id='addTagRow'>
-                  <Col />
-                  <Col xs={5}>
+                  <Col id='addTagCol1' />
+                  <Col xs={5} id='addTagCol'>
                     <div id='addTagPanal'>
                       <AddTag addTag={addTag} loading={tagLoading} tags={tags} />
                     </div>
                   </Col>
-                  <Col />
+                  <Col id='addTagCol2'/>
                 </Row>
               </div>
         )}
-
       </div>
         </div>
       </section>
+      {/* ===========FOOTER=================== */}
       <Footer logout={logout} loggedIn={loggedIn}/>
     </div>
   )

@@ -1,5 +1,5 @@
 #notePadForm{
-   width: 80%;
+       width: 100%;
     background-color: #777d83;
     border: #323A42 solid 2px;
     display: flex;
@@ -137,14 +137,11 @@ LAYOUT
     flex-direction: column;
     align-items: center;
 }
-#noteTextBlock{
-    display: flex;
-    gap: 10px;
-}
+
 /* Input */
 #noteTextInput{
-    width: 650px;
-    max-width: 100%;
+    width: 500px;
+    /* max-width: 100%; */
     height: 250px;
     padding: 8px 10px;
     background-color: #fff;
@@ -156,8 +153,6 @@ LAYOUT
     outline: none;
     box-shadow: 0 0 0 3px #323a4266;
 }
-
-
 #noteTextBlock{
     display: flex;
     flex-direction: column;

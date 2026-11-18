@@ -15,6 +15,13 @@ SECTION 1: ADD NOTE FORM
 /* ======================
 LAYOUT
 ========================*/
+#notePadDiv{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 #notePadPanal{
     display: flex;
     justify-content: center;
@@ -25,19 +32,12 @@ LAYOUT
     background-color: #9E9E9E;
     border-radius: 5px;
 }
-#toggleNotePadRow{
-    display: flex;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-
 #notePadBlock{
     display: flex;
     justify-content: center;
     width: 100%;
     margin: 0px;
-    padding: 10px;
+        padding: 10px 0px;
 }
 #toggleNotePadDiv{
     display: flex;
@@ -46,16 +46,33 @@ LAYOUT
     margin: 0px;
     padding: 5px 0px;
 }
-
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+#toggleNotePadRow,
 #notePadRow{
+    display: flex;
+    justify-content: center;
     width: 100%;
     margin: 0px;
     padding: 0px;
 }
+#toggleNotePadCol{
+    display: flex;
+    align-items: baseline;
+    margin: 0px;
+    padding: 0px;
+}
+#toggleNotePadCol1,
+#toggleNotePadCol2,
+#notePadCol1,
+#notePadCol2{
+    margin: 0px;
+    padding: 0px;
+}
+
 #notePadCol{
-    width: 100%;
+    display: flex;
+    justify-content: center;
     padding: 0px;
     margin: 0px;
 }
@@ -78,8 +95,7 @@ LAYOUT
     flex-direction: column;
     align-items: center;
     margin: 0px;
-    padding: 0px;
-    
+    padding: 0px;    
 }
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
@@ -88,7 +104,6 @@ LAYOUT
     padding: 0px;
     display: flex;
     width: 100%;
-    
 }
 #toggleNoteFormsCol{
     display: flex;
@@ -117,10 +132,7 @@ LAYOUT
     padding: 0px;
     width: 100%;
 }
-
-
-
-
+/* FORMS */
 #addNoteBookPanal,
 #addTagPanal{
     display: flex;
@@ -129,17 +141,13 @@ LAYOUT
     margin: 0px;
     width: 100%;
 }
-
+/* ======BOOTSTRAP LAYOUT============= */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #addNoteBookRow,
 #addTagRow{
     width: 100%;
     margin: 0px;
     padding: 0px;
-}
-#notePadCol{
-    width: 100%;
-    padding: 0px;
-    margin: 0px;
 }
 #addNoteBookCol1,
 #addNoteBookCol2{
@@ -167,6 +175,7 @@ LAYOUT
     margin: 0px;
     padding: 0px;
 }
+/* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons */
 #toggleNotePadBtn,
 #toggleAddNotebookBtn,
 #toggleAddTagBtn{
@@ -192,4 +201,15 @@ LAYOUT
 #toggleAddTagBtn:hover{
  background-color: #323A42;
     color: #E8F0F6;
+}
+#toggleNotePadBtn:active,
+#toggleAddNotebookBtn:active,
+#toggleAddTagBtn:active,
+#toggleNotePadBtn[aria-pressed='true'],
+#toggleAddNotebookBtn[aria-pressed='true'],
+#toggleAddTagBtn[aria-pressed='true']{
+    background-color: #323A42;
+    color: #E8F0F6;
+    border: #323A42;
+    text-decoration: underline;
 }
