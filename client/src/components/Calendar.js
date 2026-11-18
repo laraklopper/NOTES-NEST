@@ -5,8 +5,10 @@ import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Badge from 'react-bootstrap/Badge';
 import Alert from 'react-bootstrap/Alert';
+import Stack from 'react-bootstrap/Stack';
 import { DAY_NAMES, buildMonthGrid, toKey, monthTitle, longDate } from '../util/calenderUtil'
 import { fetchCalendar } from '../util/apiUtil'
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Calendar({ onSelectDay, selectedDate }) {
   const today = new Date()
@@ -65,17 +67,44 @@ export default function Calendar({ onSelectDay, selectedDate }) {
     <div id='calendarWrapper'>
       {/* ----- HEADER: month navigation ----- */}
       <div id='calenderHeadBlock'>
-        <Button variant='outline-secondary' size='sm' onClick={() => changeMonth(-1)} aria-label='Previous month'>‹</Button>
-        <div className='text-center'>
+       <Stack gap={3} id='calendarHeadStack'>
+       <div className="p-2" id='monthHead'>
+     
           <h5 className='mb-0' id='calendarTitle'>{monthTitle(view.year, view.month)}</h5>
-          <small className='text-muted' aria-live='polite'>
-            {loading ? 'Loading…' : `${monthTotal} note${monthTotal === 1 ? '' : 's'} this month`}
-          </small>
+         
+          <p id='monthNoteTotal' aria-live='polite'>{loading ? 'Loading…' : `${monthTotal} note${monthTotal === 1 ? '' : 's'} this month`}</p>
+            
+       
+     
+      </div>
+      <div className="p-2" id='monthNavBlock'>
+        <Button 
+        variant='secondary' 
+        id='prevMonthBtn' 
+        type='button'
+        size='sm' 
+        onClick={() => changeMonth(-1)} 
+        aria-label='Previous month'
+        >
+        <ChevronLeft size={16} fontWeight={700}/>
+        </Button>
+       
+        <div id='monthBtnDiv'>
+          <Button variant='primary' id='toTodayBtn' onClick={goToday}>Today</Button>
+          <Button 
+          variant='secondary' 
+          id='nextMonthBtn'
+          size='sm' 
+          onClick={() => changeMonth(1)} 
+          aria-label='Next month'
+          >
+          <ChevronRight size={16} fontWeight={700}/>
+          </Button>
         </div>
-        <div>
-          <Button variant='outline-primary' size='sm' className='me-1' onClick={goToday}>Today</Button>
-          <Button variant='outline-secondary' size='sm' onClick={() => changeMonth(1)} aria-label='Next month'>›</Button>
-        </div>
+      </div>
+      
+    </Stack>
+        
       </div>
 
       {error && <Alert variant='danger' className='py-1'>{error}</Alert>}

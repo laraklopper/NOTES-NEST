@@ -231,6 +231,15 @@ Home.js */
 #toggleCalendarBtn:hover{
     background-color: #323A42;
     color: #E8F0F6;
+    text-decoration: underline;
+    border: #404040;
+}
+#showProfileBtn:active,
+#showProfileBtn:active,
+#showProfileBtn[aria-pressed="true"],
+#toggleCalendarBtn[aria-pressed="true"]{
+    background-color: #323A42;
+    color: #E8F0F6;
 }
 /* ======CALENDAR TAB============= */
 #calendarPanal{
@@ -239,6 +248,69 @@ Home.js */
     width: 100%;
     margin: 0px;
     padding: 10px 0px;
+}
+/* =============SECTION 3=============== */
+#adminPanal{
+    width: 100%;
+}
+#adminSection{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    background-color: #946E26;
+}
+#toggleUsersRow{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+
+}
+#toggleUsersCol{
+    display: flex;
+    justify-content: center;
+      margin: 0px;
+    padding: 0px;
+}
+#toggleUsersCol1,
+#toggleUsersCol2{
+    margin: 0px;
+    padding: 0px;
+}
+#toggleUsersDiv{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 5px 0px;
+}
+#toggleUsersBtn{
+       display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    height: 40px;
+    width: 180px;
+    text-transform: uppercase;
+    color: #000;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border: solid 2px #323A42;
+}
+#toggleUsersBtn:hover{
+        background-color: #323A42;
+    color: #E8F0F6;
+}
+#toggleUsersBtn:active,
+#toggleUsersBtn[aria-pressed = 'true']{
+        background-color: #323A42;
+    color: #E8F0F6;
+    text-decoration: underline;
+    border: #404040 solid 2px;
 }
 /* ======ADMIN REGISTRATION FORM============= */
 #adminRegisPanal{

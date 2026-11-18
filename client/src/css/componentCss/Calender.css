@@ -17,13 +17,13 @@ than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
   gap: 10px;
 }
 #calendarWrapper{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  margin: 0px;
-  padding: 5px;
-  background-color: #f8f9fa;
+display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    border: solid;
+    padding: 10px;
+    background-color: #f8f9fa;
 }
 #calendarRow1,
 #calenderRow2{
@@ -48,6 +48,7 @@ than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
 #calendarRow{
   width: 100%;
   margin: 0px;
+  padding: 0px;
 }
 .calendarTable {
   table-layout: fixed; /* seven equal columns */
@@ -56,8 +57,9 @@ than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
 
 .calendarTable th,
 .calendarTable td {
-  border: 1px solid #dee2e6;
-  padding: 0.25rem;
+
+  padding: 4px;
+      border: #404040 solid 1.5px;
 }
 
 .calendarTable th {
@@ -85,7 +87,66 @@ than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
 .calendarTable .calendarBlank {
   --bs-table-bg: #f8f9fa;
 }
-
+#monthBtnDiv{
+  display: flex;
+  align-self: baseline;
+  gap: 4px;
+  margin: 0px;
+  padding: 0px;
+}
+#calendarHeadStack{
+  width: 100%;
+}
+#monthHead{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+#calendarTitle{
+  margin: 0px;
+  padding: 0px;
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+#monthNoteTotal{
+  display: flex;
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0px;
+  text-decoration: underline;
+  letter-spacing: 2px;
+}
+#monthNavBlock{
+  display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+#toTodayBtn,
+#prevMonthBtn,
+#nextMonthBtn{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  color: #000;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border: solid 2px #323A42;
+}
+#toTodayBtn{
+  width: 80px;
+  text-transform: uppercase;
+}
 /* Phones: smaller cells (only the note count badge is shown) */
 @media (max-width: 767.98px) {
   .calendarDay {

@@ -19,6 +19,7 @@ import EditProfile from '../components/EditProfile';
 import EditPassword from '../components/EditPassword';
 import NotesCalender from '../components/NotesCalender'
 import AdminRegisForm from '../components/AdminRegisForm'
+import UsersList from '../components/UsersList'
 // IMPORT ICONS FROM LUCIDE-REACT
 import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText } from 'lucide-react'
 // IMPORT UTILITY FUNCTIONS
@@ -39,6 +40,7 @@ export default function Home(//Export default Home.js function component
   const [editPassword, setEditPassword] = useState(false)
   const [showCalendar, setShowCalendar] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
+  const [showUsers, setShowUsers] = useState(false)
   const [profileLoading, setProfileLoading] = useState(false)// Disables the edit profile buttons while the update is saving
   const userId = currentUser?.userId// currentUser is { userId, fullName, admin } (see Login.js)
   const dismissKey = `adminFormDismissed_${userId}`
@@ -81,6 +83,13 @@ export default function Home(//Export default Home.js function component
      setShowProfile(prev => (!prev))
     setShowCalendar(false)
   },[])
+  const toggleUsersList = useCallback(() => {
+    if (currentUser?.admin) {
+       setShowUsers(prev => (!prev))
+    setShowCalendar(false)
+    setShowProfile(false)
+    }
+  },[currentUser?.admin])
   // Function to toggle editUser/profile form
   const toggleEditUser = useCallback(() => {
     setEditUser(prev => (!prev))
@@ -339,12 +348,48 @@ const notProvided = 'Not provided';
       </div>       
         </div>
       </section>
+        <div id='adminPanal'>
+        {currentUser?.admin &&(    
+          <section id='adminSection'>
+          <Row id='toggleUsersRow'>
+        <Col id='toggleUsersCol1'/>
+        <Col xs={5} id='toggleUsersCol'>
+          <div id='toggleUsersDiv'>
+            <Button
+            variant='light'
+            onClick={toggleUsersList}
+            id='toggleUsersBtn'
+            type='button'
+            // ARIA ATTRIBUTES:
+            aria-label={showUsers ? 'Hide Users': 'Show Users'}
+            aria-pressed={showUsers}
+            aria-expanded={showUsers}
+            aria-controls='usersListPanal'
+            >
+              {showUsers ? (
+                <>Hide Users</>
+              ):(
+                <>Show User<FolderUser aria-hidden='true' focusable='false'/></>
+              )}
+            </Button>
+          </div>
+        </Col>
+        <Col id='toggleUsersCol2'/>
+      </Row>
+      {showUsers && (
+        <div id='usersListPanal'>
+             <UsersList/>
+          </div>
+      )}
+      </section>
+      )}
+      </div>
       <div id='adminRegisPanal'>
         {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not
         an admin user  and matches the age requirement of 21 years and has
         been a user for 3 months (1 day during development) */}
         {showAdminForm && (
-          <section id='adminRegisSec' className='userEditSection'>
+          <section id='adminRegisSec' >
             <div id='adminRegisDiv'>
               <Row>
                 <Col id='adminFormCol1' />
