@@ -94,6 +94,7 @@ export default function Translate(
 <Row id='toggleLanguagesRow'>
               <Col id='toggleLangCol1'/>
               <Col xs={5} id='toggleLangCol'>
+                
                 <Button
                   variant='light'
                   id='toggleLangBtn'

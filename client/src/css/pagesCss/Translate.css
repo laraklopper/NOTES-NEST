@@ -184,9 +184,26 @@ margin: 0px;
         width: 330px;
 
 }
+#toggleLangCol1,
+#toggleLangCol2{
+    margin: 0px;
+    padding: 0px;
+}
 #translateLanguagesPanal{
     display: flex;
-    
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 10px 0px;
+        background-color: #b3b3b3;
+border: solid 2px #323A42;
+border-radius: 8px;
+}
+#showLangBtnDiv{
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 #showTranslationsBtn{
     width: 250px;
