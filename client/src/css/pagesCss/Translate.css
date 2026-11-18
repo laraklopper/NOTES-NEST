@@ -184,6 +184,10 @@ margin: 0px;
         width: 330px;
 
 }
+#translateLanguagesPanal{
+    display: flex;
+    
+}
 #showTranslationsBtn{
     width: 250px;
 }

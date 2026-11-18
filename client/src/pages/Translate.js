@@ -87,8 +87,11 @@ export default function Translate(
                   />
                 </div>
               </Col>
-            </Row>
-            <Row id='toggleLanguagesRow'>
+            </Row>     
+          
+          </div>
+            <div id='translateLanguagesPanal'>
+<Row id='toggleLanguagesRow'>
               <Col id='toggleLangCol1'/>
               <Col xs={5} id='toggleLangCol'>
                 <Button
@@ -106,6 +109,7 @@ export default function Translate(
               </Col>
               <Col id='toggleLangCol2'/>
             </Row>
+           
             {/* API LANGUAGES LIST */}
             {showLang && (
               <div id='langaugeListPanal'>
@@ -121,7 +125,7 @@ export default function Translate(
                 </div>
               </div>
             )}
-          </div>
+             </div>
         </div>
       </section>
       <section id='translateSec2'>
