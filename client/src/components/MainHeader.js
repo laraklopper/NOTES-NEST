@@ -58,7 +58,7 @@ export default function MainHeader(//Export default MainHeader function componen
           <div id='pageHeadingBlock'>
             <span id='pageHeadingSpan' >
               <h1 id='appHeading'>NOTE NEST</h1>
-              <h2 id='pageHeading'>{heading}</h2>
+             
             </span>
           </div>
         </Col>
@@ -67,14 +67,16 @@ export default function MainHeader(//Export default MainHeader function componen
       {/* Row 3: Navigation Bar*/}
       <Row id='headerRow3'>
         <Col xs={12} md={12} id='navCol'>
-          {/* Navigation Bar */}
+         <Stack direction="horizontal" gap={3} id='navBarStack'>
+      <div className="p-2"> <h2 id='pageHeading'>{heading}</h2></div>
+      <div className="p-2 ms-auto"/>
+      <div className="p-2"> {/* Navigation Bar */}
           <nav id='navigation'>
             <ul id='navbar'>
               {/* Header Navigation Bar stack */}
-              <Stack gap={3} id='navBarStack'>
                 {/* NAVBAR BLOCK 1: HomePage, NotePad, Notes */}
                 {currentUser && (
-                  <div className="p-2" id='navBlock1'>
+                  <div id='navBlock1'>
                     <li className='linkItem'>
                       {/* Link to Home.js Page */}
                       <NavLink to='/' className='refLink'>HOME</NavLink>
@@ -95,16 +97,18 @@ export default function MainHeader(//Export default MainHeader function componen
                 )}
                 {/* (Admin only)NAVBAR BLOCK 3: Users */}
                 {currentUser?.admin && (
-                  <div className="p-2" id='navBlock2'>
+                  <div  id='navBlock2'>
                     <li className='linkItem'>
                       {/* Admin only link to Users.js Page */}
                       <NavLink to='/users' className='refLink'>USERS</NavLink>
                     </li>
                   </div>
                 )}
-              </Stack>
+   
             </ul>
-          </nav>
+          </nav></div>
+    </Stack>
+         
         </Col>
       </Row>
       </div>
