@@ -58,23 +58,17 @@ export default function MainHeader(//Export default MainHeader function componen
           <div id='pageHeadingBlock'>
             <span id='pageHeadingSpan' >
               <h1 id='appHeading'>NOTE NEST</h1>
-             
+             <h2 id='pageHeading'>{heading}</h2>
             </span>
+             
           </div>
         </Col>
-        <Col id='headingCol2'/>
-      </Row>
-      {/* Row 3: Navigation Bar*/}
-      <Row id='headerRow3'>
-        <Col xs={12} md={12} id='navCol'>
-         <Stack direction="horizontal" gap={3} id='navBarStack'>
-      <div className="p-2"> <h2 id='pageHeading'>{heading}</h2></div>
-      <div className="p-2 ms-auto"/>
-      <div className="p-2"> {/* Navigation Bar */}
+        <Col id='headingCol2'>
+        <div id='navbarBlock'> 
+        {/* Navigation Bar */}
           <nav id='navigation'>
             <ul id='navbar'>
               {/* Header Navigation Bar stack */}
-                {/* NAVBAR BLOCK 1: HomePage, NotePad, Notes */}
                 {currentUser && (
                   <div id='navBlock1'>
                     <li className='linkItem'>
@@ -95,21 +89,16 @@ export default function MainHeader(//Export default MainHeader function componen
                     </li>
                   </div>
                 )}
-                {/* (Admin only)NAVBAR BLOCK 3: Users */}
-                {currentUser?.admin && (
-                  <div  id='navBlock2'>
-                    <li className='linkItem'>
-                      {/* Admin only link to Users.js Page */}
-                      <NavLink to='/users' className='refLink'>USERS</NavLink>
-                    </li>
-                  </div>
-                )}
+                
    
             </ul>
-          </nav></div>
-    </Stack>
-         
+          </nav>
+          </div>
         </Col>
+      </Row>
+      {/* Row 3*/}
+      <Row id='headerRow3'>
+        <Col xs={12} md={12} id='navCol'></Col>
       </Row>
       </div>
     ):(

@@ -37,6 +37,12 @@
     margin: 0px;
     padding: 0px;
 }
+#headingCol2{
+    display: flex;
+    justify-content: flex-end;
+    margin: 0px;
+    padding: 0px 4px 0px 0px;
+}
 #pageHeadingBlock{
     display: flex;
     flex-direction: column;
@@ -52,27 +58,24 @@
     margin: 0px;
     padding: 0px;
 }
+#navbarBlock{
+    display: flex;
+    justify-content: flex-end;
+    margin: 0px;
+    padding: 0px;
+    
+}
 #navigation{
     width: fit-content;
     margin: 0px;
     display: flex;
     flex-direction: column;
-    padding: 5px;
-    
-}
-#navBarStack{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    display: flex;
-    align-items: baseline;
-    /* flex-direction: column; */
-    /* background-color: #8797A8; */
     border-radius: 8px;
-    /* border: solid #323A42 2px; */
+    padding: 5px;
+    background-color: #8797A8;
 }
-#navBlock1,
-#navBlock2{
+
+#navBlock1{
     display: flex;
     justify-content: center;
     gap: 10px;

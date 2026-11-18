@@ -12,7 +12,7 @@ import { Routes , Route, Navigate, useNavigate} from 'react-router-dom';
 // IMPORT CUSTOM COMPONENTS
 // PROTECTED ROUTES
 import ProtectedUserRoute from './protectedRoutes/ProtectedUserRoute';
-import ProtectedAdminRoute from './protectedRoutes/ProtectedAdminRoute';
+// import ProtectedAdminRoute from './protectedRoutes/ProtectedAdminRoute';
 // IMPORT MAIN PAGES CUSTOM COMPONENTS
 // PUBLIC PAGES
 import Login from './pages/Login';
@@ -22,7 +22,7 @@ import Home from './pages/Home';
 import NotePad from './pages/NotePad';
 import Notes from './pages/Notes';
 import Translate from './pages/Translate';
-import Users from './pages/Users';
+
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Bug } from 'lucide-react';
 
@@ -168,6 +168,7 @@ export default function App() {
                     setError={setError} 
                     setCurrentUser={setCurrentUser} 
                     logout={logout}
+                    users={users}
                       loggedIn={loggedIn}
                     />
                 </ProtectedUserRoute>
@@ -195,12 +196,7 @@ export default function App() {
                 <Translate currentUser={currentUser} logout={logout} loggedIn={loggedIn}/>
                 </ProtectedUserRoute>
               }/> 
-              {/* Protected (Admin Only) Route to Users Page */}
-              <Route path='/users' element={
-                <ProtectedAdminRoute currentUser={currentUser}>
-                  <Users currentUser={currentUser} users={users} logout={logout} loggedIn={loggedIn}/>
-                </ProtectedAdminRoute>
-              }/>
+              
                {/* FALL BACK ROUTE: Response 404 PAGE NOT FOUND */}
             {/* <Route path='*' element={<h2 id='pageNotFound'>404: Page Not Found</h2>}/> */}
               <Route path='*' element={<Navigate to='/' replace/>}/>
