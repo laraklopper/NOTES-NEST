@@ -1,5 +1,7 @@
 //NotePad.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useEffect, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/NotePad.css'
 // IMPORT BOOTSTRAP COMPONENTS
