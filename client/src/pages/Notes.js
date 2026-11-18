@@ -451,6 +451,7 @@ const toggleNotes = useCallback(() => {
                   <Col id='toggleNotesCol2' />
                 </Row>
                 <div id='listsDiv'>
+                {/* TOGGLE (NOTES) ARCHIVE LIST */}
                   {showArchive && (
                     <div id='archiveDiv'>
                       <Row id='archiveRow'>
@@ -467,6 +468,7 @@ const toggleNotes = useCallback(() => {
                       </Row>
                     </div>
                   )}
+                  {/* TOGGLE (NOTES) TRASH LIST */}
                   {showTrash && (
                     <div id='trashListPanal'>
                       <Row id='trashRow'>
@@ -484,8 +486,6 @@ const toggleNotes = useCallback(() => {
                   )}
                 </div>
               </div>
-            
-       
       </section>
       <Footer logout={logout} loggedIn={loggedIn}/>
     </div>
