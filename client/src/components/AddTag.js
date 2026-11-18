@@ -75,6 +75,8 @@ export default function AddTag(//Export default AddTag.js function component
               disabled={loading}
               // ARIA ATTRIBUTES
               aria-label='SAVE TAG'
+              role='button'
+              aria-disabled={loading ? 'true' : 'false'}
             >
               {loading ? 'SAVING...' : 'SAVE'} <Save fontWeight={700} aria-hidden='true' focusable='false'/>
             </Button>
