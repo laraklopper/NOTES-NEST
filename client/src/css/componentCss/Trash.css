@@ -6,6 +6,7 @@
     padding: 0px;
     display: flex;
     justify-content:center;
+    padding: 10px 0px;
 }
 /* #archiveTable / #trashTable formatting lives in ListTables.css */
 .archiveTableBtns,
