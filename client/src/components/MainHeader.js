@@ -48,9 +48,9 @@ export default function MainHeader(//Export default MainHeader function componen
     {loggedIn ? (
       <div id='headerDiv'>
            {/* Row 1 */}
-      <Row id='headerRow1'>
+      {/* <Row id='headerRow1'>
         <Col id='headerCol1'/>
-      </Row>
+      </Row> */}
       {/* Row 2: Application and Page Heading */}
       <Row id='headerRow2'>
         <Col id='headingCol1'/>
@@ -97,9 +97,9 @@ export default function MainHeader(//Export default MainHeader function componen
         </Col>
       </Row>
       {/* Row 3*/}
-      <Row id='headerRow3'>
+      {/* <Row id='headerRow3'>
         <Col xs={12} md={12} id='navCol'></Col>
-      </Row>
+      </Row> */}
       </div>
     ):(
       <div id='mainHeaderDiv'>
