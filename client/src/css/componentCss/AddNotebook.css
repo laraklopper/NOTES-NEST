@@ -91,6 +91,7 @@ and AddTag.js
 /* ADD TAG: AddTag.js */
 #addTagForm{
     width: 100%;
+    gap: 10px;
     margin: 0px;
     display: flex;
     flex-direction: column;
