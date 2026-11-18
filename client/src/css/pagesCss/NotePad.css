@@ -8,7 +8,7 @@ SECTION 1: ADD NOTE FORM
     flex-direction: column;
     width: 100%;
     margin: 0px;
-        padding: 10px 0px;
+    padding: 10px 0px;
     gap: 10px;
     background-color: #946E26;
 }
@@ -17,6 +17,7 @@ LAYOUT
 ========================*/
 #notePadPanal{
     display: flex;
+    justify-content: center;
     padding: 10px;
     margin: 0px;
     width: 100%;
@@ -24,12 +25,26 @@ LAYOUT
     background-color: #9E9E9E;
     border-radius: 5px;
 }
+#toggleNotePadRow{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
 #notePadBlock{
     display: flex;
     justify-content: center;
     width: 100%;
     margin: 0px;
     padding: 10px;
+}
+#toggleNotePadDiv{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0px;
+    padding: 5px 0px;
 }
 
 /* ======BOOTSTRAP LAYOUT============= */
@@ -137,7 +152,14 @@ LAYOUT
     padding: 0px;
     justify-content: center;
 }
-#addNoteBookDiv,
+#addNoteBookDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
 #addTagDiv{
     display: flex;
     flex-direction: column;
@@ -145,6 +167,7 @@ LAYOUT
     margin: 0px;
     padding: 0px;
 }
+#toggleNotePadBtn,
 #toggleAddNotebookBtn,
 #toggleAddTagBtn{
     display: flex;
@@ -161,6 +184,10 @@ LAYOUT
     border: solid 2px #323A42;
     color: #000;
 }
+#toggleNotePadBtn{
+    width: 200px;
+}
+#toggleNotePadBtn:hover,
 #toggleAddNotebookBtn:hover,
 #toggleAddTagBtn:hover{
  background-color: #323A42;

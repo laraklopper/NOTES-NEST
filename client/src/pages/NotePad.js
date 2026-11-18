@@ -30,18 +30,26 @@ export default function NotePad(//Export default NotePad.js function component
   const [newNotebookForm, setNewNotebookForm] = useState(false)
   const [newTagForm, setNewTagForm] = useState(false)
   const [profile, setProfile] = useState(null)
+  const [showNotePad, setShowNotePad] = useState(false)
   const [noteLoading, setNoteLoading] = useState(false)
   const [tagLoading, setTagLoading] = useState(false)
   const [tags, setTags] = useState([])
   const [notebookLoading, setNotebookLoading] = useState(false)
   const [notebooks, setNotebooks] = useState([])
 
+  const toggleNotePad = useCallback(() => {
+    setShowNotePad(prev => (!prev))
+    setNewNotebookForm(false)
+    setNewTagForm(false)
+  },[])
   const toggleNoteBookForm = useCallback(() => {
     setNewNotebookForm(prev => (!prev))
     setNewTagForm(false)
+    setShowNotePad(false)
   },[])
   const toggleAddTagForm = useCallback(() => {
     setNewTagForm(prev => (!prev))
+    setShowNotePad(false)
     setNewNotebookForm(false)
   },[])
 
@@ -220,8 +228,32 @@ export default function NotePad(//Export default NotePad.js function component
       SECTION 1:
       ------------- */}
       <section  id='notePadSection1'>
-         <div id='notePadBlock'>
-                <Row id='notePadRow'>
+         <div id='notePadDiv'>
+                      <Row id='toggleNotePadRow'>
+        <Col id='toggleNotePadCol1'/>
+        <Col xs={5} id='toggleNotePadCol'>
+          <div id='toggleNotePadDiv'>
+            <Button
+            variant='light'
+            onClick={toggleNotePad}
+            id='toggleNotePadBtn'
+            type='button'
+            // ARIA ATTRIBUTES:
+            aria-label={showNotePad ? 'HIDE NOTE PAD': 'SHOW NOTE PAD'}
+            >
+            {showNotePad ? (
+              <>Hide Note Pad<X/></>
+            ):(
+              <>Show NotePad <NotepadText/></>
+            )}
+            </Button>
+          </div>
+        </Col>
+        <Col id='toggleNotePadCol2'/>
+      </Row>
+      {showNotePad && (
+ <div id='notePadBlock'>
+  <Row id='notePadRow'>
                   <Col id='notePadCol'>
                     <div id='notePadPanal'>
                       <NotePadForm
@@ -235,6 +267,8 @@ export default function NotePad(//Export default NotePad.js function component
                     </div>
                   </Col>
                 </Row>
+      </div>
+      )}             
               </div>
       </section>
       <section  id='notePadSection2'>
