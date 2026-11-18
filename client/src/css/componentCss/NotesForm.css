@@ -1,5 +1,5 @@
 #notePadForm{
-       width: 100%;
+         width: 90%;
     background-color: #777d83;
     border: #323A42 solid 2px;
     display: flex;
@@ -39,7 +39,7 @@ LAYOUT
 #notePadInput{
     display: flex;
     flex-direction: column;
-    width: 90%;
+    width: 100%;
     padding: 10px;
      background-color: #BFBFBF;
      border-radius: 5px ;
