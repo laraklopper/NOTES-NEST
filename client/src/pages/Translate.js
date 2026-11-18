@@ -161,7 +161,15 @@ export default function Translate(
                     aria-expanded={showArchive}
                     aria-controls='archivedTranslationPanal'
                   >
-                    {showArchive ? (<>Hide Archive<ArchiveX/></>): (<>Show Archive<Archive/></>) }
+                    {showArchive ? (<>
+                        Hide Archive
+                        <ArchiveX aria-hidden='true' focusable='false'/>
+                        </>
+                        ): (
+                        <>
+                        Show Archive
+                        <Archive aria-hidden='true' focusable='false'/>
+                        </>)}
                   </Button>
                 </div>
                 <div className="p-2" id='toggleTrashBlock'>
