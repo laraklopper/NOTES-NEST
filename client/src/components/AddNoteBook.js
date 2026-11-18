@@ -55,7 +55,7 @@ export default function AddNoteBook(//Export default AddNoteBook.js function com
       </div>
       <div id='noteBookInput'>
         <fieldset id='noteBookGroup1'>
-          <legend>NOTEBOOK DETAILS</legend>
+          <legend hidden>NOTEBOOK DETAILS</legend>
           <Stack gap={3} id='noteBookStack1'>
             <div className="p-2" id='noteBookBlock1'>
               {/* NOTEBOOK NAME: value={name} */}
@@ -95,13 +95,13 @@ export default function AddNoteBook(//Export default AddNoteBook.js function com
             </div>
           </Stack>
         </fieldset>
-      </div>
+     
       {/* -------END OF INPUT------------ */}
       <Stack gap={3} id='addNotebookBtnStack'>
-        <div className="p-2" id='requiredInputBlock'>
+        <div className="p-2" id='reqInput'>
           <span className='reqInfoSpan'>
             <small><Asterisk color="#C22419" fontWeight={700} size={14} aria-hidden='true' focusable='false' /> </small>
-            <p className='reqInfo'>Indicates required information</p>
+            <p className='infoMsg'>Indicates required information</p>
           </span>
         </div>
         <div className="p-2" id='noteBookBtnBlock'>
@@ -149,6 +149,7 @@ export default function AddNoteBook(//Export default AddNoteBook.js function com
           )}
         </div>
       </Stack>
+       </div>
     </form>
   )
 }

@@ -15,12 +15,13 @@ and AddTag.js
 }
 /* LAYOUT */
 #noteBookInput{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
+       margin: 0px;
+    width: 80%;
+    padding: 5px;
     display: flex;
-    align-items: center;
     flex-direction: column;
+    align-items: center;
+    background-color: #BFBFBF;
 }
 /* GROUP 1: */
 #noteBookGroup1{
@@ -65,7 +66,7 @@ and AddTag.js
     padding: 0px;
     gap: 10px;
 }
-/* BUTTONS */
+/* BUTTON: https://react-bootstrap.netlify.app/docs/components/buttons*/
 #saveNoteBookBtn,
 #saveTagBtn{
     width: 180px;
@@ -82,21 +83,10 @@ and AddTag.js
    border: solid 2px #323A42;
    gap: 5px;
 }
-
 #saveTagBtn:hover,
 #saveNoteBookBtn:hover{
     color: #E8F0F6;
     background:#323A42;
-}
-
-#noteBookListHeading{
-    display: flex;
-    justify-content: center;
-}
-#noteBookList{
-    display: flex;
-    justify-content: center;
-    width: 100%;
 }
 /* ADD TAG: AddTag.js */
 #addTagForm{
@@ -130,12 +120,13 @@ and AddTag.js
     flex-direction: column;
     align-items: center;
 }
+#reqInput,
 #tagReqInput{
     display: flex;
     flex-direction: column;
-    
     align-items: center;
 }
+#reqInput .infoMsg,
 #tagReqInput .infoMsg{
     font-size: 14px;
     text-transform: uppercase;
@@ -145,7 +136,6 @@ and AddTag.js
     font-weight: 700;
     letter-spacing: 2px;
 }
-#tagListBlock,
 #tagBtnBlock{
     display: flex;
     flex-direction: column;
@@ -154,6 +144,16 @@ and AddTag.js
     gap: 10px;
     align-items: center;
 }
+#noteBookListBlock,
+#tagListBlock{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+    align-items: center;
+}
+#noteBookListHeading,
 #tagListHeading{
     text-decoration: underline;
     margin: 0px;
@@ -161,6 +161,7 @@ and AddTag.js
   font-weight: 700;
     padding: 0px;
 }
+.noteBookListItem,
 .tagListItem{
      font-family: "Comic Relief", system-ui;
   font-weight: 700;
