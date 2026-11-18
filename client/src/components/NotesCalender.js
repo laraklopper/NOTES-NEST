@@ -50,6 +50,7 @@ export default function NotesCalender({ onOpenNote }) {
                 )}
               </>
             )}
+            {/* DISPLAY PANAL FOR THE SELECTED NOTE */}
           </div>
         </Col>
       </Row>

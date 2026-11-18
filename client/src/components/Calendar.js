@@ -8,7 +8,7 @@ import Alert from 'react-bootstrap/Alert';
 import Stack from 'react-bootstrap/Stack';
 import { DAY_NAMES, buildMonthGrid, toKey, monthTitle, longDate } from '../util/calenderUtil'
 import { fetchCalendar } from '../util/apiUtil'
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarChevronsLeft , CalendarChevronsRight  } from 'lucide-react';
 
 export default function Calendar({ onSelectDay, selectedDate }) {
   const today = new Date()
@@ -69,13 +69,8 @@ export default function Calendar({ onSelectDay, selectedDate }) {
       <div id='calenderHeadBlock'>
        <Stack gap={3} id='calendarHeadStack'>
        <div className="p-2" id='monthHead'>
-     
           <h5 className='mb-0' id='calendarTitle'>{monthTitle(view.year, view.month)}</h5>
-         
           <p id='monthNoteTotal' aria-live='polite'>{loading ? 'Loading…' : `${monthTotal} note${monthTotal === 1 ? '' : 's'} this month`}</p>
-            
-       
-     
       </div>
       <div className="p-2" id='monthNavBlock'>
         <Button 
@@ -86,9 +81,8 @@ export default function Calendar({ onSelectDay, selectedDate }) {
         onClick={() => changeMonth(-1)} 
         aria-label='Previous month'
         >
-        <ChevronLeft size={16} fontWeight={700}/>
+        <CalendarChevronsLeft  size={16} fontWeight={700} aria-hidden='true' focusable='false'/>
         </Button>
-       
         <div id='monthBtnDiv'>
           <Button variant='primary' id='toTodayBtn' onClick={goToday}>Today</Button>
           <Button 
@@ -98,7 +92,7 @@ export default function Calendar({ onSelectDay, selectedDate }) {
           onClick={() => changeMonth(1)} 
           aria-label='Next month'
           >
-          <ChevronRight size={16} fontWeight={700}/>
+          <CalendarChevronsRight  size={16} fontWeight={700} aria-hidden='true' focusable='false'/>
           </Button>
         </div>
       </div>
