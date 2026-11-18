@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 // IMPORT CSS STYLESHEETS
 import '../css/componentCss/FormSetup.css'
-import '../css/componentCss/NotesForm.css'
 import '../css/componentCss/NoteEditor.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';

@@ -39,16 +39,20 @@ export default function NotePad(//Export default NotePad.js function component
   const [notebookLoading, setNotebookLoading] = useState(false)
   const [notebooks, setNotebooks] = useState([])
 
+  //==========EVENT LISTENERS=============
+  // Function to toggle NotePadForm.js
   const toggleNotePad = useCallback(() => {
     setShowNotePad(prev => (!prev))
     setNewNotebookForm(false)
     setNewTagForm(false)
   },[])
+  // Function to toggle AddNoteBook.js
   const toggleNoteBookForm = useCallback(() => {
     setNewNotebookForm(prev => (!prev))
     setNewTagForm(false)
     setShowNotePad(false)
   },[])
+  // Function to toggle AddTag.js
   const toggleAddTagForm = useCallback(() => {
     setNewTagForm(prev => (!prev))
     setShowNotePad(false)
@@ -98,16 +102,21 @@ export default function NotePad(//Export default NotePad.js function component
   const fetchNotebooks = useCallback(async () => {
     try {
       // The browser sends the JWT cookie with the request
-      const response = await fetch('/notebooks', { method: 'GET' });
+      const response = await fetch('/notebooks', { 
+        method: 'GET' 
+      });
+      
       const data = await response.json().catch(() => ({}));
+      
       if (!response.ok) {
         throw new Error(data.message || 'Failed to fetch notebooks');
       }
       setNotebooks(data.notebooks || []);
     } catch (error) {
       console.error('Error fetching notebooks:', error);
+      setError('Error fetching notebooks:', error)
     }
-  }, [])
+  }, [setError])
 
   useEffect(() => {
     fetchNotebooks();
@@ -123,6 +132,7 @@ export default function NotePad(//Export default NotePad.js function component
       // The browser sends the JWT cookie with the request
       const response = await fetch('/notebooks', {
         method: 'POST',
+        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         },

@@ -89,14 +89,7 @@ LAYOUT
 /* ---------------------
 LAYOUT
 -----------*/
-#notesFormsPanal{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;    
-}
+
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #toggleNoteFormsRow{
@@ -132,7 +125,15 @@ LAYOUT
     padding: 0px;
     width: 100%;
 }
-/* FORMS */
+/* FORMS: AddNotebookForm + Add TagForm */
+#notesFormsPanal{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;    
+}
 #addNoteBookPanal,
 #addTagPanal{
     display: flex;
