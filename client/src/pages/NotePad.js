@@ -254,6 +254,9 @@ export default function NotePad(//Export default NotePad.js function component
             type='button'
             // ARIA ATTRIBUTES:
             aria-label={showNotePad ? 'HIDE NOTE PAD': 'SHOW NOTE PAD'}
+            aria-pressed={showNotePad}
+            aria-expanded={showNotePad}
+            aria-controls='notePadBlock'
             >
             {showNotePad ? (<>
               Hide Note Pad
@@ -295,10 +298,10 @@ export default function NotePad(//Export default NotePad.js function component
         <div id='notepadFormsPanal'>
         {/* Row 3: Toggle Notes Form Buttons (toggleNotebookForm + toggleTagForm)*/}
             <Row  id='toggleNoteFormsRow'>
-        <Col id='toggleNoteFormsCol1'/>
+        <Col id='toggleNoteFormsCol1' />
         <Col xs={6} id='toggleNoteFormsCol'>
           <Stack gap={3} id='toggleNoteFormsStack'>
-      <div className="p-2">
+      <div className="p-2" id='toggleNotebookBlock'>
         <Button
         variant='light'
         id='toggleAddNotebookBtn'
@@ -321,7 +324,7 @@ export default function NotePad(//Export default NotePad.js function component
             </>)}
         </Button>
       </div>
-      <div className="p-2">
+      <div className="p-2" id='toggleTagsBlock'>
         <Button
         variant='light'
         id='toggleAddTagBtn'
@@ -365,13 +368,13 @@ export default function NotePad(//Export default NotePad.js function component
         {newTagForm && (
              <div id='addTagDiv'>
                 <Row id='addTagRow'>
-                  <Col id='addTagCol1' />
-                  <Col xs={5} id='addTagCol'>
+                  <Col id='addTagCol1' xs='0' />
+                  <Col xs={8} md='8' id='addTagCol'>
                     <div id='addTagPanal'>
                       <AddTag addTag={addTag} loading={tagLoading} tags={tags} />
                     </div>
                   </Col>
-                  <Col id='addTagCol2'/>
+                  <Col id='addTagCol2' xs='0'/>
                 </Row>
               </div>
         )}

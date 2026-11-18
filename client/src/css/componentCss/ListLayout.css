@@ -17,8 +17,9 @@
     flex-direction: column;
     align-items: center;
     margin: 0px;
-    padding: 0px;
+    padding: 5px 0px;
     gap: 10px;
+    background-color: #6f757b;
     width: 100%;
 }
 #notesDataList,

@@ -11,6 +11,9 @@ SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
     background-color: #946E26;
         gap: 10px;
 }
+/* --------------------
+SECTION 2:ARCHIVED + TRASH
+--------------*/
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #toggleListCol{
@@ -67,8 +70,11 @@ SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
     display: flex;
     flex-direction: column;
     margin: 0px;
-    padding: 0px;
+    padding: 5px;
     width: 100%;
+        gap: 5px;
+        background-color: #6f757b;
+
 }
 #editNoteBlock{
     display: flex;
@@ -83,6 +89,11 @@ SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
     margin: 0px;
     background-color: #9E9E9E;
     padding: 5px;
+}
+#notepadFormsPanal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 #editNoteRow{
     width: 100%;
@@ -147,6 +158,7 @@ SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
     padding: 5px 0px;
     background-color: darkgrey;
     border-radius: 5px;
+    border: #323A42 2px solid;
 }
 #trashList{
     display: flex;
@@ -176,29 +188,7 @@ SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
     padding: 10px;
     background-color: #946E26;
 }
-#toggleNotesBtn{
-        width: 180px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-    justify-content: center;
-    font-weight: 700;
-    font-family: "Roboto Mono", monospace;
-    border: solid 2px #323A42;
-    color: #000;
-    gap: 5px;
-}
 
-#notesDataListPanal{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
 #notesDataRow{
     width: 100%;
     margin: 0px;
@@ -222,14 +212,26 @@ SECTION 1: NOTES, NOTEBOOKS AND TAGS LIST
     padding: 0px;
 }
 /* BUTTON */
-#toggleArchiveBtn:active,
-#toggleTrashBtn:active{
-     background-color: #323A42;
-    color: #E8F0F6;
-    text-decoration: underline;
+#toggleNotesBtn{
+        width: 180px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    border: solid 2px #323A42;
+    color: #000;
+    gap: 5px;
 }
-#toggleArchiveBtn.active,
-#toggleTrashBtn.active{
+#toggleNotesBtn:active,
+#toggleArchiveBtn:active,
+#toggleTrashBtn:active,
+#toggleNotesBtn[aria-pressed ='true'],
+#toggleArchiveBtn[aria-pressed ='true'],
+#toggleTrashBtn[aria-pressed ='true']{
       background-color: #323A42;
     color: #E8F0F6;
     text-decoration: underline;

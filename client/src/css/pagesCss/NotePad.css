@@ -146,12 +146,17 @@ LAYOUT
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #addNoteBookRow,
 #addTagRow{
+        display: flex;
     width: 100%;
     margin: 0px;
     padding: 0px;
+    justify-content: center;
 }
+
 #addNoteBookCol1,
-#addNoteBookCol2{
+#addNoteBookCol2,
+#addTagCol1,
+#addTagCol2{
     margin: 0px;
     padding: 0px;
 }
