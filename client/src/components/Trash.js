@@ -153,9 +153,9 @@ export default function Trash(//Export default Trash function component
                       {dateDisplay(note.deletedAt)}
                       {remaining !== null && <><br/><small>({remaining} {remaining === 1 ? 'DAY' : 'DAYS'} LEFT)</small></>}
                     </td>
-                    <td>
+                    <td style={{width: '330px'}}>
                     {/* TABLE BUTTONS */}
-                      <div className='trashTableBtns'>
+                      <div className='trashTableBtns' style={{width:'100%'}}>
                         <Button
                         variant='light'
                         className='restoreNoteBtn'

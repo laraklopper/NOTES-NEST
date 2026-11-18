@@ -7,7 +7,7 @@ import '../css/componentCss/FormSetup.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { Asterisk, RotateCcw, Save } from 'lucide-react';
+import { Asterisk, RotateCcw, Save, Tags } from 'lucide-react';
 
 // AddTag function component
 export default function AddTag(//Export default AddTag.js function component
@@ -92,7 +92,11 @@ export default function AddTag(//Export default AddTag.js function component
             </Button>
           </div>
           <div className="p-2" id='tagListBlock'>
-            <h4 id='tagListHeading'>YOUR TAGS</h4>
+          <span className='formListSpan' >
+          <h4 id='tagListHeading'>YOUR TAGS</h4><Tags/>
+
+          </span>
+            
             {tags.length === 0 ? (
               <p className='infoMsg'>You have no tags yet.</p>
             ) : (
