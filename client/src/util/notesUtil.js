@@ -40,9 +40,31 @@ export const htmlToText = (html = '') => {
   return (doc.body.textContent || '').replace(/\n{3,}/g, '\n\n').trim()
 }
 
+/* A date as YYYY-MM-DD in the user's LOCAL time zone (the format a date input needs).
+toISOString() is not used because it gives the UTC day, which can be a day off
+from the day shown on the calendar */
+export const toLocalDateInput = (value) => {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
+/* Moves a note's createdAt to the day picked in the date input (YYYY-MM-DD),
+keeping the original time of day so notes on the same day stay in order.
+A time later than now (e.g. moving a note to today) is capped at now */
+export const changeCreatedDay = (createdAt, dayString) => {
+  const [year, month, day] = dayString.split('-').map(Number)
+  const date = createdAt ? new Date(createdAt) : new Date()
+  date.setFullYear(year, month - 1, day)
+  const now = new Date()
+  return (date > now ? now : date).toISOString()
+}
+
 /* Form values for editing an existing note (shape matches emptyNoteForm).
 The note comes from GET /notes/fetchNotes, so notebook and tags are populated objects */
 export const noteToForm = (note) => note ? {
+  createdAt: note.createdAt ? toLocalDateInput(note.createdAt) : '',// YYYY-MM-DD for the DATE input
   title: note.title || '',
   content: htmlToText(note.content),
   language: note.language || '',

@@ -337,7 +337,7 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
     try {
         const userId = req.user.id;// Get the authenticated user's ID from the JWT token
         const { id } = req.params;// Get the note ID from the URL
-        const { title, content, language, notebook, tags, isPinned } = req.body || {};// Extract the note fields from the request body
+        const { title, content, language, notebook, tags, isPinned, createdAt } = req.body || {};// Extract the note fields from the request body
 
         // Guard clause: check the id is a valid ObjectId (avoids a CastError 500)
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -351,6 +351,7 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
             (language !== undefined && typeof language !== 'string') ||
             (notebook !== undefined && notebook !== null && typeof notebook !== 'string') ||
             (isPinned !== undefined && typeof isPinned !== 'boolean') ||
+            (createdAt !== undefined && typeof createdAt !== 'string') ||
             (tags !== undefined && (!Array.isArray(tags) || tags.some((tag) => typeof tag !== 'string')))) {
             console.error('[ERROR: noteRoutes.js, PATCH /:id] Invalid field types');// Log an error message in the console for debugging purposes
             return res.status(400).json({ message: 'Invalid note details' });// Return a 400 (Bad Request) status code with a message
@@ -397,6 +398,21 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
             updates.isPinned = isPinned;
         }
 
+        /* createdAt: moves the note to another day on the calendar (EditNoteForm DATE input).
+        Sent as an ISO timestamp; the client keeps the original time of day */
+        if (createdAt !== undefined) {
+            const createdDate = new Date(createdAt);
+            // Guard clause: check it is a real date from 1970 (the calendar's first year) up to now.
+            // One minute of leeway allows for the client's clock being slightly ahead
+            if (Number.isNaN(createdDate.getTime()) ||
+                createdDate.getTime() < 0 ||
+                createdDate.getTime() > Date.now() + 60 * 1000) {
+                console.error(`[ERROR: noteRoutes.js, PATCH /:id] Invalid date: ${createdAt}`);// Log an error message in the console for debugging purposes
+                return res.status(400).json({ message: 'The note date must be a valid date that is not in the future' });// Return a 400 (Bad Request) status code with a message
+            }
+            updates.createdAt = new Date(Math.min(createdDate.getTime(), Date.now()));// Never store a future date
+        }
+
         let tagNames;
         if (tags !== undefined) {
             tagNames = normaliseTagNames(tags);
@@ -422,9 +438,10 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
                 console.error(`[ERROR: noteRoutes.js, PATCH /:id] Note not found: ${id}`);// Log an error message in the console for debugging purposes
                 return res.status(404).json({ message: 'Note not found' });// Return a 404 (Not Found) status code with a message
             }
-            const changedPaths = Object.keys(updates);
+            const { createdAt: _createdAt, ...fieldsToCheck } = updates;// createdAt is immutable on a document (and already checked above)
+            const changedPaths = Object.keys(fieldsToCheck);
             if (changedPaths.length > 0) {
-                current.set(updates);
+                current.set(fieldsToCheck);
                 await current.validate(changedPaths);// Only the sent fields; throws a ValidationError (400 below) without saving anything
             }
             updates.tags = await findOrCreateTagIds(userId, tagNames);// Find each tag, creating the ones the user does not have yet
@@ -433,7 +450,9 @@ router.patch('/:id', checkJwtToken, async (req, res) => {
         // Only an active note the user owns can be edited (not archived or in the trash)
         const note = await populateNote(Note.findOneAndUpdate(
             editableFilter,
-            { $set: updates }
+            { $set: updates },
+            // timestamps make createdAt immutable, so Mongoose would silently drop it without this
+            updates.createdAt ? { overwriteImmutable: true } : {}
         ));// The noteSchema hook sanitises content, runs validators and returns the UPDATED note
 
         // Guard clause: check the note was found

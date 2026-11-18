@@ -9,7 +9,7 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT UTILITY FUNCTIONS
 import languageData from '../util/languageData';
-import { noteToForm, textToHtml } from '../util/notesUtil';
+import { noteToForm, textToHtml, toLocalDateInput, changeCreatedDay } from '../util/notesUtil';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Pin, RotateCw } from 'lucide-react';
 
@@ -47,8 +47,8 @@ export default function EditNoteForm(
         ? [note.notebook, ...notebooks]
         : notebooks
 
-    // Date the note was created, in the YYYY-MM-DD format a date input needs
-    const createdDate = note?.createdAt ? new Date(note.createdAt).toISOString().split('T')[0] : ''
+    // Today's local date (YYYY-MM-DD): the latest day a note can be moved to
+    const today = toLocalDateInput(new Date())
 
     /* Build the PATCH body with only the fields that were changed.
     Content is only sent if the text changed, so untouched notes keep any rich formatting */
@@ -60,6 +60,10 @@ export default function EditNoteForm(
         if (editNoteData.notebook !== savedValues.notebook) changes.notebook = editNoteData.notebook || null
         if (selectedTagNames.join(',') !== splitTags(savedValues.tags).join(',')) changes.tags = selectedTagNames
         if (editNoteData.isPinned !== savedValues.isPinned) changes.isPinned = editNoteData.isPinned
+        // Date moved: send the full timestamp so the note shows on the new day in the calendar
+        if (editNoteData.createdAt && editNoteData.createdAt !== savedValues.createdAt) {
+            changes.createdAt = changeCreatedDay(note.createdAt, editNoteData.createdAt)
+        }
         return changes
     }
 
@@ -86,6 +90,11 @@ export default function EditNoteForm(
         // `required` blocks an empty textarea, but not one that only holds spaces
         if (!editNoteData.content.trim()) {
             alert('Please enter the note text before saving.')
+            return
+        }
+        // The date picker's max isn't enforced when a date is typed, so check it here too
+        if (editNoteData.createdAt && editNoteData.createdAt > today) {
+            alert('The note date cannot be in the future.')
             return
         }
         const changes = buildChanges()
@@ -140,22 +149,21 @@ export default function EditNoteForm(
                             />
                         </div>
       <div className="p-2" id='editNoteDateBlock'>
-                        {/* DATE: value={createdDate}: edit the day the note was created only allow
-                        past and current dates */}
+                        {/* DATE: value={editNoteData.createdAt}: edit the day the note was created
+                        (moves it on the calendar). Only past and current dates are allowed */}
                         <label className='notePadLabel' htmlFor='editNoteDate'>DATE:</label>
                             <div className='inputDiv'>
-                                
                                 <input
                                     type='date'
                                     className='editNoteInput'
                                     id='editNoteDate'
-                                    placeholder={createdDate}//Set the date created as the placeholder
-                                    // name=''
-                                    value={createdDate}
-                                    // onChange={}
+                                    name='createdAt'
+                                    value={editNoteData.createdAt || ''}
+                                    max={today}// Blocks future dates in the date picker
+                                    onChange={handleInputChange}
                                     // ARIA ATTRIBUTES:
                                     aria-required='false'
-                                    aria-label='Date added'
+                                    aria-label='Edit date added'
                                 />
                             </div>
                         </div>
