@@ -16,3 +16,17 @@ export const filenameFromHeader = (header) => header?.match(/filename="?([^";]+)
 /*FILTER FORMS */
 export const EMPTY_FILTERS = { sourceLanguage: '', targetLanguage: '' }// '' = all languages
 export const EMPTY_NOTE_FILTERS = { language: '', notebook: '', tag: '' }// '' = all
+
+//DOCUMENT TRANSLATOR: DocTranslator.js
+// ACCEPTED DATA 
+export const ACCEPTED_EXTENSION = '.pdf';//What the file input accepts and what a chosen file is checked
+export const ACCEPTED_MIME_TYPE = 'application/pdf';//Accepted MIME type
+/*File size limits*/
+export const MAX_FILE_SIZE_MB = 5;
+export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+// Names the downloaded translation after the document it came from
+export const downloadName = (fileName, targetLang) => {
+    const base = String(fileName || 'document').replace(/\.pdf$/i, '');
+    return `${base}-${targetLang}.txt`;
+}
