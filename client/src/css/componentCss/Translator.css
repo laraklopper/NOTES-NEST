@@ -22,11 +22,14 @@ TranslateForm.js*/
     gap: 10px;
 }
 /* LAYOUT */
-#translatorInputDetails{
+#translatorInputDetails,
+#translateDocInput{
     display: flex;
+    padding: 10px;
+     background-color: #BFBFBF;
     width: 100%;
     margin: 0px;
-    padding: 0px;
+    overflow-y: scroll;
 }
 /* STACK: https://react-bootstrap.netlify.app/docs/layout/stack*/
 #translateInputStack{
@@ -117,6 +120,50 @@ justify-content: space-between;
     margin: 0px;
     padding: 0px;
     justify-content: center;
+}
+#translateDocForm{
+      display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 10px;
+   width: 100%;
+    background-color: #777d83;
+    border: #323A42 solid 2px;
+    gap: 10px;
+}
+/* TRANSLATE DOCUMENT FORM */
+#translateDocGroup1{
+    width: 100%;
+    margin: 0px;
+    padding: 5px;
+    background-color: #999999;
+    border: solid 2px #323A42;
+    display: flex;
+}
+#translateDocInput{
+    display: flex;
+    padding: 10px;
+     background-color: #BFBFBF;
+    width: 100%;
+    margin: 0px;
+    overflow-y: scroll;
+}
+/* STACK: https://react-bootstrap.netlify.app/docs/layout/stack*/
+#translateDocStack1{
+     width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+#docLanguageSelectBlock{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: #323A42 solid;
 }
 /* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons */
 #swapLanguageBtn{

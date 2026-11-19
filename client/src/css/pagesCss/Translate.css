@@ -10,8 +10,6 @@ SECTION 1:
     padding: 10px;
     background-color: #946E26;
 }
-
-
 #translateSectionPanal{
     display: flex;
     flex-direction: column;
@@ -30,6 +28,9 @@ SECTION 1:
 }
 #translateForm1Panal,
 #translateForm2Panal{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     width: 100%;
     margin: 0px;
     padding: 5px 0px;
