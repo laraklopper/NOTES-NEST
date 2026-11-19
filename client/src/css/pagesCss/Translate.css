@@ -1,3 +1,6 @@
+/* ==================
+SECTION 1:
+===========*/
 #translateSec1{
      display: flex;
     flex-direction: column;
@@ -7,15 +10,8 @@
     padding: 10px;
     background-color: #946E26;
 }
-#translateSec2{
-     display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin: 0px;
-    padding: 10px;
-    background-color: #946E26;
-}
+
+
 #translateSectionPanal{
     display: flex;
     flex-direction: column;
@@ -24,18 +20,31 @@
     padding: 0px;
     width: 100%;
 }
+/* LAYOUT */
+#translatorPanal{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 #translateForm1Panal,
 #translateForm2Panal{
     width: 100%;
     margin: 0px;
     padding: 5px 0px;
 }
-/* TAB 1: TRANSLATION TABLE */
 #translatorDiv{
     width: 100%;
     margin: 0px;
     padding: 0px;
 }
+#langaugeListPanal{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+/* GRID */
 #toggleTranslatorRow{
     display: flex;
     margin: 0px;
@@ -48,6 +57,17 @@
     margin: 0px;
     padding: 0px;
 }
+#toggleTranslateCol{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+}
+#toggleTranslateCol1,
+#toggleTranslateCol2{
+    margin: 0px;
+    padding: 0px;
+}
 #translatorCol1,
 #translatorCol2{
     display: flex;
@@ -56,19 +76,61 @@
     margin: 0px;
     padding: 0px;
 }
-#translatorPanal{
+/* STACK */
+#toggleTranslatorStack{
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 5px 0px;
+    background-color: darkgrey;
+    border-radius: 5px;
+}
+/* =========================
+SECTION 2
+==============*/
+#translateSec2{
      display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     margin: 0px;
-    padding: 0px;
+    padding: 10px;
+    background-color: #946E26;
 }
-/* TAB 2: TRANSLATION LIST */
+
+/* TRANSLATIONS LISTS */
+#translationListsPanal{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin: 0px;
+            padding: 10px 5px;
+
+}
 #translationListPanal{
     width: 100%;
     margin: 0px;
     padding: 0px;
 }
+#deletedTranslationPanal,
+#archivedTranslationPanal,
+#translationTrashPanal{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+#translationsList{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 5px;
+        background-color: #b3b3b3;
+}
+/* BOOTSTRAP*/
 #translationsListRow,
 #toggleTranslationsRow{
     width: 100%;
@@ -80,6 +142,11 @@
     margin: 0px;
     padding: 0px;
 }
+#translationsListCol{
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
 #translationsListDiv{
         gap: 10px;
     display: flex;
@@ -90,21 +157,7 @@
     width: 100%;
 }
 
-/* TAB 3: ARCHIVE AND TRASH */
-#deletedTranslationPanal,
-#archivedTranslationPanal,
-#translationTrashPanal{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
 
-
-}
-#translationsList{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
 #toggleTranslationsRow,
 #translationsArchiveRow,
 #toggleLanguagesRow,
@@ -120,11 +173,7 @@
     padding: 0px;
 }
 /* TAB 4: LANGUAGES */
-#langaugeListPanal{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
+
 #languageListCol{
     display: flex;
     align-items: center;
@@ -167,22 +216,8 @@ align-items: center;
 margin: 0px;
     
 }
-#translationListsPanal{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    margin: 0px;
-            padding: 10px 5px;
 
-}
-#toggleTranslatorStack{
-    display: flex;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-    background-color: darkgrey;
-}
+
 #toggleTranslator1Btn,
 #toggleTranslator2Btn,
 #toggleLangBtn,
