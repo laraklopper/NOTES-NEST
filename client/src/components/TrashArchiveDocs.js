@@ -1,14 +1,16 @@
 import React from 'react'
 import Button from 'react-bootstrap/Button';
 import { PURGE_DAYS } from '../util/listUtilFunc';
+
+/*Table displaying archived and translated documents */
 export default function TrashArchiveDocs() {
   return (
     <div id='trashArchiveDocsList'>
         <div id='documentTrashWrapper'>
-            <table>
+            <table id='documentTrashTable'>
                 <thead>
                     <tr>
-                        <th>TRANSLATED DOCUMENTS</th>
+                        <th colSpan={6}>TRANSLATED DOCUMENTS</th>
                     </tr>
                     <tr>
                         <th>#</th>
@@ -29,9 +31,14 @@ export default function TrashArchiveDocs() {
                         <td>archived/trash</td>
                         <td>
                             <div>
-                                <Button>RESTORE</Button>
+                                <Button
+                                variant='light'
+                                >RESTORE</Button>
                                 {/* Permanent delete if the status is trash */}
-                                <Button>DELETE</Button>
+                                <Button
+                                variant='light'
+                                id='deleteDocBrn'
+                                >DELETE</Button>
                             </div>
                         </td>
 

@@ -20,6 +20,8 @@ import MainHeader from '../components/MainHeader';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Archive, ArchiveX, BookOpenCheck, BookOpenText, BookX, LanguagesIcon, Trash2Icon, TrashOff } from 'lucide-react';
 import DocTranslator from '../components/DocTranslator';
+import DocTranslationList from '../components/DocTranslationList';
+import TrashArchiveDocs from '../components/TrashArchiveDocs';
 
 // =======MAIN TRANSLATE COMPONENT============
 export default function Translate(
@@ -34,6 +36,8 @@ export default function Translate(
   const [documentTranslate, setDocumentTranslate] = useState(false)
   const [showTranslations, setShowTranslations] = useState(false)
   const [showTrash, setShowTrash] = useState(false)
+  const [showDocTranslations ,setShowDocTranslations] = useState(false)
+  const [showDocArchive, setShowDocArchive] = useState(false)
   const [showArchive, setShowArchive] = useState(false)
   const [showLang, setShowLang] = useState(false)
 
@@ -63,6 +67,23 @@ export default function Translate(
     setShowTrash(false)
     setShowArchive(false)
   }, [])
+  const toggleDocTranslations = useCallback(() => {
+    setShowDocTranslations(prev => (!prev))
+    setShowTranslations(false)
+    setShowTranslator(false)
+    setDocumentTranslate(false)
+    setShowTrash(false)
+    setShowArchive(false)
+ 
+  }, [])
+  const toggleDocArchive = useCallback(() => {
+    setShowDocArchive(prev => (!prev))
+     setShowTranslator(false)
+    setDocumentTranslate(false)
+    setShowTrash(false)
+    setShowArchive(false)
+    
+  },[])
   const toggleArchive = useCallback(() => {
     setShowArchive(prev => (!prev))
     setShowTranslator(false)
@@ -217,21 +238,16 @@ export default function Translate(
              </div>
         </div>
       )}
-          {/* TRANSLATE FORM */}
-          
-
-          
-          </div>
-            
+          </div>    
         </div>
       </section>
       <section id='translateSec2'>
         <div id='translationsListDiv'>
-          <Row id='toggleTranslationsRow'>
-            <Col id='toggleTranslationsCol1'/>
-            <Col xs={5} id='toggleTranslationsCol'>
-              <Stack gap={3} id='toggleTranslationStack'>
-                <div className="p-2" id='toggleTranslationsBlock'>
+              <Row id='toggleTranslationsRow1'>
+        <Col id='toggleTranslationsCol1'/>        <Col xs={5} id='toggleTranslationsCol2'>
+           <Stack gap={3} id='toggleTranslationStack1'>
+      <div className="p-2" id='toggleTranslationsBlock'>
+      {/* BUTTON TO TOGGLE TRANSLATIONS */}
                   <Button
                     variant='light'
                     id='showTranslationsBtn'
@@ -243,6 +259,65 @@ export default function Translate(
                     aria-controls='translationListPanal'
                   >
                     {showTranslations ? (<>Hide Translations<BookX/></>): (<>Show Translations<BookOpenText/></>)}
+                  </Button>
+                </div>
+      <div className="p-2" id='toggleDocsBlock'>
+      {/* BUTTON TO TOGGLE TRANSLATEDOCUMENTS */}
+        <Button
+        variant='light'
+        id='toggleDocumentsBtn'
+        onClick={toggleDocTranslations}
+        type='button'
+        aria-label={showDocTranslations ? 'Hide Documents' : 'SHow documents'}
+        aria-pressed={showDocTranslations}
+        >
+          {showDocTranslations ? 'Hide Documents' : 'SHow documents'}
+        </Button>
+      </div>
+      
+    </Stack>
+        </Col>
+        <Col id='toggleTranslationsCol3'/>
+      </Row>
+          {/* TRANSLATIONS LIST + TRANSLATED DOCUMENTS LIST */}
+      <div id='translationListsPanal1'>
+            {/* TOGGLE TRANSLATIONS LIST */}
+            {showTranslations && (
+              <div id='translationListPanal'>
+                <TranslationsList
+                  currentUser={currentUser}
+                />
+              </div>
+            )}
+            {showDocTranslations && (
+              <div id='docListPanal'>
+                <Row>
+                  <Col md='12'>
+                    <div>
+                      <DocTranslationList/>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            )}
+</div>
+          <Row id='toggleTranslationsRow2'>
+            <Col id='toggleTranslationsCol4'/>
+            <Col xs={5} id='toggleTranslationsCol5'>
+              <Stack gap={3} id='toggleTranslationStack2'>
+                <div className="p-2" id='toggleTranslationsBlock2'>
+                {/*  */}
+                  <Button
+                    variant='light'
+                    id='showArchivedDocsBtn'
+                    onClick={toggleDocArchive}
+                    type='button'
+                    aria-label={showDocArchive ? 'HIDE TRANSLATED DOCUMENTS': 'SHOW TRANSLATED DOCUMENTS'}
+                    aria-pressed={showDocArchive}
+                    aria-expanded={showDocArchive}
+                    aria-controls='translationListPanal'
+                  >
+                    {showDocArchive ? (<>Hide Documents<ArchiveX/></>): (<>Document Archive/Trash<Archive/></>)}
                   </Button>
                 </div>
                 <div className="p-2" id='toggleArchiveBlock'>
@@ -285,21 +360,10 @@ export default function Translate(
                 </div>
               </Stack>
             </Col>
-            <Col id='toggleTranslationsCol2'/>
+            <Col id='toggleTranslationsCol6'/>
           </Row>
-          {/* TRANSLATIONS LIST + TRANSLATIONS ARCHIVE + TRANSLATIONS TRASH */}
-          <div id='translationListsPanal'>
-            {/* TOGGLE TRANSLATIONS LIST */}
-            {showTranslations && (
-              <div id='translationListPanal'>
-                <TranslationsList
-                  currentUser={currentUser}
-                />
-                <Row>
-
-                </Row>
-              </div>
-            )}
+          {/* TRANSLATIONS LIST + TRANSLATIONS ARCHIVE + TRANSLATIONS TRASH + TRANSLATED DOCUMENTS TRASH AND ARCHIve*/}
+          <div id='translationListPanal2'>       
             {/* TOGGLE ARCHIVED TRANSLATIONS */}
             {showArchive && (
               <div id='archivedTranslationPanal'>
@@ -320,7 +384,20 @@ export default function Translate(
                 </Row>
               </div>
             )}
+            {/* DOCUMENT ARCHIVE AND TRASH */}
+            {showDocArchive && (
+              <div id='documentArchivePanal'>
+                <Row id='docArchiveRow'>
+                  <Col id='docArchiveCol'>
+                    <div>
+                      <TrashArchiveDocs/>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            )}
           </div>
+
         </div>
       </section>
       <Footer logout={logout} loggedIn={loggedIn} />

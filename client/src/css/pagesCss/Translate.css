@@ -100,7 +100,8 @@ SECTION 2
 }
 
 /* TRANSLATIONS LISTS */
-#translationListsPanal{
+#translationListsPanal1,
+#translationListsPanal2{
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -109,7 +110,8 @@ SECTION 2
             padding: 10px 5px;
 
 }
-#translationListPanal{
+#translationListPanal1,
+#translationListPanal2{
     width: 100%;
     margin: 0px;
     padding: 0px;
@@ -159,7 +161,8 @@ SECTION 2
 }
 
 
-#toggleTranslationsRow,
+#toggleTranslationsRow1,
+#toggleTranslationsRow2,
 #translationsArchiveRow,
 #toggleLanguagesRow,
 #translationTrashRow{
@@ -191,8 +194,17 @@ SECTION 2
 #toggleLangCol1,
 #toggleLangCol1,
 #toggleTranslationsCol1,
-#toggleTranslationsCol2{
+#toggleTranslationsCol3,
+#toggleTranslationsCol4,
+#toggleTranslationsCol6{
     margin: 0px;
+    padding: 0px;
+}
+#toggleTranslationsCol2,
+#toggleTranslationsCol5{
+    display: flex;
+    justify-content: center;
+     margin: 0px;
     padding: 0px;
 }
 #toggleLangCol{
@@ -201,7 +213,8 @@ SECTION 2
     margin: 0px;
     padding: 0px;
 }
-#toggleTranslationStack{
+#toggleTranslationStack1,
+#toggleTranslationStack2{
         width: 100%;
     display: flex;
     align-items: center;
@@ -218,10 +231,11 @@ margin: 0px;
     
 }
 
-
+#toggleDocumentsBtn,
 #toggleTranslator1Btn,
 #toggleTranslator2Btn,
 #toggleLangBtn,
+#showArchivedDocsBtn,
 #showTranslationsBtn,
 #toggleTranslateArchiveBtn,
 #toggleTranslateTrashBtn{
@@ -264,7 +278,7 @@ border-radius: 8px;
     justify-content: center;
     width: 100%;
 }
-
+#showArchivedDocsBtn,
 #toggleTranslator2Btn{
         width: 350px;
 }
@@ -273,6 +287,7 @@ border-radius: 8px;
     width: 250px;
 }
 #showTranslationsBtn:hover,
+#showArchivedDocsBtn:hover,
 #toggleTranslateArchiveBtn:hover,
 #toggleTrashBtn:hover{
       background-color: #323A42;
