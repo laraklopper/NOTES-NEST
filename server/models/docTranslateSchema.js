@@ -35,13 +35,15 @@ const docTranslateSchema = new mongoose.Schema({
      sourceLanguage:{
         type: String,
         required: [true, 'Document Source Language is required'],
-        trim: true
+        trim: true,
+        // enum: [],
      },
      //Field for text Target Language,
      targetLanguage: {
         type: String,
         required: [true, 'Translation target language is required'],
         trim: true,
+        // enum: [],
      },
     // Field for provider
      provider:{
