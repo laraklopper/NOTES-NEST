@@ -19,6 +19,7 @@ import LanguagesList from '../components/LanguagesList';
 import MainHeader from '../components/MainHeader';
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Archive, ArchiveX, BookOpenCheck, BookOpenText, BookX, LanguagesIcon, Trash2Icon, TrashOff } from 'lucide-react';
+import DocTranslator from '../components/DocTranslator';
 
 // =======MAIN TRANSLATE COMPONENT============
 export default function Translate(
@@ -29,6 +30,8 @@ export default function Translate(
   }
 ) {
   // =========STATE VARIABLES=============
+  const [showTranslator, setShowTranslator] = useState(false)
+  const [documentTranslate, setDocumentTranslate] = useState(false)
   const [showTranslations, setShowTranslations] = useState(false)
   const [showTrash, setShowTrash] = useState(false)
   const [showArchive, setShowArchive] = useState(false)
@@ -36,16 +39,34 @@ export default function Translate(
 
 
   // ============EVENT LISTENERS====================
+  const toggleTranslator = useCallback(() => {
+    setShowTranslator(prev => (!prev))
+    setDocumentTranslate(false)
+    setShowArchive(false)
+    setShowTrash(false)
+    setShowTranslations(false)
+  },[])
+  const toggleDocTranslator = useCallback(() => {
+    setDocumentTranslate(prev => (!prev))
+    setShowTranslator(false)
+    setShowArchive(false)
+    setShowTrash(false)
+    setShowTranslations(false)
+  },[])
   const toggleLang = useCallback(() => {
     setShowLang(prev => (!prev))
   }, [])
   const toggleTranslations = useCallback(() => {
     setShowTranslations(prev => (!prev))
+    setShowTranslator(false)
+    setDocumentTranslate(false)
     setShowTrash(false)
     setShowArchive(false)
   }, [])
   const toggleArchive = useCallback(() => {
     setShowArchive(prev => (!prev))
+    setShowTranslator(false)
+    setDocumentTranslate(false)
     setShowTrash(false)
     setShowTranslations(false)
   }, [])
@@ -77,20 +98,87 @@ export default function Translate(
       --------------- */}
       <section id='translateSec1'>
         <div id='translateSectionPanal'>
-          {/* TRANSLATE FORM */}
-          <div id='translatorDiv'>
-            <Row id='translatorRow'>
-              <Col xs={12} md={12} id='translatorCol'>
+         <Row id='toggleTranslatorRow'>
+        <Col id='toggleTranslateCol1'/>
+        <Col xs={5} id='toggleTranslateCol'>
+          <Stack gap={2} id='toggleTranslatorStack'>
+      <Button variant="light"
+      onClick={toggleTranslator}
+      id='toggleTranslator1Btn'
+      >
+        SHOW TRANSLATOR
+      </Button>
+      <Button 
+        variant="light" 
+        id='toggleTranslator2Btn'
+        onClick={toggleDocTranslator}
+        >
+        SHOW DOCUMENT TRANSLATOR
+      </Button>
+    </Stack>
+        </Col>
+        <Col id='toggleTranslateCol2'/>
+      </Row>
+      <div id='translatorDiv'>
+      {showTranslator && (
+        <div id='translateForm1Panal'>
+            <Row id='translatorRow1'>
+              <Col xs={12} md={12} id='translatorCol1'>
                 <div id='translatorPanal'>
                   <TranslateForm
                     currentUser={currentUser}
                   />
                 </div>
               </Col>
-            </Row>     
-          
-          </div>
-            <div id='translateLanguagesPanal'>
+            </Row>    
+                      <div id='translateLanguagesPanal'>
+<Row id='toggleLanguagesRow'>
+              <Col id='toggleLangCol1'/>
+              <Col xs={5} id='toggleLangCol'>
+                
+                <Button
+                  variant='light'
+                  id='toggleLangBtn'
+                  onClick={toggleLang}
+                  type='button'
+                  aria-label={showLang ? 'HIDE AVAILABLE LANGUAGES' : 'SHOW AVAILABLE LANGUAGES'}
+                  aria-pressed={showLang}
+                  aria-expanded={showLang}
+                  aria-controls='langaugeListPanal'
+                >
+                  {showLang ? (<>Hide Available Languages<BookX/></>) : <>Show Available Languages<LanguagesIcon/></>}
+                </Button>
+              </Col>
+              <Col id='toggleLangCol2'/>
+            </Row>
+           
+            {/* API LANGUAGES LIST */}
+            {showLang && (
+              <div id='langaugeListPanal'>
+                {/* Langauges */}
+                <div id='languageList'>
+                  <Row id='langaugeListRow'>
+                    <Col id='languageListCol1' />
+                    <Col xs={12} md={8} id='languageListCol'>
+                      <LanguagesList/>
+                    </Col>
+                    <Col id='languageListCol2' />
+                  </Row>
+                </div>
+              </div>
+            )}
+             </div> 
+        </div>
+      )}
+      {documentTranslate && (
+        <div id='translateForm2Panal'>
+          <Row id='translatorRow2'>
+            <Col xs={12} md={12} id='translatorCol2'>
+              <DocTranslator/>
+
+            </Col>
+          </Row>
+          <div id='translateLanguagesPanal'>
 <Row id='toggleLanguagesRow'>
               <Col id='toggleLangCol1'/>
               <Col xs={5} id='toggleLangCol'>
@@ -127,6 +215,14 @@ export default function Translate(
               </div>
             )}
              </div>
+        </div>
+      )}
+          {/* TRANSLATE FORM */}
+          
+
+          
+          </div>
+            
         </div>
       </section>
       <section id='translateSec2'>

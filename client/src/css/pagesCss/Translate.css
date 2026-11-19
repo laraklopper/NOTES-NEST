@@ -24,18 +24,32 @@
     padding: 0px;
     width: 100%;
 }
+#translateForm1Panal,
+#translateForm2Panal{
+    width: 100%;
+    margin: 0px;
+    padding: 5px 0px;
+}
 /* TAB 1: TRANSLATION TABLE */
 #translatorDiv{
     width: 100%;
     margin: 0px;
     padding: 0px;
 }
-#translatorRow{
+#toggleTranslatorRow{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+#translatorRow1,
+#translatorRow2{
     width: 100%;
     margin: 0px;
     padding: 0px;
 }
-#translatorCol{
+#translatorCol1,
+#translatorCol2{
     display: flex;
     justify-content: center;
     width: 100%;
@@ -162,6 +176,15 @@ margin: 0px;
             padding: 10px 5px;
 
 }
+#toggleTranslatorStack{
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    background-color: darkgrey;
+}
+#toggleTranslator1Btn,
+#toggleTranslator2Btn,
 #toggleLangBtn,
 #showTranslationsBtn,
 #toggleTranslateArchiveBtn,
@@ -205,6 +228,11 @@ border-radius: 8px;
     justify-content: center;
     width: 100%;
 }
+
+#toggleTranslator2Btn{
+        width: 350px;
+}
+#toggleTranslator1Btn,
 #showTranslationsBtn{
     width: 250px;
 }
