@@ -8,6 +8,9 @@ GET - /archive/fetchTranslations - fetch all of the user's archived translations
 PATCH - /archive/translation/:id - archive an active translation
 PATCH - /archive/translation/:id/restore - restore an archived translation to the main translation list
 DELETE - /archive/translation/:id - move an archived translation to the trash
+PATCH - /archive/document/:id - archive an active document translation
+PATCH - /archive/document/:id/restore - restore an archived document translation to the main document list
+DELETE - /archive/document/:id - move an archived translated document to the trash
 */
 const express = require('express');
 const mongoose = require('mongoose');// Used to validate ObjectIds
