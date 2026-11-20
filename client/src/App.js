@@ -1,4 +1,5 @@
 // App.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useState, useEffect, useCallback } from 'react'
 // IMPORT CSS STYLESHEETS
 import './App.css'
@@ -22,16 +23,16 @@ import Home from './pages/Home';
 import NotePad from './pages/NotePad';
 import Notes from './pages/Notes';
 import Translate from './pages/Translate';
-
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Bug } from 'lucide-react';
 
 // MAIN APP FUNCTION COMPONENT
-export default function App() {
+export default function App() {//Export defualt App.js function component
    // ========STATE VARIABLES================
    //User variables
-  const [users, setUsers] = useState([])
-  const [currentUser, setCurrentUser] = useState(null)
+  const [users, setUsers] = useState([])// List of all users (only filled in for admins)
+  const [currentUser, setCurrentUser] = useState(null)// Logged-in user: { userId, fullName, admin }
+  // Form data for the Login page, shaped like the server's user model
   const [userData, setUserData] = useState({
     username: '',
     fullName: {
@@ -49,8 +50,8 @@ export default function App() {
     admin: false
   })
   // Event and UI-related states
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [error, setError] = useState(null)
+  const [loggedIn, setLoggedIn] = useState(false)// Decides which set of routes is rendered
+  const [error, setError] = useState(null)// Message shown in the global error banner (null hides it)
 
     //=======NAViGATE=======
   // Hook to navigate between different routes
@@ -74,7 +75,7 @@ export default function App() {
     } catch (error) {
       console.error('Error reading saved user:', error);
     }
-    if (!savedUser) return
+    if (!savedUser) return// Nothing saved, so stay logged out
 
     setCurrentUser(savedUser);// Show the logged-in pages straight away while the cookie is checked
     setLoggedIn(true);
@@ -86,18 +87,20 @@ export default function App() {
           throw new Error('Session expired');
         }
         const user = await response.json();
+        // Keep only the fields the client needs
         const freshUser = { userId: user._id, fullName: user.fullName, admin: user.admin === true };
         localStorage.setItem('currentUser', JSON.stringify(freshUser));
         setCurrentUser(freshUser);// Pick up changes made since login, e.g. admin status
       } catch (error) {
         console.error('Error restoring session:', error);
-        clearSession();
+        clearSession();// Cookie is missing or expired, so log out locally
       }
     }
     verifySession();
   }, [clearSession]);
 
   // Only admins can see the users list
+  // Runs again whenever currentUser changes, e.g. after login or session restore
   useEffect(() => {
     if (!currentUser?.admin) return
     const fetchUsers = async () => {
@@ -108,9 +111,10 @@ export default function App() {
           throw new Error('Failed to fetch users');
         }
         const data = await response.json();
+        // Make sure the server sent a list before storing it
          if (Array.isArray(data)) {
           setUsers(data);
-          setError(null);
+          setError(null);// Clear any earlier error
         } else {
           throw new Error('Unexpected users response format');
         }
@@ -123,7 +127,8 @@ export default function App() {
   }, [currentUser]);
 
 
-
+  // ==============LOGOUT================
+  // Log out on the server, clear local state and go back to the login page
   const logout = useCallback(async () => {
     try {
       await fetch('/auth/logout', { method: 'POST' });// Server clears the JWT cookie
@@ -138,11 +143,14 @@ export default function App() {
   return (
     <>
     <Container id='appContainer' role='main'>
+      {/* ------GLOBAL ERROR BANNER: any page can set it via setError */}
          <Row id='globalErrorRow'>
+         {/* Empty side columns centre the banner on medium+ screens */}
          <Col xs={0} md id='errorCol1'/>
         <Col xs={12} md={8} id='globalErrorCol'>
           <div id='globalErrorBlock'>
-            {error && 
+            {/* Only shown when there is an error message */}
+            {error &&
               <span>
               <Bug size={20} fontWeight={900} color='#3D0F13' aria-hidden='true'/>
                 <p id='errorMessage'>{error}</p>  
@@ -153,13 +161,15 @@ export default function App() {
         <Col xs={0} md id='errorCol2'/>
       </Row>
       {/* ------MAIN APPLICATION CONTAINER */}
-      <Container id='appContainer' role='main'>
+      <Container id='routesContainer'>
       {/* --------------
       CLIENT SIDE ROUTES
       ---------------------- */}
         <Routes>
+          {/* Logged-in users get the protected pages, everyone else gets Login/Register */}
           {loggedIn ? (
             <>
+            {/* =====PROTECTED ROUTES (logged in)===== */}
             {/* Protected Route to Home page */}
               <Route path='/' element={
                 <ProtectedUserRoute currentUser={currentUser}>
@@ -203,6 +213,7 @@ export default function App() {
             </>
           ):(
             <>
+            {/* =====PUBLIC ROUTES (logged out)===== */}
               {/* Route to Login Page */}
               <Route path='/' element={<Login
                 userData={userData}
