@@ -19,6 +19,26 @@
 BUTTONS
 https://react-bootstrap.netlify.app/docs/components/buttons
 ================ */
+.btnTextSpan{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    gap:  5px;
+}
+.btnTextSpan h6{
+    font-family: "Comic Relief", system-ui;
+    font-weight: 700;
+    text-decoration: underline;
+    letter-spacing: 2px;
+    margin: 0px;
+    text-transform: uppercase;
+    padding: 0px;
+}
+.btnTextSpan svg{
+    font-size: 24px;
+}
 #toggleArchiveBtn,
 #toggleTrashBtn{
     display: flex;

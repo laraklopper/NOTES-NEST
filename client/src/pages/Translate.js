@@ -17,12 +17,13 @@ import TrashedTranslations from '../components/TrashedTranslations';
 import ArchivedTranslations from '../components/ArchivedTranslations';
 import LanguagesList from '../components/LanguagesList';
 import MainHeader from '../components/MainHeader';
-// IMPORT ICONS FROM LUCIDE-REACT
-import { Archive, ArchiveX, BookOpenCheck, BookOpenText, BookX, LanguagesIcon, Trash2Icon, TrashOff } from 'lucide-react';
 import DocTranslator from '../components/DocTranslator';
 import DocTranslationList from '../components/DocTranslationList';
 import TrashArchiveDocs from '../components/TrashArchiveDocs';
-
+// IMPORT ICONS FROM LUCIDE-REACT
+import { Archive, ArchiveX, BookOpenCheck, FileSymlink , MessageCircleX , 
+  BookOpenText, BookX, LanguagesIcon, Trash2Icon, TrashOff, 
+  ScanText, FolderOpen, FolderClosed } from 'lucide-react';
 // =======MAIN TRANSLATE COMPONENT============
 export default function Translate(
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
@@ -115,32 +116,66 @@ export default function Translate(
         </Col>
       </Row>
       {/* -----------------
-      SECTION 1: TranslationsList
+      SECTION 1: Translate Forms
       --------------- */}
       <section id='translateSec1'>
         <div id='translateSectionPanal'>
          <Row id='toggleTranslatorRow'>
         <Col id='toggleTranslateCol1'/>
         <Col xs={5} id='toggleTranslateCol'>
+        {/* STACK 1: TOGGLE TRANSLATORS STACK */}
           <Stack gap={2} id='toggleTranslatorStack'>
-      <Button variant="light"
+          <div className='p-2' id='toggleTranslator1Block'>
+      {/* Toggle Translate Form Button */}
+        {showTranslator ? (<span className='btnTextSpan'><h6>Hide Translator</h6><MessageCircleX  size={24} aria-hidden='true' focusable='false'/>
+        </span>) : (
+          <span className='btnTextSpan'>
+          <h6>Open Text Translator</h6><ScanText size={24} aria-hidden='true' focusable='false'/></span>)}
+      <Button 
+      variant="light"
       onClick={toggleTranslator}
       id='toggleTranslator1Btn'
+      type='buttons'
+      // ARIA ATTRIBUTES:
+      aria-label={showTranslator ? 'Hide Translator' : 'Translate Text'}
+      aria-pressed={showTranslator}
+      aria-expanded={showTranslator}
+      aria-controls='translateForm1Panal'
       >
-        SHOW TRANSLATOR
+      {showTranslator ? 'Hide Translator' : 'Translate Text'}
+      
       </Button>
-      <Button 
+      </div>
+      <div className='p-2'  id='toggleTranslator2Block'>
+         {documentTranslate ? (
+          <span className='btnTextSpan'>
+            <h6>Hide Translator</h6>   
+            <MessageCircleX size={24} aria-hidden='true' focusable='false'/>
+          </span>
+          ) :(<span className='btnTextSpan'>
+        <h6>Translate Document</h6>
+           <FileSymlink aria-hidden='true' focusable='false'/>
+        </span>) }
+        <Button 
         variant="light" 
         id='toggleTranslator2Btn'
         onClick={toggleDocTranslator}
+        // ARIA ATTRIBUTES:
+        aria-label={documentTranslate ? 'Hide Document Translator' : 'Translate Document'}
+        aria-pressed={documentTranslate}
+        aria-expanded={documentTranslate}
+        aria-controls='translateForm2Panal'
         >
-        SHOW DOCUMENT TRANSLATOR
+        {documentTranslate ? 'Hide  Translator' : 'TRANSLATE Document'}
       </Button>
+      </div>
+      
     </Stack>
         </Col>
         <Col id='toggleTranslateCol2'/>
       </Row>
       <div id='translatorDiv'>
+      {/* TOGGLE THE TEXT TRANSLATOR FORM */}
       {showTranslator && (
         <div id='translateForm1Panal'>
             <Row id='translatorRow1'>
@@ -151,12 +186,12 @@ export default function Translate(
                   />
                 </div>
               </Col>
-            </Row>    
-                      <div id='translateLanguagesPanal'>
-<Row id='toggleLanguagesRow'>
+            </Row> 
+            <div id='translateLanguagesPanal'>
+              <Row id='toggleLanguagesRow'>
               <Col id='toggleLangCol1'/>
               <Col xs={5} id='toggleLangCol'>
-                
+                {/* Button to toggle Languages */}
                 <Button
                   variant='light'
                   id='toggleLangBtn'
@@ -172,8 +207,7 @@ export default function Translate(
               </Col>
               <Col id='toggleLangCol2'/>
             </Row>
-           
-            {/* API LANGUAGES LIST */}
+            {/* TOGGLE API LANGUAGES LIST */}
             {showLang && (
               <div id='langaugeListPanal'>
                 {/* Langauges */}
@@ -191,19 +225,19 @@ export default function Translate(
              </div> 
         </div>
       )}
+      {/* TOGGLE THE DOCUMENT TRANSLATOR FORM */}
       {documentTranslate && (
         <div id='translateForm2Panal'>
           <Row id='translatorRow2'>
             <Col xs={12} md={12} id='translatorCol2'>
               <DocTranslator currentUser={currentUser}/>
-
             </Col>
           </Row>
           <div id='translateLanguagesPanal'>
-<Row id='toggleLanguagesRow'>
+            <Row id='toggleLanguagesRow'>
               <Col id='toggleLangCol1'/>
               <Col xs={5} id='toggleLangCol'>
-                
+                {/* Button to toggle API languages */}
                 <Button
                   variant='light'
                   id='toggleLangBtn'
@@ -219,8 +253,7 @@ export default function Translate(
               </Col>
               <Col id='toggleLangCol2'/>
             </Row>
-           
-            {/* API LANGUAGES LIST */}
+            {/* TOGGLE API LANGUAGES LIST */}
             {showLang && (
               <div id='langaugeListPanal'>
                 {/* Langauges */}
@@ -241,28 +274,55 @@ export default function Translate(
           </div>    
         </div>
       </section>
+      {/* -----------------
+      SECTION 2: TEXT AND DOCUMENT TRANSLATIONS LIST 
+      ----------------------- */}
       <section id='translateSec2'>
         <div id='translationsListDiv'>
               <Row id='toggleTranslationsRow1'>
-        <Col id='toggleTranslationsCol1'/>        <Col xs={5} id='toggleTranslationsCol2'>
+        <Col id='toggleTranslationsCol1'/>        
+        <Col xs={5} id='toggleTranslationsCol2'>
+        {/* TOGGLE TRANSLATIONS: TEXT AND DOCUMENTS */}
            <Stack gap={3} id='toggleTranslationStack1'>
-      <div className="p-2" id='toggleTranslationsBlock'>
-      {/* BUTTON TO TOGGLE TRANSLATIONS */}
+            <div className="p-2" id='toggleTranslationsBlock'>
+        {showTranslations ? (
+          <span className='btnTextSpan'>
+          <h6>CLOSE TEXT TRANSLATIONS</h6><BookX aria-hidden='true' focusable='false'/>
+          </span>
+                  ):(
+                    <span className='btnTextSpan'>
+                    <h6>OPEN TEXT TRANSLATIONS</h6><BookOpenText aria-hidden='true' focusable='false'/>
+                    </span>   
+                  )}
+              {/* BUTTON TO TOGGLE TEXT TRANSLATIONS */}
                   <Button
                     variant='light'
                     id='showTranslationsBtn'
                     onClick={toggleTranslations}
                     type='button'
-                    aria-label={showTranslations ? 'HIDE TRANSLATIONS': 'SHOW TRANSLATIONS'}
+                    aria-label={showTranslations ? 'HIDE TEXT TRANSLATIONS': 'SHOW TEXT TRANSLATIONS'}
                     aria-pressed={showTranslations}
                     aria-expanded={showTranslations}
                     aria-controls='translationListPanal'
                   >
-                    {showTranslations ? (<>Hide Translations<BookX/></>): (<>Show Translations<BookOpenText/></>)}
+                    {showTranslations ? 'Hide Translations': 'Text Translations'}
                   </Button>
                 </div>
       <div className="p-2" id='toggleDocsBlock'>
-      {/* BUTTON TO TOGGLE TRANSLATEDOCUMENTS */}
+      <span>
+        {showDocTranslations ? (
+          <span className='btnTextSpan'>
+           <h6>CLOSE TRANSLATED DOCUMENTS</h6>
+           <FolderClosed aria-hidden='true' focusable='false'/>
+          </span>  
+                  ):(
+                    <span className='btnTextSpan'>
+           <h6>OPEN TRANSLATED DOCUMENTS</h6>
+           <FolderOpen  size={24} aria-hidden='true' focusable='false'/>
+          </span>
+                  )}
+      </span>
+      {/* BUTTON TO TOGGLE TRANSLATED DOCUMENTS */}
         <Button
         variant='light'
         id='toggleDocumentsBtn'
@@ -270,8 +330,10 @@ export default function Translate(
         type='button'
         aria-label={showDocTranslations ? 'Hide Documents' : 'SHow documents'}
         aria-pressed={showDocTranslations}
+        aria-expanded={showDocTranslations}
+        aria-controls='docListPanal'
         >
-          {showDocTranslations ? 'Hide Documents' : 'SHow documents'}
+          {showDocTranslations ? 'Hide' : 'Open Translations'}
         </Button>
       </div>
       
@@ -289,6 +351,7 @@ export default function Translate(
                 />
               </div>
             )}
+            {/* TOGGLE DOCUMENT TRANSLATIONS */}
             {showDocTranslations && (
               <div id='docListPanal'>
                 <Row id='docsListRow'>
@@ -300,27 +363,22 @@ export default function Translate(
                 </Row>
               </div>
             )}
-</div>
+        </div>
           <Row id='toggleTranslationsRow2'>
             <Col id='toggleTranslationsCol4'/>
-            <Col xs={5} id='toggleTranslationsCol5'>
+            <Col xs={12} md={5} id='toggleTranslationsCol5'>
+            {/* STACK TOGGLE ARCHIVED AND TRASHED TRANSLATIONS BUTTONS */}
               <Stack gap={3} id='toggleTranslationStack2'>
-                <div className="p-2" id='toggleTranslationsBlock2'>
-                {/*  */}
-                  <Button
-                    variant='light'
-                    id='showArchivedDocsBtn'
-                    onClick={toggleDocArchive}
-                    type='button'
-                    aria-label={showDocArchive ? 'HIDE TRANSLATED DOCUMENTS': 'SHOW TRANSLATED DOCUMENTS'}
-                    aria-pressed={showDocArchive}
-                    aria-expanded={showDocArchive}
-                    aria-controls='translationListPanal'
-                  >
-                    {showDocArchive ? (<>Hide Documents<ArchiveX/></>): (<>Document Archive/Trash<Archive/></>)}
-                  </Button>
-                </div>
-                <div className="p-2" id='toggleArchiveBlock'>
+                <div className="p-2" id='toggleTranslationArchiveBlock1'>
+                 {showArchive ? (<span className='btnTextSpan'>
+                        <h6>Hide Archive</h6>
+                        <ArchiveX aria-hidden='true' focusable='false'/>
+                        </span>
+                        ): (
+                        <span className='btnTextSpan'>
+                       <h6>Show Archive</h6> 
+                        <Archive aria-hidden='true' focusable='false'/>
+                        </span>)}
                   <Button
                     variant='light'
                     id='toggleTranslateArchiveBtn'
@@ -332,18 +390,14 @@ export default function Translate(
                     aria-expanded={showArchive}
                     aria-controls='archivedTranslationPanal'
                   >
-                    {showArchive ? (<>
-                        Hide Archive
-                        <ArchiveX aria-hidden='true' focusable='false'/>
-                        </>
-                        ): (
-                        <>
-                        Show Archive
-                        <Archive aria-hidden='true' focusable='false'/>
-                        </>)}
+                    {showArchive ? 'Hide Archive':'Show Archive'}
                   </Button>
-                </div>
-                <div className="p-2" id='toggleTrashBlock'>
+                </div>               
+                <div className="p-2" id='toggleTranslationTrashBlock1'>
+                {showTrash ? (
+                  <span className='btnTextSpan'><h6>Hide Trash </h6><TrashOff aria-hidden='true' focusable='false'/> </span>
+                  ) : (
+                    <span className='btnTextSpan'><h6>SHOW TRASHED TEXT TRANSLATIONS</h6><Trash2Icon aria-hidden='true' focusable='false'/></span>) }
                   <Button
                     variant='light'
                     onClick={toggleTrash}
@@ -358,11 +412,34 @@ export default function Translate(
                     {showTrash ? (<>Hide Trash <TrashOff/> </>) : (<>Show Trash<Trash2Icon/></>)}
                   </Button>
                 </div>
+                <div className="p-2" id='toggleTranslationsArchiveBlock2'>
+                  {showDocArchive ? (
+                    <span className='btnTextSpan'>
+                      <h6>HIDE ARCHIVED AND TRASHED DOCUMENTS</h6><ArchiveX/>
+                    </span>
+                  ):(
+                    <span className='btnTextSpan'>
+                    <h6 style={{textAlign: 'center'}}>OPEN ARCHIVED AND TRASHED <br/>TRANSLATED DOCUMENTS</h6><Archive/>
+                    </span>
+                  )}
+                  <Button
+                    variant='light'
+                    id='showArchivedDocsBtn'
+                    onClick={toggleDocArchive}
+                    type='button'
+                    aria-label={showDocArchive ? 'HIDE TRANSLATED DOCUMENTS': 'SHOW TRANSLATED DOCUMENTS'}
+                    aria-pressed={showDocArchive}
+                    aria-expanded={showDocArchive}
+                    aria-controls='translationListPanal'
+                  >
+                    {showDocArchive ? 'Hide Documents': 'Archive/Trash'}
+                  </Button>
+                </div>
               </Stack>
             </Col>
             <Col id='toggleTranslationsCol6'/>
           </Row>
-          {/* TRANSLATIONS LIST + TRANSLATIONS ARCHIVE + TRANSLATIONS TRASH + TRANSLATED DOCUMENTS TRASH AND ARCHIve*/}
+          {/* TRANSLATIONS ARCHIVE + TRANSLATIONS TRASH + TRANSLATED DOCUMENTS TRASH AND ARCHIve*/}
           <div id='translationListPanal2'>       
             {/* TOGGLE ARCHIVED TRANSLATIONS */}
             {showArchive && (

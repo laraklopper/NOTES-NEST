@@ -185,6 +185,7 @@ LAYOUT
     margin: 0px;
     padding: 0px;
 }
+/* STACK 2: https://react-bootstrap.netlify.app/docs/layout/stack*/
 #translateDocStack2{
         width: 100%;
     margin: 0px;
@@ -224,38 +225,12 @@ LAYOUT
     padding: 0px;
 }
 /* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons */
-#swapLanguageBtn{
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-     border: solid 2px #323A42;
-}
-#swapLanguageBtn:hover{
-    background-color: #323A42;
-    color: #E8F0F6;
-}
-#copyTranslationBtn{
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    border: solid 2px #323A42;
-    text-transform: uppercase;
-    color: #000;
-    font-family: "Roboto Mono", monospace;
-    font-weight: 700;
-    display: flex;
-    letter-spacing: 1px;
-    align-items: center;
-    gap: 5px;
-    margin: 0px 10px 0px 0px;
-}
-
+#swapLanguageBtn,
+#saveDocTranslateBtn,
+#downloadDocBtn,
 #translateDocumentBtn,
 #translateBtn,
+#copyTranslationBtn,
 #saveTranslationBtn{
     width: 180px;
     height: 40px;
@@ -272,9 +247,31 @@ LAYOUT
     align-items: center;
     border: solid 2px #323A42;
 }
+#swapLanguageBtn{
+    width: 40px;
+    height: 40px;
+}
+#copyTranslationBtn{
+    position: absolute;
+    top: 8px;
+    right: 8px;    
+    text-transform: uppercase;
+    color: #000;
+    letter-spacing: 1px;
+    margin: 0px 10px 0px 0px;
+}
+#saveDocTranslateBtn,
+#downloadDocBtn{
+    width: 220px;
+    font-size: 16px;
+}
+#swapLanguageBtn:hover,
 #translateDocumentBtn:hover,
 #translateBtn:hover,
-#saveTranslationBtn:hover{
+#saveTranslationBtn:hover,
+#copyTranslationBtn:hover,
+#saveDocTranslateBtn:hover,
+#downloadDocBtn:hover{
     background-color: #323A42;
     color: #E8F0F6;
 }

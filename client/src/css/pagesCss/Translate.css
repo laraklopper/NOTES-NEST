@@ -19,6 +19,7 @@ SECTION 1:
     width: 100%;
 }
 /* LAYOUT */
+
 #translatorPanal{
     display: flex;
     justify-content: center;
@@ -77,7 +78,7 @@ SECTION 1:
     margin: 0px;
     padding: 0px;
 }
-/* STACK */
+/* STACK 1: https://react-bootstrap.netlify.app/docs/layout/stack */
 #toggleTranslatorStack{
     display: flex;
     align-items: center;
@@ -85,6 +86,15 @@ SECTION 1:
     padding: 5px 0px;
     background-color: darkgrey;
     border-radius: 5px;
+}
+#toggleTranslator1Block,
+#toggleTranslator2Block{
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ margin: 0px;
+ padding: 0px;   
+ gap: 5px;
 }
 /* =========================
 SECTION 2
@@ -241,32 +251,16 @@ align-items: center;
 margin: 0px;
     
 }
-/* BUTTONS: */
-#toggleDocumentsBtn,
-#toggleTranslator1Btn,
-#toggleTranslator2Btn,
-#toggleLangBtn,
-#showArchivedDocsBtn,
-#showTranslationsBtn,
-#toggleTranslateArchiveBtn,
-#toggleTranslateTrashBtn{
-      display: flex;
-    justify-content: center;
+
+#toggleTranslationTrashBlock1,
+#toggleTranslationArchiveBlock1,
+#toggleTranslationsArchiveBlock2{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     align-items: center;
     margin: 0px;
     padding: 0px;
-    height: 40px;
-    width: 200px;
-    text-transform: uppercase;
-    color: #000;
-    font-family: "Roboto Mono", monospace;
-    font-weight: 700;
-    letter-spacing: 2px;
-    border: solid 2px #323A42;
-}
-#toggleLangBtn{
-        width: 330px;
-
 }
 #toggleLangCol1,
 #toggleLangCol2{
@@ -310,17 +304,34 @@ border-radius: 8px;
     border-radius: 8px;
     padding: 10px;
 }
+#toggleTranslationsBlock,
+#toggleTranslationsBlock2,
+#toggleDocsBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
 /* BUTTONS */
+
+#toggleTranslator1Btn,
+#toggleTranslator2Btn,
+#toggleLangBtn,
+#toggleDocumentsBtn,
 #saveDocTranslateBtn,
-#downloadDocBtn{
-         display: flex;
+#downloadDocBtn,
+#showArchivedDocsBtn,
+#showTranslationsBtn,
+#toggleTranslateArchiveBtn,
+#toggleTranslateTrashBtn{
+      display: flex;
     justify-content: center;
     align-items: center;
     margin: 0px;
     padding: 0px;
     height: 40px;
-    width: 220px;
-    font-size: 16px;
+    width: 200px;
     text-transform: uppercase;
     color: #000;
     font-family: "Roboto Mono", monospace;
@@ -328,12 +339,17 @@ border-radius: 8px;
     letter-spacing: 2px;
     border: solid 2px #323A42;
 }
-#showArchivedDocsBtn,
-#toggleTranslator2Btn{
-        width: 350px;
+
+#toggleLangBtn{
+           width: 330px;
+
 }
-#toggleTranslator1Btn,
-#showTranslationsBtn{
+#downloadDocBtn{
+    width: 220px;
+}
+#toggleDocumentsBtn,
+#showTranslationsBtn,
+#toggleTranslator2Btn{
     width: 250px;
 }
 #toggleDocumentsBtn:hover,
@@ -341,13 +357,17 @@ border-radius: 8px;
 #showArchivedDocsBtn:hover,
 #toggleTranslateArchiveBtn:hover,
 #toggleTrashBtn:hover{
-      background-color: #323A42;
+    background-color: #323A42;
     color: #E8F0F6;
 }
+#toggleTranslator1Btn:active,
+#toggleTranslator2Btn:active,
 #toggleTranslateArchiveBtn:active,
 #toggleTranslateTrashBtn:active,
 #showTranslationsBtn:active,
 #toggleDocumentsBtn:active,
+#toggleTranslator1Btn[aria-pressed ='true'],
+#toggleTranslator2Btn[aria-pressed ='true'],
 #toggleDocumentsBtn[aria-pressed = 'true'],
 #toggleTranslateArchiveBtn[aria-pressed ='true'],
 #toggleTranslateTrashBtn[aria-pressed = 'true'],
