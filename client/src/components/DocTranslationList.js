@@ -44,7 +44,7 @@ export default function DocTranslationList() {
         </div>
         <div id='documentPanal'>
              <Stack direction="horizontal" gap={3} id='panalHeader'>
-      <div className="p-2">First item</div>
+      <div className="p-2"/>
       <div className="p-2 ms-auto">
         
       </div>
