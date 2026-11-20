@@ -49,9 +49,7 @@ export default function DocTranslationList() {
         
       </div>
       <div className="vr" />
-      <div className="p-2">
-        
-      </div>
+      <div className="p-2"/>
     </Stack>
     <div id='docPanalBody'>
 <Stack gap={3} id='docBodyStack1'>
