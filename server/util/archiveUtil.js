@@ -9,14 +9,16 @@ The hourly sweep also deletes translations whose note was purged by the notes TT
 const mongoose = require('mongoose');
 const Note = require('../models/noteSchema');
 const Translation = require('../models/translationSchema');
+const DocTranslation = require('../models/docTranslateSchema');
 const { ARCHIVE_RETENTION_MS } = require('./schemaUtil');
 
 const ARCHIVE_SWEEP_INTERVAL_MS = 1000 * 60 * 60;// Run the global sweep every hour
 
 /* Moves a model's expired archived documents to the trash. Pass a userId to sweep only that user's.
 Documents archived before archivedAt existed have no archivedAt, so updatedAt is used for them.
+ownerField is the model's owner path ('user' for notes and translations, 'userId' for document translations).
 Returns the number of documents moved */
-const trashExpired = async (Model, extraSet, userId) => {
+const trashExpired = async (Model, extraSet, userId, ownerField = 'user') => {
     const cutoff = new Date(Date.now() - ARCHIVE_RETENTION_MS);
     const filter = {
         isArchived: true,
@@ -26,7 +28,7 @@ const trashExpired = async (Model, extraSet, userId) => {
             { archivedAt: null, updatedAt: { $lte: cutoff } }
         ]
     };
-    if (userId) filter.user = new mongoose.Types.ObjectId(userId);
+    if (userId) filter[ownerField] = new mongoose.Types.ObjectId(userId);
 
     // Same end state as the archive DELETE routes, so a trash restore returns it to the main list
     const result = await Model.updateMany(filter, {
@@ -40,6 +42,7 @@ const trashExpired = async (Model, extraSet, userId) => {
 
 const trashExpiredArchivedNotes = (userId) => trashExpired(Note, { isPinned: false }, userId);
 const trashExpiredArchivedTranslations = (userId) => trashExpired(Translation, {}, userId);
+const trashExpiredArchivedDocuments = (userId) => trashExpired(DocTranslation, {}, userId, 'userId');
 
 /* Deletes translations whose linked note no longer exists. The 30-day TTL index purges
 trashed notes inside MongoDB, so the cascade in DELETE /notes/:id/permanent never runs
@@ -78,6 +81,7 @@ const startArchiveSweep = () => {
     const run = () => Promise.all([
         trashExpiredArchivedNotes(),
         trashExpiredArchivedTranslations(),
+        trashExpiredArchivedDocuments(),
         removeOrphanedTranslations()
     ]).catch((error) => {
         console.error('[ERROR: archiveUtil.js] Archive sweep failed:', error.message);
@@ -88,4 +92,4 @@ const startArchiveSweep = () => {
     return timer;
 };
 
-module.exports = { trashExpiredArchivedNotes, trashExpiredArchivedTranslations, removeOrphanedTranslations, startArchiveSweep };
+module.exports = { trashExpiredArchivedNotes, trashExpiredArchivedTranslations, trashExpiredArchivedDocuments, removeOrphanedTranslations, startArchiveSweep };

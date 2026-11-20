@@ -8,6 +8,7 @@ GET - /archive/fetchTranslations - fetch all of the user's archived translations
 PATCH - /archive/translation/:id - archive an active translation
 PATCH - /archive/translation/:id/restore - restore an archived translation to the main translation list
 DELETE - /archive/translation/:id - move an archived translation to the trash
+GET - /archive/fetchDocuments - fetch all of the user's archived document translations (text omitted)
 PATCH - /archive/document/:id - archive an active document translation
 PATCH - /archive/document/:id/restore - restore an archived document translation to the main document list
 DELETE - /archive/document/:id - move an archived translated document to the trash
@@ -16,8 +17,9 @@ const express = require('express');
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const Note = require('../models/noteSchema');// Import the Note model
 const Translation = require('../models/translationSchema');// Import the Translation model
+const DocTranslation = require('../models/docTranslateSchema');// Import the DocumentTranslation model
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
-const { trashExpiredArchivedNotes, trashExpiredArchivedTranslations } = require('../util/archiveUtil');// 60-day archive rule
+const { trashExpiredArchivedNotes, trashExpiredArchivedTranslations, trashExpiredArchivedDocuments } = require('../util/archiveUtil');// 60-day archive rule
 const router = express.Router();
 
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
@@ -66,6 +68,28 @@ router.get('/fetchTranslations', checkJwtToken, async (req, res) => {
         return res.status(200).json({ translations });// Send a 200 (OK) status code with the translations
     } catch (error) {
         console.error('[ERROR: archiveRoutes.js, GET /fetchTranslations]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+/* GET: /archive/fetchDocuments : Lists the signed-in user's archived document
+translations (not in the trash), most recently archived first. The text is left
+out like /document/fetchDocuments; the details panel uses GET /document/fetchDoc/:id */
+router.get('/fetchDocuments', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+
+        // Apply the 60-day rule first so expired document translations never show in the archive
+        await trashExpiredArchivedDocuments(userId);
+
+        const documents = await DocTranslation.find({ userId, isArchived: true, deletedAt: null })
+            .select('-sourceText -translatedText -__v')// Text is only sent by GET /document/fetchDoc/:id
+            .sort({ archivedAt: -1, updatedAt: -1 })// Latest archived first
+            .lean();
+
+        console.log(`[SUCCESS: archiveRoutes.js, GET /fetchDocuments] Fetched ${documents.length} archived document translations`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ documents });// Send a 200 (OK) status code with the document translations
+    } catch (error) {
+        console.error('[ERROR: archiveRoutes.js, GET /fetchDocuments]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
@@ -170,6 +194,72 @@ router.patch('/translation/:id/restore', checkJwtToken, async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
+/* PATCH: /archive/document/:id : Archives one of the signed-in user's active document
+translations, which hides it from the main document translations list */
+router.patch('/document/:id', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the document translation ID from the URL
+
+        // Guard clause: check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: archiveRoutes.js, PATCH /document/:id] Invalid document id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid document id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only a document translation the user owns that is not in the trash or already archived can be archived
+        const document = await DocTranslation.findOneAndUpdate(
+            { _id: id, userId, deletedAt: null, isArchived: { $ne: true } },// $ne also matches older rows without the field
+            { $set: { isArchived: true, archivedAt: new Date() } },// archivedAt starts the 60-day countdown
+            { returnDocument: 'after' }// Return the document translation AFTER the update
+        ).select('_id fileName isArchived archivedAt');
+
+        // Guard clause: check the document translation was found
+        if (!document) {
+            console.error(`[ERROR: archiveRoutes.js, PATCH /document/:id] Document translation not found or already archived: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Document translation not found or already archived' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: archiveRoutes.js, PATCH /document/:id] Document translation archived: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Document translation archived', document });// Send a 200 (OK) status code with a message and the document translation
+    } catch (error) {
+        console.error('[ERROR: archiveRoutes.js, PATCH /document/:id]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+/* PATCH: /archive/document/:id/restore : Unarchives one of the signed-in user's archived
+document translations, which moves it back to the main document translations list */
+router.patch('/document/:id/restore', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the document translation ID from the URL
+
+        // Guard clause: check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: archiveRoutes.js, PATCH /document/:id/restore] Invalid document id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid document id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only an archived document translation the user owns that is not in the trash can be restored
+        const document = await DocTranslation.findOneAndUpdate(
+            { _id: id, userId, deletedAt: null, isArchived: true },
+            { $set: { isArchived: false, archivedAt: null } },// Clear the 60-day countdown
+            { returnDocument: 'after' }// Return the document translation AFTER the update, like the archive route
+        ).select('_id fileName');
+
+        // Guard clause: check the document translation was found
+        if (!document) {
+            console.error(`[ERROR: archiveRoutes.js, PATCH /document/:id/restore] Archived document translation not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Archived document translation not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: archiveRoutes.js, PATCH /document/:id/restore] Document translation restored from archive: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Document translation restored', document });// Send a 200 (OK) status code with a message and the document translation
+    } catch (error) {
+        console.error('[ERROR: archiveRoutes.js, PATCH /document/:id/restore]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
 /* PATCH: /archive/:id/restore : Unarchives one of the signed-in user's archived
 notes, which moves it back to the main notes list */
 router.patch('/:id/restore', checkJwtToken, async (req, res) => {
@@ -269,6 +359,40 @@ router.delete('/translation/:id', checkJwtToken, async (req, res) => {
         return res.status(200).json({ message: 'Translation moved to trash', translation });// Send a 200 (OK) status code with a message and the translation
     } catch (error) {
         console.error('[ERROR: archiveRoutes.js, DELETE /translation/:id]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
+    }
+})
+/* DELETE: /archive/document/:id : Moves one of the signed-in user's archived document
+translations to the trash (soft delete). isArchived is cleared so that restoring it
+from the trash puts it back in the main document translations list */
+router.delete('/document/:id', checkJwtToken, async (req, res) => {
+    try {
+        const userId = req.user.id;// Get the authenticated user's ID from the JWT token
+        const { id } = req.params;// Get the document translation ID from the URL
+
+        // Guard clause: check the id is a valid ObjectId (avoids a CastError 500)
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.error(`[ERROR: archiveRoutes.js, DELETE /document/:id] Invalid document id: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'Invalid document id' });// Return a 400 (Bad Request) status code with a message
+        }
+
+        // Only an archived document translation the user owns that is not already in the trash can be moved there
+        const document = await DocTranslation.findOneAndUpdate(
+            { _id: id, userId, deletedAt: null, isArchived: true },
+            { $set: { deletedAt: new Date(), isArchived: false, archivedAt: null } },
+            { returnDocument: 'after' }// Return the document translation AFTER the update, like the archive route
+        ).select('_id fileName');
+
+        // Guard clause: check the document translation was found
+        if (!document) {
+            console.error(`[ERROR: archiveRoutes.js, DELETE /document/:id] Archived document translation not found: ${id}`);// Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'Archived document translation not found' });// Return a 404 (Not Found) status code with a message
+        }
+
+        console.log(`[SUCCESS: archiveRoutes.js, DELETE /document/:id] Archived document translation moved to trash: ${id}`);//Log a message in the console for debugging purposes
+        return res.status(200).json({ message: 'Document translation moved to trash', document });// Send a 200 (OK) status code with a message and the document translation
+    } catch (error) {
+        console.error('[ERROR: archiveRoutes.js, DELETE /document/:id]', error.message);// Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })

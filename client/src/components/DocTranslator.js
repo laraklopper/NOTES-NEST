@@ -136,7 +136,7 @@ export default function DocTranslator(
         await navigator.clipboard.writeText(result.translatedText);
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
-    },[result.translatedText])
+    },[result?.translatedText])
 
         /* Hands the translation to the browser as a plain text file, named after
     the document it came from. Nothing is downloaded from the server: the text
@@ -201,7 +201,7 @@ export default function DocTranslator(
             formData.append('sourceLanguage', sourceLang);// "auto" is a valid value here
             formData.append('targetLanguage', targetLang);
 
-            const response = await fetch(`http://localhost:3001/translate/translateDoc`, {
+            const response = await fetch(`/document/translateDoc`, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',// Send the HTTP-only auth cookie
@@ -234,7 +234,7 @@ export default function DocTranslator(
         setError('');
         setSaveMessage('');
         try {
-            const response = await fetch(`http://localhost:3001/translate/saveDoc`, {
+            const response = await fetch(`/document/saveDoc`, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',// Send the HTTP-only auth cookie
