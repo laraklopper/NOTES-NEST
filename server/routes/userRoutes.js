@@ -7,6 +7,7 @@ const Note = require('../models/noteSchema');// Import the Note model (removed w
 const Notebook = require('../models/notebookSchema');// Import the Notebook model (removed with the user)
 const Tag = require('../models/tagSchema');// Import the Tag model (removed with the user)
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with the user)
+const DocTranslation = require('../models/docTranslateSchema');// Import the DocumentTranslation model (removed with the user)
 const router = express.Router();// Create a new router object using Express.js
 const { checkPassword, checkPasswordChange, hashPassword, isDevelopment } = require('../middleware/passwordMiddleware');// Password middleware and the development flag
 const { checkJwtToken, setTokenCookie } = require('../middleware/securityMiddleware');// JWT check and cookie issuing
@@ -286,16 +287,17 @@ router.delete('/deleteUser/:id', checkJwtToken, checkAdmin, async (req, res) => 
 
         /* Remove the user's data first and the account last, so if a step fails
         the account still exists and the request can be sent again */
-        const [notes, notebooks, tags, translations] = await Promise.all([
+        const [notes, notebooks, tags, translations, documents] = await Promise.all([
             Note.deleteMany({ user: id }),
             Notebook.deleteMany({ user: id }),
             Tag.deleteMany({ user: id }),
-            Translation.deleteMany({ user: id })
+            Translation.deleteMany({ user: id }),
+            DocTranslation.deleteMany({ userId: id })// The document model's owner field is userId, not user
         ]);
         await User.deleteOne({ _id: id });
 
         console.log(`[SUCCESS: userRoutes.js, DELETE /deleteUser/:id] Removed ${user.username} (${id}) by ${req.adminUser.username}: ` +
-            `${notes.deletedCount} notes, ${notebooks.deletedCount} notebooks, ${tags.deletedCount} tags, ${translations.deletedCount} translations`);//Log a message in the console for debugging purposes
+            `${notes.deletedCount} notes, ${notebooks.deletedCount} notebooks, ${tags.deletedCount} tags, ${translations.deletedCount} translations, ${documents.deletedCount} document translations`);//Log a message in the console for debugging purposes
         return res.status(200).json({ message: 'User removed', user: { _id: user._id, username: user.username } });// Send a 200 (OK) status code with a message
     } catch (error) {
         console.error('[ERROR: userRoutes.js, DELETE /deleteUser/:id]', error.message);// Log an error message in the console for debugging purposes
