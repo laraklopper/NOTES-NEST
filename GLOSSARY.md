@@ -54,6 +54,7 @@ Abbreviations and terms used across this application and its documentation.
 |`SRV`| **SERVICE RECORD** | A type of DNS record that specifies the hostname and port of a network service. MongoDB Atlas uses SRV records via the `mongodb+srv://` scheme to provide automatic discovery of replica set members without hardcoding IP addresses. |
 |`SVG`| **SCALABLE VECTOR GRAPHIC** | An XML-based vector image format that scales without loss of quality at any resolution. Used in this application for the `lucide-react` interface icons. |
 |`TLS`| **TRANSPORT LAYER SECURITY** | A cryptographic protocol that secures communication over a network by encrypting data in transit. The foundation of HTTPS. |
+|`TTL indexes`| **TIME-TO-LIVE** | |
 |`TTS`| **TEXT-TO-SPEECH** | Technology that reads written text aloud as synthesised speech. Reserved as a future feature by the `voiceOutputEnabled` field on the settings schema. |
 |`UAAG`| **USER AGENT ACCESSIBILITY GUIDELINES** | W3C guidelines for user agents — browsers, media players and other software that renders web content — covering how they should support assistive technologies. A companion standard to WCAG and ATAG. |
 |`UI`| **USER INTERFACE** | The visual layer of an application — everything the user sees and interacts with. |
