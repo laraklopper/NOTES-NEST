@@ -1,8 +1,15 @@
+//DocTranslationList.js
 import React, { useState } from 'react'
+import '../css/componentCss/ListTables.css'
+import '../css/componentCss/ListLayout.css'
+import '../css/componentCss/ListBtns.css'
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import { ScrollText } from 'lucide-react';
+
+//DocTranslationList function component
 export default function DocTranslationList() {
+    /*======STATE VARIABLES=============== */
     const [documents, setDocuments] = useState()
     const [selected, setSelected] = useState(null)
     const [loading, setLoading] = useState(true)// State variable to indicate the list is still being fetched
@@ -11,7 +18,7 @@ export default function DocTranslationList() {
   return (
     <div id='translatedDocsList'>
       <div id='docTranslationsWrapper'>
-        <table>
+        <table id='documentTranslationsTable'>
             <thead>
                 <tr>
                     <th colSpan={5}>DOCUMENT TRANSLATIONS:</th>
