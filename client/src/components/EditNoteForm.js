@@ -124,14 +124,13 @@ export default function EditNoteForm(
             </div>
             {/* =======INPUT=========== */}
             <div id='editNoteInput'>
-                {/* GROUP 1: */}
+                {/* GROUP 1: Edit Title + Edit date*/}
                 <fieldset id='editNoteGroup1' aria-describedby='editNoteGroup1Desc'>
-                    {/* -----Screen Reader Heading */}
-                    <p className='visually-hidden' id='editNoteGroup1Desc'>Edit note title</p>
-                    <legend id='editNoteGroup1Desc'>EDIT TITLE OR DATE</legend>
+                    {/* -----Screen Reader Heading---------- */}
+                    <legend  className='visually-hidden' id='editNoteGroup1Desc'>EDIT TITLE OR DATE</legend>
                     {/* STACK 1 */}
                     <Stack gap={3} id='editNoteStack1'>
-           {/* TITLE: value={editNoteData.title} */}
+                         {/* TITLE: value={editNoteData.title} */}
                         <div className="p-2" id='editTitleBlock'>
                             <label className='editNoteLabel' htmlFor='editNoteTitleInput'>TITLE:</label>
                             <input
@@ -148,9 +147,9 @@ export default function EditNoteForm(
                                 aria-required='false'
                             />
                         </div>
-      <div className="p-2" id='editNoteDateBlock'>
                         {/* DATE: value={editNoteData.createdAt}: edit the day the note was created
                         (moves it on the calendar). Only past and current dates are allowed */}
+                        <div className="p-2" id='editNoteDateBlock'>       
                         <label className='notePadLabel' htmlFor='editNoteDate'>DATE:</label>
                             <div className='inputDiv'>
                                 <input
@@ -169,9 +168,9 @@ export default function EditNoteForm(
                         </div>
     </Stack>
                 </fieldset>
-                {/* GROUP 2 */}
-                <fieldset id='editNoteGroup2'>
-                    <legend>EDIT NOTE DETAILS</legend>
+                {/* GROUP 2: note content + edit Language */}
+                <fieldset id='editNoteGroup2' aria-labelledby='editNoteSec2'>
+                    <legend className='visually-hidden' id='editNoteSec2'>EDIT NOTE DETAILS</legend>
                     <Stack gap={3} id='editNoteStack2'>
                         {/* EDIT NOTE: value={editNoteData.content} */}
                         <div className="p-2" id='editNoteTextBlock'>
@@ -220,7 +219,7 @@ export default function EditNoteForm(
                 {/* GROUP 3 */}
                 <fieldset id='editNoteGroup3' aria-labelledby='optionalInputGroup'>
                 <legend id='optionalInputGroup'>Optional Input</legend>
-                {/* STACK 3: */}
+                {/* STACK 3: edit notebook + edit Tag + edit pinned checkbox */}
                   <Stack gap={3} id='editNoteStack3'>
       <div className="p-2" id='optEditNoteBlock1'>
          {/* NOTEBOOK:  
@@ -304,9 +303,8 @@ export default function EditNoteForm(
                                 />
                                 <Pin size={16}/>
                             </div>
-      </div>
-    </Stack>
-
+                        </div>
+                        </Stack>
                 </fieldset>
             </div>
             {/* STACK 3 */}
