@@ -295,7 +295,39 @@ border-radius: 8px;
     border-top: solid 1px;
         padding: 10px 0px;
 }
+#translateDocResultBtns{
+    display: flex;
+    align-items: center;
+        justify-content: flex-end;
+    padding: 10px 0px 5px 0px;
+}
+#translatedDocText{
+    overflow-y: scroll;
+    height: 260px;
+    width: 100%;
+    text-align: justify;
+    margin: 0px;
+    border-radius: 8px;
+    padding: 10px;
+}
 /* BUTTONS */
+#saveDocTranslateBtn,
+#downloadDocBtn{
+         display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    height: 40px;
+    width: 220px;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #000;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border: solid 2px #323A42;
+}
 #showArchivedDocsBtn,
 #toggleTranslator2Btn{
         width: 350px;

@@ -335,7 +335,7 @@ export default function DocTranslator(
                         </div>
                     </div>
                     <div className="p-2" id='translateDocBlock2'>
-                        <div className='inputDiv'>
+                        <div id='docInputDiv'>
                             <label className='translateLabel' id='documentUploadLabel' htmlFor='documentUploadInput'>UPLOAD DOCUMENT:</label>
                             <input
                                 className='docInput'
@@ -383,12 +383,17 @@ export default function DocTranslator(
                                     <>
                                         {/* What the server read, so a short translation can be
                                         checked against the document it came from */}
-                                        <p id='translateDocResultMeta' className='translateDocNote'>
-                                            {result.fileName} · {result.pageCount} PAGE(S) · {result.characterCount} CHARACTERS
+                                        <span id='translateDocResultMeta'>
+                                        <p  className='translateDocNote'>{result.fileName}</p>
+                                        <p  className='translateDocNote'>{result.pageCount} PAGE(S) · {result.characterCount} CHARACTERS</p>
+                                        <p className='translateDocNote'>
                                             {result.detectedLanguageName && sourceLang === 'auto'
-                                                ? ` · DETECTED: ${result.detectedLanguageName}`
+                                                ? `  DETECTED: ${result.detectedLanguageName}`
                                                 : ''}
                                         </p>
+                                        </span>
+                                        
+                                            
                                         <div id='translatedDocText' className='form-control bg-light'>
                                             <Stack direction="horizontal" gap={3} id='copyDocTextStack'>
                                                 <div className="p-2" />
