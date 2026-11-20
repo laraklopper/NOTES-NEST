@@ -260,7 +260,11 @@ export default function TrashArchiveDocs() {
                         <td colSpan={6}>RESTORE TO VIEW DETAILS</td>
                     </tr>
                     <tr>
-                        <td colSpan={6}><i style={{color: "#B82C3A", fontWeight: "800"}}>ARCHIVED DOCUMENTS ARE MOVED TO TRASH {ARCHIVE_DAYS} DAYS AFTER BEING ARCHIVED. DOCUMENTS ARE PERMANENTLY DELETED {PURGE_DAYS} DAYS AFTER BEING MOVED TO TRASH</i></td>
+                        <td colSpan={6}>
+                        <i style={{color: "#B82C3A", fontWeight: "800"}}>ARCHIVED DOCUMENTS ARE MOVED TO TRASH {ARCHIVE_DAYS} DAYS AFTER BEING ARCHIVED.</i></td>
+                    </tr>
+                    <tr>
+                      <td colSpan={6}><i style={{color: "#B82C3A", fontWeight: "800"}}>DOCUMENTS ARE PERMANENTLY DELETED {PURGE_DAYS} DAYS AFTER BEING MOVED TO TRASH</i></td>
                     </tr>
                 </tfoot>
             </table>

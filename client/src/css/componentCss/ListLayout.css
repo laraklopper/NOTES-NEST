@@ -1,7 +1,9 @@
 /* show all bootstrap cols & rows and div tags in lists*/
 #translationList,
 #notesDataListsDiv,
-#languageList{
+#languageList,
+#docsList,
+#trashArchiveDocsList{
     display: flex;
     flex-direction: column;
     align-items: center;

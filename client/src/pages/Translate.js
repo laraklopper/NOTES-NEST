@@ -291,9 +291,9 @@ export default function Translate(
             )}
             {showDocTranslations && (
               <div id='docListPanal'>
-                <Row>
-                  <Col md='12'>
-                    <div>
+                <Row id='docsListRow'>
+                  <Col md='12' id='docsListCol'>
+                    <div id='docsList'>
                       <DocTranslationList/>
                     </div>
                   </Col>

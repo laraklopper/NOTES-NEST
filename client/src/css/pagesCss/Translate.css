@@ -164,15 +164,26 @@ SECTION 2
 #toggleTranslationsRow1,
 #toggleTranslationsRow2,
 #translationsArchiveRow,
+#docsListRow,
 #toggleLanguagesRow,
 #translationTrashRow{
     width: 100%;
     margin: 0px;
     padding: 0px;
 }
+#docListPanal{
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
 #translationTrashCol,
 #translationsFilterCol{
      width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#translatedDocsList{
+    width: 100%;
     margin: 0px;
     padding: 0px;
 }
