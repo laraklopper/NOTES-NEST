@@ -8,6 +8,8 @@ React (TranslateForm)  ──►  /api/language/translate/v2/...  ──►  Lan
        └────────────── clean JSON / safe error message ◄────────────┘
 ```
 
+The Langbly helpers (`langblyRequest()`, `LangblyError`, `sendError()`, `clientAbortSignal()` and `LANGUAGE_NAMES`) live in [`langblyUtil.js`](../server/util/langblyUtil.js), so [`docTranslateRoutes.js`](../server/routes/docTranslateRoutes.js) can call Langbly the same way when it translates an uploaded PDF (see [DOCUMENT_ROUTES.md](DOCUMENT_ROUTES.md)). Only `checkSourceText()` and the languages cache are still defined in this router.
+
 ---
 
 ## TABLE OF CONTENTS
@@ -225,26 +227,26 @@ When the language can't be determined:
 ## 2. IMPORTS AND SETUP
 
 ```js
-require('dotenv').config();
 const express = require('express');
 const { checkJwtToken } = require('../middleware/securityMiddleware');
 const { translateLimiter, detectLimiter } = require('../middleware/rateLimitMiddleware');
-const { languageData } = require('../util/languageData');
 const { languageCodeRegex, MAX_TRANSLATION_CHARS } = require('../util/schemaUtil');
-const { LANGBLY_TIMEOUT_MS, LANGUAGES_CACHE_MS, LANGBLY_PATH } = require('../util/apiUtil');
+const { LANGUAGES_CACHE_MS } = require('../util/apiUtil')
+const { LANGUAGE_NAMES, langblyRequest, sendError, clientAbortSignal } = require('../util/langblyUtil')
 const router = express.Router();
 ```
 
 | Import | From | Used For |
 |---|---|---|
-| `dotenv` | npm | Loads `.env` into `process.env`. It must run **before** the constants read `LANGBLY_API_KEY`. |
 | `express` | npm | Creates the `router`. |
 | `checkJwtToken` | `securityMiddleware` | Blocks requests from users who aren't logged in. |
 | `translateLimiter`, `detectLimiter` | `rateLimitMiddleware` | Per-IP request limits, with a separate limit for each route. |
-| `languageData` | `util/languageData` | Local `[{ code, name }]` list, used to build [`LANGUAGE_NAMES`](#41-language_names). |
 | `languageCodeRegex` | `util/schemaUtil` | Validates codes like `en`, `zu`, `zh-CN`. |
 | `MAX_TRANSLATION_CHARS` | `util/schemaUtil` | The maximum text length allowed per request (`10000`). |
-| `LANGBLY_TIMEOUT_MS`, `LANGUAGES_CACHE_MS`, `LANGBLY_PATH` | `util/apiUtil` | Langbly connection settings ([3.1. CONNECTION SETTINGS](#31-connection-settings)). |
+| `LANGUAGES_CACHE_MS` | `util/apiUtil` | How long the languages list is cached ([3.2.2](#322-languages-cache)). |
+| `LANGUAGE_NAMES`, `langblyRequest`, `sendError`, `clientAbortSignal` | `util/langblyUtil` | The shared Langbly helpers ([4. UTILITY FUNCTIONS](#4-utility-functions)). |
+
+`dotenv`, `languageData`, `LANGBLY_PATH` and `LANGBLY_TIMEOUT_MS` are now imported by `langblyUtil.js` instead. It calls `require('dotenv').config()` at its top so `LANGBLY_API_KEY` is set before it's read.
 
 ---
 
@@ -254,7 +256,7 @@ const router = express.Router();
 ### 3.1. CONNECTION SETTINGS
 
 ```js
-// apiRoutes.js (read from .env)
+// util/langblyUtil.js (read from .env)
 const LANGBLY_BASE_URL = (process.env.LANGBLY_BASE_URL || 'https://api.langbly.com').replace(/\/+$/, '');
 const LANGBLY_API_KEY = process.env.LANGBLY_API_KEY;
 
@@ -264,7 +266,7 @@ const LANGBLY_TIMEOUT_MS = 15000;
 const LANGUAGES_CACHE_MS = 1000 * 60 * 60 * 24;
 ```
 
-The two `.env` values stay in `apiRoutes.js`. The fixed values live in `util/apiUtil.js`.
+The two `.env` values are read in `util/langblyUtil.js`, the only file that uses them. The fixed values live in `util/apiUtil.js`.
 
 | Constant | Value | Notes |
 |---|---|---|
@@ -415,15 +417,16 @@ When Langbly answers with an error status, [`langblyRequest()`](#42-langblyreque
 <!-- SECTION 4: UTILITY FUNCTIONS -->
 ## 4. UTILITY FUNCTIONS
 
-All of these are defined inside `apiRoutes.js`.
+`checkSourceText()` is defined inside `apiRoutes.js`. The rest are in [`langblyUtil.js`](../server/util/langblyUtil.js) and shared with `docTranslateRoutes.js` (`POST /document/translateDoc`).
 
-| Helper | Used By | Purpose |
-|---|---|---|
-| `LANGUAGE_NAMES` | All three routes | Language code → readable name |
-| `langblyRequest()` | All three routes | The single place that calls Langbly |
-| `clientAbortSignal()` | `/translate`, `/detect` | Cancels the Langbly call if the browser disconnects |
-| `sendError()` | All three routes | Turns any caught error into a `{ message }` response |
-| `checkSourceText()` | `/translate`, `/detect` | Validates the text before it's sent |
+| Helper | Defined In | Used By | Purpose |
+|---|---|---|---|
+| `LANGUAGE_NAMES` | `langblyUtil.js` | All three routes, `/document/translateDoc` | Language code → readable name |
+| `LangblyError` | `langblyUtil.js` | `langblyRequest()`, `sendError()`, `/document/translateDoc` | An error carrying the status to answer with ([3.3.1](#331-langblyerror-class)) |
+| `langblyRequest()` | `langblyUtil.js` | All three routes, `/document/translateDoc` | The single place that calls Langbly |
+| `clientAbortSignal()` | `langblyUtil.js` | `/translate`, `/detect`, `/document/translateDoc` | Cancels the Langbly call if the browser disconnects |
+| `sendError()` | `langblyUtil.js` | All three routes, `/document/translateDoc` | Turns any caught error into a `{ message }` response |
+| `checkSourceText()` | `apiRoutes.js` | `/translate`, `/detect` | Validates the text before it's sent |
 
 ### 4.1. `LANGUAGE_NAMES`
 
@@ -572,17 +575,17 @@ const clientAbortSignal = (res) => {
 ### 4.4. `sendError()`
 
 ```js
-const sendError = (res, route, error) => {
+const sendError = (res, route, error, file = 'apiRoutes.js') => {
     if (res.writableEnded || res.destroyed) return;
     if (error instanceof LangblyError) {
         return res.status(error.status).json({ message: error.message });
     }
-    console.error(`[ERROR: apiRoutes.js, ${route}]`, error.message);
+    console.error(`[ERROR: ${file}, ${route}]`, error.message);
     return res.status(500).json({ message: 'Internal Server Error' });
 };
 ```
 
-Every route's `catch` calls this, so all error responses have the same shape: `{ message }`.
+Every route's `catch` calls this, so all error responses have the same shape: `{ message }`. The optional `file` argument names the calling router in the log line; this router leaves it out, and `docTranslateRoutes.js` passes `'docTranslateRoutes.js'`.
 
 | Error Type | Logged Here? | Response |
 |---|---|---|
@@ -622,7 +625,7 @@ if (textError) return res.status(400).json({ message: textError });
 
 | Package | Where | Security role |
 |---|---|---|
-| `dotenv` | `apiRoutes.js` | Keeps `LANGBLY_API_KEY` in `.env`, out of the source code and the client bundle |
+| `dotenv` | `langblyUtil.js` | Keeps `LANGBLY_API_KEY` in `.env`, out of the source code and the client bundle |
 | `jsonwebtoken` | `securityMiddleware.js` | Verifies the session JWT in `checkJwtToken` |
 | `express-rate-limit` | `rateLimitMiddleware.js` | `translateLimiter` and `detectLimiter`: limits how fast one IP can spend Langbly quota |
 
@@ -630,7 +633,7 @@ if (textError) return res.status(400).json({ message: textError });
 
 | Middleware | File | Routes | What it does |
 |---|---|---|---|
-| `translateLimiter` | [rateLimitMiddleware.js](../server/middleware/rateLimitMiddleware.js) | `/translate` | **429** after 100 requests per 15 minutes per IP ("Too many translation requests...") |
+| `translateLimiter` | [rateLimitMiddleware.js](../server/middleware/rateLimitMiddleware.js) | `/translate` (and `POST /document/translateDoc`) | **429** after 100 requests per 15 minutes per IP ("Too many translation requests..."). It's the same limiter instance on both routes, so text and document translations share one budget. |
 | `detectLimiter` | [rateLimitMiddleware.js](../server/middleware/rateLimitMiddleware.js) | `/detect` | **429** after 60 requests per 15 minutes per IP ("Too many language detection requests...") |
 | `checkJwtToken` | [securityMiddleware.js](../server/middleware/securityMiddleware.js) | All | **401** if the user isn't logged in, the token is invalid or expired, or the session was signed out. A database failure during the lookup returns **500**. |
 
@@ -727,14 +730,14 @@ When the cache has expired, every `/languages` request that arrives before the f
 | The `/detect` doc comment appeared **twice** | Removed the duplicate |
 | Two descriptions of `langblyRequest` (a block comment plus two `//` lines) | Merged into one block comment, which now also covers the `signal` option |
 | Comments said "Conditional rendering" | Changed to "Guard clause" (in `langblyRequest` and `/translate`), or removed where the comment beside it already explained the check (`sendError`) |
+| Langbly helpers could only be used by this router | Moved `langblyRequest`, `LangblyError`, `sendError`, `clientAbortSignal`, `LANGUAGE_NAMES` and the `.env` settings to `util/langblyUtil.js`, shared with `docTranslateRoutes.js`. This also removed the leftover commented-out `LANGBLY_PATH`. |
 | `'../util/langaugeData'` typo | Renamed the file to `server/util/languageData.js` and updated every `require` (`apiRoutes.js`, `exportRoutes.js`, `userSchema.js`), plus the references in `EXPORT_ROUTES.md`, `GLOSSARY.md` and the client's `languageData.js` comment |
 
 **Still to do:**
 
 | Issue | Where | Change |
 |---|---|---|
-| Leftover commented-out `LANGBLY_PATH` | `apiRoutes.js` line 26 | Delete it; the value now comes from `util/apiUtil.js` |
-| Missing semicolon and spacing | `apiRoutes.js`: `const {LANGBLY_TIMEOUT_MS, ...} = require('../util/apiUtil')` | `const { ... } = require('../util/apiUtil');` to match the other imports |
+| Missing semicolons | `apiRoutes.js`: the `require('../util/apiUtil')` and `require('../util/langblyUtil')` lines | Add `;` to match the other imports |
 | "userTranslatoons" typo | `rateLimitMiddleware.js` comment above `translateLimiter` | "translations" |
 
 ---
@@ -745,10 +748,10 @@ When the cache has expired, every `/languages` request that arrives before the f
 **Project files**
 
 - [apiRoutes.js](../server/routes/apiRoutes.js)
-- [apiUtil.js](../server/util/apiUtil.js), [schemaUtil.js](../server/util/schemaUtil.js), [languageData.js](../server/util/languageData.js)
+- [langblyUtil.js](../server/util/langblyUtil.js), [apiUtil.js](../server/util/apiUtil.js), [schemaUtil.js](../server/util/schemaUtil.js), [languageData.js](../server/util/languageData.js)
 - [securityMiddleware.js](../server/middleware/securityMiddleware.js), [rateLimitMiddleware.js](../server/middleware/rateLimitMiddleware.js)
 - [TranslateForm.js](../client/src/components/TranslateForm.js)
-- [TRANSLATION_ROUTES.md](TRANSLATION_ROUTES.md), [GLOSSARY.md](../GLOSSARY.md)
+- [TRANSLATION_ROUTES.md](TRANSLATION_ROUTES.md), [DOCUMENT_ROUTES.md](DOCUMENT_ROUTES.md), [GLOSSARY.md](../GLOSSARY.md)
 
 **External documentation**
 

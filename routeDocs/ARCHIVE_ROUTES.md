@@ -1,15 +1,17 @@
 # ARCHIVE ROUTES — [`archiveRoutes.js`](../server/routes/archiveRoutes.js) BREAKDOWN
 
-[`archiveRoutes.js`](../server/routes/archiveRoutes.js) is the Express router for the **archive**. It handles two kinds of item: **notes** and **translations**. Archiving hides an item from its main list without deleting it. From the archive, an item can be **restored** to its main list or **moved to the trash** (soft delete). An item left in the archive for **60 days** is moved to the trash automatically.
+[`archiveRoutes.js`](../server/routes/archiveRoutes.js) is the Express router for the **archive**. It handles three kinds of item: **notes**, **translations** and **document translations**. Archiving hides an item from its main list without deleting it. From the archive, an item can be **restored** to its main list or **moved to the trash** (soft delete). An item left in the archive for **60 days** is moved to the trash automatically.
 
-The archive has no collection of its own. It's a **state** on each `Note` and `Translation` document, controlled by these fields:
+The archive has no collection of its own. It's a **state** on each `Note`, `Translation` and `DocumentTranslation` document, controlled by these fields:
 
 | Field | Type | On | Meaning |
 |---|---|---|---|
-| `isArchived` | Boolean | both | `true` means the item is in the archive |
-| `archivedAt` | Date or `null` | both | When the item was archived. Starts the 60-day countdown. `null` when not archived. |
-| `deletedAt` | Date or `null` | both | A date means the item is in the trash (soft-deleted); `null` means it isn't |
+| `isArchived` | Boolean | all three | `true` means the item is in the archive |
+| `archivedAt` | Date or `null` | all three | When the item was archived. Starts the 60-day countdown. `null` when not archived. |
+| `deletedAt` | Date or `null` | all three | A date means the item is in the trash (soft-deleted); `null` means it isn't |
 | `isPinned` | Boolean | notes only | Pinned to the top of the main list. Always cleared when a note is archived or trashed. |
+
+> Document translations store their owner as **`userId`**, not `user` like notes and translations, so their routes filter on `userId`.
 
 ---
 
@@ -21,8 +23,9 @@ The archive has no collection of its own. It's a **state** on each `Note` and `T
      - [1.4. PATCH `/archive/:id/restore`](#14-patch-archiveidrestore)
      - [1.5. DELETE `/archive/:id`](#15-delete-archiveid)
      - [1.6. TRANSLATION ROUTES](#16-translation-routes)
-     - [1.7. LIFECYCLE](#17-lifecycle)
-     - [1.8. THE 60-DAY ARCHIVE RULE](#18-the-60-day-archive-rule)
+     - [1.7. DOCUMENT TRANSLATION ROUTES](#17-document-translation-routes)
+     - [1.8. LIFECYCLE](#18-lifecycle)
+     - [1.9. THE 60-DAY ARCHIVE RULE](#19-the-60-day-archive-rule)
 2. [IMPORTS AND SETUP](#2-imports-and-setup)
 3. [SCHEMAS AND UTILITY FUNCTIONS](#3-schemas-and-utility-functions)
      - [3.1. SCHEMAS](#31-schemas)
@@ -30,6 +33,7 @@ The archive has no collection of its own. It's a **state** on each `Note` and `T
           - [3.1.2. TAG SCHEMA](#312-tag-schema)
           - [3.1.3. NOTEBOOK SCHEMA](#313-notebook-schema)
           - [3.1.4. TRANSLATION SCHEMA](#314-translation-schema)
+          - [3.1.5. DOCUMENT TRANSLATION SCHEMA](#315-document-translation-schema)
      - [3.2. UTILITY FUNCTIONS](#32-utility-functions)
 4. [SECURITY](#4-security)
      - [4.1. PACKAGES](#41-packages)
@@ -68,6 +72,15 @@ The router is mounted at **`/archive`** in `app.js`. Every route requires a vali
 | `PATCH` | `/archive/translation/:id/restore` | `checkJwtToken` | Return a translation to the main list | **archived**, not trashed | `isArchived: false`, `archivedAt: null` |
 | `DELETE` | `/archive/translation/:id` | `checkJwtToken` | Move an archived translation to the trash | **archived**, not trashed | `deletedAt: now`, `isArchived: false`, `archivedAt: null` |
 
+**Document translations**
+
+| Method | Full Path | Middleware | Purpose | Document Must Be | Sets |
+|---|---|---|---|---|---|
+| `GET` | `/archive/fetchDocuments` | `checkJwtToken` | List the user's archived document translations (text omitted) | archived, not trashed | — |
+| `PATCH` | `/archive/document/:id` | `checkJwtToken` | Archive an active document translation | **active** (not archived, not trashed) | `isArchived: true`, `archivedAt: now` |
+| `PATCH` | `/archive/document/:id/restore` | `checkJwtToken` | Return a document translation to the main list | **archived**, not trashed | `isArchived: false`, `archivedAt: null` |
+| `DELETE` | `/archive/document/:id` | `checkJwtToken` | Move an archived document translation to the trash | **archived**, not trashed | `deletedAt: now`, `isArchived: false`, `archivedAt: null` |
+
 No route takes a request body. Everything comes from the URL (`:id`) and the token (`req.user.id`).
 
 **Client side usage:**
@@ -82,6 +95,10 @@ No route takes a request body. Everything comes from the URL (`:id`) and the tok
 | `PATCH` | `/archive/translation/:id` | [TranslationPanal.js](../client/src/components/TranslationPanal.js) (archive button) |
 | `PATCH` | `/archive/translation/:id/restore` | [ArchivedTranslations.js](../client/src/components/ArchivedTranslations.js) (restore button) |
 | `DELETE` | `/archive/translation/:id` | [ArchivedTranslations.js](../client/src/components/ArchivedTranslations.js) (move to trash button) |
+| `GET` | `/archive/fetchDocuments` | [TrashArchiveDocs.js](../client/src/components/TrashArchiveDocs.js) (on load, alongside `GET /document/trash`) |
+| `PATCH` | `/archive/document/:id` | [DocTranslationList.js](../client/src/components/DocTranslationList.js) (ARCHIVE button in the details panal) |
+| `PATCH` | `/archive/document/:id/restore` | [TrashArchiveDocs.js](../client/src/components/TrashArchiveDocs.js) (RESTORE on a row with status ARCHIVED) |
+| `DELETE` | `/archive/document/:id` | [TrashArchiveDocs.js](../client/src/components/TrashArchiveDocs.js) (DELETE on a row with status ARCHIVED) |
 
 ---
 
@@ -102,7 +119,7 @@ const notes = await Note.find({ user: userId, isArchived: true, deletedAt: null 
 
 | Step | What It Does |
 |---|---|
-| `trashExpiredArchivedNotes(userId)` | Moves this user's notes archived more than 60 days ago to the trash first, so they never show here ([1.8](#18-the-60-day-archive-rule)) |
+| `trashExpiredArchivedNotes(userId)` | Moves this user's notes archived more than 60 days ago to the trash first, so they never show here ([1.9](#19-the-60-day-archive-rule)) |
 | `find({...})` | The user's notes that are archived **and** not in the trash |
 | `.select('-__v')` | Leaves out Mongoose's internal version key. The `-` means "exclude". |
 | `.populate('notebook', 'name colour')` | Replaces the notebook ObjectId with `{ _id, name, colour }`, so the UI can show a coloured notebook badge ([3.1.3](#313-notebook-schema)) |
@@ -257,7 +274,7 @@ const note = await Note.findOneAndUpdate(
 | Update | Why |
 |---|---|
 | `deletedAt: new Date()` | Puts the note in the trash and records **when**, for the "deleted X days ago" label and the 30-day TTL purge |
-| `isArchived: false` | So a trash restore returns it to the main list ([1.7](#17-lifecycle)) |
+| `isArchived: false` | So a trash restore returns it to the main list ([1.8](#18-lifecycle)) |
 | `isPinned: false` | Already false from archiving. Setting it again is a harmless safety net. |
 | `archivedAt: null` | The note has left the archive, so the countdown no longer applies |
 
@@ -296,9 +313,60 @@ All three also filter on `_id`, `user: userId` and `deletedAt: null` ([4.3.3](#4
 
 ---
 
-### 1.7. LIFECYCLE
+### 1.7. DOCUMENT TRANSLATION ROUTES
 
-Notes and translations follow the same lifecycle.
+The document translation routes mirror the translation routes, under `/archive/document/...`, plus a list route.
+
+#### GET `/archive/fetchDocuments`
+
+**Purpose:** List the user's archived document translations, most recently archived first.
+
+```js
+await trashExpiredArchivedDocuments(userId);// Apply the 60-day rule first
+
+const documents = await DocTranslation.find({ userId, isArchived: true, deletedAt: null })
+    .select('-sourceText -translatedText -__v')// Text is only sent by GET /document/fetchDoc/:id
+    .sort({ archivedAt: -1, updatedAt: -1 })
+    .lean();
+```
+
+The text is left out because a document holds up to 20 000 characters on each side, and the table only shows the file name, languages and days left. Unlike `GET /document/trash`, this list **isn't paged**, the same as the other two archive lists.
+
+**Response (200):**
+
+```json
+{
+  "documents": [
+    { "_id": "6740...", "fileName": "Huurkontrak.pdf", "sourceLanguage": "af", "targetLanguage": "en",
+      "pageCount": 3, "characterCount": 8412, "isArchived": true, "archivedAt": "2026-11-20T10:00:00.000Z", "...": "..." }
+  ]
+}
+```
+
+#### The update routes
+
+| Route | Filter | Sets | Response (200) | 404 Message |
+|---|---|---|---|---|
+| `PATCH /archive/document/:id` | `isArchived: { $ne: true }` | `isArchived: true`, `archivedAt: now` | `{ message: 'Document translation archived', document: { _id, fileName, isArchived, archivedAt } }` | "Document translation not found or already archived" |
+| `PATCH /archive/document/:id/restore` | `isArchived: true` | `isArchived: false`, `archivedAt: null` | `{ message: 'Document translation restored', document: { _id, fileName } }` | "Archived document translation not found" |
+| `DELETE /archive/document/:id` | `isArchived: true` | `deletedAt: now`, `isArchived: false`, `archivedAt: null` | `{ message: 'Document translation moved to trash', document: { _id, fileName } }` | "Archived document translation not found" |
+
+All three also filter on `_id`, **`userId`** and `deletedAt: null` ([4.3.3](#433-ownership-and-state-in-a-single-filter)) and pass `{ returnDocument: 'after' }` ([4.3.4](#434-returning-the-updated-document)).
+
+**Differences from translations:**
+
+- The owner field is `userId`, not `user`.
+- Responses use the key `document` and return `fileName` instead of `sourceText`.
+- The 400 message is "Invalid document id".
+- Active document translations are trashed through `DELETE /document/:id`; trashed ones are restored and permanently deleted through `docTranslateRoutes.js` (see [DOCUMENT_ROUTES.md](DOCUMENT_ROUTES.md)).
+
+**Route matching:** `/document/:id` and `/document/:id/restore` work the same way as the translation paths: their segment counts never match `/:id` or `/:id/restore`.
+
+---
+
+### 1.8. LIFECYCLE
+
+Notes, translations and document translations follow the same lifecycle.
 
 ```
                 PATCH /archive/:id
@@ -316,7 +384,7 @@ Notes and translations follow the same lifecycle.
                                       └──────────┘
 ```
 
-For translations, swap in the `/archive/translation/...` paths.
+For translations, swap in the `/archive/translation/...` paths; for document translations, the `/archive/document/...` paths.
 
 | State | `isArchived` | `archivedAt` | `deletedAt` |
 |---|---|---|---|
@@ -324,11 +392,11 @@ For translations, swap in the `/archive/translation/...` paths.
 | Archived | `true` | a `Date` | `null` |
 | Trash | `false` | `null` | a `Date` |
 
-**Why `DELETE` sets `isArchived: false`:** a trashed item shouldn't remember that it came from the archive. That way, restoring *any* item from the trash always returns it to the **main list**, and the trash routes only need one rule. `DELETE /notes/:id`, `DELETE /translation/:id` and the 60-day sweep all produce the same trash state.
+**Why `DELETE` sets `isArchived: false`:** a trashed item shouldn't remember that it came from the archive. That way, restoring *any* item from the trash always returns it to the **main list**, and the trash routes only need one rule. `DELETE /notes/:id`, `DELETE /translation/:id`, `DELETE /document/:id` and the 60-day sweep all produce the same trash state.
 
 ---
 
-### 1.8. THE 60-DAY ARCHIVE RULE
+### 1.9. THE 60-DAY ARCHIVE RULE
 
 An archived item is moved to the trash **60 days** (`ARCHIVE_DAYS`) after `archivedAt`. A TTL index can only delete documents, not change them, so a sweep in [archiveUtil.js](../server/util/archiveUtil.js) does the move instead ([3.2](#32-utility-functions)).
 
@@ -336,7 +404,7 @@ The sweep sets the same fields as the `DELETE` routes (`deletedAt: now`, `isArch
 
 **When it runs:**
 
-- For **one user**, at the start of `GET /archive/fetchNotes`, `GET /archive/fetchTranslations` and `GET /notes/trash`. The lists are always accurate, even between hourly sweeps.
+- For **one user**, at the start of `GET /archive/fetchNotes`, `GET /archive/fetchTranslations`, `GET /archive/fetchDocuments`, `GET /notes/trash`, `GET /translation/trash` and `GET /document/trash`. The lists are always accurate, even between hourly sweeps.
 - For **every user**, on server start and then every hour (`startArchiveSweep()` in `app.js`). The hourly sweep also deletes translations whose note was purged by the notes TTL index.
 
 Once in the trash, the `deletedAt` TTL index purges the item **30 days** later.
@@ -351,8 +419,9 @@ const express = require('express');
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const Note = require('../models/noteSchema');
 const Translation = require('../models/translationSchema');
+const DocTranslation = require('../models/docTranslateSchema');
 const { checkJwtToken } = require('../middleware/securityMiddleware');
-const { trashExpiredArchivedNotes, trashExpiredArchivedTranslations } = require('../util/archiveUtil');
+const { trashExpiredArchivedNotes, trashExpiredArchivedTranslations, trashExpiredArchivedDocuments } = require('../util/archiveUtil');
 const router = express.Router();
 ```
 
@@ -364,8 +433,9 @@ const router = express.Router();
 | `mongoose` | Only `mongoose.Types.ObjectId.isValid()`, to check `:id` |
 | `Note` | The Mongoose model for notes |
 | `Translation` | The Mongoose model for translations |
+| `DocTranslation` | The Mongoose model for document translations (`DocumentTranslation`) |
 | `checkJwtToken` | Verifies the JWT cookie and sets `req.user` |
-| `trashExpiredArchived*` | The per-user 60-day sweep run before each GET ([1.8](#18-the-60-day-archive-rule)) |
+| `trashExpiredArchived*` | The per-user 60-day sweep run before each GET ([1.9](#19-the-60-day-archive-rule)) |
 
 ---
 
@@ -443,6 +513,23 @@ Defined in [translationSchema.js](../server/models/translationSchema.js). The fi
 
 Unlike `noteSchema`, it has **no** `pre('findOneAndUpdate')` hook, so the translation routes pass `{ returnDocument: 'after' }` themselves.
 
+#### 3.1.5. DOCUMENT TRANSLATION SCHEMA
+
+Defined in [docTranslateSchema.js](../server/models/docTranslateSchema.js) (model name `DocumentTranslation`). The fields this router reads or changes:
+
+| Field | Type | Used By |
+|---|---|---|
+| `userId` | ObjectId → User, required, indexed | Every route (ownership filter) |
+| `isArchived` | Boolean, default `false` | Every document route (filter), PATCH and DELETE (set) |
+| `archivedAt` | Date, default `null` | GET (sort), PATCH, restore and DELETE (set), the 60-day sweep |
+| `deletedAt` | Date, default `null` | Every document route (filter), DELETE (set), the TTL purge |
+| `fileName` | String | GET, PATCH, restore, DELETE (returned) |
+| `sourceText`, `translatedText` | String | **Never** sent by this router (left out of `GET /fetchDocuments`) |
+
+**Indexes used by the archive:** the same three as notes and translations, on `userId`: `{ userId, isArchived, deletedAt, archivedAt }`, `{ isArchived, archivedAt }`, and the 30-day TTL on `deletedAt`.
+
+Like `translationSchema`, it has no `pre('findOneAndUpdate')` hook, so the document routes pass `{ returnDocument: 'after' }` themselves. See [DOCUMENT_ROUTES.md](DOCUMENT_ROUTES.md) for the full schema.
+
 ### 3.2. UTILITY FUNCTIONS
 
 All in [archiveUtil.js](../server/util/archiveUtil.js), using `ARCHIVE_RETENTION_MS` (60 days) from [schemaUtil.js](../server/util/schemaUtil.js).
@@ -450,14 +537,15 @@ All in [archiveUtil.js](../server/util/archiveUtil.js), using `ARCHIVE_RETENTION
 | Function | Used By | What it does |
 |---|---|---|
 | `trashExpiredArchivedNotes(userId?)` | `GET /fetchNotes`, `GET /notes/trash`, the hourly sweep | Moves expired archived notes to the trash (also clears `isPinned`) |
-| `trashExpiredArchivedTranslations(userId?)` | `GET /fetchTranslations`, the hourly sweep | Moves expired archived translations to the trash |
+| `trashExpiredArchivedTranslations(userId?)` | `GET /fetchTranslations`, `GET /translation/trash`, the hourly sweep | Moves expired archived translations to the trash |
+| `trashExpiredArchivedDocuments(userId?)` | `GET /fetchDocuments`, `GET /document/trash`, the hourly sweep | Moves expired archived document translations to the trash |
 | `removeOrphanedTranslations()` | The hourly sweep | Deletes translations whose note was purged by the notes TTL index |
-| `startArchiveSweep()` | `app.js` | Runs all three for every user on start, then every hour. Errors are logged, never thrown. |
+| `startArchiveSweep()` | `app.js` | Runs all four for every user on start, then every hour. Errors are logged, never thrown. |
 
-Both `trashExpired*` functions call one shared helper:
+All three `trashExpired*` functions call one shared helper:
 
 ```js
-const trashExpired = async (Model, extraSet, userId) => {
+const trashExpired = async (Model, extraSet, userId, ownerField = 'user') => {
     const cutoff = new Date(Date.now() - ARCHIVE_RETENTION_MS);
     const filter = {
         isArchived: true,
@@ -467,7 +555,7 @@ const trashExpired = async (Model, extraSet, userId) => {
             { archivedAt: null, updatedAt: { $lte: cutoff } }// Archived before archivedAt existed
         ]
     };
-    if (userId) filter.user = new mongoose.Types.ObjectId(userId);
+    if (userId) filter[ownerField] = new mongoose.Types.ObjectId(userId);
 
     // Same end state as the archive DELETE routes, so a trash restore returns it to the main list
     const result = await Model.updateMany(filter, {
@@ -480,7 +568,8 @@ const trashExpired = async (Model, extraSet, userId) => {
 | Detail | Why |
 |---|---|
 | `userId` is optional | With it, only that user's items are swept (before a GET). Without it, every user's are (the hourly sweep). |
-| `extraSet` | Lets notes also clear `isPinned`; translations pass `{}` |
+| `extraSet` | Lets notes also clear `isPinned`; translations and document translations pass `{}` |
+| `ownerField` | The model's owner path: `'user'` for notes and translations, `'userId'` for document translations (`trashExpired(DocTranslation, {}, userId, 'userId')`) |
 | One `updateMany` | Moves every expired item in a single database operation |
 
 ---
@@ -506,7 +595,7 @@ These routes have **no rate limiter**. They only touch the user's own documents 
 
 ### 4.3. PATTERNS SHARED BY EVERY ROUTE
 
-All eight routes use the same building blocks, so they're explained once here.
+All twelve routes use the same building blocks, so they're explained once here.
 
 #### 4.3.1. The user ID comes from the token
 
@@ -556,7 +645,7 @@ The filter checks four things at once:
 By default, `findOneAndUpdate` returns the document **as it was before** the update. Every update route here returns it **after** the update:
 
 - **Notes:** `noteSchema`'s `pre('findOneAndUpdate')` hook sets `returnDocument: 'after'` (and `runValidators`) for every note update, so the routes don't pass it themselves.
-- **Translations:** `translationSchema` has no such hook, so each translation update route passes `{ returnDocument: 'after' }` itself.
+- **Translations and document translations:** `translationSchema` and `docTranslateSchema` have no such hook, so each of their update routes passes `{ returnDocument: 'after' }` itself.
 
 `returnDocument: 'after'` is used instead of `{ new: true }`, which Mongoose 9 deprecates.
 
@@ -566,7 +655,7 @@ By default, `findOneAndUpdate` returns the document **as it was before** the upd
 .select('_id title')
 ```
 
-The response only needs enough for the UI to confirm the action (e.g. a toast saying "'Shopping list' archived"), so the content, tags and so on aren't sent back. Translations return `_id` and `sourceText`.
+The response only needs enough for the UI to confirm the action (e.g. a toast saying "'Shopping list' archived"), so the content, tags and so on aren't sent back. Translations return `_id` and `sourceText`; document translations return `_id` and `fileName`.
 
 #### 4.3.6. Consistent error handling
 
@@ -575,7 +664,7 @@ Every route follows the same pattern:
 ```
 invalid id ──► 400
 no match ────► 404
-success ─────► 200 { message, note | translation }
+success ─────► 200 { message, note | translation | document }
 exception ───► 500 { message: 'Internal Server Error' }
 ```
 
@@ -591,8 +680,8 @@ Internal error details are never sent to the client. The logs use `[SUCCESS/ERRO
 | `200` | all | Success (including an empty archive list) |
 | `400` | all with `:id` | `:id` isn't a valid ObjectId |
 | `401` | all | (From `checkJwtToken`) No token, or an invalid, expired or signed-out one |
-| `404` | PATCH `/:id`, PATCH `/translation/:id` | Not found, not yours, already archived, or in the trash |
-| `404` | restore, DELETE (notes and translations) | Not found, not yours, not archived, or in the trash |
+| `404` | PATCH `/:id`, PATCH `/translation/:id`, PATCH `/document/:id` | Not found, not yours, already archived, or in the trash |
+| `404` | restore, DELETE (notes, translations and document translations) | Not found, not yours, not archived, or in the trash |
 | `500` | all | Unexpected server or database error (for the GETs, this includes a failed 60-day sweep) |
 
 ---
@@ -615,7 +704,7 @@ These gaps were found in an earlier review and have now been fixed.
 | Item | Notes |
 |---|---|
 | 3. One 404 message covers several cases | By design ([4.3.3](#433-ownership-and-state-in-a-single-filter)). The UI only shows each button on items in the right state, so a 404 normally means another tab already acted, and the list refreshes. Friendlier messages would need a second lookup after a miss, which must still filter by `user: userId`. |
-| 4. Route order (future-proofing) | `GET /fetchNotes` and `GET /fetchTranslations` are the only GETs, so nothing clashes. If you add `GET /:id`, it must go **after** them, otherwise Express treats `fetchNotes` as an `:id` and the ObjectId check returns 400. |
+| 4. Route order (future-proofing) | `GET /fetchNotes`, `GET /fetchTranslations` and `GET /fetchDocuments` are the only GETs, so nothing clashes. If you add `GET /:id`, it must go **after** them, otherwise Express treats `fetchNotes` as an `:id` and the ObjectId check returns 400. |
 | A failed sweep fails the GET | The per-user sweep runs inside the GET's `try`, so if it throws, the archive list returns 500 instead of the (possibly slightly stale) list. The hourly sweep would still catch up. Wrapping it in its own `try/catch` that only logs would keep the list available; it's left as is because a DB error during the sweep usually means the `find` would fail too. |
 
 ### 6.2. HOUSE KEEPING
@@ -635,8 +724,9 @@ These gaps were found in an earlier review and have now been fixed.
 
 | Issue | Where | Change |
 |---|---|---|
-| Note and translation routes are interleaved within each verb section | `archiveRoutes.js` | Group the note routes and the translation routes. It doesn't affect matching ([1.6](#16-translation-routes)), but makes the file easier to scan. |
-| Missing semicolons after each route's closing `})` | `archiveRoutes.js`: all eight `router.get` / `router.patch` / `router.delete` calls | Add `;` |
+| Note, translation and document routes are interleaved within each verb section | `archiveRoutes.js` | Group the routes by item type. It doesn't affect matching ([1.6](#16-translation-routes), [1.7](#17-document-translation-routes)), but makes the file easier to scan. |
+| Missing semicolons after each route's closing `})` | `archiveRoutes.js`: all twelve `router.get` / `router.patch` / `router.delete` calls | Add `;` |
+| Header comment doesn't mention document translations | `archiveUtil.js`, top comment | Add document translations and their per-user callers (`GET /archive/fetchDocuments`, `GET /document/trash`) |
 
 ---
 
@@ -646,10 +736,10 @@ These gaps were found in an earlier review and have now been fixed.
 **Project files**
 
 - [archiveRoutes.js](../server/routes/archiveRoutes.js)
-- [noteSchema.js](../server/models/noteSchema.js), [translationSchema.js](../server/models/translationSchema.js), [tagSchema.js](../server/models/tagSchema.js), [notebookSchema.js](../server/models/notebookSchema.js)
+- [noteSchema.js](../server/models/noteSchema.js), [translationSchema.js](../server/models/translationSchema.js), [docTranslateSchema.js](../server/models/docTranslateSchema.js), [tagSchema.js](../server/models/tagSchema.js), [notebookSchema.js](../server/models/notebookSchema.js)
 - [archiveUtil.js](../server/util/archiveUtil.js), [schemaUtil.js](../server/util/schemaUtil.js), [securityMiddleware.js](../server/middleware/securityMiddleware.js)
-- [ArchivedNotes.js](../client/src/components/ArchivedNotes.js), [ArchivedTranslations.js](../client/src/components/ArchivedTranslations.js), [NotePanal.js](../client/src/components/NotePanal.js), [TranslationPanal.js](../client/src/components/TranslationPanal.js)
-- [NOTE_ROUTES.md](NOTE_ROUTES.md), [TRANSLATION_ROUTES.md](TRANSLATION_ROUTES.md), [TAG_ROUTES.md](TAG_ROUTES.md), [NOTEBOOK_ROUTES.md](NOTEBOOK_ROUTES.md), [GLOSSARY.md](../GLOSSARY.md)
+- [ArchivedNotes.js](../client/src/components/ArchivedNotes.js), [ArchivedTranslations.js](../client/src/components/ArchivedTranslations.js), [NotePanal.js](../client/src/components/NotePanal.js), [TranslationPanal.js](../client/src/components/TranslationPanal.js), [DocTranslationList.js](../client/src/components/DocTranslationList.js), [TrashArchiveDocs.js](../client/src/components/TrashArchiveDocs.js)
+- [NOTE_ROUTES.md](NOTE_ROUTES.md), [TRANSLATION_ROUTES.md](TRANSLATION_ROUTES.md), [DOCUMENT_ROUTES.md](DOCUMENT_ROUTES.md), [TAG_ROUTES.md](TAG_ROUTES.md), [NOTEBOOK_ROUTES.md](NOTEBOOK_ROUTES.md), [GLOSSARY.md](../GLOSSARY.md)
 
 **External documentation**
 

@@ -370,7 +370,8 @@ Promise.all([
     Note.deleteMany({ user: id }),
     Notebook.deleteMany({ user: id }),
     Tag.deleteMany({ user: id }),
-    Translation.deleteMany({ user: id })
+    Translation.deleteMany({ user: id }),
+    DocTranslation.deleteMany({ userId: id })// The document model's owner field is userId
 ])
      ▼
 User.deleteOne({ _id: id })// The account LAST
@@ -393,11 +394,13 @@ Every step is **idempotent** (running `deleteMany` again on data that's already 
 
 #### Why `Promise.all`
 
-The four collections don't depend on each other, so they're deleted **in parallel**. Destructuring the results gives the `deletedCount` for each, and those go into the **audit log**:
+The five collections don't depend on each other, so they're deleted **in parallel**. Destructuring the results gives the `deletedCount` for each, and those go into the **audit log**:
 
 ```
-[SUCCESS: userRoutes.js, DELETE /deleteUser/:id] Removed johndoe (6731...) by admin_user: 42 notes, 3 notebooks, 11 tags, 18 translations
+[SUCCESS: userRoutes.js, DELETE /deleteUser/:id] Removed johndoe (6731...) by admin_user: 42 notes, 3 notebooks, 11 tags, 18 translations, 4 document translations
 ```
+
+Document translations were added to this list later; before that, deleting an account left them behind (see [DOCUMENT_ROUTES.md, Gap 1](DOCUMENT_ROUTES.md#61-gaps)). Note the different filter: `docTranslateSchema` stores the owner as **`userId`**, not `user`.
 
 `req.adminUser.username` (set by `checkAdmin`) records **which admin** removed the account.
 
@@ -429,6 +432,7 @@ const Note = require('../models/noteSchema');
 const Notebook = require('../models/notebookSchema');
 const Tag = require('../models/tagSchema');
 const Translation = require('../models/translationSchema');
+const DocTranslation = require('../models/docTranslateSchema');
 const router = express.Router();
 const { checkPassword, checkPasswordChange, hashPassword, isDevelopment } = require('../middleware/passwordMiddleware');
 const { checkJwtToken, setTokenCookie } = require('../middleware/securityMiddleware');
@@ -445,7 +449,7 @@ There's no `require('dotenv').config()` here: `app.js` loads it before requiring
 | `mongoose` | npm | `mongoose.Types.ObjectId.isValid()` for `:id` |
 | `bcrypt` | npm (`bcryptjs`) | `/editPassword`: compares the **current** password with the stored hash |
 | `User` | `models/userSchema` | The model this router manages |
-| `Note`, `Notebook`, `Tag`, `Translation` | `models/` | `/deleteUser/:id`: deletes all of the user's data |
+| `Note`, `Notebook`, `Tag`, `Translation`, `DocTranslation` | `models/` | `/deleteUser/:id`: deletes all of the user's data |
 | `checkJwtToken` | `securityMiddleware` | Verifies the JWT cookie and sets `req.user` |
 | `setTokenCookie` | `securityMiddleware` | `/editPassword`: issues a fresh cookie carrying the new `tokenVersion` |
 | `checkAdmin` | `adminMiddleware` | Only lets admins through; sets **`req.adminUser`** (used in the delete log) |
@@ -463,7 +467,7 @@ There's no `require('dotenv').config()` here: `app.js` loads it before requiring
 
 ### 3.1. SCHEMAS
 
-`Note`, `Notebook`, `Tag` and `Translation` are only used by `/deleteUser/:id` (`deleteMany({ user: id })`). Their schemas are covered in [NOTE_ROUTES.md](NOTE_ROUTES.md), [NOTEBOOK_ROUTES.md](NOTEBOOK_ROUTES.md), [TAG_ROUTES.md](TAG_ROUTES.md) and [TRANSLATION_ROUTES.md](TRANSLATION_ROUTES.md).
+`Note`, `Notebook`, `Tag`, `Translation` and `DocTranslation` are only used by `/deleteUser/:id` (`deleteMany({ user: id })`, or `{ userId: id }` for `DocTranslation`). Their schemas are covered in [NOTE_ROUTES.md](NOTE_ROUTES.md), [NOTEBOOK_ROUTES.md](NOTEBOOK_ROUTES.md), [TAG_ROUTES.md](TAG_ROUTES.md), [TRANSLATION_ROUTES.md](TRANSLATION_ROUTES.md) and [DOCUMENT_ROUTES.md](DOCUMENT_ROUTES.md).
 
 #### 3.1.1. USER SCHEMA ([userSchema.js](../server/models/userSchema.js))
 
