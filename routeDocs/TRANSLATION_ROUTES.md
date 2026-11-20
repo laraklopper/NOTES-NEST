@@ -2,7 +2,7 @@
 
 [`translationRoutes.js`](../server/routes/translationRoutes.js) is the Express router for the user's **translation history**: listing, saving, trashing, restoring and permanently deleting translations. It doesn't translate anything itself. Translating is done by `apiRoutes.js` (the Langbly proxy). This router stores the results the user chooses to keep.
 
-Archiving translations is handled by a different router, `archiveRoutes.js` (see `ARCHIVE_ROUTES.md`). This router only reads and resets the archive fields.
+Archiving translations is handled by a different router, [`archiveRoutes.js`](../server/routes/archiveRoutes.js) (see [`ARCHIVE_ROUTES.md`](../routeDocs/ARCHIVE_ROUTES.md)). This router only reads and resets the archive fields.
 
 ```
 TranslateForm
