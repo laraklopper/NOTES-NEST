@@ -1,22 +1,32 @@
+/* DocTranslator.js:The document translator: uploads a PDF, 
+and shows the translation of the text read out of it.*/
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import '../css/componentCss/Translator.css'
+// IMPORT CSS STYLESHEETS
+import '../css/componentCss/Translator.css';
+import '../css/componentCss/FormSetup.css';
+// IMPORT BOOTSTRAP COMPONENTS
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+// IMPORT ICONS FROM LUCIDE-REACT
 import { ArrowRightLeft, FileText,SavePlus, Check, Copy, Download, Bug, Eraser  } from 'lucide-react';
+// IMPORT BOOTSTRAP COMPONENTS
 import { FALLBACK_LANGUAGES, FALLBACK_SOURCE_LANG, FALLBACK_TARGET_LANG } from '../util/languageFunc';
 import { ACCEPTED_EXTENSION, ACCEPTED_MIME_TYPE, MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES, downloadName } from '../util/formUtil';
 
-export default function DocTranslator(
-    {
+//DocTranslator function component
+export default function DocTranslator(//Export default DocTranslator.js function component
+    {//PROPS PASSED FROM PARENT COMPONENT (Translate.js)
         currentUser
     }
     ) {
-        /* The language pair the form opens on, and the pair CLEAR FORM returns to:
+    /* The language pair the form opens on, and the pair CLEAR FORM returns to:
     the logged-in user's saved defaults from GET /user/me, falling back to the
     constants above. */
     const defaultSourceLang = currentUser?.defaultLanguages?.defaultSourceLang || FALLBACK_SOURCE_LANG;
     const defaultTargetLang = currentUser?.defaultLanguages?.defaultTargetLang || FALLBACK_TARGET_LANG;
-    const [languages, setLanguages] = useState(FALLBACK_LANGUAGES);
+    // ===========STATE VARIABLES========================
+    const [languages, setLanguages] = useState(FALLBACK_LANGUAGES);//
     const [sourceLang, setSourceLang] = useState(defaultSourceLang)//State to store the source language
     const [targetLang, setTargetLang] = useState(defaultTargetLang)//State to store the target language
     const [documentFile, setDocumentFile] = useState(null)//The PDF the user chose
@@ -28,8 +38,9 @@ export default function DocTranslator(
     const [saved, setSaved] = useState(false)//Whether the translation on screen has been saved
     const [saveMessage, setSaveMessage] = useState('')//What the server said about the save
 
+    //======USE REF==================
     const fileInputRef = useRef(null)//The file input is left uncontrolled
-    const languagesTouched = useRef(false);
+    const languagesTouched = useRef(false);//Whether either selector has been changed by hand
 
     //BOOLEAN VALUES
     const hasResult = Boolean(result?.translatedText);/*Only a translation the server has returned 
@@ -38,6 +49,9 @@ export default function DocTranslator(
     const canClear = Boolean(documentFile || result || error);/* Only offer the clear action when 
     there is something to clear */
 
+    //===========EFFECTS====================
+    /* Opens the selectors on the user's saved default pair. This runs on mount
+    and again whenever those defaults change */
     useEffect(() => {
         if(languagesTouched.current) return;
         setSourceLang(defaultSourceLang)
@@ -279,19 +293,21 @@ export default function DocTranslator(
                 <Stack gap={3} id='translateDocStack1'>
                     <div className="p-2" id='docLanguageSelectBlock'>
                         <div className='languageSelectDiv' id='selectSourceLangBlock'>
-                            {/* LANGUAGE SELECTER */}
+                            {/* SOURCE LANGUAGE SELECTER: select: value={sourceLang} 
+                            option : value={language.code} */}
                             <div className='inputDiv'>
-                                <label className='translateLabel' htmlFor='docSouceLang'>SOURCE LANGUAGE</label>
+                                <label className='translateLabel' htmlFor='docSourceLang'>SOURCE LANGUAGE</label>
                                 <select
                                 className='input'
                                 id='docSourceLang'
+                                required
                                 name='sourceLangauge'
                                 value={sourceLang}
                                 onChange={handleSourceLangChange}
                                 disabled={loading}
                                 // ARIA ATTRIBUTES
                                 aria-label='Document Source Language'
-                                // aria-disabled={}
+                                aria-disabled={loading}
                                 >
                                     <option value='auto'>AUTO-DETECT</option>
                                     {languages.map((language) => (
@@ -308,14 +324,17 @@ export default function DocTranslator(
                                 id='swapLanguageBtn'
                                 onClick={handleSwap}// Function to  flip source/target language and text
                                 type='button'
+                                // ARIA ATTRIBUTES:
                                 title='Swap language'
+                                // aria-label='Swap language button'
+                                aria-disabled={loading || sourceLang === 'auto'}
                             >
                                 <ArrowRightLeft aria-hidden='true' focusable='false' />
-
                             </Button>
                         </div>
                         <div className='languageSelectDiv' id='targetLangSelectdiv'>
-                        {/* LANGUAGE SELECTOR */}
+                        {/* TARGET LANGUAGE SELECTOR: value={targetLang} 
+                        option: language.code*/}
                         <div className='inputDiv'>
                             <label className='translateLabel' htmlFor='docTargetLang'>TARGET LANGUAGE</label>
                             <select
@@ -323,10 +342,14 @@ export default function DocTranslator(
                             id='docTargetLang'
                             name='targetLanguage'
                             value={targetLang}
+                            required
                             onChange={handleTargetLangChange}
                             disabled={loading}
-                            >
-                                    
+                            // ARIA ATTRIBUTES:
+                            aria-label='Language to translate the document into'
+                            aria-disabled={loading}
+                            aria-required='true'
+                            >    
                                     {languages.map((language) => (
                                         <option key={language.code} value={language.code}>{language.name}</option>
                                     ))}
@@ -335,6 +358,7 @@ export default function DocTranslator(
                         </div>
                     </div>
                     <div className="p-2" id='translateDocBlock2'>
+                    {/* DOCUMENT ref={fileInputRef} */}
                         <div id='docInputDiv'>
                             <label className='translateLabel' id='documentUploadLabel' htmlFor='documentUploadInput'>UPLOAD DOCUMENT:</label>
                             <input
@@ -392,8 +416,6 @@ export default function DocTranslator(
                                                 : ''}
                                         </p>
                                         </span>
-                                        
-                                            
                                         <div id='translatedDocText' className='form-control bg-light'>
                                             <Stack direction="horizontal" gap={3} id='copyDocTextStack'>
                                                 <div className="p-2" />
@@ -476,7 +498,7 @@ export default function DocTranslator(
             disabled={!canTranslate}
             // ARIA ATTRIBUTES
              aria-label={loading ? 'TRANSLATING…' : 'Translate the uploaded document'}
-                            aria-disabled={!canTranslate}
+            aria-disabled={!canTranslate}
         >
             {loading ? 'TRANSLATING...': 'TRANSLATE'}
         </Button>
@@ -485,13 +507,13 @@ export default function DocTranslator(
       <div className="p-2">
         <Button
         variant='danger'
-                            id='clearFormBtn'
-                            type='button'
-                            onClick={clearForm}
-                            disabled={loading || !canClear}
-                            // ARIA ATTRIBUTES:
-                            aria-label='Clear the document form'
-                            aria-disabled={loading || !canClear}
+        id='clearFormBtn'
+        type='button'
+        onClick={clearForm}
+        disabled={loading || !canClear}
+        // ARIA ATTRIBUTES:
+        aria-label='Clear the document form'
+        aria-disabled={loading || !canClear}
         >
            CLEAR <Eraser size={16} aria-hidden='true' focusable='false' />
         </Button>
