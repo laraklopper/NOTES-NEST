@@ -289,6 +289,13 @@ border-radius: 8px;
     justify-content: center;
     width: 100%;
 }
+#translationResult{
+        margin: 0px 0px 5px 0px;
+        width: 100%;
+    border-top: solid 1px;
+        padding: 10px 0px;
+}
+/* BUTTONS */
 #showArchivedDocsBtn,
 #toggleTranslator2Btn{
         width: 350px;

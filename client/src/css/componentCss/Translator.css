@@ -121,26 +121,22 @@ justify-content: space-between;
     padding: 0px;
     justify-content: center;
 }
+
+/* TRANSLATE DOCUMENT FORM */
 #translateDocForm{
       display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0px;
     padding: 10px;
-   width: 100%;
+      width: 85%;
     background-color: #777d83;
     border: #323A42 solid 2px;
     gap: 10px;
 }
-/* TRANSLATE DOCUMENT FORM */
-#translateDocGroup1{
-    width: 100%;
-    margin: 0px;
-    padding: 5px;
-    background-color: #999999;
-    border: solid 2px #323A42;
-    display: flex;
-}
+/* =======================
+LAYOUT
+=============*/
 #translateDocInput{
     display: flex;
     padding: 10px;
@@ -149,6 +145,17 @@ justify-content: space-between;
     margin: 0px;
     overflow-y: scroll;
 }
+/* GROUP 1 */
+#translateDocGroup1{
+    width: 100%;
+    margin: 0px;
+    padding: 5px;
+    background-color: #999999;
+    border: solid 2px #323A42;
+    display: flex;
+    flex-direction: column;
+}
+
 /* STACK: https://react-bootstrap.netlify.app/docs/layout/stack*/
 #translateDocStack1{
      width: 100%;
@@ -164,6 +171,51 @@ justify-content: space-between;
     display: flex;
     justify-content: space-between;
     border-bottom: #323A42 solid;
+}
+#translateDocBlock2{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+
+
+}
+#translateDocStack2{
+        width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: space-between;
+    border-top: #323A42 solid;
+}
+/* Input */
+.docInput{
+    width: 180px;
+    margin: 0px;
+    padding: 0px;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    border-radius: 3px;
+    gap: 2px;
+    display: flex;
+}
+/* TEXT */
+.translateDocNote{
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    margin: 0px;
+    padding: 0px;
+}
+#documentUploadLabel,
+#documentUploadInput{
+    text-decoration: underline 1.5px;
+}
+.translateLabel{ 
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    letter-spacing: 2px;
+    margin: 0px;
+    padding: 0px;
 }
 /* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons */
 #swapLanguageBtn{
@@ -187,7 +239,7 @@ justify-content: space-between;
     border: solid 2px #323A42;
     text-transform: uppercase;
     color: #000;
-    font-family: "Fira Mono", monospace;
+    font-family: "Roboto Mono", monospace;
     font-weight: 700;
     display: flex;
     letter-spacing: 1px;
@@ -196,7 +248,7 @@ justify-content: space-between;
     margin: 0px 10px 0px 0px;
 }
 
-
+#translateDocumentBtn,
 #translateBtn,
 #saveTranslationBtn{
     width: 180px;
@@ -214,12 +266,13 @@ justify-content: space-between;
     align-items: center;
     border: solid 2px #323A42;
 }
-
+#translateDocumentBtn:hover,
 #translateBtn:hover,
 #saveTranslationBtn:hover{
     background-color: #323A42;
     color: #E8F0F6;
 }
+#translateDocumentBtn:not(:disabled),
 #translateBtn:hover:not(:disabled){
     color: #E8F0F6;
     background-color: #323A42;

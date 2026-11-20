@@ -336,9 +336,9 @@ export default function DocTranslator(
                     </div>
                     <div className="p-2" id='translateDocBlock2'>
                         <div className='inputDiv'>
-                            <label className='languageSelectDiv'>UPLOAD DOCUMENT:</label>
+                            <label className='translateLabel' id='documentUploadLabel' htmlFor='documentUploadInput'>UPLOAD DOCUMENT:</label>
                             <input
-                                className='input'
+                                className='docInput'
                                 id='documentUploadInput'
                                 type='file'
                                 accept='.pdf'
@@ -461,7 +461,7 @@ export default function DocTranslator(
                 </div>
             </div>
             <div id='translateDocGroup2'>
-               <Stack direction="horizontal" gap={3}>
+               <Stack direction="horizontal" gap={3} id='translateDocStack2'>
       <div className="p-2"/>
       <div className="p-2 ms-auto">
         <Button
