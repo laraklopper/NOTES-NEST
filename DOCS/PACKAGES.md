@@ -81,12 +81,14 @@ Each dependency is listed as `"<package-name>": "<version-range>"`. The `^` pref
 | cors | `npm install cors` | Enables Cross-Origin Resource Sharing so the client can call the API | 2.8.6 |
 | helmet | `npm install helmet` | Sets secure HTTP response headers | 8.3.0 |
 | cookie-parser | `npm install cookie-parser` | Parses cookies into `req.cookies` so the JWT cookie can be read | 1.4.7 |
-| express-rate-limit | `npm install express-rate-limit` | Limits repeated requests to endpoints (e.g. login) to prevent brute-force attacks | 8.7.2 |
+| express-rate-limit | `npm install express-rate-limit` | Limits repeated requests to endpoints (e.g. login, translation, document translation) to prevent brute-force attacks and protect the Langbly quota | 8.7.2 |
 | jsonwebtoken | `npm install jsonwebtoken` | Signs and verifies JSON Web Tokens (JWT) for user authentication | 9.0.3 |
 | bcryptjs | `npm install bcryptjs` | Hashes passwords and compares login/current passwords against the stored hash | 3.0.3 |
 | sanitize-html | `npm install sanitize-html` | Strips dangerous HTML from note content and produces plain-text versions (prevents XSS) | 2.18.1 |
-| csv-stringify | `npm install csv-stringify` | Converts note data into CSV text for exports | 6.9.0 |
+| csv-stringify | `npm install csv-stringify` | Converts note and translation data into CSV text for exports | 6.9.0 |
 | xlsx | `npm install xlsx` | Builds Excel (`.xlsx`) workbooks for exports | 0.18.5 |
+| multer | `npm install multer` | Reads `multipart/form-data` uploads. Used by `POST /document/translateDoc` to receive the PDF: kept in memory only (never written to disk), limited to one file of 5 MB | 2.5.0 |
+| pdf-parse | `npm install pdf-parse` | Extracts the text and page count from an uploaded PDF so it can be sent to Langbly for translation (`POST /document/translateDoc`) | 2.4.5 |
 | nodemon | `npm install nodemon` | Automatically restarts the server when files change during development (`npm start`) | 3.1.14 |
 
 ### 2.2 CLIENT-SIDE(FRONT-END)
@@ -124,6 +126,8 @@ Each dependency is listed as `"<package-name>": "<version-range>"`. The `^` pref
 - https://www.npmjs.com/package/nodemon
 - https://csv.js.org/stringify/
 - https://www.npmjs.com/package/xlsx
+- https://github.com/expressjs/multer
+- https://www.npmjs.com/package/pdf-parse
 - https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch
 - https://react.dev/learn/creating-a-react-app
 - https://react-bootstrap.netlify.app/docs/getting-started/introduction

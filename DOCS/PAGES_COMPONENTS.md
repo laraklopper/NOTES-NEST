@@ -44,7 +44,7 @@ On load, `App.js` restores the saved user from `localStorage` and confirms the s
 | `/` | [Home.js](../client/src/pages/Home.js) | Landing page when logged in. Application description, user profile, and the toggled Edit Profile, Edit Password and Admin Registration forms | Private (`ProtectedUserRoute`) |
 | `/notepad` | [NotePad.js](../client/src/pages/NotePad.js) | Create content. Tabs: **NOTE PAD** (new note), **NOTEBOOK** (new notebook), **TAGS** (new tag) | Private (`ProtectedUserRoute`) |
 | `/notes` | [Notes.js](../client/src/pages/Notes.js) | Manage saved notes. Tabs: **NOTES** (filter, view, edit, export), **NOTEBOOKS AND TAGS** (rename/delete), **ARCHIVE & TRASH** | Private (`ProtectedUserRoute`) |
-| `/translate` | [Translate.js](../client/src/pages/Translate.js) | Translation. Tabs: **TRANSLATE** (translate and save), **TRANSLATIONS** (saved list, filter, export), **ARCHIVE & TRASH**, **LANGUAGES** | Private (`ProtectedUserRoute`) |
+| `/translate` | [Translate.js](../client/src/pages/Translate.js) | Translation. Tabs: **TRANSLATOR** (translate text and save), **DOCUMENT TRANSLATOR** (translate a PDF and save), **TRANSLATIONS** (saved list, filter, export), **DOCUMENTS** (saved document translations), **ARCHIVE**, **TRASH**, **DOCUMENT ARCHIVE/TRASH**, **LANGUAGES** | Private (`ProtectedUserRoute`) |
 | `/users` | [Users.js](../client/src/pages/Users.js) | List all users, view a user's details and delete non-admin users | **Admin only** (`ProtectedAdminRoute`) |
 
 ### 1.3. FALLBACK ROUTE
@@ -92,6 +92,7 @@ Some forms send their own request; others pass the form data up to the page, whi
 | [AddTag.js](../client/src/components/AddTag.js) | Create a tag | NotePad.js | `/tag/addTag` | **POST** | NotePad.js |
 | [EditNoteForm.js](../client/src/components/EditNoteForm.js) | Edit the selected note | Notes.js | `/notes/:id` | **PATCH** | Notes.js |
 | [TranslateForm.js](../client/src/components/TranslateForm.js) | Load languages, detect the source language, translate text and save the result | Translate.js | `/api/language/translate/v2/languages`<br>`/api/language/translate/v2/detect`<br>`/api/language/translate/v2`<br>`/translation/save` | **GET**<br>**POST**<br>**POST**<br>**POST** | TranslateForm.js |
+| [DocTranslator.js](../client/src/components/DocTranslator.js) | Upload a PDF (max 5 MB), translate it, then save, copy or download the result as `.txt`. Opens on the user's default languages | Translate.js | `/api/language/translate/v2/languages`<br>`/document/translateDoc` (`multipart/form-data`)<br>`/document/saveDoc` | **GET**<br>**POST**<br>**POST** | DocTranslator.js |
 | [FilterNotes.js](../client/src/components/FilterNotes.js) | Filter notes by language, notebook and tag | NotesList.js | `/notes/fetchNotes?…` | **GET** | Notes.js |
 | [FilterTranslations.js](../client/src/components/FilterTranslations.js) | Filter translations by note, source and target language | TranslationsList.js | `/translation/fetch?…` | **GET** | TranslationsList.js |
 | [ExportForm.js](../client/src/components/ExportForm.js) | Download notes or translations as `.csv` / `.xlsx` (uses the current filters) | NotesList.js, TranslationsList.js | `/export?type=…&format=…` | **GET** | ExportForm.js |
@@ -108,6 +109,7 @@ Some forms send their own request; others pass the form data up to the page, whi
 | [TagsList.js](../client/src/components/TagsList.js) | List tags with note counts; rename and delete | NoteDataLists.js | `/tag/:id` (**PUT**, **DELETE**) |
 | [TranslationsList.js](../client/src/components/TranslationsList.js) | Paginated list of saved translations with filters, export and the selected translation panel. Re-fetches each time the tab opens | Translate.js | `/translation/fetch` (**GET**) |
 | [TranslationPanal.js](../client/src/components/TranslationPanal.js) | Details of the selected translation: archive or move to trash | TranslationsList.js | `/archive/translation/:id` (**PATCH**), `/translation/:id` (**DELETE**) |
+| [DocTranslationList.js](../client/src/components/DocTranslationList.js) | Paginated list of saved document translations (file name and languages). VIEW loads the full translation into a details panel with copy, download (`.txt`), archive and move to trash | Translate.js | `/document/fetchDocuments` (**GET**), `/document/fetchDoc/:id` (**GET**), `/archive/document/:id` (**PATCH**), `/document/:id` (**DELETE**) |
 | [LanguagesList.js](../client/src/components/LanguagesList.js) | Table of supported languages, with a link to the Langbly language reference | Translate.js | — (uses `languageData.js`) |
 | [UsersList.js](../client/src/components/UsersList.js) | Paginated table of all users, user details panel and delete user | Users.js | `/user/fetchUsers` (**GET**), `/user/fetchUser/:id` (**GET**), `/user/deleteUser/:id` (**DELETE**) |
 
@@ -121,12 +123,13 @@ Archived items older than 60 days are moved to the trash by the server.
 | [Trash.js](../client/src/components/Trash.js) | Paginated trashed notes with days left before purge; restore or delete permanently | Notes.js (ARCHIVE & TRASH tab) | `/notes/trash` (**GET**), `/notes/:id/restore` (**PATCH**), `/notes/:id/permanent` (**DELETE**) |
 | [ArchivedTranslations.js](../client/src/components/ArchivedTranslations.js) | Archived translations; restore or move to trash | Translate.js (ARCHIVE & TRASH tab) | `/archive/fetchTranslations` (**GET**), `/archive/translation/:id/restore` (**PATCH**), `/archive/translation/:id` (**DELETE**) |
 | [TrashedTranslations.js](../client/src/components/TrashedTranslations.js) | Paginated trashed translations; restore or delete permanently | Translate.js (ARCHIVE & TRASH tab) | `/translation/trash` (**GET**), `/translation/:id/restore` (**PATCH**), `/translation/:id/permanent` (**DELETE**) |
+| [TrashArchiveDocs.js](../client/src/components/TrashArchiveDocs.js) | Archived **and** trashed document translations in one table with a STATUS column and days left. Archived rows: restore or move to trash. Trashed rows: restore or delete permanently. All archived rows show first; pagination pages through the trashed rows | Translate.js (DOCUMENT ARCHIVE/TRASH tab) | `/archive/fetchDocuments` (**GET**), `/document/trash` (**GET**), `/archive/document/:id/restore` (**PATCH**), `/archive/document/:id` (**DELETE**), `/document/:id/restore` (**PATCH**), `/document/:id/permanent` (**DELETE**) |
 
 ### 2.5. SHARED UI COMPONENTS
 
 | COMPONENT FILE | DESCRIPTION | USED IN |
 |----------------|-------------|---------|
-| [Pagination.js](../client/src/components/Pagination.js) | Page controls and page-size selector (exports `PAGE_SIZES`) | NotesList.js, TranslationsList.js, Trash.js, TrashedTranslations.js, UsersList.js |
+| [Pagination.js](../client/src/components/Pagination.js) | Page controls and page-size selector (exports `PAGE_SIZES`) | NotesList.js, TranslationsList.js, Trash.js, TrashedTranslations.js, DocTranslationList.js, TrashArchiveDocs.js, UsersList.js |
 | [LanguageSelector.js](../client/src/components/LanguageSelector.js) | Language dropdown used for both source and target language | TranslateForm.js |
 
 ---
@@ -155,13 +158,16 @@ App.js
     │   └── Trash ─────── Pagination
     ├── Translate.js ──── Header, Footer
     │   ├── TranslateForm ── LanguageSelector
+    │   ├── DocTranslator
     │   ├── TranslationsList
     │   │   ├── FilterTranslations
     │   │   ├── TranslationPanal
     │   │   ├── Pagination
     │   │   └── ExportForm
+    │   ├── DocTranslationList ── Pagination (details panel built in)
     │   ├── ArchivedTranslations
     │   ├── TrashedTranslations ── Pagination
+    │   ├── TrashArchiveDocs ── Pagination
     │   └── LanguagesList
     └── Users.js (admin) ─ Header, UsersList (Pagination), Footer
 ```
@@ -177,7 +183,7 @@ Helper functions and data in [client/src/util/](../client/src/util/).
 | [dateFunctions.js](../client/src/util/dateFunctions.js) | Date and time formatting (`dateDisplay`, `timeDisplay`, `formatTimestamp`, `TODAY`) | Headers, Footer, lists and panels |
 | [languageData.js](../client/src/util/languageData.js) | Client copy of the supported languages list | Forms with language selects, LanguagesList |
 | [languageFunc.js](../client/src/util/languageFunc.js) | `languageName` – turns a language code into its name | Notes and translations lists/panels |
-| [listUtilFunc.js](../client/src/util/listUtilFunc.js) | Archive/trash countdown helpers (`ARCHIVE_DAYS`, `PURGE_DAYS`, `daysLeft`, `urgentStyle`) | Archive and trash components |
+| [listUtilFunc.js](../client/src/util/listUtilFunc.js) | Archive/trash countdown helpers (`ARCHIVE_DAYS`, `PURGE_DAYS`, `daysLeft`, `archiveDaysLeft`, `formatDaysLeft`, `urgentStyle`) | Archive and trash components (including TrashArchiveDocs) |
 | [notesUtil.js](../client/src/util/notesUtil.js) | Empty note form values and note ↔ form conversion (`emptyNoteForm`, `noteToForm`, `textToHtml`) | NotePadForm, EditNoteForm |
-| [formUtil.js](../client/src/util/formUtil.js) | Empty filter values and export helpers (`EMPTY_NOTE_FILTERS`, `EMPTY_FILTERS`, `EXPORT_TYPES`, `filenameFromHeader`) | Notes.js, filters, lists, ExportForm |
+| [formUtil.js](../client/src/util/formUtil.js) | Empty filter values and export helpers (`EMPTY_NOTE_FILTERS`, `EMPTY_FILTERS`, `EXPORT_TYPES`, `filenameFromHeader`); document upload rules (`ACCEPTED_EXTENSION`, `ACCEPTED_MIME_TYPE`, `MAX_FILE_SIZE_MB`, `MAX_FILE_SIZE_BYTES`) and `downloadName` for the `.txt` download | Notes.js, filters, lists, ExportForm, DocTranslator, DocTranslationList |
 | [userFunc.js](../client/src/util/userFunc.js) | Empty profile form values (`emptyProfileForm`) | EditProfile |

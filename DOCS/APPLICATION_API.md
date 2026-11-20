@@ -28,7 +28,8 @@
 - [2.6 TAG ROUTES](#26-tag-routes)
 - [2.7. API ROUTES](#27-api-routes)
 - [2.8. TRANSLATION ROUTES](#28-translation-routes)
-- [2.9. EXPORT ROUTES](#29-export-routes)
+- [2.9. DOCUMENT ROUTES](#29-document-routes)
+- [2.10. EXPORT ROUTES](#210-export-routes)
 3. [HTTP STATUS CODES](#3-http-status-codes)
 4. [REFERENCES](#4-references)
 
@@ -76,6 +77,7 @@ module.exports = router;// Export the router to be used in other parts of the ap
 | [tagRoutes.js](../server/routes/tagRoutes.js) | `/tag` | [TAG_ROUTES.md](../routeDocs/TAG_ROUTES.md)| 
 | [apiRoutes.js](../server/routes/apiRoutes.js) | `/api` | [API_ROUTES.md](../routeDocs/API_ROUTES.md) | 
 | [translationRoutes.js](../server/routes/translationRoutes.js) | `/translation` | [TRANSLATION_ROUTES.md](../routeDocs/TRANSLATION_ROUTES.md) | 
+| [docTranslateRoutes.js](../server/routes/docTranslateRoutes.js) | `/document` | [DOCUMENT_ROUTES.md](../routeDocs/DOCUMENT_ROUTES.md) | 
 | [exportRoutes.js](../server/routes/exportRoutes.js) | `/export` | [EXPORT_ROUTES.md](../routeDocs/EXPORT_ROUTES.md)|
 
 ## 2. APPLICATION ENDPOINTS 
@@ -83,21 +85,22 @@ module.exports = router;// Export the router to be used in other parts of the ap
 Every endpoint below is shown with its **full path** (mount point + route path).
 
 - **AUTH** `NONE` means anyone can call the endpoint. `JWT` means the request must carry a valid JWT cookie, checked by `checkJwtToken`. `JWT + Admin` also needs `checkAdmin`.
-- Every user can only see and change **their own** notes, notebooks, tags and translations. Another user's resource returns `404`, so ids can't be probed.
+- Every user can only see and change **their own** notes, notebooks, tags, translations and document translations. Another user's resource returns `404`, so ids can't be probed.
 - Any `:id` must be a valid MongoDB ObjectId, otherwise the route returns `400`.
 
-**Summary: 49 endpoints**
+**Summary: 61 endpoints**
 
 | Router | Endpoints |
 |--------|-----------|
 | `/auth` | 5 |
 | `/user` | 6 |
 | `/notes` | 8 |
-| `/archive` | 8 |
+| `/archive` | 12 |
 | `/notebooks` | 4 |
 | `/tag` | 4 |
 | `/api` | 3 |
 | `/translation` | 6 |
+| `/document` | 8 |
 | `/export` | 1 |
 
 ### 2.1 AUTH ROUTES
@@ -123,7 +126,7 @@ The router is mounted at **`/user`** by [`app.js`](../server/app.js).
 | `GET` | `/user/fetchUser/:id` | JWT + Admin | `checkJwtToken`, `checkAdmin` | One non-admin user, for the details panel |
 | `PATCH` | `/user/editProfile` | JWT | `checkJwtToken` | Update own profile and default languages |
 | `PATCH` | `/user/editPassword` | JWT | `checkJwtToken`, `checkPasswordChange`, `checkPassword`, `passwordUpdateRateLimiter`, `hashPassword` | Change own password (signs out other sessions) |
-| `DELETE` | `/user/deleteUser/:id` | JWT + Admin | `checkJwtToken`, `checkAdmin` | Remove a non-admin user and **all** their data |
+| `DELETE` | `/user/deleteUser/:id` | JWT + Admin | `checkJwtToken`, `checkAdmin` | Remove a non-admin user and **all** their data (notes, notebooks, tags, translations and document translations) |
 
 ### 2.3. NOTE ROUTES
 
@@ -144,7 +147,7 @@ The router is mounted at **`/notes`** by [`app.js`](../server/app.js).
 
 The router is mounted at **`/archive`** by [`app.js`](../server/app.js). 
 
-Archive routes are used for notes and translations. Archived items that are older than 60 days are moved to the trash automatically.
+Archive routes are used for notes, translations and document translations. Archived items that are older than 60 days are moved to the trash automatically.
 
 **NOTES**
 
@@ -163,6 +166,15 @@ Archive routes are used for notes and translations. Archived items that are olde
 | `PATCH` | `/archive/translation/:id` | JWT | `checkJwtToken` | Archive an **active** translation (not archived, not trashed) |
 | `PATCH` | `/archive/translation/:id/restore` | JWT | `checkJwtToken` | Return an **archived** translation to the main list |
 | `DELETE` | `/archive/translation/:id` | JWT | `checkJwtToken` | Move an **archived** translation to the trash |
+
+**DOCUMENT TRANSLATIONS**
+
+| METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
+|--------|----------|------|------------|---|
+| `GET` | `/archive/fetchDocuments` | JWT | `checkJwtToken` | List the user's archived document translations (text omitted) |
+| `PATCH` | `/archive/document/:id` | JWT | `checkJwtToken` | Archive an **active** document translation (not archived, not trashed) |
+| `PATCH` | `/archive/document/:id/restore` | JWT | `checkJwtToken` | Return an **archived** document translation to the main list |
+| `DELETE` | `/archive/document/:id` | JWT | `checkJwtToken` | Move an **archived** document translation to the trash |
 
 ### 2.5. NOTEBOOK ROUTES
 
@@ -197,6 +209,8 @@ React (TranslateForm)  ──►  /api/language/translate/v2/...  ──►  Lan
        └────────────── clean JSON / safe error message ◄────────────┘
 ```
 
+The [document routes](#29-document-routes) also call Langbly, through the same shared helpers in [`langblyUtil.js`](../server/util/langblyUtil.js).
+
 The router is mounted at **`/api`** by [`app.js`](../server/app.js), so every path below starts with `/api`.
 
 | METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
@@ -216,7 +230,7 @@ The base URL and key are stored in `.env` as `LANGBLY_BASE_URL` and `LANGBLY_API
 require('dotenv').config();
 ```
 ````js
-// apiRoutes.js (read from .env)
+// util/langblyUtil.js (read from .env)
 const LANGBLY_BASE_URL = (process.env.LANGBLY_BASE_URL || 'https://api.langbly.com').replace(/\/+$/, '');
 const LANGBLY_API_KEY = process.env.LANGBLY_API_KEY;
 
@@ -229,6 +243,7 @@ const LANGBLY_API_KEY = process.env.LANGBLY_API_KEY;
 | Content type | `application/json` (POST requests) |
 | Format | `text` (so results aren't HTML-escaped) |
 | Timeout | 15 seconds |
+| Text per request | Up to 10 000 characters (`MAX_TRANSLATION_CHARS`); longer documents are sent in pieces |
 
 ### 2.8. TRANSLATION ROUTES
 
@@ -245,7 +260,43 @@ These routes manage **saved** translations in the database. Translating text its
 | `DELETE` | `/translation/:id` | JWT | `checkJwtToken` | Move an **active** translation to the trash (soft delete). Archived translations use `DELETE /archive/translation/:id` |
 | `DELETE` | `/translation/:id/permanent` | JWT | `checkJwtToken` | Delete a **trashed** translation for good |
 
-### 2.9. EXPORT ROUTES
+### 2.9. DOCUMENT ROUTES
+
+The router is mounted at **`/document`** by [`app.js`](../server/app.js).
+
+These routes translate an uploaded **PDF** and manage the user's **saved** document translations. Unlike the translation routes, this router does the translating itself: `pdf-parse` reads the text out of the PDF, and it's sent to Langbly through the shared helpers in [`langblyUtil.js`](../server/util/langblyUtil.js). Nothing is saved until the user presses SAVE (`/document/saveDoc`). Archiving document translations is handled by the [archive routes](#24-archive-routes).
+
+```
+React (DocTranslator)  ──►  POST /document/translateDoc  ──►  multer → pdf-parse → Langbly API
+       │                                                                              │
+       │ ◄───────────────── { fileName, sourceText, translatedText, ... } ◄───────────┘
+       │
+       └──►  POST /document/saveDoc  ──►  MongoDB (DocumentTranslation)
+```
+
+| METHOD | ENDPOINT | AUTH | MIDDLEWARE | DESCRIPTION/PURPOSE |
+|--------|----------|------|------------|---|
+| `GET` | `/document/fetchDocuments` | JWT | `checkJwtToken` | List the user's active document translations, newest first, text omitted (query: `page`, `limit`) |
+| `GET` | `/document/trash` | JWT | `checkJwtToken` | List the user's trashed document translations, text omitted (query: `page`, `limit`). Applies the 60-day archive rule first |
+| `GET` | `/document/fetchDoc/:id` | JWT | `checkJwtToken` | Fetch one document translation **in full**, including its text |
+| `POST` | `/document/translateDoc` | JWT | `translateLimiter`, `checkJwtToken`, `uploadDocument` (multer) | Translate an uploaded PDF (does **not** save). `multipart/form-data`: `document`, `sourceLanguage` (`auto` allowed), `targetLanguage` |
+| `POST` | `/document/saveDoc` | JWT | `checkJwtToken` | Save a document translation (`fileName`, `sourceText`, `translatedText`, `sourceLanguage`, `targetLanguage`, optional `pageCount`) |
+| `PATCH` | `/document/:id/restore` | JWT | `checkJwtToken` | Restore a document translation from the trash |
+| `DELETE` | `/document/:id` | JWT | `checkJwtToken` | Move an **active** document translation to the trash (soft delete). Archived ones use `DELETE /archive/document/:id` |
+| `DELETE` | `/document/:id/permanent` | JWT | `checkJwtToken` | Delete a **trashed** document translation for good |
+
+**Upload limits (`POST /document/translateDoc`)**
+
+| Limit | Value | Over the limit |
+|-------|-------|----------------|
+| File type | PDF only (checked by name/MIME type **and** the `%PDF-` file signature) | `400` |
+| File size | 5 MB, one file | `413` |
+| Text length | 20 000 characters | `413` |
+| Readable text | The PDF must have a text layer (scanned PDFs are images) | `422` |
+
+`translateLimiter` is the same limiter instance as on `POST /api/language/translate/v2`, so text and document translations share one budget of 100 requests per 15 minutes per IP.
+
+### 2.10. EXPORT ROUTES
 
 The router is mounted at **`/export`** by [`app.js`](../server/app.js). There's a **single route**.
 
@@ -281,12 +332,14 @@ Responses are grouped in five classes:
 | Code | RESPONSE | When it is returned |
 |------|----|---------------------|
 | 200  | OK | Successful read, update, delete or export |
-| 201 | Created | Resource created (register, note, tag or translation) |
-| 400 | Bad Request | Validation failed, invalid ObjectId, no changes sent, wrong current password, translating an archived note, or Langbly rejected the text |
+| 201 | Created | Resource created (register, note, tag, translation or document translation) |
+| 400 | Bad Request | Validation failed, invalid ObjectId, no changes sent, wrong current password, translating an archived note, Langbly rejected the text, or an uploaded file isn't a readable PDF |
 | 401 | Unauthorized | Missing, invalid or expired JWT cookie, or wrong login credentials |
 | 403 | Forbidden | Logged in but not allowed (non-admin on an admin route, not eligible for admin, or viewing an admin account through `/user/fetchUser/:id`) |
 | 404 | Not Found | Resource doesn't exist or belongs to another user |
 | 409 | Conflict | Duplicate username, contact number, notebook name or tag; already an admin (`setAdmin`) or not an admin (`clearAdmin`) |
+| 413 | Content Too Large | An uploaded PDF is over 5 MB, or its text is over 20 000 characters (`/document/translateDoc`) |
+| 422 | Unprocessable Content | An uploaded PDF has no readable text, e.g. a scanned document (`/document/translateDoc`) |
 | 429 | Too Many Requests | A rate limiter was hit (`loginLimiter`, `registerLimiter`, `passwordUpdateRateLimiter`, `translateLimiter`, `detectLimiter`, `exportLimiter`), or Langbly quota or rate limit reached |
 | 500 | Server Error | Unexpected error. Each route catches its own errors; there is no shared error-handler middleware yet |
 | 502 | Bad Gateway | Langbly returned an error, timed out, couldn't be reached, or the API key is missing |
@@ -299,3 +352,6 @@ Responses are grouped in five classes:
 - https://blog.postman.com/different-types-of-apis/
 - https://www.geeksforgeeks.org/blogs/application-programming-interfaces-api-and-its-types/
 - https://langbly.com/docs/
+- https://github.com/expressjs/multer
+- https://www.npmjs.com/package/pdf-parse
+- https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects

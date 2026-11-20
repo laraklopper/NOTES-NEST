@@ -1,6 +1,6 @@
 # MONGOOSE SCHEMAS
 
-The server stores its data in MongoDB through five **Mongoose models**, defined in [`server/models/`](../server/models/).
+The server stores its data in MongoDB through six **Mongoose models**, defined in [`server/models/`](../server/models/).
 Shared validation rules and constants (regular expressions, length limits, retention periods) live in [`server/util/schemaUtil.js`](../server/util/schemaUtil.js), so the schemas, the route validators and the client all use the same values.
 
 Every schema uses `timestamps: true`, which adds `createdAt` and `updatedAt` automatically.
@@ -12,8 +12,9 @@ Every schema uses `timestamps: true`, which adds `createdAt` and `updatedAt` aut
 4. [NOTEBOOK](#4-notebook)
 5. [TAG](#5-tag)
 6. [TRANSLATION](#6-translation)
-7. [SHARED RULES (schemaUtil.js)](#7-shared-rules-schemautiljs)
-8. [ARCHIVE AND TRASH LIFECYCLE](#8-archive-and-trash-lifecycle)
+7. [DOCUMENT TRANSLATION](#7-document-translation)
+8. [SHARED RULES (schemaUtil.js)](#8-shared-rules-schemautiljs)
+9. [ARCHIVE AND TRASH LIFECYCLE](#9-archive-and-trash-lifecycle)
 
 ## 1. RELATIONSHIPS
 
@@ -22,10 +23,12 @@ User ─┬─< Notebook
       ├─< Tag
       ├─< Note >── Notebook (optional)
       │     └──>< Tag (many-to-many)
-      └─< Translation >── Note (optional)
+      ├─< Translation >── Note (optional)
+      └─< DocumentTranslation
 ```
 
 - Every Notebook, Tag, Note and Translation has a required `user` field. Every query is filtered by that owner.
+- A DocumentTranslation's owner field is named **`userId`** instead of `user`. It's linked to nothing else: the PDF it came from isn't stored.
 - A Note can belong to at most one Notebook. `notebook: null` means "No notebook".
 - Notes and Tags are linked many-to-many through the Note's `tags` array.
 - A Translation can point to the Note it came from. `note: null` means the text was typed into the translate form.
@@ -183,14 +186,52 @@ Saved translations made through the Langbly provider, either of a note or of fre
 - `pre('validate')`: sets `characterCount` when `sourceText` changes, and recomputes `textHash` when either text changes.
 - `toJSON` removes `__v` and `textHash`.
 
-## 7. SHARED RULES (schemaUtil.js)
+## 7. DOCUMENT TRANSLATION
+
+**File:** [`server/models/docTranslateSchema.js`](../server/models/docTranslateSchema.js) · **Model:** `DocumentTranslation`
+
+Saved translations of uploaded PDF documents. `POST /document/translateDoc` reads the text out of the PDF and translates it; the user then saves the result with `POST /document/saveDoc`. Only the text is stored, never the PDF itself.
+
+| Field | Type | Rules / purpose |
+|---|---|---|
+| `userId` | ObjectId → `User` | Required, indexed. Named `userId`, not `user` as on the other models. |
+| `fileName` | String | Required, trimmed, at most 255 characters. The name of the uploaded PDF. |
+| `sourceText` | String | Required, trimmed, at most `MAX_DOCUMENT_TEXT_LENGTH` (20,000). The text read out of the PDF. |
+| `translatedText` | String | Required, trimmed, at most 40,000 characters, because a translation can be longer than its source. |
+| `sourceLanguage` | String | Required, must match `languageCodeRegex`. The chosen language, or the one Langbly detected. |
+| `targetLanguage` | String | Required, must match `languageCodeRegex` and must differ from `sourceLanguage`. |
+| `provider` | String | Default `langbly`. Always set by the server, never taken from the client. |
+| `pageCount` | Number | At least 0, default `0`. The number of pages in the PDF. |
+| `characterCount` | Number | Length of `sourceText`. Set automatically (any value sent by the client is replaced). |
+| `isArchived` | Boolean | Default `false`. Archived document translations are hidden from the list and shown in the archive. |
+| `archivedAt` | Date | When the document translation was archived. Default `null`. |
+| `deletedAt` | Date | Soft-delete marker. Default `null`. |
+
+`MAX_DOCUMENT_TEXT_LENGTH` is defined in the schema file and exported with the model (`require('../models/docTranslateSchema').MAX_DOCUMENT_TEXT_LENGTH`), so `docTranslateRoutes.js` rejects a document that's too long **before** translating it.
+
+**Indexes:**
+
+| Index | Purpose |
+|---|---|
+| `{ userId, createdAt: -1 }` | Document translations list, newest first. |
+| `{ userId, isArchived, deletedAt, archivedAt: -1 }` | Archive list filter and sort (`GET /archive/fetchDocuments`). |
+| `{ isArchived, archivedAt }` | The 60-day archive sweep. |
+| `{ deletedAt }` with `expireAfterSeconds` of 30 days | TTL purge 30 days after soft delete. |
+
+**Hooks:**
+- `pre('validate')`: sets `characterCount` when `sourceText` changes.
+- `toJSON` removes `__v`.
+
+Unlike `Translation`, there's no `textHash`, so the duplicate check on `POST /document/saveDoc` compares the full text (see [DOCUMENT_ROUTES.md](../routeDocs/DOCUMENT_ROUTES.md#61-gaps)).
+
+## 8. SHARED RULES (schemaUtil.js)
 
 | Export | Value | Used by |
 |---|---|---|
 | `emailRegex` | `/^[^\s@]+@[^\s@]+\.[^\s@]+$/` | User email |
 | `phoneRegex` | `/^(\+27\|0)[6-8][0-9]{8}$/` | User contact number |
 | `normalizePhoneSA(phone)` | Removes spaces and turns a leading `0` into `+27` | User pre-validate hook |
-| `languageCodeRegex` | `/^[a-z]{2,3}(-[A-Za-z]{2,4})?$/` (e.g. `en`, `zu`, `zh-CN`) | Note, Translation |
+| `languageCodeRegex` | `/^[a-z]{2,3}(-[A-Za-z]{2,4})?$/` (e.g. `en`, `zu`, `zh-CN`) | Note, Translation, DocumentTranslation |
 | `hexColourRegex` | `#RGB` or `#RRGGBB` | Notebook colour |
 | `DEFAULT_NOTEBOOK_COLOUR` | `#1F4E79` | Notebook default; `PATCH /notebooks/:id` resets a blank colour to it |
 | `NAME_COLLATION` | `{ locale: 'en', strength: 2 }` | Case-insensitive notebook names |
@@ -198,12 +239,12 @@ Saved translations made through the Langbly provider, either of a note or of fre
 | `ADMIN_MIN_ACCOUNT_AGE_MS` | 90 days in production, 1 day in development | Admin eligibility |
 | `THIRTY_DAYS_IN_SECONDS` | 30 days | Trash TTL indexes |
 | `ARCHIVE_DAYS` / `ARCHIVE_RETENTION_MS` | 60 days | Archive sweep |
-| `MAX_TRANSLATION_CHARS` | `10000` | Translation text limit (Langbly free tier, per request) |
+| `MAX_TRANSLATION_CHARS` | `10000` | Translation text limit (Langbly free tier, per request). Documents longer than this are translated in pieces of this size. |
 | `MAX_TAG_LENGTH` | `30` | Tag name, `noteRoutes.js`, `TagsList.js` |
 
-## 8. ARCHIVE AND TRASH LIFECYCLE
+## 9. ARCHIVE AND TRASH LIFECYCLE
 
-Notes and translations follow the same lifecycle:
+Notes, translations and document translations follow the same lifecycle:
 
 ```
 Active ──archive──> Archived ──60 days (archive sweep)──> Trash ──30 days (TTL index)──> Permanently deleted
@@ -213,4 +254,6 @@ Active ──archive──> Archived ──60 days (archive sweep)──> Trash 
 
 - **Archived:** `isArchived: true`, `archivedAt` set. Hidden from the main list. Archived notes can't be translated.
 - **Trash:** `deletedAt` set (soft delete). Can still be restored.
-- **Permanently deleted:** MongoDB's TTL monitor removes the document 30 days after `deletedAt`. A user can also delete a note permanently before then.
+- **Permanently deleted:** MongoDB's TTL monitor removes the document 30 days after `deletedAt`. A user can also delete a note, translation or document translation permanently before then.
+
+The 60-day sweep (`util/archiveUtil.js`) handles all three models with one helper. Because `DocumentTranslation` names its owner `userId`, the helper takes the owner field as a parameter (`trashExpired(DocTranslation, {}, userId, 'userId')`).

@@ -1,9 +1,6 @@
 # SECURITY
 
 ## TABLE OF CONTENTS
-
-
-
 1. [Overview](#1-overview)
 2. [Security Packages](#2-security-packages)
 3. [Configuration and Secrets](#3-configuration-and-secrets)
@@ -16,6 +13,7 @@
 10. [Cross-Site Scripting (XSS) Protection](#10-cross-site-scripting-xss-protection)
 11. [HTTP Security Headers and CORS](#11-http-security-headers-and-cors)
 12. [Privacy and Consent](#12-privacy-and-consent)
+13. [REFERENCES](#13-references)
 
 - *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
 ---
@@ -40,6 +38,7 @@ The application uses **defence in depth**: several layers of security, so that i
 - Keep secrets out of source control (`dotenv`)
 - Enforce strong passwords at registration and password updates
 - Limit repeated API calls using `express-rate-limit`
+- Accept file uploads (PDFs for document translation) safely: size-limited, type-checked and never written to disk
 
 ---
 
@@ -55,6 +54,7 @@ The application uses **defence in depth**: several layers of security, so that i
 | [`express-rate-limit`](https://www.npmjs.com/package/express-rate-limit) | Limiting repeated requests per IP |
 | [`sanitize-html`](https://www.npmjs.com/package/sanitize-html) | Removing dangerous HTML from note content |
 | [`dotenv`](https://www.npmjs.com/package/dotenv) | Loading secrets from a `.env` file |
+| [`multer`](https://github.com/expressjs/multer) | Reading PDF uploads with strict limits (one file, 5 MB, held in memory only) |
 | `crypto` (Node.js built-in) | Generating a secure random JWT secret |
 
 ---
@@ -69,7 +69,7 @@ All secrets are loaded from a `.env` file with `dotenv`. The `.env` file is list
 | `JWT_EXPIRATION` | How long a token is valid (default `12h`) |
 | `JWT_ALGORITHM` | Signing algorithm (default `HS256`) |
 | `DATABASE_URL` / `DATABASE_NAME` | MongoDB connection details |
-| `LANGBLY_API_KEY` / `LANGBLY_BASE_URL` | Translation API credentials (kept on the server, never sent to the client) |
+| `LANGBLY_API_KEY` / `LANGBLY_BASE_URL` | Translation API credentials (kept on the server, never sent to the client). Read only in [langblyUtil.js](../server/util/langblyUtil.js), which both the text and document translation routes use |
 | `NODE_ENV` | `development` or `production`; controls password hashing and secure cookies |
 
 ### [ensureJwtSecret.js](../server/config/ensureJwtSecret.js)
@@ -176,7 +176,7 @@ After the role changes, a new token is issued so the admin claim is up to date.
 ### 6.3. ADMIN SAFEGUARDS
 
 - Admin accounts **cannot be deleted** through `/user/deleteUser/:id`, which also stops an admin from deleting themselves.
-- When a user is deleted, all of their notes, notebooks, tags and translations are deleted with them, so no orphaned personal data is left behind.
+- When a user is deleted, all of their notes, notebooks, tags, translations and document translations are deleted with them, so no orphaned personal data is left behind.
 
 ### 6.4. PROTECTED FRONT-END ROUTES
 
@@ -251,11 +251,14 @@ The server sends the admin status as `isAdmin`. The client saves it on `currentU
 |---|---|---|
 | `loginLimiter` | `POST /auth/login` | 10 requests / 15 minutes |
 | `registerLimiter` | `POST /auth/register` | 20 requests / 1 hour |
-| `translateLimiter` | `POST /api/language/translate/v2` | 100 requests / 15 minutes |
+| `translateLimiter` | `POST /api/language/translate/v2` and `POST /document/translateDoc` | 100 requests / 15 minutes, **shared** by both routes (one limiter instance) |
 | `detectLimiter` | `POST /api/language/translate/v2/detect` | 60 requests / 15 minutes |
 | `exportLimiter` | `GET /export` | 60 requests / 15 minutes |
+| `passwordUpdateRateLimiter` | `PATCH /user/editPassword` | 3 requests / 1 hour |
 
-The file also defines `authLimiter`, `generalRateLimiter` and `passwordUpdateRateLimiter`, which are available but not currently applied to any route (see [Known Limitations](#13-known-limitations)).
+The file also defines `generalRateLimiter`, which is available but not currently applied to any route.
+
+On `POST /document/translateDoc`, the limiter and `checkJwtToken` run **before** the upload is read, so a flooding or anonymous client is turned away before the server buffers its file.
 
 ---
 
@@ -283,14 +286,31 @@ The Mongoose schemas validate data even if a request bypasses the front-end form
 - Email and South African phone number formats are checked with regular expressions
 - Users must be at least **13 years old**
 - Language codes must be in the list of supported languages
-- Maximum lengths are set on usernames, names, note titles, tag names, notebook names and translation text
+- Maximum lengths are set on usernames, names, note titles, tag names, notebook names, translation text and document translation text (20 000 characters) and file names (255)
 - Usernames and contact numbers must be unique
+- Values the client shouldn't control are set by the server: `characterCount` (from the text) and `provider` on document translations
+
+### File uploads
+
+`POST /document/translateDoc` is the only route that accepts a file. [docTranslateRoutes.js](../server/routes/docTranslateRoutes.js) protects it in layers:
+
+| Protection | How |
+|---|---|
+| Auth and rate limit first | `translateLimiter` → `checkJwtToken` → `uploadDocument`, so the file is only read for a logged-in user within the limit |
+| Size and count limits | `multer` limits: one file, **5 MB**, at most 5 form fields. A bigger file is cut off while uploading and returns **413** |
+| Never written to disk | `multer.memoryStorage()`: the PDF stays in memory while its text is read, then is discarded. Only the extracted text is ever stored, and only if the user saves it |
+| PDF only | The name/MIME type is checked by `fileFilter`, **and** the content must start with the `%PDF-` signature, because the client chooses the name and MIME type |
+| Unreadable files | Password-protected or corrupt PDFs return **400**; PDFs with no text (scans) return **422**. The parser is always destroyed afterwards to free memory |
+| Text cap | Text over 20 000 characters returns **413** before any Langbly call, so a large document can't use up the translation quota |
+| Safe errors | Multer and parser errors are turned into JSON messages; internal details aren't sent to the client |
+
+The extracted text is only shown as plain text in React (never with `dangerouslySetInnerHTML`), so text inside a PDF can't run as HTML.
 
 ---
 
 ## 9. DATA OWNERSHIP
 
-Every note, notebook, tag and translation stores the ID of the user who owns it. Every query includes the logged-in user's ID from the token, for example:
+Every note, notebook, tag, translation and document translation stores the ID of the user who owns it (`user`, or `userId` on document translations). Every query includes the logged-in user's ID from the token, for example:
 
 ```js
 Note.findOneAndUpdate({ _id: id, user: userId, deletedAt: null }, ...)
@@ -330,7 +350,7 @@ The HTTP-only JWT cookie adds a second layer: even if a script did run, it could
 
 ### CORS
 
-`cors()` is applied globally. In development the React client uses a proxy, so requests come from the same origin. Before deploying, CORS should be restricted to the client's domain (see [Known Limitations](#13-known-limitations)).
+`cors()` is applied globally. In development the React client uses a proxy, so requests come from the same origin. Before deploying, CORS should be restricted to the client's domain.
 
 ---
 
