@@ -241,7 +241,7 @@ align-items: center;
 margin: 0px;
     
 }
-
+/* BUTTONS: */
 #toggleDocumentsBtn,
 #toggleTranslator1Btn,
 #toggleTranslator2Btn,
@@ -297,6 +297,7 @@ border-radius: 8px;
 #showTranslationsBtn{
     width: 250px;
 }
+#toggleDocumentsBtn:hover,
 #showTranslationsBtn:hover,
 #showArchivedDocsBtn:hover,
 #toggleTranslateArchiveBtn:hover,
@@ -307,8 +308,10 @@ border-radius: 8px;
 #toggleTranslateArchiveBtn:active,
 #toggleTranslateTrashBtn:active,
 #showTranslationsBtn:active,
+#toggleDocumentsBtn:active,
+#toggleDocumentsBtn[aria-pressed = 'true'],
 #toggleTranslateArchiveBtn[aria-pressed ='true'],
-#toggleTranslateArchiveBtn[aria-pressed = 'true'],
+#toggleTranslateTrashBtn[aria-pressed = 'true'],
 #showTranslationsBtn[aria-pressed = 'true']{
     background-color: #323A42;
     color: #E8F0F6;
