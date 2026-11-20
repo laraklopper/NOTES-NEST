@@ -9,20 +9,22 @@
     gap: 10px;
 }
 /* FORM INPUT LAYOUT */
-
-/* BOOTSTRAP LAYOUT */
-#loginStack1,
-#loginStack2{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    display: flex;
-}
 #loginFormInput{
     width: 80%;
     margin: 0px;
     padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
      background-color: #BFBFBF;
+}
+/* BOOTSTRAP LAYOUT */
+/* STACK 1: https://react-bootstrap.netlify.app/docs/layout/stack */
+#loginStack1{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
 }
 #loginBlock1{
     display: flex;
@@ -31,6 +33,14 @@
     margin: 0px;
     padding: 0px;
     gap: 5px;
+}
+
+/* STACK 2: https://react-bootstrap.netlify.app/docs/layout/stack */
+#loginStack2{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
 }
 #loginPswdBlock1,
 #loginPswdBlock2{
@@ -41,38 +51,8 @@
     padding: 0px;
     gap: 5px;
 }
-#usernameHelpId{
-       display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    margin: 0px;
-    text-transform: uppercase;
-}
-#loginUsernameError{
-        display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    margin: 0px;
-    text-transform: uppercase;
-}
-.loginLabel{
-  font-family: "Roboto Mono", monospace;
-  font-weight: 700;
-  margin: 0px;
-  letter-spacing: 1px;
-  padding: 0px;
-}
 
-.loginErrorMsg{
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin: 0px;
-    padding: 0px;
-    text-transform: uppercase;
-}
+
 #pswdInputDiv{
     display: flex;
     align-items: center;
@@ -81,6 +61,61 @@
     margin: 0px;
     padding: 0px;
 }
+
+/* ----TEXT----------- */
+#usernameHelpId{
+       display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 0px;
+    text-transform: uppercase;
+}
+
+#loginUsernameError,
+#loginPasswordError{
+        display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 0px;
+    margin: 0px;
+    text-transform: uppercase;
+    font-family: "Open Sans", sans-serif;
+    color:#B82C3A;
+    
+}
+#loginUsernameHelp,
+.loginHelpMessage,
+.loginErrorMessage{
+    display: flex;
+    align-items: center;
+     font-family: "Open Sans", sans-serif;
+    gap: 5px;
+    margin: 0px;
+    padding: 0px;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-decoration: underline;
+    letter-spacing: 2px;
+}
+.loginUsernameHelp,
+.loginHelpMessage{
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    align-items: center;
+}
+/* Label */
+.loginLabel{
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  margin: 0px;
+  letter-spacing: 1px;
+  padding: 0px;
+}
+/* BUTTONS */
 #loginBtn{
     display: flex;
     align-items: center;
