@@ -141,7 +141,7 @@ export default function Calendar({ onSelectDay, selectedDate }) {
                         <Badge bg='success' className='d-md-none'>{info.count}</Badge> {/* mobile: count only */}
                         <div className='small d-none d-md-block'> {/* tablet/desktop: titles */}
                           {info.notes.slice(0, 2).map(n => (
-                            <div key={n._id} className='text-truncate' title={n.title}>{n.title}</div> // first two titles
+                            <div key={n._id} id='calenderNoteTitle' className='text-truncate' title={n.title}>{n.title}</div> // first two titles
                           ))}
                           {info.count > 2 && <div className='text-muted'>+{info.count - 2} more</div>} {/* overflow hint */}
                         </div>

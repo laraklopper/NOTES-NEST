@@ -189,7 +189,7 @@ const notProvided = 'Not provided';
       <section id='homeSection1'>
        <div id='appDescriptionPanal' role='region'>
                 <Row id='appDescriptionRow'>
-                <Col id='appdescripCol1'/>
+                <Col id='appdescripCol1' xs='0' md='1'/>
                   <Col id='appDescriptionCol' xs={12} md={10}>
                   {/* STACK 1: */}
                     <Stack gap={3} id='welcomeStack'>
@@ -234,7 +234,7 @@ const notProvided = 'Not provided';
                       </div>
                     </Stack>
                   </Col>
-                  <Col id='appdescripCol2'/>
+                  <Col id='appdescripCol2' xs='0' md='1'/>
                 </Row>  
                 </div>
                 </section>

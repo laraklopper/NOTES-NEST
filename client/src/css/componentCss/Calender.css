@@ -279,6 +279,31 @@ display: flex;
   border: #1F4E79 solid 1.5px;
   border-radius: 12px;
 }
+#calenderNoteTitle{
+  font-weight: 400;
+  font-size: 14px;
+  font-family: "Comic Relief", system-ui;
+  letter-spacing: 1px;
+  text-decoration: underline;
+}
+#notesListBlock{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0px;
+  padding: 0px;
+  gap: 5px;
+}
+.date{
+  font-weight: 700;
+   font-family: "Comic Relief", system-ui;
+   font-size: 16px;
+   text-transform: uppercase;
+   text-decoration: underline;
+   letter-spacing: 2px;
+   margin: 0px;
+   padding: 0px;
+}
 /* SELECT NOTE BUTTON */
 #listItem{
   display: flex;

@@ -74,7 +74,7 @@ export default function NotesCalender({ onOpenNote }) {
         <Col xs={12} md={12} style={{width: '100%'}} id='calenderCol1'>
           <div id='calendarDayPanal' aria-live='polite'>
            <Stack direction="horizontal" gap={3} id='calenderStack'>
-      <div className="p-2">
+      <div className="p-2" id='notesListBlock'>
           {!selected.date ? (
               <p className='text-muted mb-0'>Select a day to see its notes.</p> // nothing picked yet
             ) : (
@@ -101,8 +101,8 @@ export default function NotesCalender({ onOpenNote }) {
               </>
             )}
       </div>
-      <div className="p-2 ms-auto">Second item</div>
-      <div className="p-2">Third item</div>
+      <div className="p-2 ms-auto"/>
+      <div className="p-2"/>
     </Stack>
             {/* DISPLAY PANAL FOR THE SELECTED NOTE UNDER THE CALENDAR*/}
             {noteLoading && (

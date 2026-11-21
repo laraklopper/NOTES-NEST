@@ -25,6 +25,13 @@ Home.js */
     margin: 0px;
 }
 #appDescriptionCol{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+#appdescripCol1,
+#appdescripCol2{
     margin: 0px;
     padding: 0px;
 }
@@ -128,7 +135,7 @@ Home.js */
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    width: 75%;
+    width: 100%;
     margin: 0px;
     padding: 10px;
     background-color: #b3b3b3;
