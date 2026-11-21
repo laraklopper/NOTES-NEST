@@ -254,10 +254,6 @@ export default function ArchivedTranslations() {
                     </Button>
       </div>
     </Stack>
-                  <div >
-                   
-                    
-                  </div>
                 </td>
               </tr>
               )
