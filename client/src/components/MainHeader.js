@@ -60,11 +60,7 @@ export default function MainHeader(//Export default MainHeader function componen
               <h1 id='appHeading'>NOTE NEST</h1>
              <h2 id='pageHeading'>{heading}</h2>
             </span>
-             
-          </div>
-        </Col>
-        <Col id='headingCol2'>
-        <div id='navbarBlock'> 
+              <div id='navbarBlock'> 
         {/* Navigation Bar */}
           <nav id='navigation'>
             <ul id='navbar'>
@@ -94,6 +90,10 @@ export default function MainHeader(//Export default MainHeader function componen
             </ul>
           </nav>
           </div>
+          </div>
+        </Col>
+        <Col id='headingCol2'>
+       
         </Col>
       </Row>
       {/* Row 3*/}

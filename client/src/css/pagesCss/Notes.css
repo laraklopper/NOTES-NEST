@@ -252,3 +252,19 @@ SECTION 2:ARCHIVED + TRASH
     color: #E8F0F6;
     text-decoration: underline;
 }
+@media screen and (min-width: 480px) {
+  #html, #body {
+    background-color: #6B4F1C;
+  border-color: #6B4F1C;
+  }
+ .btnTextSpan h6{
+    font-size: 12px;
+  }
+  #toggleListCol{
+    width: 100%;
+  }
+ #toggleListCol1, #toggleListCol2 {
+  
+    visibility: hidden;
+}
+}
