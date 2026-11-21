@@ -138,6 +138,7 @@ export default function Home(//Export default Home.js function component
       // The browser sends the JWT cookie with the request
       const response = await fetch('/user/editProfile', {
         method: 'PATCH',//HTTP Request method
+        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',//Specify the Content-Type in the payload as JSON
         },

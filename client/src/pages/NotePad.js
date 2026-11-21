@@ -103,7 +103,8 @@ export default function NotePad(//Export default NotePad.js function component
     try {
       // The browser sends the JWT cookie with the request
       const response = await fetch('/notebooks', { 
-        method: 'GET' 
+        method: 'GET', 
+        mode:'cors'
       });
       
       const data = await response.json().catch(() => ({}));
@@ -256,7 +257,6 @@ export default function NotePad(//Export default NotePad.js function component
               <h6>Show NotePad</h6> 
               <NotepadText fontWeight={700} aria-hidden='true' focusable='false'/></span>
             )}
-  
             <Button
             variant='light'
             onClick={toggleNotePad}
