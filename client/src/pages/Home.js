@@ -21,7 +21,7 @@ import NotesCalender from '../components/NotesCalender'
 import AdminRegisForm from '../components/AdminRegisForm'
 import UsersList from '../components/UsersList'
 // IMPORT ICONS FROM LUCIDE-REACT
-import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText } from 'lucide-react'
+import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText, BookUser, FolderClosed } from 'lucide-react'
 // IMPORT UTILITY FUNCTIONS
 const { ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 
@@ -262,6 +262,14 @@ const notProvided = 'Not provided';
           </Button>
       </div>
       <div className="p-2" id='toggleProfileBlock'>
+      {showProfile ? (
+        <span className='btnTextSpan'>
+          <h6>CLOSE USER PROFILE</h6>
+          <BookUser/>
+        </span>
+      ):(
+        <span></span>
+      )}
          <Button
           variant='light'
           onClick={toggleProfile}
@@ -355,6 +363,17 @@ const notProvided = 'Not provided';
         <Col id='toggleUsersCol1'/>
         <Col xs={5} id='toggleUsersCol'>
           <div id='toggleUsersDiv'>
+             {showUsers ? (
+                <span className='btnTextSpan'>
+                  <h6>CLOSE USERS LIST</h6>
+                  <FolderClosed aria-hidden='true' focusable='false'/>
+                </span>
+              ):(
+                <span className='btnTextSpan'>
+                <h6>OPEN USERS LIST</h6>
+                <FolderUser aria-hidden='true' focusable='false'/>
+                </span>
+              )}
             <Button
             variant='light'
             onClick={toggleUsersList}
@@ -369,7 +388,7 @@ const notProvided = 'Not provided';
               {showUsers ? (
                 <>Hide Users</>
               ):(
-                <>Show User<FolderUser aria-hidden='true' focusable='false'/></>
+                <>Show Users<FolderUser aria-hidden='true' focusable='false'/></>
               )}
             </Button>
           </div>
