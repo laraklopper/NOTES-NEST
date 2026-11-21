@@ -135,7 +135,6 @@ Home.js */
     border: #323A42 solid 2px;
     border-radius: 6px;
 }
-
 /* SECTION 2 */
 #homeSection2{
     display: flex;
@@ -155,29 +154,6 @@ Home.js */
     flex-direction: column;
     align-items: center;
 }
-/* ==========CALENDAR============== */
-#calendarPanal{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin: 0px;
-    padding: 10px 0px;
-}
-#calendarDayPanal{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    margin: 0px;
-    padding: 10px;
-    background-color: #BFBFBF;
-    border-radius: 5px;
-    border: #323A42 solid 2px;
-}
-#calenderCol1{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
 /* PROFILE */
 #showProfileDiv{
     display: flex;
@@ -185,7 +161,6 @@ Home.js */
     padding: 5px 10px;
     width: 100%;
 }
-
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #homeToggleRow{

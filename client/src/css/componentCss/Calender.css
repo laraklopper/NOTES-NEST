@@ -6,25 +6,26 @@ Bootstrap 5.3 paints table cells with `.table > :not(caption) > * > *`, using th
 --bs-table-bg variable, so cell colours are set through that variable rather
 than background-color. The `.calendarTable td/th` selectors are also more specific
 than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
-
-#calenderDisplay{
-  width: 100%;
-  margin: 0px;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  background-color: #747a7f;
-  gap: 10px;
-}
-#calendarWrapper{
-display: flex;
+/* ==========CALENDAR============== */
+#calendarPanal{
+    display: flex;
     flex-direction: column;
-    align-items: center;
+    width: 100%;
     margin: 0px;
-    border: solid;
-    padding: 10px;
-    background-color: #f8f9fa;
+    padding: 10px 0px;
 }
+#calendarDayPanal{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 10px;
+    background-color: #BFBFBF;
+    border-radius: 5px;
+    border: #323A42 solid 2px;
+}
+/* ======BOOTSTRAP LAYOUT============= */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #calendarRow1,
 #calenderRow2{
   width: 100%;
@@ -38,6 +39,27 @@ display: flex;
   display: flex;
   justify-content: center;
 }
+
+#calenderDisplay{
+  width: 100%;
+  margin: 0px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  background-color: #747a7f;
+  gap: 10px;
+}
+/* CALENDAR TABLE */
+#calendarWrapper{
+display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    border: solid;
+    padding: 10px;
+    background-color: #f8f9fa;
+}
+
 #calenderHeadBlock{
       display: flex;
     justify-content: space-between;
@@ -129,6 +151,7 @@ display: flex;
     width: 100%;
     align-items: center;
 }
+/* BUTTONS:  */
 #toTodayBtn,
 #prevMonthBtn,
 #nextMonthBtn{
