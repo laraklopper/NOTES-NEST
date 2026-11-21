@@ -20,9 +20,7 @@ than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
     flex-direction: column;
     margin: 0px;
     padding: 10px;
-    background-color: #BFBFBF;
-    border-radius: 5px;
-    border: #323A42 solid 2px;
+
 }
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
@@ -40,6 +38,17 @@ than the global `tbody tr td` borders in ListLayout.css / ListBtns.css */
   justify-content: center;
 }
 
+#calenderStack{
+      width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    align-items: baseline;
+    background-color: #BFBFBF;
+        
+    border-radius: 5px;
+    border: #323A42 solid 2px;
+}
 #calenderDisplay{
   width: 100%;
   margin: 0px;
@@ -170,10 +179,131 @@ display: flex;
   width: 80px;
   text-transform: uppercase;
 }
+/* ==========SELECTED NOTE PANAL (under the calendar)============== */
+/* Scoped to #calendarNotePanal so it does not rely on DetailsPanals.css being loaded */
+#calendarNoteLoading{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+}
+#calendarNotePanal{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+  background-color: #949ca2;
+  border: #323A42 solid 2px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+#calendarNoteHead{
+  width: 100%;
+  margin: 0px;
+  padding: 8px 10px;
+  background-color: #323A42;
+  flex-wrap: wrap;
+}
+#calendarNoteHead h5{
+  font-family: "Roboto", sans-serif;
+  color: #f8f9fa;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+#calendarNoteHead .btn{
+  color: #000;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border: solid 2px #000;
+}
+
+#calendarNoteBody{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0px !important;
+  padding: 10px;
+}
+#calendarNotePanal .dataLabel{
+  font-family: "Comic Relief", system-ui;
+  color: #000;
+  padding: 0px;
+  text-decoration: underline #323A42 1.5px;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+#calendarNotePanal .dataValue{
+  font-family: "Comic Relief", system-ui;
+  color: #000;
+  margin: 0px 0px 6px 0px;
+  padding: 0px;
+}
+#calendarNoteContent{
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0px 0px 6px 0px;
+  padding: 8px 10px;
+  background-color: #f8f9fa;
+  border: #404040 solid 1.5px;
+  border-radius: 4px;
+  text-align: justify;
+  overflow-wrap: anywhere;
+}
+#calendarNoteContent p:last-child{
+  margin-bottom: 0px;
+}
+#calendarNoteContent img{
+  max-width: 100%;
+  height: auto;
+}
+#calendarNotePanal .tagList{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+#calendarNotePanal .tagListItem{
+  font-family: "Comic Relief", system-ui;
+  font-weight: 700;
+  color: #000;
+  text-transform: capitalize;
+  padding: 2px 10px;
+  background-color: #e2ebf3;
+  border: #1F4E79 solid 1.5px;
+  border-radius: 12px;
+}
+/* SELECT NOTE BUTTON */
+#listItem{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0px;
+  height: 40px;
+  border: solid 2px #323A42;
+  width: 220px;
+  padding: 0px;
+  color: #000;
+  letter-spacing: 2px;
+  font-weight: 700;
+  font-family: "Roboto Mono", monospace;
+}
 /* Phones: smaller cells (only the note count badge is shown) */
 @media (max-width: 767.98px) {
   .calendarDay {
     height: 56px;
+  }
+  #calendarNoteHead h5{
+    width: 100%; /* title on its own line, buttons wrap below */
+  }
+  #calendarNoteContent{
+    max-height: 200px;
   }
   .calendarTable th,
   .calendarTable td {
