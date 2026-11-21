@@ -169,6 +169,14 @@ Home.js */
     flex-direction: column;
     margin: 0px;
     padding: 10px;
+    background-color: #BFBFBF;
+    border-radius: 5px;
+    border: #323A42 solid 2px;
+}
+#calenderCol1{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
 }
 /* PROFILE */
 #showProfileDiv{

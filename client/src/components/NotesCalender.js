@@ -18,7 +18,7 @@ export default function NotesCalender({ onOpenNote }) {
     <div id='calenderDisplay'>
       <Row id='calendarRow1'>
         {/* ----- CALENDAR ----- */}
-        <Col xs={12} md={12} style={{width: '100%'}} id='calendarCol'>
+        <Col xs={12} md={12} id='calendarCol'>
           <Calendar
             selectedDate={selected.date} onSelectDay={handleSelectDay}
           />
