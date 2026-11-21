@@ -21,7 +21,7 @@ import NotesCalender from '../components/NotesCalender'
 import AdminRegisForm from '../components/AdminRegisForm'
 import UsersList from '../components/UsersList'
 // IMPORT ICONS FROM LUCIDE-REACT
-import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText, BookUser, FolderClosed } from 'lucide-react'
+import { UserCheck, BookUp, FolderUser, Languages, ClipboardPenIcon, NotepadText, FolderClosed, FolderUsers, CalendarOff, CalendarFold } from 'lucide-react'
 // IMPORT UTILITY FUNCTIONS
 const { ADMIN_MIN_ACCOUNT_AGE_MS, ADMIN_MIN_AGE, calculateAge } = require('../util/userFunc')
 
@@ -203,29 +203,29 @@ const notProvided = 'Not provided';
                         <h4 className='appDescriptionSubHeading'>WHAT YOU CAN DO</h4>
                         <div className='appDescriptionList'>
                           <span className='listSpan'>
-                            <label className='listLabel'><NotepadText/>NOTE PAD:</label>
+                            <label className='listLabel'><NotepadText aria-hidden='true' focusable='false'/>NOTE PAD:</label>
                             <p>Write new notes and file them in notebooks and tags so they 
                             are easy to find later.</p>
                           </span>
                           <span className='listSpan'>
-                            <label className='listLabel'><ClipboardPenIcon/>NOTES:</label>
+                            <label className='listLabel'><ClipboardPenIcon aria-hidden='true' focusable='false'/>NOTES:</label>
                             <p>View, filter, edit, archive and delete your
-                              saved notes. Deleted notes go to the trash, where they can be
+                              saved notes. Deleted notes go to the trash,<br/> where they can be
                               restored or removed permanently.</p>
                           </span>
                           <span className='listSpan'>
-                            <label className='listLabel'><Languages/>TRANSLATE:</label>
-                            <p>Translate text between languages,
-                              detect the language of a piece of text, and save translations
+                            <label className='listLabel'><Languages aria-hidden='true' focusable='false'/>TRANSLATE:</label>
+                            <p>Translate text and documents between languages,
+                              detect the language of a piece of text,<br/> and save translations
                               you want to keep.</p>
                           </span>
                           <span className='listSpan'>
-                            <label className='listLabel'><BookUp/>EXPORT:</label>
+                            <label className='listLabel'><BookUp aria-hidden='true' focusable='false'/>EXPORT:</label>
                             <p>Download your notes or translations as a
                               CSV or Excel (.xlsx) file.</p>
                           </span>
                           <span className='listSpan'>
-                            <label className='listLabel'><FolderUser/>PROFILE:</label>
+                            <label className='listLabel'><FolderUser aria-hidden='true' focusable='false'/>PROFILE:</label>
                             <p>View and update your personal details
                               and change your password from the Profile tab.</p>
                           </span>
@@ -248,6 +248,17 @@ const notProvided = 'Not provided';
         {/* STACK 2: */}
         <Stack gap={3} id='homeToggleStack'>
       <div className="p-2" id='toggleCalendarBlock'>
+      {showCalendar ? (
+        <span className='btnTextSpan'>
+          <h6>CLOSE NOTES CALENDAR</h6>
+          <CalendarOff/>
+        </span>
+      ):(
+        <span className='btnTextSpan'>
+          <h6>OPEN NOTES CALENDAR</h6>
+          <CalendarFold/>
+        </span>
+      )}
            <Button
           variant='light'
           onClick={toggleCalendar}
@@ -258,17 +269,20 @@ const notProvided = 'Not provided';
           aria-expanded={showCalendar}
           aria-controls='calendarPanal'
           >
-          {showCalendar ? 'HIDE CALENDAR': 'SHOW CALENDAR'}
+          {showCalendar ? 'HIDE CALENDAR': 'OPEN CALENDAR'}
           </Button>
       </div>
       <div className="p-2" id='toggleProfileBlock'>
       {showProfile ? (
         <span className='btnTextSpan'>
           <h6>CLOSE USER PROFILE</h6>
-          <BookUser/>
+          <FolderUser aria-hidden='true' focusable='false'/>
         </span>
       ):(
-        <span></span>
+        <span className='btnTextSpan'>
+           <h6>OPEN USER PROFILE</h6>
+          <FolderUser aria-hidden='true' focusable='false'/>
+        </span>
       )}
          <Button
           variant='light'
@@ -356,6 +370,7 @@ const notProvided = 'Not provided';
       </div>       
         </div>
       </section>
+      {/* ADMIN JSX: UsersList + admin registration form */}
         <div id='adminPanal'>
         {currentUser?.admin &&(    
           <section id='adminSection'>
@@ -371,7 +386,7 @@ const notProvided = 'Not provided';
               ):(
                 <span className='btnTextSpan'>
                 <h6>OPEN USERS LIST</h6>
-                <FolderUser aria-hidden='true' focusable='false'/>
+                <FolderUsers aria-hidden='true' focusable='false'/>
                 </span>
               )}
             <Button

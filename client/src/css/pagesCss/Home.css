@@ -37,6 +37,8 @@ Home.js */
 }
 /* STACK: https://react-bootstrap.netlify.app/docs/layout/stack/ */
 #welcomeStack{
+    display: flex;
+    align-items: center;
     width: 100%;
     background-color: #f2f2f2;
     margin: 0px;
@@ -46,10 +48,11 @@ Home.js */
 }
 #welcomeBlock{
     display: flex;
+    border-bottom: solid 2px #404040;
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    width: 100%;
+    width: 80%;
     margin: 0px;
     padding: 0px;
     text-align: center;
@@ -66,15 +69,11 @@ Home.js */
 #usersListRow{
     width: 100%;
 }
-#usersListPanal{
-    display: flex;
-    width: 100%;
-    margin: 0px;
-}
+
 #showProfileDiv{
     display: flex;
     margin: 0px;
-    padding: 0px;
+    padding: 5px 10px;
     width: 100%;
 }
 #calendarDayPanal{
@@ -87,8 +86,9 @@ Home.js */
 #descriptionListBlock{
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 10px;
-    width: 100%;
+    width: 75%;
     margin: 0px;
     padding: 10px;
     background-color: #b3b3b3;
@@ -194,7 +194,7 @@ Home.js */
     display: flex;
     justify-content: center;
     margin: 0px;
-    padding: 0px;
+    padding: 10px 0px;
 }
 #homeToggleCol1,
 #homeToggleCol2{
@@ -203,9 +203,14 @@ Home.js */
 }
 /* STACK: https://react-bootstrap.netlify.app/docs/layout/stack */
 #homeToggleStack{
+    display: flex;
+    align-items: center;
     width: 100%;
     margin: 0px;
     padding: 0px;
+    border-radius: 5px;
+    border: solid #323A42 2px;
+    background-color: darkgrey;
 }
 #toggleCalendarBlock,
 #toggleProfileBlock{
@@ -213,6 +218,8 @@ Home.js */
     margin: 0px;
     padding: 5px 0px;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
 }
 /* BUTTONS : https://react-bootstrap.netlify.app/docs/components/buttons*/
@@ -275,6 +282,11 @@ Home.js */
 /* -------------------
 LAYOUT
 -------------*/
+#usersListPanal{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+}
 #toggleUsersDiv{
       display: flex;
     text-decoration: underline;
