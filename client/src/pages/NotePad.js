@@ -16,7 +16,7 @@ import NotePadForm from '../components/NotePadForm';
 import AddNoteBook from '../components/AddNoteBook';
 import AddTag from '../components/AddTag';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { NotebookPen, NotepadText, TagPlus, X } from 'lucide-react';
+import { BookLock, NotebookPen, NotebookTabs, NotepadText, TagPlus } from 'lucide-react';
 
 
 // =========MAIN NOTEPAD FUNCTION COMPONENT
@@ -247,6 +247,16 @@ export default function NotePad(//Export default NotePad.js function component
         <Col id='toggleNotePadCol1'/>
         <Col xs={5} id='toggleNotePadCol'>
           <div id='toggleNotePadDiv'>
+            {showNotePad ? (<span className='btnTextSpan'>
+              <h6>Hide Note Pad</h6>
+              <NotebookTabs fontWeight={700}  aria-hidden='true' focusable='false'/>
+              </span>
+              ):(
+                <span className='btnTextSpan'>
+              <h6>Show NotePad</h6> 
+              <NotepadText fontWeight={700} aria-hidden='true' focusable='false'/></span>
+            )}
+  
             <Button
             variant='light'
             onClick={toggleNotePad}
@@ -258,11 +268,7 @@ export default function NotePad(//Export default NotePad.js function component
             aria-expanded={showNotePad}
             aria-controls='notePadBlock'
             >
-            {showNotePad ? (<>
-              Hide Note Pad
-              <X fontWeight={700}  aria-hidden='true' focusable='false'/>
-              </>):(<>Show NotePad <NotepadText fontWeight={700}  aria-hidden='true' focusable='false'/></>
-            )}
+           {showNotePad ? 'HIDE NOTE PAD': 'SHOW NOTE PAD'}
             </Button>
           </div>
         </Col>
@@ -299,9 +305,20 @@ export default function NotePad(//Export default NotePad.js function component
         {/* Row 3: Toggle Notes Form Buttons (toggleNotebookForm + toggleTagForm)*/}
             <Row  id='toggleNoteFormsRow'>
         <Col id='toggleNoteFormsCol1' />
-        <Col xs={6} id='toggleNoteFormsCol'>
+        <Col xs={5} id='toggleNoteFormsCol'>
           <Stack gap={3} id='toggleNoteFormsStack'>
       <div className="p-2" id='toggleNotebookBlock'>
+        {newNotebookForm ? (<span className='btnTextSpan'>
+            <h6>Hide form</h6>
+            <BookLock fontWeight={700} aria-hidden='true' focusable='false'/>
+            </span>
+            ):(<span className='btnTextSpan'>
+            <h6>ADD NOTEBOOK</h6>
+            <NotebookPen 
+              fontWeight={700}  
+              aria-hidden='true' focusable='false'/>
+            </span>
+            )}
         <Button
         variant='light'
         id='toggleAddNotebookBtn'
@@ -313,18 +330,21 @@ export default function NotePad(//Export default NotePad.js function component
         aria-expanded={newNotebookForm}
         aria-controls='addNoteBookDiv'
         >
-          {newNotebookForm ? (<>
-            HIDE FORM
-            <X fontWeight={700} aria-hidden='true' focusable='false'/>
-            </>):(<>
-            ADD NOTEBOOK
-            <NotebookPen 
-              fontWeight={700}  
-              aria-hidden='true' focusable='false'/>
-            </>)}
+        {newNotebookForm ? 'Hide Form': 'Add NoteBook'}
         </Button>
       </div>
       <div className="p-2" id='toggleTagsBlock'>
+         {newTagForm ? (
+          <span className='btnTextSpan'>
+            <h6>Hide Form</h6>
+            <NotebookTabs fontWeight={700}  aria-hidden='true' focusable='false'/>
+          </span>
+          ):( 
+          <span className='btnTextSpan'>
+                <h6>ADD NEW TAG </h6>
+              <TagPlus fontWeight={700}  aria-hidden='true' focusable='false'/>
+            </span>
+            )}      
         <Button
         variant='light'
         id='toggleAddTagBtn'
@@ -336,13 +356,7 @@ export default function NotePad(//Export default NotePad.js function component
         aria-expanded={newTagForm}
         aria-controls='addTagDiv'
         >
-          {newTagForm ? (<>
-              Hide Form 
-              <X fontWeight={700}  aria-hidden='true' focusable='false'/>
-            </>) : (<>
-              ADD NEW TAG 
-              <TagPlus fontWeight={700}  aria-hidden='true' focusable='false'/>
-            </>)}
+       {newTagForm ? 'Hide form' : 'Add New Tag'}
         </Button>
       </div>
     </Stack>

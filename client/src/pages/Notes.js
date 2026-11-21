@@ -1,4 +1,4 @@
-//Note.js
+//Notes.js
 //IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -19,7 +19,7 @@ import Trash from '../components/Trash';
 import ArchivedNotes from '../components/ArchivedNotes';
 
 // IMPORT ICONS FROM LUCIDE-REACT
-import { NotebookTabs } from 'lucide-react';
+import { Archive, ArchiveX, BookBookmark, FolderClosed, FolderOpen, LibraryBig, NotebookTabs, Tags, Trash2, TrashOff } from 'lucide-react';
 // IMPORT UTILITY FUNCTIONS
 import NotesList, { NOTE_PAGE_SIZES } from '../components/NotesList';
 import { EMPTY_NOTE_FILTERS } from '../util/formUtil';
@@ -283,8 +283,18 @@ const toggleNotes = useCallback(() => {
          <Row id='toggleNotesRow'>
         <Col id='toggleListCol1'/>
         <Col xs={5} id='toggleListCol'>
-            <Stack gap={3} id='toggleNotesStack'>
-      <div className="p-2" id='toggleBtnBlock2'>
+            <Stack gap={3} id='toggleNotesStack1'>
+      <div className="p-2" id='toggleNotesBlock1'>
+      {viewNotes ? (
+        <span className='btnTextSpan'>
+          <h6>HIDE NOTES</h6><FolderClosed/>
+        </span>
+      ):(
+        <span className='btnTextSpan'>
+          <h6>OPEN USER NOTES</h6>
+          <FolderOpen/>
+        </span>
+      )}
         <Button
         variant='light'
         onClick={toggleNotes}
@@ -299,7 +309,18 @@ const toggleNotes = useCallback(() => {
           {viewNotes ? ('Hide Notes'):( 'Show Notes')}
         </Button>
       </div>
-        <div className="p-2" id='toggleBtnBlock1'>
+        <div className="p-2" id='toggleNotesBlock2'>
+        {showNoteBooks ? (
+          <span className='btnTextSpan'>
+            <h6>HIDE NOTEBOOKS</h6>
+            <BookBookmark aria-hidden='true' focusable='false'/>
+          </span>
+        ):(
+          <span className='btnTextSpan'>
+            <h6>OPEN USER NOTEBOOKS</h6>
+            <LibraryBig aria-hidden='true' focusable='false'/>
+          </span>
+        )}
               <Button
                 variant='light'
                 onClick={toggleNoteBooks}
@@ -314,7 +335,18 @@ const toggleNotes = useCallback(() => {
                 {showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
               </Button>
             </div>
-         <div className="p-2" id='toggleBtnBlock2'>
+         <div className="p-2" id='toggleNotesBlock3'>
+         {showTags ? (
+         <span className='btnTextSpan'>
+         <h6>HIDE TAGS</h6>
+         <NotebookTabs aria-hidden='true' focusable='false'/>
+         </span>
+         ) : (
+         <span className='btnTextSpan'>
+         <h6>SHOW TAGS</h6>
+         <Tags aria-hidden='true' focusable='false'/>
+         </span>
+         )}
               <Button
                 variant='light'
                 id='toggleTagsBtn'
@@ -415,7 +447,6 @@ const toggleNotes = useCallback(() => {
             </Row>
           </div>
         )}
-                
               </div>
                 </div>
       </section>
@@ -427,8 +458,20 @@ const toggleNotes = useCallback(() => {
                 <Row id='toggleNotesRow'>
                   <Col id='toggleNotesCol1' />
                   <Col xs={5} id='toggleNotesCol' >
-                    <Stack gap={2} className="col-md-5 mx-auto" id='toggleNotesStack'>
-                      <Button
+                    <Stack gap={2} id='toggleNotesStack2'>
+                    <div className="p-2" id='toggleNotesBlock5'>
+                    {showArchive ? (
+                    <span className='btnTextSpan'>
+                    <h6>HIDE ARCHIVED NOTES</h6>
+                    <ArchiveX/>
+                    </span>
+                    ):(
+                    <span className='btnTextSpan'>
+                    <h6>OPEN ARCHIVED NOTES</h6>
+                    <Archive/>
+                    </span>
+                    )}
+                    <Button
                         variant="light"
                         id='toggleArchiveBtn'
                         type='button'
@@ -441,7 +484,20 @@ const toggleNotes = useCallback(() => {
                       >
                         {showArchive ? 'HIDE ARCHIVE' : 'SHOW ARCHIVE'}
                       </Button>
-                      <Button
+                      </div>
+                      <div className="p-2" id='toggleNotesBlock6'>
+                      {showTrash ? (
+                      <span className='btnTextSpan'>
+                      <h6>CLOSE TRASHED NOTES</h6>
+                      <TrashOff aria-hidden='true' focusable='false'/>
+                      </span>
+                      ):(
+                      <span className='btnTextSpan'>
+                      <h6>OPEN TRASHED NOTES</h6>
+                      <Trash2 aria-hidden='true' focusable='false'/>
+                      </span>
+                      )}
+                           <Button
                         variant="light"
                         id='toggleTrashBtn'
                         type='button'
@@ -454,6 +510,7 @@ const toggleNotes = useCallback(() => {
                       >
                         {showTrash ? 'HIDE TRASH' : 'SHOW TRASH'}
                       </Button>
+                      </div>
                     </Stack>
                   </Col>
                   <Col id='toggleNotesCol2' />

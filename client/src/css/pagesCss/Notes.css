@@ -65,7 +65,14 @@ SECTION 2:ARCHIVED + TRASH
     padding: 0px;
     gap: 10px;
 }
-
+#toggleNotesBlock1, #toggleNotesBlock2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
 #notesList{
     display: flex;
     flex-direction: column;
@@ -149,8 +156,9 @@ SECTION 2:ARCHIVED + TRASH
     margin: 0px;
     padding: 0px;
 }
-#toggleNoteBooksStack,
-#toggleNotesStack{
+
+#toggleNotesStack1,
+#toggleNotesStack2{
     width: 100%;
     display: flex;
     align-items: center;
@@ -205,7 +213,14 @@ SECTION 2:ARCHIVED + TRASH
     margin: 0px;
     padding: 0px;
 }
-
+#toggleNotesBlock5,
+#toggleNotesBlock6{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+    align-items: center;
+}
 #trashListPanal{
     width: 100%;
     margin: 0px;

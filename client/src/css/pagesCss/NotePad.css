@@ -21,6 +21,7 @@ LAYOUT
     width: 100%;
     margin: 0px;
     padding: 0px;
+    
 }
 #notePadPanal{
     display: flex;
@@ -41,10 +42,14 @@ LAYOUT
 }
 #toggleNotePadDiv{
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     margin: 0px;
     padding: 5px 0px;
+    background-color: darkgrey;
+    border-radius: 5px;
+    border: #323A42 solid 2px;
 }
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
@@ -69,7 +74,6 @@ LAYOUT
     margin: 0px;
     padding: 0px;
 }
-
 #notePadCol{
     display: flex;
     justify-content: center;
@@ -116,6 +120,9 @@ LAYOUT
     width: 100%;
     margin: 0px;
     padding: 0px;
+    background-color: darkgrey;
+    border-radius: 5px;
+    border: #323A42 solid ;
 }
 #notePadFormBlock1,
 #notePadFormBlock2{
@@ -193,14 +200,11 @@ LAYOUT
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 2px;
-    width: 280px;
+    width: 200px;
     height: 40px;
     font-family: "Roboto Mono", monospace;
     border: solid 2px #323A42;
     color: #000;
-}
-#toggleNotePadBtn{
-    width: 200px;
 }
 #toggleNotePadBtn:hover,
 #toggleAddNotebookBtn:hover,
