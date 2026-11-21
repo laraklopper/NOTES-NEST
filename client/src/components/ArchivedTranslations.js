@@ -7,6 +7,7 @@ import '../css/componentCss/ListLayout.css'
 import '../css/componentCss/ListBtns.css'
 import '../css/componentCss/Trash.css'
 // IMPORT BOOTSTRAP COMPONENTS
+import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 // IMPORT COMPONENTS
 import Pagination, { PAGE_SIZES } from './Pagination';
@@ -205,26 +206,28 @@ export default function ArchivedTranslations() {
                 {/* STATUS: red when a week or less is left */}
                 <td style={{ width: '260px' }}>
                   {isTrash ? (
-                    <span>
-                      <p>TRASH</p>
+                    <span className='statusSpan'>
+                      <p className='statusText'>TRASH</p>
                       <p>DELETED ON</p>
                       <p>{formatTimestamp(row.deletedAt)}</p>
                       {remaining !== null && <p><small style={urgentStyle(remaining)}>({formatDaysLeft(remaining)} LEFT)</small></p>}
                     </span>
                   ) : (
-                    <span>
-                      <p>ARCHIVED</p>
+                    <span className='statusSpan'>
+                      <p className='statusText'>ARCHIVED</p>
                       <p>MOVES TO TRASH IN</p>
                       <p style={urgentStyle(remaining)}>{formatDaysLeft(remaining)}</p>
                     </span>
                   )}
                 </td>
-                <td style={{ width: '260px' }}>
-                  <div className={isTrash ? 'trashTableBtns' : 'archiveTableBtns'}>
-                    <Button
+                <td style={{ width: '180px' }}>
+                  <Stack gap={1} className={isTrash ? 'trashTableBtns' : 'archiveTableBtns'}>
+      <div className="p-2">
+         <Button
                       variant='light'
                       className='restoreNoteBtn'
                       type='button'
+                      id='retoreItemBtn'
                       onClick={() => handleRestore(row)}
                       disabled={actionId !== null}
                       // ARIA ATTRIBUTES:
@@ -232,9 +235,12 @@ export default function ArchivedTranslations() {
                     >
                       <ArchiveRestoreIcon aria-hidden='true' focusable='false'/> RESTORE
                     </Button>
-                    {/* Permanent delete if the status is trash */}
+      </div>
+      <div >
+        {/* Permanent delete if the status is trash */}
                     <Button
                       variant='danger'
+                      id='deleteItemBtn'
                       className={isTrash ? 'permanentDeleteBtn' : 'deleteArchiveNoteBtn'}
                       type='button'
                       onClick={() => handleDelete(row)}
@@ -246,6 +252,11 @@ export default function ArchivedTranslations() {
                         ? <Trash2Icon aria-hidden='true' focusable='false'/>
                         : <TrashIcon aria-hidden='true' focusable='false'/>}DELETE
                     </Button>
+      </div>
+    </Stack>
+                  <div >
+                   
+                    
                   </div>
                 </td>
               </tr>

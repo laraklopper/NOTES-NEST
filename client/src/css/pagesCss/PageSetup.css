@@ -32,6 +32,7 @@ https://react-bootstrap.netlify.app/docs/components/buttons
     font-weight: 700;
     text-decoration: underline;
     letter-spacing: 2px;
+    text-align: center;
     margin: 0px;
     text-transform: uppercase;
     padding: 0px;

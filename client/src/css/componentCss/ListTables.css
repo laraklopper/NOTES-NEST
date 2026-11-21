@@ -175,6 +175,16 @@
 #trashTable tfoot tr:nth-child(even),
 #languageTable tfoot tr:nth-child(even) { background: #383838; color: #f8f9fa; }
 
+.statusSpan p{
+    margin: 0px;
+    padding: 0px;
+}
+.statusSpan{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+}
 .translationBtnDiv{
     display: flex;
     justify-content: center;
