@@ -192,6 +192,13 @@ SECTION 2
     margin: 0px;
     padding: 0px;
 }
+#toggleTranslationsCol{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
 #translatedDocsList{
     width: 100%;
     margin: 0px;

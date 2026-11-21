@@ -276,7 +276,8 @@ export default function Translate(
         {/* Row 1: toggle translations buttons */}
          <Row id='toggleTranslationsRow1'>
          {/* Toggle translations lists */}
-        <Col xs={6} id='toggleTranslationsCol1'>
+        <Col id='toggleTranslationsCol1'/>
+        <Col xs={5} id='toggleTranslationsCol'>
                 {/* TOGGLE TRANSLATIONS: TEXT AND DOCUMENTS */}
           <Stack gap={3} id='toggleTranslationStack1' role='group'>
             <div className="p-2" id='toggleTranslationsBlock'>
@@ -331,10 +332,7 @@ export default function Translate(
       </div>
       
     </Stack>
-        </Col>
-        {/* Toggle Trashed and archived 
-        text and trashed translations */}
-        <Col xs={6} toggleTranslationsCol2>
+        
             {/* STACK TOGGLE ARCHIVED AND TRASHED TRANSLATIONS BUTTONS */}
               <Stack gap={3} id='toggleTranslationStack2' role='group'>
                 <div className="p-2" id='toggleTranslationArchiveBlock1'>
@@ -385,7 +383,9 @@ export default function Translate(
                   </Button>
                 </div>
               </Stack>
-        </Col>
+              </Col>
+      
+         <Col toggleTranslationsCol2/>
       </Row>
           {/* TRANSLATIONS LIST + TRANSLATED DOCUMENTS LIST */}
       <div id='translationListsPanal1' role='group' aria-labelledby='listGroup1'>
