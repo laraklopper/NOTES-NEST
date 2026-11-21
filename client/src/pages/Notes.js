@@ -32,7 +32,7 @@ export default function Notes(//Export the default Notes.js function component
   {//PROPS PASSED FROM PARENT COMPONENT (App.js)
     currentUser,
     logout,
-    loggedIn, 
+    loggedIn,
     setError
   }) {
   //==========STATE VARIABLES=================
@@ -60,14 +60,14 @@ export default function Notes(//Export the default Notes.js function component
   const [viewNotes, setViewNotes] = useState(false)
   const [showNoteBooks, setShowNoteBooks] = useState(false)//State to Toggle the Notebook List
   const [showTags, setShowTags] = useState(false);//State to toggle the Tags List
-  
+
   const location = useLocation()
   const navigate = useNavigate()
   const linkedNoteId = location.state?.noteId// Set by Home.js: navigate('/notes', { state: { noteId } })
 
-   //===========EVENT HANDLERS/CALLBACKS=====================
+  //===========EVENT HANDLERS/CALLBACKS=====================
   //  Function to toggle Notes list
-const toggleNotes = useCallback(() => {
+  const toggleNotes = useCallback(() => {
     setViewNotes(prev => (!prev))
     setShowTags(false)//Hide TagsList
     setShowNoteBooks(false)
@@ -77,7 +77,7 @@ const toggleNotes = useCallback(() => {
     setShowNoteBooks(prev => (!prev))
     setViewNotes(false)
     setShowTags(false)//Hide TagsList
-     setShowArchive(false)
+    setShowArchive(false)
     setShowTrash(false)
   }, [])
 
@@ -265,7 +265,7 @@ const toggleNotes = useCallback(() => {
   //===================JSX RENDERING===============
   return (
     <div id='pageContainer' role='main'>
-    <MainHeader heading={'NOTES'} currentUser={currentUser} loggedIn={loggedIn}/>
+      <MainHeader heading={'NOTES'} currentUser={currentUser} loggedIn={loggedIn} />
       <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
           <div className='eventBar'>
@@ -280,279 +280,281 @@ const toggleNotes = useCallback(() => {
       ----------------- */}
       <section id='notesSection1'>
         <div id='notesListDiv'>
-         <Row id='toggleNotesRow'>
-        <Col id='toggleListCol1'/>
-        <Col xs={5} id='toggleListCol'>
-            <Stack gap={3} id='toggleNotesStack1'>
-      <div className="p-2" id='toggleNotesBlock1'>
-      {viewNotes ? (
-        <span className='btnTextSpan'>
-          <h6>HIDE NOTES</h6><FolderClosed/>
-        </span>
-      ):(
-        <span className='btnTextSpan'>
-          <h6>OPEN USER NOTES</h6>
-          <FolderOpen/>
-        </span>
-      )}
-        <Button
-        variant='light'
-        onClick={toggleNotes}
-        id='toggleNotesBtn'
-        type='button'
-        // ARIA ATTRIBUTES:
-        aria-label={viewNotes ? ('Hide Notes'):( 'Show Notes')}
-        aria-pressed={viewNotes}
-        aria-expanded={viewNotes}
-        aria-controls='notesListPanal'
-        >
-          {viewNotes ? ('Hide Notes'):( 'Show Notes')}
-        </Button>
-      </div>
-        <div className="p-2" id='toggleNotesBlock2'>
-        {showNoteBooks ? (
-          <span className='btnTextSpan'>
-            <h6>HIDE NOTEBOOKS</h6>
-            <BookBookmark aria-hidden='true' focusable='false'/>
-          </span>
-        ):(
-          <span className='btnTextSpan'>
-            <h6>OPEN USER NOTEBOOKS</h6>
-            <LibraryBig aria-hidden='true' focusable='false'/>
-          </span>
-        )}
-              <Button
-                variant='light'
-                onClick={toggleNoteBooks}
-                id='toggleNoteBooksBtn'
-                type='button'
-                // ARIA ATTRIBUTES:
-                aria-label={showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
-                aria-pressed={showNoteBooks}
-                aria-expanded={showNoteBooks}
-                aria-controls='noteBookListPanal'
-              >
-                {showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
-              </Button>
-            </div>
-         <div className="p-2" id='toggleNotesBlock3'>
-         {showTags ? (
-         <span className='btnTextSpan'>
-         <h6>HIDE TAGS</h6>
-         <NotebookTabs aria-hidden='true' focusable='false'/>
-         </span>
-         ) : (
-         <span className='btnTextSpan'>
-         <h6>SHOW TAGS</h6>
-         <Tags aria-hidden='true' focusable='false'/>
-         </span>
-         )}
-              <Button
-                variant='light'
-                id='toggleTagsBtn'
-                onClick={toggleTags}
-                type='button'
-                // ARIA ATTRIBUTES:
-                aria-label={showTags ? 'Hide Tags' : 'Show Tags'}
-                aria-pressed={showTags}
-                aria-expanded={showTags}
-                aria-controls='tagsListPanal'
-              >
-                {showTags ? 'Hide Tags' : 'Show Tags'}
-              </Button>
-            </div>
-    </Stack>
-        </Col>
-        <Col id='toggleListCol2'/>
-      </Row>  
-       <div id='notesDataListPanal'>
-       {/* TOGGLE NOTES LIST */}
-        {viewNotes && (
-            <div id='notesListPanal'>
-             <NotesList
-                    currentUser={currentUser}
-                    editNote={editNote}
-                    toggleEditNote={toggleEditNote}
-                    setError={setError}
-                    notes={notes}
-                    loading={notesLoading}
-                    fetchNotes={fetchNotes}
-                    selectedId={selectedId}
-                    setSelectedId={setSelectedId}
-                    linkedNote={linkedNote}
-                    notebooks={notebooks}
-                    tags={tags}
-                    pagination={notesPagination}
-                    limit={notesLimit}
-                    setLimit={setNotesLimit}
-                    setPage={setNotesPage}
-                    filters={noteFilters}
-                    setFilters={setNoteFilters}
-                  />
-                  <div id='editNoteDiv'>
-                {/* TOGGLE EDIT NOTE FORM */}
-                {editNote && selectedNote && (
-                  <div id='editNoteBlock'>
-                    <Row id='editNoteRow'>
-                      <Col id='editNoteCol1'/>
-                      <Col id='editNoteCol' md='8'>
-                        <div id='editNotePanal'>
-                          <EditNoteForm
-                            note={selectedNote}
-                            updateNote={updateNote}
-                            loading={updatingNote}
-                            tags={tags}
-                            notebooks={notebooks}
-                          />
-                        </div>
-                      </Col>
-                      <Col id='editNoteCol2'/>
-                    </Row>
-                  </div>
-                )}
-                <div/>
-              </div>
-            </div>
-        )}
-        {/* Toggle the NoteBook  */}
-        {showNoteBooks && (
-          <div id='noteBookListPanal'>
-            <Row id='notebookDataRow'>
-              <Col id='noteBooksCol1' />
-              <Col id='noteBooksCol' xs={12} md={10}>
-                <NoteBookList
-                  notebooks={notebooks}
-                  fetchNotebooks={fetchNotebooks}
-                  fetchNotes={fetchNotes}
-                  setError={setError}
-                />
-              </Col>
-              <Col id='noteBooksCol2' />
-              </Row>
-          </div>
-        )}
-        {/* TOGGLE TAGS LIST */}
-        {showTags && (
-          <div id='tagsListPanal'>
-            <Row id='tagsDataRow'>
-              <Col id='tagsDataCol1' />
-              <Col md={10} id='tagsDataCol'>
-                <TagsList
-                tags={tags}
-                fetchNotes={fetchNotes}
-                fetchTags={fetchTags}
-                setError={setError}/>
-              </Col>
-              <Col id='tagsDataCol2' />
-            </Row>
-          </div>
-        )}
-              </div>
+          <Row id='toggleNotesRow'>
+            <Col id='toggleListCol1' />
+            <Col xs={5} id='toggleListCol'>
+              <Stack gap={3} id='toggleNotesStack1'>
+                <div className="p-2" id='toggleNotesBlock1'>
+                  {viewNotes ? (
+                    <span className='btnTextSpan'>
+                      <h6>HIDE NOTES</h6>
+                      <FolderClosed />
+                    </span>
+                  ) : (
+                    <span className='btnTextSpan'>
+                      <h6>OPEN USER NOTES</h6>
+                      <FolderOpen />
+                    </span>
+                  )}
+                  <Button
+                    variant='light'
+                    onClick={toggleNotes}
+                    id='toggleNotesBtn'
+                    type='button'
+                    // ARIA ATTRIBUTES:
+                    aria-label={viewNotes ? ('Hide Notes') : ('Show Notes')}
+                    aria-pressed={viewNotes}
+                    aria-expanded={viewNotes}
+                    aria-controls='notesListPanal'
+                  >
+                    {viewNotes ? ('Hide Notes') : ('Show Notes')}
+                  </Button>
                 </div>
+                <div className="p-2" id='toggleNotesBlock2'>
+                  {showNoteBooks ? (
+                    <span className='btnTextSpan'>
+                      <h6>HIDE NOTEBOOKS</h6>
+                      <BookBookmark aria-hidden='true' focusable='false' />
+                    </span>
+                  ) : (
+                    <span className='btnTextSpan'>
+                      <h6>OPEN USER NOTEBOOKS</h6>
+                      <LibraryBig aria-hidden='true' focusable='false' />
+                    </span>
+                  )}
+                  <Button
+                    variant='light'
+                    onClick={toggleNoteBooks}
+                    id='toggleNoteBooksBtn'
+                    type='button'
+                    // ARIA ATTRIBUTES:
+                    aria-label={showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
+                    aria-pressed={showNoteBooks}
+                    aria-expanded={showNoteBooks}
+                    aria-controls='noteBookListPanal'
+                  >
+                    {showNoteBooks ? 'Hide Notebooks' : 'Show Notebooks'}
+                  </Button>
+                </div>
+                <div className="p-2" id='toggleNotesBlock3'>
+                  {showTags ? (
+                    <span className='btnTextSpan'>
+                      <h6>HIDE TAGS</h6>
+                      <NotebookTabs aria-hidden='true' focusable='false' />
+                    </span>
+                  ) : (
+                    <span className='btnTextSpan'>
+                      <h6>SHOW TAGS</h6>
+                      <Tags aria-hidden='true' focusable='false' />
+                    </span>
+                  )}
+                  <Button
+                    variant='light'
+                    id='toggleTagsBtn'
+                    onClick={toggleTags}
+                    type='button'
+                    // ARIA ATTRIBUTES:
+                    aria-label={showTags ? 'Hide Tags' : 'Show Tags'}
+                    aria-pressed={showTags}
+                    aria-expanded={showTags}
+                    aria-controls='tagsListPanal'
+                  >
+                    {showTags ? 'Hide Tags' : 'Show Tags'}
+                  </Button>
+                </div>
+              </Stack>
+            </Col>
+            <Col id='toggleListCol2' />
+          </Row>
+          <div id='notesDataListPanal'>
+            {/* TOGGLE NOTES LIST */}
+            {viewNotes && (
+              <div id='notesListPanal'>
+                <NotesList
+                  currentUser={currentUser}
+                  editNote={editNote}
+                  toggleEditNote={toggleEditNote}
+                  setError={setError}
+                  notes={notes}
+                  loading={notesLoading}
+                  fetchNotes={fetchNotes}
+                  selectedId={selectedId}
+                  setSelectedId={setSelectedId}
+                  linkedNote={linkedNote}
+                  notebooks={notebooks}
+                  tags={tags}
+                  pagination={notesPagination}
+                  limit={notesLimit}
+                  setLimit={setNotesLimit}
+                  setPage={setNotesPage}
+                  filters={noteFilters}
+                  setFilters={setNoteFilters}
+                />
+                <div id='editNoteDiv'>
+                  {/* TOGGLE EDIT NOTE FORM */}
+                  {editNote && selectedNote && (
+                    <div id='editNoteBlock'>
+                      <Row id='editNoteRow'>
+                        <Col id='editNoteCol1' />
+                        <Col id='editNoteCol' md='8'>
+                          <div id='editNotePanal'>
+                            <EditNoteForm
+                              note={selectedNote}
+                              updateNote={updateNote}
+                              loading={updatingNote}
+                              tags={tags}
+                              notebooks={notebooks}
+                            />
+                          </div>
+                        </Col>
+                        <Col id='editNoteCol2' />
+                      </Row>
+                    </div>
+                  )}
+                  <div />
+                </div>
+              </div>
+            )}
+            {/* Toggle the NoteBook  */}
+            {showNoteBooks && (
+              <div id='noteBookListPanal'>
+                <Row id='notebookDataRow'>
+                  <Col id='noteBooksCol1' />
+                  <Col id='noteBooksCol' xs={12} md={10}>
+                    <NoteBookList
+                      notebooks={notebooks}
+                      fetchNotebooks={fetchNotebooks}
+                      fetchNotes={fetchNotes}
+                      setError={setError}
+                    />
+                  </Col>
+                  <Col id='noteBooksCol2' />
+                </Row>
+              </div>
+            )}
+            {/* TOGGLE TAGS LIST */}
+            {showTags && (
+              <div id='tagsListPanal'>
+                <Row id='tagsDataRow'>
+                  <Col id='tagsDataCol1' />
+                  <Col md={10} id='tagsDataCol'>
+                    <TagsList
+                      tags={tags}
+                      fetchNotes={fetchNotes}
+                      fetchTags={fetchTags}
+                      setError={setError}
+                    />
+                  </Col>
+                  <Col id='tagsDataCol2' />
+                </Row>
+              </div>
+            )}
+          </div>
+        </div>
       </section>
       {/* =============
       SECTION 2:
       ========== */}
       <section id='notesSection2'>
-              <div id='archiveTrashPanal'>
-                <Row id='toggleNotesRow'>
-                  <Col id='toggleNotesCol1' />
-                  <Col xs={5} id='toggleNotesCol' >
-                    <Stack gap={2} id='toggleNotesStack2'>
-                    <div className="p-2" id='toggleNotesBlock5'>
-                    {showArchive ? (
+        <div id='archiveTrashPanal'>
+          <Row id='toggleArchiveRow'>
+            <Col id='toggleNotesCol1' />
+            <Col xs={5} id='toggleNotesCol'>
+              <Stack gap={2} id='toggleNotesStack2'>
+                <div className="p-2" id='toggleNotesBlock5'>
+                  {showArchive ? (
                     <span className='btnTextSpan'>
-                    <h6>HIDE ARCHIVED NOTES</h6>
-                    <ArchiveX/>
+                      <h6>HIDE ARCHIVED NOTES</h6>
+                      <ArchiveX />
                     </span>
-                    ):(
+                  ) : (
                     <span className='btnTextSpan'>
-                    <h6>OPEN ARCHIVED NOTES</h6>
-                    <Archive/>
+                      <h6>OPEN ARCHIVED NOTES</h6>
+                      <Archive />
                     </span>
-                    )}
-                    <Button
-                        variant="light"
-                        id='toggleArchiveBtn'
-                        type='button'
-                        onClick={toggleArchive}
-                        // ARIA ATTRIBUTES:
-                        aria-label={showArchive ? 'HIDE ARCHIVE BUTTON' : 'SHOW ARCHIVE BUTTON'}
-                        aria-controls='archiveDiv'
-                        aria-pressed={showArchive}
-                        aria-expanded={showArchive}
-                      >
-                        {showArchive ? 'HIDE ARCHIVE' : 'SHOW ARCHIVE'}
-                      </Button>
-                      </div>
-                      <div className="p-2" id='toggleNotesBlock6'>
-                      {showTrash ? (
-                      <span className='btnTextSpan'>
-                      <h6>CLOSE TRASHED NOTES</h6>
-                      <TrashOff aria-hidden='true' focusable='false'/>
-                      </span>
-                      ):(
-                      <span className='btnTextSpan'>
-                      <h6>OPEN TRASHED NOTES</h6>
-                      <Trash2 aria-hidden='true' focusable='false'/>
-                      </span>
-                      )}
-                           <Button
-                        variant="light"
-                        id='toggleTrashBtn'
-                        type='button'
-                        onClick={toggleTrash}
-                        // ARIA ATTRIBUTES:
-                        aria-label={showTrash ? 'HIDE TRASH BUTTON' : 'SHOW TRASH BUTTON'}
-                        aria-expanded={showTrash}
-                        aria-pressed={showTrash}
-                        aria-controls='trashListPanal'
-                      >
-                        {showTrash ? 'HIDE TRASH' : 'SHOW TRASH'}
-                      </Button>
-                      </div>
-                    </Stack>
-                  </Col>
-                  <Col id='toggleNotesCol2' />
-                </Row>
-                <div id='listsDiv'>
-                {/* TOGGLE (NOTES) ARCHIVE LIST */}
-                  {showArchive && (
-                    <div id='archiveDiv'>
-                      <Row id='archiveRow'>
-                        <Col id='archiveCol1' md='0' />
-                        <Col id='archiveCol' md={12}>
-                          <div id='archiveList'>
-                            <ArchivedNotes
-                              setError={setError}
-                              fetchNotes={fetchNotes}// Refreshes the NOTES tab when a note is restored
-                            />
-                          </div>
-                        </Col>
-                        <Col id='archiveCol2' md='0' />
-                      </Row>
-                    </div>
                   )}
-                  {/* TOGGLE (NOTES) TRASH LIST */}
-                  {showTrash && (
-                    <div id='trashListPanal'>
-                      <Row id='trashRow'>
-                        <Col id='trashCol' md={12}>
-                          {/* TRASH */}
-                          <div id='trashList'>
-                            <Trash
-                              setError={setError}
-                              fetchNotes={fetchNotes}// Refreshes the NOTES tab when a note is restored
-                            />
-                          </div>
-                        </Col>
-                      </Row>
-                    </div>
-                  )}
+                  <Button
+                    variant="light"
+                    id='toggleArchiveBtn'
+                    type='button'
+                    onClick={toggleArchive}
+                    // ARIA ATTRIBUTES:
+                    aria-label={showArchive ? 'HIDE ARCHIVE BUTTON' : 'SHOW ARCHIVE BUTTON'}
+                    aria-controls='archiveDiv'
+                    aria-pressed={showArchive}
+                    aria-expanded={showArchive}
+                  >
+                    {showArchive ? 'HIDE ARCHIVE' : 'SHOW ARCHIVE'}
+                  </Button>
                 </div>
+                <div className="p-2" id='toggleNotesBlock6'>
+                  {showTrash ? (
+                    <span className='btnTextSpan'>
+                      <h6>CLOSE TRASHED NOTES</h6>
+                      <TrashOff aria-hidden='true' focusable='false' />
+                    </span>
+                  ) : (
+                    <span className='btnTextSpan'>
+                      <h6>OPEN TRASHED NOTES</h6>
+                      <Trash2 aria-hidden='true' focusable='false' />
+                    </span>
+                  )}
+                  <Button
+                    variant="light"
+                    id='toggleTrashBtn'
+                    type='button'
+                    onClick={toggleTrash}
+                    // ARIA ATTRIBUTES:
+                    aria-label={showTrash ? 'HIDE TRASH BUTTON' : 'SHOW TRASH BUTTON'}
+                    aria-expanded={showTrash}
+                    aria-pressed={showTrash}
+                    aria-controls='trashListPanal'
+                  >
+                    {showTrash ? 'HIDE TRASH' : 'SHOW TRASH'}
+                  </Button>
+                </div>
+              </Stack>
+            </Col>
+            <Col id='toggleNotesCol2' />
+          </Row>
+          <div id='listsDiv'>
+            {/* TOGGLE (NOTES) ARCHIVE LIST */}
+            {showArchive && (
+              <div id='archiveDiv'>
+                <Row id='archiveRow'>
+                  <Col id='archiveCol1' md='0' />
+                  <Col id='archiveCol' md={12}>
+                    <div id='archiveList'>
+                      <ArchivedNotes
+                        setError={setError}
+                        fetchNotes={fetchNotes}// Refreshes the NOTES tab when a note is restored
+                      />
+                    </div>
+                  </Col>
+                  <Col id='archiveCol2' md='0' />
+                </Row>
               </div>
+            )}
+            {/* TOGGLE (NOTES) TRASH LIST */}
+            {showTrash && (
+              <div id='trashListPanal'>
+                <Row id='trashRow'>
+                  <Col id='trashCol' md={12}>
+                    {/* TRASH */}
+                    <div id='trashList'>
+                      <Trash
+                        setError={setError}
+                        fetchNotes={fetchNotes}// Refreshes the NOTES tab when a note is restored
+                      />
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            )}
+          </div>
+        </div>
       </section>
-      <Footer logout={logout} loggedIn={loggedIn}/>
+      <Footer logout={logout} loggedIn={loggedIn} />
     </div>
   )
 }

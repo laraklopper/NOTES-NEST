@@ -119,7 +119,8 @@ SECTION 2:ARCHIVED + TRASH
     padding: 0px;
 }
 #toggleDataListRow,
-#toggleNotesRow{
+#toggleNotesRow,
+#toggleArchiveRow{
     width: 100%;
     display: flex;
     margin: 0px;
