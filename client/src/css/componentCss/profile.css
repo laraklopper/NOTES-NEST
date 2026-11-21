@@ -1,4 +1,11 @@
 /* Profile.css */
+/* PROFILE */
+#showProfileDiv{
+    display: flex;
+    margin: 0px;
+    padding: 5px 10px;
+    width: 100%;
+}
 #userProfile{
      background-color: #b7bdc4;
      width: 100%;

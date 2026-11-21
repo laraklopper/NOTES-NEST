@@ -29,12 +29,6 @@ Home.js */
     padding: 0px;
 }
 
-#toggleCalendarRow{
-    width: 100%;
-    margin: 0px;
-    display: flex;
-    justify-content: center;
-}
 /* STACK: https://react-bootstrap.netlify.app/docs/layout/stack/ */
 #welcomeStack{
     display: flex;
@@ -57,50 +51,11 @@ Home.js */
     padding: 0px;
     text-align: center;
 }
-
 #welcomeSpan{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
-    margin: 0px;
-    padding: 0px;
-}
-#usersListRow{
-    width: 100%;
-}
-
-#showProfileDiv{
-    display: flex;
-    margin: 0px;
-    padding: 5px 10px;
-    width: 100%;
-}
-#calendarDayPanal{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    margin: 0px;
-    padding: 10px;
-}
-#descriptionListBlock{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    width: 75%;
-    margin: 0px;
-    padding: 10px;
-    background-color: #b3b3b3;
-    border: #323A42 solid 2px;
-    border-radius: 6px;
-}
-/* Text */
-.appDescriptionHeading{
-    font-family: "Roboto", sans-serif;
-    font-weight: 800;
-    text-decoration: underline;
-    font-size: 28px;
     margin: 0px;
     padding: 0px;
 }
@@ -113,6 +68,16 @@ Home.js */
     padding: 0px;
     text-decoration: underline;
 }
+/* Text */
+.appDescriptionHeading{
+    font-family: "Roboto", sans-serif;
+    font-weight: 800;
+    text-decoration: underline;
+    font-size: 28px;
+    margin: 0px;
+    padding: 0px;
+}
+
 .appDescriptionSubHeading{
     font-family: "Roboto", sans-serif;
     font-size: 24px;
@@ -157,6 +122,20 @@ Home.js */
     font-size: 14px;
     margin: 0px;
 }
+
+#descriptionListBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 75%;
+    margin: 0px;
+    padding: 10px;
+    background-color: #b3b3b3;
+    border: #323A42 solid 2px;
+    border-radius: 6px;
+}
+
 /* SECTION 2 */
 #homeSection2{
     display: flex;
@@ -176,6 +155,29 @@ Home.js */
     flex-direction: column;
     align-items: center;
 }
+/* ==========CALENDAR============== */
+#calendarPanal{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0px;
+    padding: 10px 0px;
+}
+#calendarDayPanal{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 10px;
+}
+/* PROFILE */
+#showProfileDiv{
+    display: flex;
+    margin: 0px;
+    padding: 5px 10px;
+    width: 100%;
+}
+
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #homeToggleRow{
@@ -253,135 +255,6 @@ Home.js */
     background-color: #323A42;
     color: #E8F0F6;
 }
-/* ==========CALENDAR============== */
-#calendarPanal{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin: 0px;
-    padding: 10px 0px;
-}
-/* =============SECTION 3=============== */
-#adminPanal{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-    width: 100%;
-}
-#adminSection{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-    width: 100%;
-    background-color: #946E26;
-}
-/* -------------------
-LAYOUT
--------------*/
-#usersListPanal{
-    display: flex;
-    width: 100%;
-    margin: 0px;
-}
-#toggleUsersDiv{
-      display: flex;
-    text-decoration: underline;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 5px;
-    border: #323A42 solid 2px;
-    background-color: darkgrey;
-    justify-content: center;
-    margin: 0px;
-    padding: 10px;
-    width: 300px;
-}
-/* BOOTSTRAP */
-/* GRID */
-#toggleUsersRow{
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    display: flex;
 
-}
-#toggleUsersCol{
-    display: flex;
-    justify-content: center;
-    margin: 0px;
-    padding: 10px 0px;
-}
-#toggleUsersCol1,
-#toggleUsersCol2{
-    margin: 0px;
-    padding: 0px;
-}
-/* BUTTONS : https://react-bootstrap.netlify.app/docs/components/buttons*/
-#toggleUsersBtn{
-       display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-    height: 40px;
-    width: 180px;
-    text-transform: uppercase;
-    color: #000;
-    font-family: "Roboto Mono", monospace;
-    font-weight: 700;
-    letter-spacing: 2px;
-    border: solid 2px #323A42;
-}
-#toggleUsersBtn:hover{
-    background-color: #323A42;
-    color: #E8F0F6;
-}
-#toggleUsersBtn:active,
-#toggleUsersBtn[aria-pressed = 'true']{
-        background-color: #323A42;
-    color: #E8F0F6;
-    text-decoration: underline;
-    border: #404040 solid 2px;
-}
-/* ======ADMIN REGISTRATION FORM============= */
-#adminRegisPanal{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-/* ADMIN REGISTRATION SECTION */
-#adminRegisSec{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin: 0px;
-    padding: 10px 0px;
-    background-color: #946E26;
-}
-#adminRegisDiv,
-#adminRegisDiv > .row{
-    width: 100%;
-    margin: 0px;
-}
-/* ======PHONES============= */
-@media (max-width: 767.98px) {
-    .appDescriptionHeading{
-        font-size: 22px;
-    }
-    .appDescriptionSubHeading{
-        font-size: 18px;
-    }
-    /* Stack the label above its description */
-    .listSpan{
-        grid-template-columns: 1fr;
-        gap: 2px;
-    }
-}
+
+

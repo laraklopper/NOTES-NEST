@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 // IMPORT CSS STYLESHEETS
 import '../css/pagesCss/PageSetup.css'
+import '../css/pagesCss/Admin.css'
 import '../css/pagesCss/Home.css'
 import '../css/componentCss/Profile.css'
 // IMPORT BOOTSTRAP COMPONENTS
@@ -173,7 +174,7 @@ const notProvided = 'Not provided';
     <p className='visually-hidden' id='pageTitle'>HOME PAGE</p>
       <MainHeader currentUser={currentUser} loggedIn={loggedIn}/>
       {/* ====EVENT/ANIMATION======== */}
-      <Row id='eventRow'>
+      <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
           <div className='eventBar'>
             <div className='eventTrack'>
@@ -370,8 +371,8 @@ const notProvided = 'Not provided';
       </div>       
         </div>
       </section>
-      {/* ADMIN JSX: UsersList + admin registration form */}
-        <div id='adminPanal'>
+      {/* SECTION 3 ADMIN SECTION: UsersList*/}
+        <div id='adminPanal' role='region'>
         {currentUser?.admin &&(    
           <section id='adminSection'>
           <Row id='toggleUsersRow'>
@@ -400,16 +401,13 @@ const notProvided = 'Not provided';
             aria-expanded={showUsers}
             aria-controls='usersListPanal'
             >
-              {showUsers ? (
-                <>Hide Users</>
-              ):(
-                <>Show Users<FolderUser aria-hidden='true' focusable='false'/></>
-              )}
+              {showUsers ? 'Hide Users': 'Show Users'}
             </Button>
           </div>
         </Col>
         <Col id='toggleUsersCol2'/>
       </Row>
+      {/* TOGGLE THE ADMIN ONLY USERS LIST */}
       {showUsers && (
         <div id='usersListPanal'>
              <UsersList/>
@@ -418,6 +416,7 @@ const notProvided = 'Not provided';
       </section>
       )}
       </div>
+      {/* SECTION 4: ADMIN REGISTRATION */}
       <div id='adminRegisPanal'>
         {/*  TOGGLE ADMIN REGISTRATION FORM: Only display form if user is not
         an admin user  and matches the age requirement of 21 years and has
@@ -441,6 +440,7 @@ const notProvided = 'Not provided';
           </section>
         )}
       </div>
+      {/* ------FOOTER------------ */}
       <Footer logout={logout} loggedIn={loggedIn}/>
     </div>
   )

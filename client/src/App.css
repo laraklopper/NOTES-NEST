@@ -41,3 +41,17 @@ padding: 0px 0px 0px 0px;
   padding: 0px;
   font-family: "Open Sans", sans-serif;
 }
+/* ======PHONES============= */
+@media (max-width: 767.98px) {
+    .appDescriptionHeading{
+        font-size: 22px;
+    }
+    .appDescriptionSubHeading{
+        font-size: 18px;
+    }
+    /* Stack the label above its description */
+    .listSpan{
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+}
