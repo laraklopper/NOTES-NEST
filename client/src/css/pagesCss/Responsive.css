@@ -35,6 +35,37 @@
     overflow-wrap: anywhere;
 }
 
+/* Mobile navigation menu opening animation */
+@keyframes navMenuOpen{
+    from{ opacity: 0; transform: translateY(-6px); }
+    to{ opacity: 1; transform: translateY(0); }
+}
+
+/* =========TABLETS ONLY (768px - 991px)======================== */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Navigation links in one horizontal row instead of a tall column */
+    #root #navbarBlock,
+    #root #navigation{
+        width: 100%;
+    }
+    #root #navbar,
+    #root #mainNavbar{
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+    #root .linkItem{
+        flex: 1 1 140px;
+        max-width: 200px;
+    }
+    #root .refLink{
+        width: 100%;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+}
+
 /* =========TABLETS (below 992px)======================== */
 @media (max-width: 991.98px) {
     /* Translator: stack the source and translated text boxes */
@@ -50,6 +81,87 @@
     #root #noteTextInput,
     #root #editNoteTextInput{
         width: 100%;
+    }
+
+    /* ---TOGGLE BUTTONS---
+       A toggle is a caption (.btnTextSpan: "OPEN USER NOTES" + icon) followed by its button,
+       wrapped in a div; several toggles sit in a vertical Bootstrap Stack (.vstack). */
+    /* Toggle groups become a grid: 2 per row when there is room, 1 per row when not */
+    #root .vstack:has(> div > .btnTextSpan){
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 8px !important;
+        align-items: stretch;
+        padding: 6px;
+    }
+    /* Each toggle: caption on top, button underneath, buttons line up across a row */
+    #root div:has(> .btnTextSpan + .btn){
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        width: 100%;
+        min-width: 0;
+        height: 100%;
+        margin: 0px;
+        padding: 6px 4px !important;
+    }
+    /* Captions wrap and stay centred; the icon never gets squashed */
+    #root .btnTextSpan{
+        flex-wrap: wrap;
+        text-align: center;
+    }
+    #root .btnTextSpan svg{
+        flex-shrink: 0;
+    }
+    /* Toggle buttons: flexible width (their desktop widths range from 180px to 330px),
+       taller tap target, text may wrap */
+    #root .btnTextSpan ~ .btn{
+        width: 100%;
+        max-width: 280px;
+        min-height: 44px;
+        height: auto;
+        padding: 4px 8px;
+        white-space: normal;
+        letter-spacing: 1px;
+        line-height: 1.2;
+    }
+    /* Keyboard focus is clearly visible */
+    #root .btnTextSpan ~ .btn:focus-visible{
+        outline: 3px solid #323A42;
+        outline-offset: 2px;
+    }
+
+    /* ---FORMS--- */
+    /* Forms use more of the narrower screen (most are 80-90% wide on desktop) */
+    #root form{
+        width: 100%;
+        max-width: 100%;
+    }
+    #root form fieldset{
+        min-width: 0;
+    }
+    #root #loginFormInput,
+    #root #editPasswordInput,
+    #root #editProfileInput,
+    #root #editNoteInput,
+    #root #noteBookInput,
+    #root #tagInput,
+    #root #notesFormStack4{
+        width: 95%;
+    }
+    /* Side-by-side fields wrap onto a new line when they run out of room */
+    #root form .hstack{
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    #root form .hstack > .ms-auto:empty{
+        display: none;
+    }
+    /* Long label + input pairs wrap rather than overflow */
+    #root form .inputDiv{
+        flex-wrap: wrap;
     }
 
     /* ---TABLES--- */
@@ -125,20 +237,29 @@
         font-size: 22px;
         text-align: center;
     }
+    /* ---NAVIGATION BAR--- */
     #root #navbarBlock,
     #root #navigation{
         width: 100%;
     }
-    /* Navigation links in a 2 x 2 grid */
-    #root #navBlock1,
+    #root #navigation{
+        align-items: stretch;
+        gap: 8px;
+    }
+    /* Logged in: links stay hidden until the MENU button opens them */
+    #root #navigation:not(.navOpen) #navbar{
+        display: none;
+    }
+    /* Open menu / logged-out links: 2 x 2 grid */
+    #root #navbar,
     #root #mainNavbar{
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
         width: 100%;
     }
-    #root #navbar{
-        width: 100%;
+    #root #navigation.navOpen #navbar{
+        animation: navMenuOpen 0.2s ease-out;
     }
     #root .linkItem{
         width: 100%;
@@ -171,16 +292,122 @@
         gap: 2px;
     }
 
-    /* ---FORMS--- */
-    #root #loginForm{
+    /* ---FORMS--- (applies to every <form> in the app) */
+    /* Forms and their inner wrappers use the full screen width */
+    #root form,
+    #root #loginFormInput,
+    #root #editPasswordInput,
+    #root #editProfileInput,
+    #root #editNoteInput,
+    #root #noteBookInput,
+    #root #tagInput,
+    #root #notesFormStack4,
+    #root #translateDocInput{
+        width: 100%;
+        max-width: 100%;
+    }
+    #root form{
+        padding: 8px;
+    }
+    #root form fieldset{
+        width: 100%;
+        min-width: 0;/* Fieldsets refuse to shrink below their content without this */
+        padding: 4px 6px 8px 6px;
+    }
+    #root form legend{
+        letter-spacing: 1px;
+    }
+    /* Field rows: every field takes its own full-width line */
+    #root form .hstack,
+    #root form .vstack{
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px !important;
+    }
+    #root form .hstack > *,
+    #root form .vstack > *{
+        width: 100%;
+        margin-left: 0px !important;/* Cancels Bootstrap's ms-auto spacing */
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    /* Label above its input */
+    #root form .inputDiv,
+    #root form .noteInputDiv,
+    #root form .languageSelectDiv{
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: stretch;
         width: 100%;
     }
-    #root .languageSelectDiv{
+    /* Inputs, selects and text areas fill the row */
+    #root form .input,
+    #root form .inputDiv select,
+    #root form .noteInputDiv select,
+    #root form .editNoteInput,
+    #root form .editUserInput,
+    #root form .docInput,
+    #root form .languageSelect,
+    #root form select,
+    #root form textarea,
+    #root form input[type='text'],
+    #root form input[type='email'],
+    #root form input[type='password'],
+    #root form input[type='tel'],
+    #root form input[type='date'],
+    #root form input[type='search'],
+    #root form input[type='number'],
+    #root form input[type='file']{
+        width: 100%;
+        max-width: 100%;
+        font-size: 16px;/* 16px+ stops iPhones zooming in when a field is focused */
+    }
+    /* Checkboxes and radios keep their natural size next to their label */
+    #root form input[type='checkbox'],
+    #root form input[type='radio']{
+        width: auto;
+        flex-shrink: 0;
+    }
+    #root form #checkBoxInputDiv,
+    #root form #adminConsentCheckboxDiv{
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    /* Password show/hide row: input and button share the line, button wraps below if needed */
+    #root form #pswdInputDiv{
         flex-wrap: wrap;
     }
-    #root .languageSelect{
+    /* Translator language row keeps the swap button between the two selects */
+    #root form #languageSelectBlock,
+    #root form #docLanguageSelectBlock{
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+    #root form #swapLanguageBtn{
+        width: 40px;
+        flex: 0 0 40px;
+        align-self: center;
+    }
+    /* Form buttons: comfortable width, centred, wrap side by side */
+    #root form .btn{
+        max-width: 100%;
+    }
+    #root form button[type='submit'],
+    #root form #clearFormBtn,
+    #root form #showPswdBtn,
+    #root form #showCurrentPswdBtn{
         width: 100%;
-        max-width: 280px;
+        max-width: 320px;
+        align-self: center;
+    }
+    /* Required-field hints wrap instead of running off screen */
+    #root form .requiredInfoSpan,
+    #root form .reqInfoSpan,
+    #root form #reqInfoSpan{
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
     }
 
     /* ---TABLES: each row becomes a card---
@@ -312,26 +539,29 @@
 /* =========SMALL PHONES (below 480px)======================== */
 @media (max-width: 479.98px) {
     #root #appHeading{
-        font-size: 26px;
+        font-size: 20px;
     }
     #root #pageHeading{
         font-size: 18px;
     }
-    /* Navigation links in a single column */
-    #root #navBlock1,
-    #root #mainNavbar{
+    /* Open menu links in a single column (logged-out LOGIN/REGISTRATION stay side by side) */
+    #root #navbar{
         grid-template-columns: 1fr;
     }
     #root .btn{
         font-size: 14px;
     }
     #root .btnTextSpan h6{
-        font-size: 14px;
+        font-size: 12px;
         letter-spacing: 1px;
     }
-    /* Main toggle buttons (the ones under an OPEN/CLOSE caption) fill the width for easy tapping */
+    /* Toggle groups: one toggle per row, button fills the width for easy tapping */
+    #root .vstack:has(> div > .btnTextSpan){
+        grid-template-columns: 1fr;
+    }
     #root .btnTextSpan ~ .btn{
         width: 100%;
+        max-width: 100%;
     }
     /* Table cards: labels above values to give long text the full width */
     #root table:not(.calendarTable) tbody td[data-label]{
@@ -344,5 +574,13 @@
     #root .tableBtnCell .btn{
         flex-basis: 100%;
         max-width: 100%;
+    }
+}
+
+/* =========REDUCED MOTION======================== */
+/* Kept last so it overrides the menu animation above */
+@media (prefers-reduced-motion: reduce) {
+    #root #navigation.navOpen #navbar{
+        animation: none;
     }
 }

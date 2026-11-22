@@ -10,11 +10,11 @@ import Stack from 'react-bootstrap/Stack';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 // IMPORT REACT-ROUTER-DOM COMPONENTS FOR NAVIGATION
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 // IMPORT UTILITY FUNCTIONS FOR DATE AND TIME FORMATTING
 import { dateDisplay, timeDisplay } from '../util/dateFunctions';
 // IMPORT ICONS FROM LUCIDE-REACT
-import { Calendar, Clock8 } from 'lucide-react';
+import { Calendar, Clock8, Menu, X } from 'lucide-react';
 
 
 //MainHeader function component
@@ -42,6 +42,24 @@ export default function MainHeader(//Export default MainHeader function componen
     // Prevents memory leaks and duplicate timers
     return () => clearInterval(timer);
   }, []);
+
+  //================MOBILE NAVIGATION MENU================//
+  // On phones the links are hidden behind a MENU button (see Responsive.css)
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  // Close the menu after a link is followed
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+  // Close the menu with the Escape key
+  useEffect(() => {
+    if (!menuOpen) return
+    const closeOnEscape = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    }
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [menuOpen]);
   //===========JSX RENDERING=======
   return (
     <header id='mainHeader' role='banner'>
@@ -62,11 +80,27 @@ export default function MainHeader(//Export default MainHeader function componen
             </span>
               <div id='navbarBlock'> 
         {/* Navigation Bar */}
-          <nav id='navigation'>
+          <nav id='navigation' className={menuOpen ? 'navOpen' : ''} aria-label='Main navigation'>
+            {/* MENU BUTTON: only shown on phones (hidden from md up by Bootstrap's d-md-none) */}
+            {currentUser && (
+              <button
+                type='button'
+                id='navToggleBtn'
+                className='d-md-none'
+                onClick={() => setMenuOpen(open => !open)}
+                // ARIA ATTRIBUTES:
+                aria-expanded={menuOpen}
+                aria-controls='navbar'
+                aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              >
+                {menuOpen ? <X size={22} aria-hidden='true'/> : <Menu size={22} aria-hidden='true'/>}
+                <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>
+              </button>
+            )}
             <ul id='navbar'>
               {/* Header Navigation Bar stack */}
                 {currentUser && (
-                  <div id='navBlock1'>
+                  <>
                     <li className='linkItem'>
                       {/* Link to Home.js Page */}
                       <NavLink to='/' className='refLink'>HOME</NavLink>
@@ -83,7 +117,7 @@ export default function MainHeader(//Export default MainHeader function componen
                       {/* Link to Translate.js page */}
                       <NavLink to='/translate' className='refLink'>TRANSLATE</NavLink>
                     </li>
-                  </div>
+                  </>
                 )}
                 
    
