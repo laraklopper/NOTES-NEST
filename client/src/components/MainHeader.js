@@ -53,8 +53,8 @@ export default function MainHeader(//Export default MainHeader function componen
       </Row> */}
       {/* Row 2: Application and Page Heading */}
       <Row id='headerRow2'>
-        <Col id='headingCol1'/>
-        <Col xs={5} id='headingCol'>
+        <Col id='headingCol1' xs='0'/>
+        <Col id='headingCol' md='12'>
           <div id='pageHeadingBlock'>
             <span id='pageHeadingSpan' >
               <h1 id='appHeading'>NOTE NEST</h1>
@@ -92,7 +92,7 @@ export default function MainHeader(//Export default MainHeader function componen
           </div>
           </div>
         </Col>
-        <Col id='headingCol2'>
+        <Col id='headingCol2' xs='0'>
        
         </Col>
       </Row>

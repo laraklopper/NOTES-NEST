@@ -143,7 +143,7 @@ export default function App() {//Export defualt App.js function component
   // =================JSX RENDERING========================================
   return (
     <>
-    <Container id='appContainer' role='main'>
+    <Container id='appContainer' role='main' fluid>
       {/* ------GLOBAL ERROR BANNER: any page can set it via setError */}
          <Row id='globalErrorRow'>
          {/* Empty side columns centre the banner on medium+ screens */}

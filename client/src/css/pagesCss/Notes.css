@@ -252,7 +252,7 @@ SECTION 2:ARCHIVED + TRASH
     color: #E8F0F6;
     text-decoration: underline;
 }
-@media screen and (min-width: 480px) {
+/* @media screen and (min-width: 480px) {
   #html, #body {
     background-color: #6B4F1C;
   border-color: #6B4F1C;
@@ -267,4 +267,4 @@ SECTION 2:ARCHIVED + TRASH
   
     visibility: hidden;
 }
-}
+} */
