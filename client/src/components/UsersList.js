@@ -121,7 +121,7 @@ export default function UsersList() {
         {error && <p className='text-danger' role='alert'>{error}</p>}
         <Row id='usersListRow'>
         <Col id='usersListCol1'/>
-            <Col id='usersListCol' md={10} xs='12'>
+            <Col id='usersListCol' xs={12} md={10}>
                 <div id='usersTableWrapper'>
             <table id='usersTable'>
                 <thead>

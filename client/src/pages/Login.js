@@ -96,7 +96,7 @@ export default function Login(//Export the default Login function component
         <div id='loginPanal' role='region'>
           <Row id='loginRow'>
             <Col id='loginCol1' />
-            <Col xs={6} id='loginCol'>
+            <Col xs={12} md={8} lg={6} id='loginCol'>
               <div id='loginDiv'>
                 <LoginForm
                   userData={userData}

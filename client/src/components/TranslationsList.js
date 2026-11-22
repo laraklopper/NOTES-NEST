@@ -118,7 +118,7 @@ export default function TranslationsList(
     <div id='translationsList'>
       <Row id='errorRow'>
         <Col />
-        <Col id='errorCol' xs={6}>
+        <Col id='errorCol' xs={12} md={6}>
           <span>{error && <p className='text-danger' role='alert'>{error}</p>}</span>
         </Col>
         <Col />

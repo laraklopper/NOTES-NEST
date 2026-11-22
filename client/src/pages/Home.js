@@ -246,7 +246,7 @@ const notProvided = 'Not provided';
                 <div id='section2Panal'>
 <Row id='homeToggleRow'>
         <Col id='homeToggleCol1'/>
-        <Col xs={5} id='homeToggleCol'>
+        <Col xs={12} md={8} lg={5} id='homeToggleCol'>
         {/* STACK 2: */}
         <Stack gap={3} id='homeToggleStack'>
       <div className="p-2" id='toggleCalendarBlock'>
@@ -378,7 +378,7 @@ const notProvided = 'Not provided';
           <section id='adminSection'>
           <Row id='toggleUsersRow'>
         <Col id='toggleUsersCol1'/>
-        <Col xs={5} id='toggleUsersCol'>
+        <Col xs={12} md={8} lg={5} id='toggleUsersCol'>
           <div id='toggleUsersDiv'>
              {showUsers ? (
                 <span className='btnTextSpan'>

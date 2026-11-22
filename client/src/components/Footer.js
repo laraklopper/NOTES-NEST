@@ -35,7 +35,7 @@ export default function Footer(//Export default Footer component
          {/* loggedIn = true */}
           {/* Row 1 */}
       <Row id='footerRow1'>
-        <Col id='footerTimeCol' md='12'>
+        <Col id='footerTimeCol' xs={12} md='12'>
         {/* STACK 1: CLOCK (date and time) */}
           <Stack direction="horizontal" gap={3} id='footerTimeStack'>
           <div className="p-2" id='footerClockBlock'>

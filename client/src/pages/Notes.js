@@ -282,7 +282,7 @@ export default function Notes(//Export the default Notes.js function component
         <div id='notesListDiv'>
           <Row id='toggleNotesRow'>
             <Col id='toggleListCol1' />
-            <Col xs={5} id='toggleListCol'>
+            <Col xs={12} md={8} lg={5} id='toggleListCol'>
               <Stack gap={3} id='toggleNotesStack1'>
                 <div className="p-2" id='toggleNotesBlock1'>
                   {viewNotes ? (
@@ -396,7 +396,7 @@ export default function Notes(//Export the default Notes.js function component
                     <div id='editNoteBlock'>
                       <Row id='editNoteRow'>
                         <Col id='editNoteCol1' />
-                        <Col id='editNoteCol' md='8'>
+                        <Col id='editNoteCol' xs={12} md='8'>
                           <div id='editNotePanal'>
                             <EditNoteForm
                               note={selectedNote}
@@ -437,7 +437,7 @@ export default function Notes(//Export the default Notes.js function component
               <div id='tagsListPanal'>
                 <Row id='tagsDataRow'>
                   <Col id='tagsDataCol1' />
-                  <Col md={10} id='tagsDataCol'>
+                  <Col xs={12} md={10} id='tagsDataCol'>
                     <TagsList
                       tags={tags}
                       fetchNotes={fetchNotes}
@@ -523,7 +523,7 @@ export default function Notes(//Export the default Notes.js function component
               <div id='archiveDiv'>
                 <Row id='archiveRow'>
                   <Col id='archiveCol1' xs='0' />
-                  <Col id='archiveCol' md={12}>
+                  <Col id='archiveCol' xs={12} md={12}>
                     <div id='archiveList'>
                       <ArchivedNotes
                         setError={setError}
@@ -539,7 +539,7 @@ export default function Notes(//Export the default Notes.js function component
             {showTrash && (
               <div id='trashListPanal'>
                 <Row id='trashRow'>
-                  <Col id='trashCol' md={12}>
+                  <Col id='trashCol' xs={12} md={12}>
                     {/* TRASH */}
                     <div id='trashList'>
                       <Trash

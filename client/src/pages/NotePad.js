@@ -246,7 +246,7 @@ export default function NotePad(//Export default NotePad.js function component
          {/* Row 1: Toggle NotePad*/}
                       <Row id='toggleNotePadRow'>
         <Col id='toggleNotePadCol1'/>
-        <Col xs={5} id='toggleNotePadCol'>
+        <Col xs={12} md={8} lg={5} id='toggleNotePadCol'>
           <div id='toggleNotePadDiv'>
             {showNotePad ? (<span className='btnTextSpan'>
               <h6>Hide Note Pad</h6>
@@ -305,7 +305,7 @@ export default function NotePad(//Export default NotePad.js function component
         {/* Row 3: Toggle Notes Form Buttons (toggleNotebookForm + toggleTagForm)*/}
             <Row  id='toggleNoteFormsRow'>
         <Col id='toggleNoteFormsCol1' />
-        <Col xs={5} id='toggleNoteFormsCol'>
+        <Col xs={12} md={8} lg={5} id='toggleNoteFormsCol'>
           <Stack gap={3} id='toggleNoteFormsStack'>
       <div className="p-2" id='toggleNotebookBlock'>
         {newNotebookForm ? (<span className='btnTextSpan'>
@@ -369,7 +369,7 @@ export default function NotePad(//Export default NotePad.js function component
            <div id='addNoteBookDiv'>
                 <Row id='addNoteBookRow'>
                   <Col id='addNoteBookCol1' />
-                  <Col xs={5} id='addNoteBookCol'>
+                  <Col xs={12} md={8} lg={5} id='addNoteBookCol'>
                     <div id='addNoteBookPanal'>
                       <AddNoteBook addNotebook={addNotebook} loading={notebookLoading} notebooks={notebooks} />
                     </div>
@@ -383,7 +383,7 @@ export default function NotePad(//Export default NotePad.js function component
              <div id='addTagDiv'>
                 <Row id='addTagRow'>
                   <Col id='addTagCol1' xs='0' />
-                  <Col xs={8} md='8' id='addTagCol'>
+                  <Col xs={12} md={8} id='addTagCol'>
                     <div id='addTagPanal'>
                       <AddTag addTag={addTag} loading={tagLoading} tags={tags} />
                     </div>

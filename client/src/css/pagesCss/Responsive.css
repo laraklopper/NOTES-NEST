@@ -1,48 +1,195 @@
 /* Responsive.css */
-/* Web responsive css */
+/* Web responsive css
+   Imported LAST in App.js so these rules load after the page/component stylesheets.
+   Selectors are prefixed with #root so they also out-rank the component ID rules.
+   Breakpoints match Bootstrap 5:
+     - Tablets:      max-width 991.98px  (below lg)
+     - Phones:       max-width 767.98px  (below md)
+     - Small phones: max-width 479.98px
+*/
 
-/* =========HEADER======================== */
-/* @media screen and (min-width: 480px) and (max-width: 768px) {
-    #headingCol1,
-    #headingCol2{
-        visibility: hidden;
+/* =========ALL SCREEN SIZES======================== */
+/* Media and form fields never grow wider than their container */
+#root img,
+#root video,
+#root textarea,
+#root input,
+#root select{
+    max-width: 100%;
+}
+/* Fixed-width buttons and links shrink instead of overflowing on narrow screens */
+#root .btn,
+#root .refLink{
+    max-width: 100%;
+}
+/* Long words/URLs wrap instead of pushing the page sideways */
+#root p,
+#root h1,
+#root h2,
+#root h3,
+#root h4,
+#root h5,
+#root h6,
+#root td,
+#root th{
+    overflow-wrap: anywhere;
+}
+
+/* =========TABLETS (below 992px)======================== */
+@media (max-width: 991.98px) {
+    /* Translator: stack the source and translated text boxes */
+    #root #translatedInputDiv{
+        flex-wrap: wrap;
+        justify-content: center;
     }
-    #headingCol{
+    #root #sourceTextBlock,
+    #root #translatedTextBlock{
         width: 100%;
     }
-    .refLink{
-        font-size: 13px;
-        width: 100px;
-        
-    }
-} */
-
-/* ======PHONES============= */
-@media (max-width: 767.98px) {
-    .appDescriptionHeading{
-        font-size: 22px;
-    }
-    .appDescriptionSubHeading{
-        font-size: 18px;
-    }
-    /* Stack the label above its description */
-    .listSpan{
-        grid-template-columns: 1fr;
-        gap: 2px;
+    /* Note text areas fill their form */
+    #root #noteTextInput,
+    #root #editNoteTextInput{
+        width: 100%;
     }
 }
 
-/* @media screen and (min-width: 480px) {
-    #headingCol1,
-    #headingCol2{
-        visibility: hidden;
+/* =========PHONES (below 768px)======================== */
+@media (max-width: 767.98px) {
+    /* ---LAYOUT--- */
+    /* Empty spacer columns (used to centre content on desktop) take no room on phones */
+    #root .row > .col:empty{
+        display: none;
     }
-    #headingCol{
+    /* Bootstrap rows have negative margins; stop them causing sideways scrolling */
+    #root .row{
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+    #routesContainer{
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    /* Horizontal stacks wrap onto extra lines instead of overflowing */
+    #root .hstack{
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    #root .hstack > .ms-auto:empty{
+        display: none;
+    }
+
+    /* ---HEADER--- */
+    #root #appHeading{
+        font-size: 30px;
+    }
+    #root #pageHeading{
+        font-size: 22px;
+        text-align: center;
+    }
+    #root #navbarBlock,
+    #root #navigation{
         width: 100%;
     }
-    .refLink{
-        font-size: 13px;
-        width: 100px;
-        letter-spacing: 0.5px;
+    /* Navigation links in a 2 x 2 grid */
+    #root #navBlock1,
+    #root #mainNavbar{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        width: 100%;
     }
-} */
+    #root #navbar{
+        width: 100%;
+    }
+    #root .linkItem{
+        width: 100%;
+    }
+    #root .refLink{
+        width: 100%;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+    #root .headClockSpan,
+    #root #dateItem,
+    #root #timeItem,
+    #root .clockListItem{
+        font-size: 14px;
+    }
+
+    /* ---HOME--- */
+    #root .appDescriptionHeading{
+        font-size: 22px;
+    }
+    #root .appDescriptionSubHeading{
+        font-size: 18px;
+    }
+    #root #welcomeBlock{
+        width: 100%;
+    }
+    /* Stack the label above its description */
+    #root .listSpan{
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+
+    /* ---FORMS--- */
+    #root #loginForm{
+        width: 100%;
+    }
+    #root .languageSelectDiv{
+        flex-wrap: wrap;
+    }
+    #root .languageSelect{
+        width: 100%;
+        max-width: 280px;
+    }
+
+    /* ---TABLES--- */
+    /* Wide tables scroll sideways inside their wrapper instead of being clipped */
+    #root #tagsTableWrapper,
+    #root #notesListWrapper,
+    #root #notebookTableWrapper,
+    #root #usersTableWrapper,
+    #root #archiveTableWrapper,
+    #root #trashTableWrapper,
+    #root #languageTableWrapper,
+    #root #deletedTranslateWrapper,
+    #root #documentTrashWrapper,
+    #root #docTranslationsWrapper,
+    #root #translationsTableWrapper{
+        justify-content: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* ---TEXT BOXES--- */
+    #root #noteTextInput{
+        height: 200px;
+    }
+    #root #sourceText,
+    #root #translatedText{
+        height: 160px;
+    }
+}
+
+/* =========SMALL PHONES (below 480px)======================== */
+@media (max-width: 479.98px) {
+    #root #appHeading{
+        font-size: 26px;
+    }
+    #root #pageHeading{
+        font-size: 18px;
+    }
+    /* Navigation links in a single column */
+    #root #navBlock1,
+    #root #mainNavbar{
+        grid-template-columns: 1fr;
+    }
+    #root .btn{
+        letter-spacing: 1px;
+    }
+    #root .btnTextSpan h6{
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+}

@@ -117,7 +117,7 @@ export default function Translate(
         <div id='translateSectionPanal'>
          <Row id='toggleTranslatorRow'>
         <Col id='toggleTranslateCol1'/>
-        <Col xs={5} id='toggleTranslateCol'>
+        <Col xs={12} md={8} lg={5} id='toggleTranslateCol'>
         {/* STACK 1: TOGGLE TRANSLATORS STACK */}
           <Stack gap={2} id='toggleTranslatorStack'>
           <div className='p-2' id='toggleTranslator1Block'>
@@ -184,7 +184,7 @@ export default function Translate(
             <div id='translateLanguagesPanal'>
               <Row id='toggleLanguagesRow'>
               <Col id='toggleLangCol1'/>
-              <Col xs={5} id='toggleLangCol'>
+              <Col xs={12} md={8} lg={5} id='toggleLangCol'>
                 {/* Button to toggle Languages */}
                 <Button
                   variant='light'
@@ -230,7 +230,7 @@ export default function Translate(
           <div id='translateLanguagesPanal'>
             <Row id='toggleLanguagesRow'>
               <Col id='toggleLangCol1'/>
-              <Col xs={5} id='toggleLangCol'>
+              <Col xs={12} md={8} lg={5} id='toggleLangCol'>
                 {/* Button to toggle API languages */}
                 <Button
                   variant='light'
@@ -277,7 +277,7 @@ export default function Translate(
          <Row id='toggleTranslationsRow1'>
          {/* Toggle translations lists */}
         <Col id='toggleTranslationsCol1'/>
-        <Col xs={5} id='toggleTranslationsCol'>
+        <Col xs={12} md={8} lg={5} id='toggleTranslationsCol'>
                 {/* TOGGLE TRANSLATIONS: TEXT AND DOCUMENTS */}
           <Stack gap={3} id='toggleTranslationStack1' role='group'>
             <div className="p-2" id='toggleTranslationsBlock'>
@@ -402,7 +402,7 @@ export default function Translate(
             {showDocTranslations && (
               <div id='docListPanal'>
                 <Row id='docsListRow'>
-                  <Col md='12' id='docsListCol'>
+                  <Col xs={12} md='12' id='docsListCol'>
                     <div id='docsList'>
                       <DocTranslationList/>
                     </div>
@@ -419,7 +419,7 @@ export default function Translate(
             {showArchive && (
               <div id='archivedTranslationPanal'>
                 <Row id='translationsArchiveRow'>
-                  <Col id='translationsArchiveCol' md='12'>
+                  <Col id='translationsArchiveCol' xs={12} md='12'>
                     <ArchivedTranslations/>
                   </Col>
                 </Row>

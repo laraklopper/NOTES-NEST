@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 // IMPORT CSS STYLESHEETS
 import './App.css'
-import './css/pagesCss/Responsive.css'
 import './css/pagesCss/Animations.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Container from 'react-bootstrap/Container';
@@ -24,6 +23,8 @@ import Home from './pages/Home';
 import NotePad from './pages/NotePad';
 import Notes from './pages/Notes';
 import Translate from './pages/Translate';
+// RESPONSIVE STYLESHEET: imported after the pages so its media queries load last
+import './css/pagesCss/Responsive.css'
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Bug } from 'lucide-react';
 
