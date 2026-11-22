@@ -214,11 +214,11 @@ export default function DocTranslationList() {
                 ) : (
                     documents.map((doc, index) => (
                         <tr key={doc._id}>
-                            <td>{rowNumber(index)}</td>
-                            <td>{doc.fileName}</td>
-                            <td>{languageName(doc.sourceLanguage)}</td>
-                            <td>{languageName(doc.targetLanguage)}</td>
-                            <td>
+                            <td data-label='NO.'>{rowNumber(index)}</td>
+                            <td data-label='DOCUMENT NAME'>{doc.fileName}</td>
+                            <td data-label='SOURCE LANGUAGE'>{languageName(doc.sourceLanguage)}</td>
+                            <td data-label='TARGET LANGUAGE'>{languageName(doc.targetLanguage)}</td>
+                            <td className='tableBtnCell'>
                                 <Button
                                 variant='light'
                                 type='button'

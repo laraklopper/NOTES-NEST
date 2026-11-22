@@ -23,8 +23,8 @@ export default function LanguagesList() {
             <tbody>
                 {languageData.map((langauage) => (
                     <tr key={langauage.code}>
-                        <td>{langauage.code}</td>
-                        <td>{langauage.name}</td>
+                        <td data-label='LANGUAGE CODE'>{langauage.code}</td>
+                        <td data-label='LANGUAGE'>{langauage.name}</td>
                     </tr>
                 ))}
             </tbody>

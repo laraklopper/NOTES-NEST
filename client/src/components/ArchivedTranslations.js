@@ -199,12 +199,12 @@ export default function ArchivedTranslations() {
               const number = rowNumber(row, index)
               return (
               <tr key={`${row.status}-${row._id}`}>
-                <td>{number}</td>
-                <td>{preview(row.sourceText)}</td>
-                <td>{languageName(row.sourceLanguage)}</td>
-                <td>{languageName(row.targetLanguage)}</td>
+                <td data-label='NO.'>{number}</td>
+                <td data-label='SOURCE TEXT'>{preview(row.sourceText)}</td>
+                <td data-label='SOURCE LANGUAGE'>{languageName(row.sourceLanguage)}</td>
+                <td data-label='TARGET LANGUAGE'>{languageName(row.targetLanguage)}</td>
                 {/* STATUS: red when a week or less is left */}
-                <td style={{ width: '260px' }}>
+                <td data-label='STATUS' style={{ width: '260px' }}>
                   {isTrash ? (
                     <span className='statusSpan'>
                       <p className='statusText'>TRASH</p>
@@ -220,7 +220,7 @@ export default function ArchivedTranslations() {
                     </span>
                   )}
                 </td>
-                <td style={{ width: '180px' }}>
+                <td className='tableBtnCell' style={{ width: '180px' }}>
                   <Stack gap={1} className={isTrash ? 'trashTableBtns' : 'archiveTableBtns'}>
       <div className="p-2">
          <Button

@@ -204,17 +204,17 @@ export default function NotesList(
                 ) : (
                     notes.map((note, index) => (
                         <tr key={note._id}>
-                            <td>{rowNumber(index)}</td>
-                            <td>
+                            <td data-label='NO.'>{rowNumber(index)}</td>
+                            <td data-label='TITLE'>
                                 {note.isPinned && (
                                     <Pin size={14} aria-label='Pinned' />
                                 )} {note.title}
                             </td>
-                            <td>{languageName(note.language)}</td>
-                            <td>{note.notebook?.name || '-'}</td>
-                            <td>{tagNames(note.tags) || '-'}</td>
-                            <td>{dateDisplay(note.createdAt)}</td>
-                            <td>
+                            <td data-label='LANGUAGE'>{languageName(note.language)}</td>
+                            <td data-label='NOTE BOOK'>{note.notebook?.name || '-'}</td>
+                            <td data-label='TAGS'>{tagNames(note.tags) || '-'}</td>
+                            <td data-label='DATE ADDED'>{dateDisplay(note.createdAt)}</td>
+                            <td className='tableBtnCell'>
                                 <div id='tableBtnDiv'>
                                     <Button
                                     variant='light'

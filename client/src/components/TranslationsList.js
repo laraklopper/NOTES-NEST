@@ -214,12 +214,12 @@ export default function TranslationsList(
                 ) : (
                   translations.map((translation, index) => (
                     <tr key={translation._id}>
-                      <td>{rowNumber(index)}</td>
-                      <td>{preview(translation.sourceText)}</td>
-                      <td>{languageName(translation.sourceLanguage)}</td>
-                      <td>{preview(translation.translatedText)}</td>
-                      <td>{languageName(translation.targetLanguage)}</td>
-                      <td>
+                      <td data-label='NO.'>{rowNumber(index)}</td>
+                      <td data-label='SOURCE TEXT'>{preview(translation.sourceText)}</td>
+                      <td data-label='SOURCE LANGUAGE'>{languageName(translation.sourceLanguage)}</td>
+                      <td data-label='TRANSLATED TEXT'>{preview(translation.translatedText)}</td>
+                      <td data-label='TARGET LANGUAGE'>{languageName(translation.targetLanguage)}</td>
+                      <td className='tableBtnCell'>
                         <div className='translationBtnDiv'>
                           <Button
                             variant='light'

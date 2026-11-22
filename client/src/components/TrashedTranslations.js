@@ -148,16 +148,16 @@ export default function TrashedTranslations() {
                 const remaining = daysLeft(translation.deletedAt)
                 return (
                   <tr key={translation._id}>
-                    <td>{rowNumber(index)}</td>
-                    <td>{preview(translation.sourceText)}</td>
-                    <td>{languageName(translation.sourceLanguage)}</td>
-                    <td>{languageName(translation.targetLanguage)}</td>
-                    <td>
+                    <td data-label='NO.'>{rowNumber(index)}</td>
+                    <td data-label='SOURCE TEXT'>{preview(translation.sourceText)}</td>
+                    <td data-label='SOURCE LANGUAGE'>{languageName(translation.sourceLanguage)}</td>
+                    <td data-label='TARGET LANGUAGE'>{languageName(translation.targetLanguage)}</td>
+                    <td data-label='DELETED ON'>
                       {formatTimestamp(translation.deletedAt)}
                       {/* 30-day purge: red when a week or less is left */}
                       {remaining !== null && <><br/><small style={urgentStyle(remaining)}>({formatDaysLeft(remaining)} LEFT)</small></>}
                     </td>
-                    <td>
+                    <td className='tableBtnCell'>
                       <div className='trashTableBtns'>
                         <Button
                           variant='light'

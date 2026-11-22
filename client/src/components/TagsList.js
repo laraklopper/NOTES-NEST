@@ -142,8 +142,8 @@ export default function TagsList(
                         const isBusy = actionId === tag._id
                         return (
                         <tr key={tag._id}>
-                            <td>{index + 1}</td>
-                            <td>
+                            <td data-label='NO.'>{index + 1}</td>
+                            <td data-label='NAME'>
                                 {isEditing ? (
                                     <input
                                     className='input'
@@ -164,9 +164,9 @@ export default function TagsList(
                                     />
                                 ) : tag.name}
                             </td>
-                            <td>{tag.noteCount ?? 0}</td>
-                            <td>{dateDisplay(tag.createdAt)}</td>
-                            <td style={{width: '280px'}}>
+                            <td data-label='NOTES'>{tag.noteCount ?? 0}</td>
+                            <td data-label='DATE ADDED'>{dateDisplay(tag.createdAt)}</td>
+                            <td className='tableBtnCell' style={{width: '280px'}}>
                                 <div id='tagTableBtns'>
                                     {isEditing ? (
                                         <>

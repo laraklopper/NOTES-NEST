@@ -145,15 +145,15 @@ export default function Trash(//Export default Trash function component
                 const remaining = daysLeft(note.deletedAt)
                 return (
                   <tr key={note._id}>
-                    <td>{rowNumber(index)}</td>
-                    <td>{note.title}</td>
-                    <td>{languageName(note.language)}</td>
-                    <td>{dateDisplay(note.createdAt)}</td>
-                    <td>
+                    <td data-label='NO.'>{rowNumber(index)}</td>
+                    <td data-label='TITLE'>{note.title}</td>
+                    <td data-label='LANGUAGE'>{languageName(note.language)}</td>
+                    <td data-label='DATE ADDED'>{dateDisplay(note.createdAt)}</td>
+                    <td data-label='DELETED ON'>
                       {dateDisplay(note.deletedAt)}
                       {remaining !== null && <><br/><small>({remaining} {remaining === 1 ? 'DAY' : 'DAYS'} LEFT)</small></>}
                     </td>
-                    <td style={{width: '330px'}}>
+                    <td className='tableBtnCell' style={{width: '330px'}}>
                     {/* TABLE BUTTONS */}
                       <div className='trashTableBtns' style={{width:'100%'}}>
                         <Button

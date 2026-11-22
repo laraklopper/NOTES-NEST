@@ -158,8 +158,8 @@ export default function NoteBookList(
                         const isBusy = actionId === notebook._id
                         return (
                         <tr key={notebook._id}>
-                            <td>{index + 1}</td>
-                            <td>
+                            <td data-label='NO.'>{index + 1}</td>
+                            <td data-label='NAME'>
                                 {isEditing ? (
                                     <input
                                     className='input'
@@ -175,7 +175,7 @@ export default function NoteBookList(
                                     />
                                 ) : notebook.name}
                             </td>
-                            <td>
+                            <td data-label='COLOUR'>
                                 {isEditing ? (
                                     <input
                                     type='color'
@@ -189,9 +189,9 @@ export default function NoteBookList(
                                     <><ColourSwatch colour={notebook.colour}/>{notebook.colour}</>
                                 )}
                             </td>
-                            <td>{notebook.noteCount ?? 0}</td>
-                            <td style={{width: '250px', margin: '0px', padding: '0px'}}>{dateDisplay(notebook.createdAt)}</td>
-                            <td style={{width: '200px'}}>
+                            <td data-label='NOTES'>{notebook.noteCount ?? 0}</td>
+                            <td data-label='DATE ADDED' style={{width: '250px', margin: '0px', padding: '0px'}}>{dateDisplay(notebook.createdAt)}</td>
+                            <td className='tableBtnCell' style={{width: '200px'}}>
                                 <div id='notebooksListBtns'>
                                     {isEditing ? (
                                         <>

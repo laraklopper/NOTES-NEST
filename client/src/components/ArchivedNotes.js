@@ -126,13 +126,13 @@ export default function ArchivedNotes(
                             const remaining = archiveDaysLeft(note)
                             return (
                             <tr key={note._id}>
-                                <td>{index + 1}</td>
-                                <td>{note.title}</td>
-                                <td>{languageName(note.language)}</td>
-                                <td>{dateDisplay(note.createdAt)}</td>
+                                <td data-label='NO.'>{index + 1}</td>
+                                <td data-label='TITLE'>{note.title}</td>
+                                <td data-label='LANGUAGE'>{languageName(note.language)}</td>
+                                <td data-label='DATE ADDED'>{dateDisplay(note.createdAt)}</td>
                                 {/* 60-day rule: highlight notes with a week or less left */}
-                                <td style={urgentStyle(remaining)}>{formatDaysLeft(remaining)}</td>
-                                <td>
+                                <td data-label='MOVES TO TRASH IN' style={urgentStyle(remaining)}>{formatDaysLeft(remaining)}</td>
+                                <td className='tableBtnCell'>
                                     <div className='archiveTableBtns'>
                                         <Button
                                             variant='light'

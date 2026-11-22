@@ -149,12 +149,12 @@ export default function UsersList() {
                     ) : (
                         pageUsers.map((user, index) => (
                             <tr key={user._id}>
-                                <td style={{width:'40px'}}>{rowNumber(index)}</td>
-                                <td>@{user.username}</td>
-                                <td>{fullNameOf(user)}</td>
-                                <td>{user.contactDetails?.email || '-'}</td>
-                                <td>{user.admin ? 'YES' : 'NO'}</td>
-                                <td>
+                                <td data-label='NO.' style={{width:'40px'}}>{rowNumber(index)}</td>
+                                <td data-label='USERNAME'>@{user.username}</td>
+                                <td data-label='FULL NAME'>{fullNameOf(user)}</td>
+                                <td data-label='EMAIL'>{user.contactDetails?.email || '-'}</td>
+                                <td data-label='IS ADMIN'>{user.admin ? 'YES' : 'NO'}</td>
+                                <td className='tableBtnCell'>
                                     <div id='usersListBtns'>
                                         <Button
                                         variant='light'

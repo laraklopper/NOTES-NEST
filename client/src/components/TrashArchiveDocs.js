@@ -191,12 +191,12 @@ export default function TrashArchiveDocs() {
                             const number = rowNumber(row, index)
                             return (
                             <tr key={`${row.status}-${row._id}`}>
-                                <td>{number}</td>
-                                <td>{row.fileName}</td>
-                                <td>{languageName(row.sourceLanguage)}</td>
-                                <td>{languageName(row.targetLanguage)}</td>
+                                <td data-label='NO.'>{number}</td>
+                                <td data-label='DOCUMENT NAME'>{row.fileName}</td>
+                                <td data-label='SOURCE LANGUAGE'>{languageName(row.sourceLanguage)}</td>
+                                <td data-label='TARGET LANGUAGE'>{languageName(row.targetLanguage)}</td>
                                 {/* display document status */}
-                                <td>
+                                <td data-label='STATUS'>
                                     {isTrash ? 'TRASH' : 'ARCHIVED'}
                                     {remaining !== null && (
                                         <><br/><small style={urgentStyle(remaining)}>
@@ -204,7 +204,7 @@ export default function TrashArchiveDocs() {
                                         </small></>
                                     )}
                                 </td>
-                                <td>
+                                <td className='tableBtnCell'>
                                     <div className={isTrash ? 'trashTableBtns' : 'archiveTableBtns'}>
                                         <Button
                                         variant='light'
