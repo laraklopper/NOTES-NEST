@@ -31,8 +31,10 @@
 #root h5,
 #root h6,
 #root td,
-#root th{
+#root th,
+#root label{
     overflow-wrap: anywhere;
+    font-size: 12px;
 }
 
 
@@ -261,11 +263,12 @@
         font-size: 14px;
         letter-spacing: 1px;
     }
-    #root .headClockSpan,
-    #root #dateItem,
-    #root #timeItem,
-    #root .clockListItem{
-        font-size: 14px;
+    /* ---CLOCK--- */
+    /* Hide the date/time clock in the header (logged-out pages) and footer to save space.
+       display: none also removes it from screen readers, which is fine since it is decorative. */
+    #root #headerRow1,
+    #root #footerRow1{
+        display: none;
     }
 
     /* ---HOME--- */
@@ -485,6 +488,10 @@
         padding-top: 4px;
         padding-bottom: 4px;
     }
+    #form label{
+    overflow-wrap: anywhere;
+    font-size: 10px;
+}
     /* Button groups inside table cards sit side by side and wrap */
     #root #tableBtnDiv,
     #root #tagTableBtns,
@@ -541,7 +548,7 @@
         grid-template-columns: 1fr;
     }
     #root .btn{
-        font-size: 14px;
+        font-size: 12px;
     }
     #root .btnTextSpan h6{
         font-size: 12px;

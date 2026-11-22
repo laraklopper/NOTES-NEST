@@ -95,7 +95,7 @@ export default function Login(//Export the default Login function component
       <section id='loginSection'>
         <div id='loginPanal' role='region'>
           <Row id='loginRow'>
-            <Col id='loginCol1' />
+            <Col id='loginCol1' xs={0} />
             <Col xs={12} md={8} lg={6} id='loginCol'>
               <div id='loginDiv'>
                 <LoginForm
@@ -106,7 +106,7 @@ export default function Login(//Export the default Login function component
                 />
               </div>
             </Col>
-            <Col id='loginCol2' />
+            <Col id='loginCol2' xs={0}/>
           </Row>
         </div>
       </section>
