@@ -35,11 +35,6 @@
     overflow-wrap: anywhere;
 }
 
-/* Mobile navigation menu opening animation */
-@keyframes navMenuOpen{
-    from{ opacity: 0; transform: translateY(-6px); }
-    to{ opacity: 1; transform: translateY(0); }
-}
 
 /* =========TABLETS ONLY (768px - 991px)======================== */
 @media (min-width: 768px) and (max-width: 991.98px) {
@@ -257,9 +252,6 @@
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
         width: 100%;
-    }
-    #root #navigation.navOpen #navbar{
-        animation: navMenuOpen 0.2s ease-out;
     }
     #root .linkItem{
         width: 100%;
@@ -577,10 +569,22 @@
     }
 }
 
-/* =========REDUCED MOTION======================== */
-/* Kept last so it overrides the menu animation above */
-@media (prefers-reduced-motion: reduce) {
-    #root #navigation.navOpen #navbar{
-        animation: none;
+/* =========NO ANIMATIONS ON SMALLER DEVICES (below 992px)======================== */
+/* Kept last so it overrides every animation/transition above it.
+   Loading spinners are left spinning so the app doesn't look frozen while loading. */
+@media (max-width: 991.98px) {
+    html{
+        scroll-behavior: auto !important;/* No smooth scrolling */
+    }
+    #root *:not(.spinner-border):not(.spinner-grow),
+    #root *::before,
+    #root *::after{
+        animation: none !important;
+        transition: none !important;
+    }
+    /* Event bar icon: skip the slide and show it where the animation would finish (centre) */
+    #root .eventSlide{
+        transform: translate(calc(50cqi - var(--event-size) / 2), -50%) !important;
+        will-change: auto;
     }
 }
