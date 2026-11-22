@@ -1,2 +1,45 @@
 /* Responsive.css */
 /* Web responsive css */
+/* ======PHONES============= */
+@media (max-width: 767.98px) {
+    .appDescriptionHeading{
+        font-size: 22px;
+    }
+    .appDescriptionSubHeading{
+        font-size: 18px;
+    }
+    /* Stack the label above its description */
+    .listSpan{
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+}
+
+@media screen and (min-width: 480px) {
+    #headingCol1,
+    #headingCol2{
+        visibility: hidden;
+    }
+    #headingCol{
+        width: 100%;
+    }
+    .refLink{
+        font-size: 13px;
+        width: 100px;
+        letter-spacing: 0.5px;
+    }
+}
+@media screen and (min-width: 480px) and (max-width: 768px) {
+    #headingCol1,
+    #headingCol2{
+        visibility: hidden;
+    }
+    #headingCol{
+        width: 100%;
+    }
+    .refLink{
+        font-size: 13px;
+        width: 100px;
+        
+    }
+}
