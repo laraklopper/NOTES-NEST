@@ -18,7 +18,10 @@ Databases are used to store, manage and retrieve data efficiently. SQL and NoSQL
 ## TABLE OF CONTENTS
 1. [APPLICATION DATABASE](#1-application-database)
 2. [DATABASE CONNECTION](#2-database-connection)
-    - [2.1. DATABASE CONNECTION FUNCTION](#21-database-connection-function)
+    - [2.1. ENVIRONMENT VARIABLES](#21-environment-variables)
+    - [2.2. DATABASE CONNECTION FUNCTION](#22-database-connection-function)
+    - [2.3. CONNECTION EVENT LISTENERS](#23-connection-event-listeners)
+    - [2.4. STARTING THE SERVER](#24-starting-the-server)
 3. [DATABASE STRUCTURE](#3-database-structure)
     - [3.1. SCHEMAS](#31-schemas)
     - [3.2. DATA TYPES](#32-data-types)
@@ -26,26 +29,40 @@ Databases are used to store, manage and retrieve data efficiently. SQL and NoSQL
         - [3.2.2. MONGOOSE SCHEMA OPTIONS](#322-mongoose-schema-options)
     - [3.3. MONGODB DATA TYPES ](#33-mongodb-data-types)
         - [3.3.1. USE CASES](#331-use-cases)
+    - [3.4. APPLICATION COLLECTIONS](#34-application-collections)
+    - [3.5. INDEXES](#35-indexes)
 4. [REFERENCES](#4-references)
 
 - *View [GLOSSARY.md](/GLOSSARY.md) for terminology*
+- *View [SCHEMAS.md](./SCHEMAS.md) for the full field-by-field description of each model*
 ---
 ## 1. APPLICATION DATABASE
 
-This application uses MongoDB. An open-source, document-oriented NoSQL database which stores data in BSON format for efficient handling of JSON-like documents. 
+This application uses MongoDB, an open-source, document-oriented NoSQL database which stores data in BSON format for efficient handling of JSON-like documents.
 
 ## 2. DATABASE CONNECTION
 
-The application uses `mongoose` middleware to connect to MongoDB and define schemas. The application is connected to the MongoDB database using mongoose third-party middleware in the `app.js` file in the back end (server) folder. 
-
+The application uses the `mongoose` package (an Object Data Modeling library) to connect to MongoDB and define schemas. It is installed in the back end (`server`) folder:
 
 ```bash
+cd server
 npm install mongoose
 ```
-## 2.1. DATABASE CONNECTION FUNCTION
 
-The `connectDB()` function in [`connect.js`](../server/config/connect.js) to connect to the database. The function uses `mongoose.connect()` to establish a connection between the application and the MongoDB database. 
+## 2.1. ENVIRONMENT VARIABLES
 
+The connection details are read from the `server/.env` file using the `dotenv` package. Never commit the `.env` file.
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | MongoDB connection string (e.g. a MongoDB Atlas `mongodb+srv://...` URI). |
+| `DATABASE_NAME` | Name of the database to use on the cluster. Passed to Mongoose as `dbName`. |
+
+If either variable is missing, [`connect.js`](../server/config/connect.js) logs an error and exits the process with code `1` before any connection is attempted.
+
+## 2.2. DATABASE CONNECTION FUNCTION
+
+The `connectDB()` function in [`connect.js`](../server/config/connect.js) uses `mongoose.connect()` to establish a connection between the application and the MongoDB database.
 
 ```js
 //connect.js
@@ -54,6 +71,17 @@ file using the dotenv package*/
 require('dotenv').config();
 // IMPORT REQUIRED MODULES AND PACKAGES
 const mongoose = require('mongoose');
+
+// Extract Enviromental variables
+const uri = process.env.DATABASE_URL;
+const database = process.env.DATABASE_NAME;
+
+if (!uri || !database) {
+    console.error('[ERROR: connect.js] Missing enviromental variables: DATABASE_URL or DATABASE_NAME');
+    process.exit(1)
+}
+
+mongoose.Promise = global.Promise;
 
 const connectDB = async () => {
     try {
@@ -72,12 +100,62 @@ const connectDB = async () => {
 module.exports = connectDB;
 ```
 
-The server starts listening only **after** a successful database connection is established. This prevents the application from accepting requests when the database is unavailable.
+**CONNECTION OPTIONS**
 
+| Option | Value | Description |
+|--------|-------|-------------|
+| `dbName` | `DATABASE_NAME` | The database to use, overriding any database name in the URI. |
+| `serverSelectionTimeoutMS` | `5000` | How long (5 seconds) the driver tries to find an available server before failing. |
+| `connectTimeoutMS` | `100000` | How long (100 seconds) the driver waits for the initial socket connection before timing out. |
+
+## 2.3. CONNECTION EVENT LISTENERS
+
+[`connect.js`](../server/config/connect.js) also listens for events on `mongoose.connection` to log and react to changes in the connection state after start-up.
+
+| Event | When it fires | Action |
+|-------|---------------|--------|
+| `error` | An error occurs after the initial connection. | Logs the error and exits the process (`process.exit(1)`). |
+| `disconnected` | MongoDB disconnects (network issue, restart, etc.). | Logs a warning and calls `connectDB()` to try to reconnect. |
+| `reconnected` | The connection is restored. | Logs an info message. |
+| `open` (once) | The connection is fully opened for the first time. | Logs a success message. |
+
+```js
+// Fired if an error occurs after initial connection
+mongoose.connection.on('error', (error) => {
+    console.error(`[ERROR: connect.js] Error connecting to MongoDb database. Exiting now...`, error);
+    process.exit(1);// Exit to prevent app running without DB
+})
+
+// Fired when MongoDB disconnects (network issue, restart, etc.)
+mongoose.connection.on('disconnected', () => {
+    console.warn('[WARNING: connectDB.js] MongoDB disconnected! Attempting reconnection...');
+    connectDB();// Attempt to reconnect automatically
+});
+
+// Fired when MongoDB successfully reconnects
+mongoose.connection.on("reconnected", () => {
+    console.log("[INFO: connectDB.js] MongoDB Reconnected!");
+});
+
+// Fired once when the connection is fully opened
+mongoose.connection.once('open', async () => {
+    console.log("[SUCCESS: connectDB.JS] Database connection established");
+});
+```
+
+## 2.4. STARTING THE SERVER
+
+The server starts listening only **after** a successful database connection is established. This prevents the application from accepting requests when the database is unavailable. Once connected, the 60-day archive sweep (`startArchiveSweep()` in [`archiveUtil.js`](../server/util/archiveUtil.js)) also starts.
+
+Before connecting, [app.js](../server/app.js) disables Mongoose's `strictPopulate` option so `.populate()` doesn't throw an error on paths that are only conditionally defined in a schema.
 
 [app.js](../server/app.js)  
 
 ```js
+// ================== MONGOOSE CONFIG ==================
+/* Disable strict populate to prevent errors when populating 
+paths that are conditionally defined*/
+mongoose.set('strictPopulate', false);
 //=============START THE SERVER=============
 // Connect to MongoDB first; only start listening once the DB is available.
 // This avoids “server started but DB is down” race conditions.
@@ -115,12 +193,12 @@ In MongoDB, each document stored in a standard collection requires a unique `_id
 
 ### 3.1. SCHEMAS
 
-A document is the basic unit of data in MongoDB. A schema acts as your blueprint and defines what each document in MongoDB should look like including fields, types, defaults and rules. `mongoose` middleware is used to define the scemas. 
+A document is the basic unit of data in MongoDB. A schema acts as your blueprint and defines what each document in MongoDB should look like, including fields, types, defaults and rules. `mongoose` is used to define the schemas.
 Schema validation lets you create validation rules for your fields, such as allowed data types and value ranges.
 
 **DEFINING THE SCHEMA**
 
-- [userSchema.js](../server/models/userSchema.js)
+The example below is a shortened version of [userSchema.js](../server/models/userSchema.js). See [SCHEMAS.md](./SCHEMAS.md#2-user) for every field.
 
 ```js
 // userSchema.js
@@ -129,11 +207,17 @@ const mongoose = require('mongoose');
 
 //Define new userSchema
 const userSchema = new mongoose.Schema({
+    //Field for username
     username: {
         type: String,
-        required: [true, 'username is required']
-    }
-      //=================NESTED FULL NAME OBJECT===================
+        required: true,
+        unique: true,
+        trim: true,
+        minlength: [3, 'Username must be at least 3 characters long'],
+        maxlength: [30, 'Username cannot exceed 30 characters'],
+        match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'],
+    },
+    //=================NESTED FULL NAME OBJECT===================
     fullName: {
         //Field for firstName
         firstName: {
@@ -172,7 +256,7 @@ module.exports = mongoose.model('User', userSchema)//Export the schema
 
 **THE MONGOOSE TYPE KEY**
 
-In a mongoose Schema the `type` key indicates the data type.type is a special property in Mongoose schemas. When Mongoose finds a nested property named type in your schema, Mongoose assumes that it needs to define a SchemaType with the given type.
+In a Mongoose schema the `type` key indicates the data type. `type` is a special property in Mongoose schemas. When Mongoose finds a nested property named type in your schema, Mongoose assumes that it needs to define a SchemaType with the given type.
 
 ### 3.2.1. MONGOOSE SCHEMA TYPES
 
@@ -226,12 +310,12 @@ In a mongoose Schema the `type` key indicates the data type.type is a special pr
 
 <!-- MongoDB uses BSON, an extended version of JSON, which supports additional data types like binary data, dates, and nested arrays, improving query efficiency and storage performance. -->
 
-`BSON` ("Binary JSON") is the binary format MongoDB uses to store documents and send them over the wire. It extended version of JSON, which supports additional data types (dates, binary data, precise integers and decimals, ObjectIds) and stores each value with a type tag and length, which makes documents fast to scan and traverse. 
+`BSON` ("Binary JSON") is the binary format MongoDB uses to store documents and send them over the wire. It is an extended version of JSON which supports additional data types (dates, binary data, precise integers and decimals, ObjectIds) and stores each value with a type tag and length, which makes documents fast to scan and traverse.
 
 |JSON | BSON |
 |----|----|
 |Text-based and human-readable |Binary-based and machine-optimized|
-|Limited support for data types |Supports rich data types like ObjectId, Date, and Binary
+|Limited support for data types |Supports rich data types like ObjectId, Date, and Binary|
 |Slower parsing and traversal|Faster parsing and data access|
 |Less efficient for database storage |Efficient storage and querying in databases like MongoDB|
 |Larger size for network transfer | Compact format, efficient network transfer|
@@ -249,21 +333,21 @@ Each BSON type has a number and a string alias. Use either with the `$type` quer
 
 | Type | Alias (`$type`) | Status | Mongoose SchemaType | Description|
 |---|------|-----------------|--------|---------------------|
-| Double | `"double"` | Active | `Number` |a decimal number. It's the default for numbers, but it isn't exact, so 0.1 + 0.2 doesn't equal 0.3.|
+| Double | `"double"` | Active | `Number` |A decimal number. It's the default for numbers, but it isn't exact, so 0.1 + 0.2 doesn't equal 0.3.|
 | String | `"string"` | Active | `String` |UTF-8 encoded text values. *Supports any Unicode characters*|
-|  Object (embedded document) | `"object"` | Active | Subdocument / nested object |a document inside another document, like an address.|
-|Array | `"array"` | Active | `[Type]` / `Array` |an ordered list that can hold values of any type|
-| ObjectId | `"objectId"` | Active | `Schema.Types.ObjectId` | a 12-byte ID that's the default for _id. It starts with a timestamp, so IDs roughly sort by when they were created.It's also what Mongoose ref and .populate() work with.|
-|  Boolean | `"bool"` | Active | `Boolean` |true or false. In $type queries its name is "bool", not "boolean".|
-|  Date | `"date"` | Active | `Date` | milliseconds since 1970, always stored in UTC. Convert it to SA time (UTC+2) in your app or in an aggregation.|
-| Null | `"null"` | Active | | : "no value". Watch out: querying { field: null } also matches documents where the field is missing. |
+|  Object (embedded document) | `"object"` | Active | Subdocument / nested object |A document inside another document, like an address.|
+|Array | `"array"` | Active | `[Type]` / `Array` |An ordered list that can hold values of any type.|
+| ObjectId | `"objectId"` | Active | `Schema.Types.ObjectId` | A 12-byte ID that's the default for `_id`. It starts with a timestamp, so IDs roughly sort by when they were created. It's also what Mongoose `ref` and `.populate()` work with.|
+|  Boolean | `"bool"` | Active | `Boolean` |`true` or `false`. In `$type` queries its name is `"bool"`, not `"boolean"`.|
+|  Date | `"date"` | Active | `Date` | Milliseconds since 1970, always stored in UTC. Convert it to SA time (UTC+2) in your app or in an aggregation.|
+| Null | `"null"` | Active | — | "No value". Watch out: querying `{ field: null }` also matches documents where the field is missing. |
 
 Extra alias: `"number"` matches **double, int, long and decimal** in one go.
 
 **NUMBER TYPES FOR ACCURACY**
 | Type | Alias (`$type`) | Status | Mongoose SchemaType | Description|
 |---|------|-----------------|--------|---------------------|
-| 32-bit integer | `"int"` | Active | `Number` (stored as double unless cast) / `Int32` | a 32-bit whole number, good for counts and quantities.|
+| 32-bit integer | `"int"` | Active | `Number` (stored as double unless cast) / `Int32` | A 32-bit whole number, good for counts and quantities.|
 | 64-bit integer | `"long"` | Active | `BigInt` / `Long` | A 64-bit whole number. JavaScript loses precision on numbers above 2^53, so use BigInt or the driver's Long class for these.|
 |Decimal128 |`"decimal"`| Active |`Schema.Types.Decimal128` | An exact decimal number.|
 
@@ -273,7 +357,7 @@ Extra alias: `"number"` matches **double, int, long and decimal** in one go.
 |---|------|-----------------|--------|---------------------|
 | Binary data | `"binData"` | Active |`Buffer` / `UUID`|Raw bytes with a **subtype** byte describing the contents|
 | Regular Expression | `"regex"` | Active | — | The regular expression data type is used to store regex patterns. |
-| Timestamp | `"timestamp"` | used internally for replication. Don't use it for your app's dates; use Date instead.|
+| Timestamp | `"timestamp"` | Active (internal) | — | Used internally for replication. Don't use it for your app's dates; use `Date` instead.|
 | MinKey / MaxKey| `"minKey"` `"maxKey"` | Active (internal) | — | Internal types that compare **lower / higher than every other BSON value**. Used mainly in sharding chunk ranges and index bounds.|
 
 
@@ -306,13 +390,42 @@ Extra alias: `"number"` matches **double, int, long and decimal** in one go.
 | UUIDs, hashes, small files | Binary data |
 | Huge counters / external 64-bit IDs | long |
 
+### 3.4. APPLICATION COLLECTIONS
 
+The application stores its data in six collections, one per Mongoose model in [`server/models/`](../server/models/). Mongoose creates the collection name by lower-casing and pluralising the model name.
+
+| Model | Collection | Schema file | Stores |
+|-------|------------|-------------|--------|
+| `User` | `users` | [userSchema.js](../server/models/userSchema.js) | User accounts, profile and language preferences. |
+| `Note` | `notes` | [noteSchema.js](../server/models/noteSchema.js) | Notes, with optional notebook and tags. |
+| `Notebook` | `notebooks` | [notebookSchema.js](../server/models/notebookSchema.js) | Notebooks that group a user's notes. |
+| `Tag` | `tags` | [tagSchema.js](../server/models/tagSchema.js) | Tags that can be attached to notes. |
+| `Translation` | `translations` | [translationSchema.js](../server/models/translationSchema.js) | Saved text translations, optionally linked to a note. |
+| `DocumentTranslation` | `documenttranslations` | [docTranslateSchema.js](../server/models/docTranslateSchema.js) | Saved document (PDF) translations. |
+
+Documents reference each other by `ObjectId` using `ref`, so related data can be loaded with `.populate()`. Every collection except `users` has an owner field (`user`, or `userId` on `DocumentTranslation`) that is used to filter every query. See [SCHEMAS.md](./SCHEMAS.md#1-relationships) for the relationship diagram.
+
+### 3.5. INDEXES
+
+Indexes let MongoDB find documents without scanning the whole collection. The schemas define them with `schema.index()`, and Mongoose builds them when the app starts (`autoIndex`).
+
+| Index type | Used for | Example |
+|------------|----------|---------|
+| **Compound** | Filtering by owner and sorting lists. | `noteSchema.index({ user: 1, isPinned: -1, updatedAt: -1 })` |
+| **Unique** | Preventing duplicates per user (returns **409**). | `tagSchema.index({ user: 1, name: 1 }, { unique: true })` |
+| **Text** | Full-text search on notes; title matches rank higher. | `noteSchema.index({ title: 'text', plainText: 'text' }, { weights: { title: 3, plainText: 1 } })` |
+| **TTL** | Permanently deleting trashed notes, translations and document translations 30 days after `deletedAt`. | `noteSchema.index({ deletedAt: 1 }, { expireAfterSeconds: THIRTY_DAYS_IN_SECONDS })` |
+
+See [SCHEMAS.md](./SCHEMAS.md) for the full list of indexes per model and [SCHEMAS.md §9](./SCHEMAS.md#9-archive-and-trash-lifecycle) for the archive and trash lifecycle.
 
 ## 4. REFERENCES
 
 - https://mongoosejs.com/docs/guide.html
 - https://mongoosejs.com/docs/schematypes.html
 - https://mongoosejs.com/docs/schematypes.html#type-key
+- https://mongoosejs.com/docs/connections.html
+- https://mongoosejs.com/docs/guide.html#indexes
+- https://www.mongodb.com/docs/manual/indexes/
 - https://www.geeksforgeeks.org/mongodb/datatypes-in-mongodb/
 - https://www.geeksforgeeks.org/mongodb/what-is-mongodb-working-and-features/
 - https://www.mongodb.com/docs/php-library/current/reference/bson/
