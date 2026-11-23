@@ -1,13 +1,177 @@
 /* web responsive css for forms */
 /* Web responsive css
+   Selectors are prefixed with #root so they out-rank the component ID rules.
    Breakpoints match Bootstrap 5:
      - Tablets:      max-width 991.98px  (below lg)
      - Phones:       max-width 767.98px  (below md)
      - Small phones: max-width 479.98px
 */
 /* =========ALL SCREEN SIZES======================== */
+/* Form fields never grow wider than their container */
+#root textarea,
+#root input,
+#root select{
+    max-width: 100%;
+}
 
 /* =========TABLETS ONLY (768px - 991px)======================== */
 
+/* =========TABLETS (below 992px)======================== */
+@media (max-width: 991.98px) {
+    /* Forms use more of the narrower screen (most are 80-90% wide on desktop) */
+    #root form{
+        width: 100%;
+        max-width: 100%;
+    }
+    #root form fieldset{
+        min-width: 0;
+    }
+    #root #loginFormInput,
+    #root #editPasswordInput,
+    #root #editProfileInput,
+    #root #editNoteInput,
+    #root #noteBookInput,
+    #root #tagInput,
+    #root #notesFormStack4{
+        width: 95%;
+    }
+    /* Side-by-side fields wrap onto a new line when they run out of room */
+    #root form .hstack{
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    #root form .hstack > .ms-auto:empty{
+        display: none;
+    }
+    /* Long label + input pairs wrap rather than overflow */
+    #root form .inputDiv{
+        flex-wrap: wrap;
+    }
+}
+
 /* =========PHONES (below 768px)======================== */
+@media (max-width: 767.98px) {
+    /* Applies to every <form> in the app */
+    /* Forms and their inner wrappers use the full screen width */
+    #root form,
+    #root #loginFormInput,
+    #root #editPasswordInput,
+    #root #editProfileInput,
+    #root #editNoteInput,
+    #root #noteBookInput,
+    #root #tagInput,
+    #root #notesFormStack4,
+    #root #translateDocInput{
+        width: 100%;
+        max-width: 100%;
+    }
+    #root form{
+        padding: 8px;
+    }
+    #root form fieldset{
+        width: 100%;
+        min-width: 0;/* Fieldsets refuse to shrink below their content without this */
+        padding: 4px 6px 8px 6px;
+    }
+    #root form legend{
+        letter-spacing: 1px;
+    }
+    #form label{
+        overflow-wrap: anywhere;
+        font-size: 10px;
+    }
+    /* Field rows: every field takes its own full-width line */
+    #root form .hstack,
+    #root form .vstack{
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px !important;
+    }
+    #root form .hstack > *,
+    #root form .vstack > *{
+        width: 100%;
+        margin-left: 0px !important;/* Cancels Bootstrap's ms-auto spacing */
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    /* Label above its input */
+    #root form .inputDiv,
+    #root form .noteInputDiv,
+    #root form .languageSelectDiv{
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: stretch;
+        width: 100%;
+    }
+    /* Inputs, selects and text areas fill the row */
+    #root form .input,
+    #root form .inputDiv select,
+    #root form .noteInputDiv select,
+    #root form .editNoteInput,
+    #root form .editUserInput,
+    #root form .docInput,
+    #root form .languageSelect,
+    #root form select,
+    #root form textarea,
+    #root form input[type='text'],
+    #root form input[type='email'],
+    #root form input[type='password'],
+    #root form input[type='tel'],
+    #root form input[type='date'],
+    #root form input[type='search'],
+    #root form input[type='number'],
+    #root form input[type='file']{
+        width: 100%;
+        max-width: 100%;
+        font-size: 16px;/* 16px+ stops iPhones zooming in when a field is focused */
+    }
+    /* Checkboxes and radios keep their natural size next to their label */
+    #root form input[type='checkbox'],
+    #root form input[type='radio']{
+        width: auto;
+        flex-shrink: 0;
+    }
+    #root form #checkBoxInputDiv,
+    #root form #adminConsentCheckboxDiv{
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    /* Password show/hide row: input and button share the line, button wraps below if needed */
+    #root form #pswdInputDiv{
+        flex-wrap: wrap;
+    }
+    /* Translator language row keeps the swap button between the two selects */
+    #root form #languageSelectBlock,
+    #root form #docLanguageSelectBlock{
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+    #root form #swapLanguageBtn{
+        width: 40px;
+        flex: 0 0 40px;
+        align-self: center;
+    }
+    /* Form buttons: comfortable width, centred, wrap side by side */
+    #root form .btn{
+        max-width: 100%;
+    }
+    #root form button[type='submit'],
+    #root form #clearFormBtn,
+    #root form #showPswdBtn,
+    #root form #showCurrentPswdBtn{
+        width: 100%;
+        max-width: 320px;
+        align-self: center;
+    }
+    /* Required-field hints wrap instead of running off screen */
+    #root form .requiredInfoSpan,
+    #root form .reqInfoSpan,
+    #root form #reqInfoSpan{
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
 /* =========SMALL PHONES (below 480px)======================== */
