@@ -28,29 +28,33 @@ import './css/pagesCss/Responsive.css'
 // IMPORT ICONS FROM LUCIDE-REACT
 import { Bug } from 'lucide-react';
 
+// Empty form data for the Login page, shaped like the server's user model
+// Also used to clear the Login form after login and logout
+const INITIAL_USER_DATA = {
+  username: '',
+  fullName: {
+    firstName: '',
+    lastName: ''
+  },
+  contactDetails: {
+    email: '',
+    phoneNumber: '',
+  },
+  defaultSourceLang: '',
+  defaultTargetLang: '',
+  dateOfBirth: '',
+  password: '',
+  admin: false
+}
+
 // MAIN APP FUNCTION COMPONENT
 export default function App() {//Export defualt App.js function component
    // ========STATE VARIABLES================
    //User variables
   const [users, setUsers] = useState([])// List of all users (only filled in for admins)
   const [currentUser, setCurrentUser] = useState(null)// Logged-in user: { userId, fullName, admin }
-  // Form data for the Login page, shaped like the server's user model
-  const [userData, setUserData] = useState({
-    username: '',
-    fullName: {
-      firstName: '',
-      lastName: ''
-    },
-    contactDetails: {
-      email: '',
-      phoneNumber: '',
-    },
-    defaultSourceLang: '',
-    defaultTargetLang: '',
-    dateOfBirth: '',
-    password: '',
-    admin: false
-  })
+  // Form data for the Login page
+  const [userData, setUserData] = useState(INITIAL_USER_DATA)
   // Event and UI-related states
   const [loggedIn, setLoggedIn] = useState(false)// Decides which set of routes is rendered
   const [error, setError] = useState(null)// Message shown in the global error banner (null hides it)
@@ -66,6 +70,7 @@ export default function App() {//Export defualt App.js function component
     setCurrentUser(null);
     setLoggedIn(false);
     setUsers([]);
+    setUserData(INITIAL_USER_DATA);// Clear the Login form inputs
   }, []);
 
   /* Restore the session saved by Login.js so a page refresh doesn't log the user out.

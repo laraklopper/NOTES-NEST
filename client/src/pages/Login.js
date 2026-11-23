@@ -60,7 +60,7 @@ export default function Login(//Export the default Login function component
         localStorage.setItem('currentUser', JSON.stringify(user))
         setCurrentUser(user);
         setLoggedIn(true)
-        setUserData((prev) => ({ ...prev, password: '' }))// Don't keep the password in state after login
+        setUserData((prev) => ({ ...prev, username: '', password: '' }))// Clear the Login form inputs after login
         setError(null)
         navigate('/')// Redirect to the Home page
       } else {
