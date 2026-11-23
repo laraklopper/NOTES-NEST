@@ -148,8 +148,8 @@ router.post('/register', registerLimiter, checkPassword, hashPassword, async (re
 
         // The form blocks an unticked box, but a request sent outside the form never sees that check
         if (adminDataConsent !== true) {
-            console.error('[ERROR: authRoutes.js, /register] Admin data consent not given');
-            return res.status(400).json({ message: 'You must consent to admin users seeing your details to register' });
+            console.error('[ERROR: authRoutes.js, /register] Admin data consent not given');// Log an error message in the console for debugging purposes
+            return res.status(400).json({ message: 'You must consent to admin users seeing your details to register' });// Send a 400 (Bad Request) status code with a JSON message
         }
 
         // Only include the language preferences that were chosen, so the schema defaults apply to the rest
@@ -233,22 +233,26 @@ router.post('/logout', (req, res) => {
 router.patch('/setAdmin', checkJwtToken, async (req, res) => {
     try {
          const user = await User.findById(req.user?.id).exec();// The token payload carries the user id as `id`
+
+         // Guard clause: checks if the user is found
           if (!user) {
-            console.error('[ERROR: authRoutes.js, /setAdmin] User not found');
+            console.error('[ERROR: authRoutes.js, /setAdmin] User not found');// Log an error message in the console for debugging purposes
             return res.status(404).json({ message: 'User not found' });
         }
+        // Guard clause: checks if the user is already admin
         if (user.admin === true) {
-            console.error('[ERROR: authRoutes.js, /setAdmin] User is already an admin:', user.username);
-            return res.status(409).json({ message: 'User is already an admin' });
+            console.error('[ERROR: authRoutes.js, /setAdmin] User is already an admin:', user.username);// Log an error message in the console for debugging purposes
+            return res.status(409).json({ message: 'User is already an admin' });// Send a 409 (Conflict) status code with a JSON message if the user is already admin
         }
+        // Guard clause: checks if the user fits the neccessary age requirements
          if (calculateAge(user.dateOfBirth) < ADMIN_MIN_AGE) {
-            console.error('[ERROR: authRoutes.js, /setAdmin] User is under the admin age requirement:', user.username);
+            console.error('[ERROR: authRoutes.js, /setAdmin] User is under the admin age requirement:', user.username);// Log an error message in the console for debugging purposes
             return res.status(403).json({ message: `You must be at least ${ADMIN_MIN_AGE} years old to register as an admin.` });
         }
 
         // Users can only register as admin after a specific time as a user
         if (Date.now() - new Date(user.createdAt).getTime() < ADMIN_MIN_ACCOUNT_AGE_MS) {
-            console.error('[ERROR: authRoutes.js, /setAdmin] Account is too new:', user.username);
+            console.error('[ERROR: authRoutes.js, /setAdmin] Account is too new:', user.username);// Log an error message in the console for debugging purposes
             return res.status(403).json({ message: 'Your account is too new to register as an admin.' });
         }
         user.admin = true;
@@ -260,8 +264,8 @@ router.patch('/setAdmin', checkJwtToken, async (req, res) => {
         console.log('[SUCCESS: authRoutes.js, /setAdmin] User registered as admin:', user.username);
         return res.status(200).json({ message: 'Admin registration successful', user: sessionUser(user) });
     } catch (error) {
-        console.error('[ERROR: authRoutes.js, /setAdmin]', error.message);
-        return res.status(500).json({ message: 'Internal Server Error' })
+        console.error('[ERROR: authRoutes.js, /setAdmin]', error.message);// Log an error message in the console for debugging purposes
+        return res.status(500).json({ message: 'Internal Server Error' })// Return a 500 (Internal Server Error) status code with a message
     }
 })
 
@@ -276,7 +280,7 @@ router.patch('/clearAdmin', checkJwtToken, async (req, res) => {
         }
         if (user.admin !== true) {
             console.error('[ERROR: authRoutes.js, /clearAdmin] User is not an admin:', user.username);
-            return res.status(409).json({ message: 'User is not an admin' });
+            return res.status(409).json({ message: 'User is not an admin' });// Send a 409 (Conflict) status code with a JSON message if the user is not an admin user
         }
 
         user.admin = false;
@@ -290,7 +294,7 @@ router.patch('/clearAdmin', checkJwtToken, async (req, res) => {
 
     } catch (error) {
         console.error('[ERROR: authRoutes.js, /clearAdmin]', error.message);
-        return res.status(500).json({ message: 'Internal Server Error' });
+        return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
 
