@@ -133,19 +133,16 @@ export default function MainHeader(//Export default MainHeader function componen
         </Col>
         <Col id='headerCol3' xs='0' md={0}/>
       </Row>
-      {/* Row 3*/}
-      {/* <Row id='headerRow3'>
-        <Col xs={12} md={12} id='navCol'></Col>
-      </Row> */}
+     
       </div>
     ):(
       <div id='mainHeaderDiv'>
-  {/* Header Row 1 */}
+  {/* Header Row 1: HIDDEN ON SMALLER DEVICES*/}
       <Row id='headerRow1'>
-        <Col id='headingCol1'>
+        <Col id='headerClockCol'>
           {/* Main Header Stack 1: DATE AND TIME */}
           <Stack direction="horizontal" gap={3} id='headerStack1'>
-            <div className="p-2" id='headerTimeBlock'>
+            <div id='headerTimeBlock'>
               <Card id='headerTimeCard'>
                 <ListGroup variant="flush" id='headerTimeList'>
                   <ListGroup.Item id='dateItem'>
@@ -179,21 +176,21 @@ export default function MainHeader(//Export default MainHeader function componen
       {/* Header ROw 2 : APPLICATION AND PAGE HEADING*/}
       <Row id='headerRow2'>
         <Col id='headingCol1' />
-        <Col xs={12} md={10} id='headingCol'>
+        <Col xs={12} md={4} id='headingCol2'>
           <div id='pageHeadingBlock'>
-              <h1 id='appHeading'>NOTE NEST</h1>
+            <span id='pageHeadingSpan'>
+             <h1 id='appHeading'>NOTE NEST</h1>
+              <h2 id='pageHeading'>{mainHeading}</h2>
+            </span>
           </div>
         </Col>
-        <Col id='headingCol2' />
+        <Col id='headingCol3' />
       </Row>
-      {/* Header ROw 3: NAVIGATION BAR*/}
+      {/* Header Row 3: NAVIGATION BAR*/}
       <Row id='headerRow3'>
-        <Col id='headerNavCol'>
-          {/* HEADER STACK 2: NAVIAGATION BAR */}
-          <Stack direction="horizontal" gap={3} id='headerStack2'>
-            <div className="p-2"><h2 id='pageHeading'>{mainHeading}</h2></div>
-            <div className="p-2 ms-auto" />
-            <div className="p-2">
+        <Col xs={6} md={3} id='headerCol1'/>
+        <Col xs={6} md={6} id='headerCol2'>
+          <div>
               {/* Navigation Bar */}
               <nav id='navigation'>
                 <ul id='mainNavbar'>
@@ -209,8 +206,8 @@ export default function MainHeader(//Export default MainHeader function componen
                 </ul>
               </nav>
             </div>
-          </Stack>
         </Col>
+        <Col xs={6} md={3} id='headerCol3'/>
       </Row>
       </div>
     )}

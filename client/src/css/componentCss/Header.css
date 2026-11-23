@@ -1,3 +1,4 @@
+/* Header.css */
 #mainHeader{
     width: 100%;
     display: flex;
@@ -8,14 +9,8 @@
     background-color: #B78830;
     gap: 10px;
 }
-#mainHeaderDiv{
-   display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-    width: 100%;
-}
+/* LAYOUT */
+#mainHeaderDiv,
 #headerDiv{
     display: flex;
     flex-direction: column;
@@ -23,7 +18,12 @@
     margin: 0px;
     padding: 0px;
     width: 100%;
+    gap: 5px;
 }
+
+/* ======BOOTSTRAP LAYOUT============= */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+
 #headerRow1,
 #headerRow2,
 #headerRow3{
@@ -44,15 +44,94 @@
    display: flex;
    justify-content: center;
 }
+#headingCol1,
+#headingCol2,
+#headingCol3,
 #pageHeadCol1,
 #pageHeadCol2,
-#pageHeadCol3,
-#headingCol2{
+#pageHeadCol3{
     display: flex;
     justify-content: flex-end;
     margin: 0px;
-    padding: 0px 4px 0px 0px;
+    padding: 0px;
 }
+/* CLOCK: HIDDEN ON SMALLER DEVICES */
+/* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
+#headerClockCol{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+/* STACK: https://react-bootstrap.netlify.app/docs/layout/stack */
+#headerStack1{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+}
+#headerTimeBlock{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+}
+
+
+.headClockSpan{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-family: "Roboto Mono", monospace;
+    font-size: 20px;
+    font-weight: 700;
+    background-color: transparent;
+}
+/* CARD: https://react-bootstrap.netlify.app/docs/components/cards */
+#headerTimeCard{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border:none;
+    background-color: transparent;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* LIST GROUP: https://react-bootstrap.netlify.app/docs/components/list-group */
+#headerTimeList{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#dateItem,
+#timeItem{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-family: "Roboto Mono", monospace;
+    font-size: 20px;
+    border:none;
+    font-weight: 700;
+    background-color: transparent;
+}
+/* TEXT */
+.clockListItem{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-family: "Roboto Mono", monospace;
+    font-size: 20px;
+    border:none;
+    margin: 0px;
+    padding: 0px;
+    font-weight: 700;
+    background-color: transparent;
+}
+/* HEADING */
+/* LAYOUT */
 #pageHeadingBlock{
     display: flex;
     flex-direction: column;
@@ -68,6 +147,7 @@
     margin: 0px;
     padding: 0px;
 }
+/* NAVIGATION BAR */
 #navbarBlock{
     display: flex;
     justify-content: flex-end;
@@ -84,52 +164,15 @@
     padding: 5px;
     background-color: #8797A8;
 }
-
-/* MENU BUTTON: opens/closes the links on phones (hidden from 768px up by 'd-md-none') */
-#navToggleBtn{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    height: 40px;
-    margin: 0px;
-    padding: 0px;
-    font-family: "Roboto Mono", monospace;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #000;
-    background-color: #E8F0F6;
-    border: solid 2px #323A42;
-    border-radius: 5px;
-}
-#navToggleBtn:hover,
-#navToggleBtn[aria-expanded="true"]{
-    background-color: #323A42;
-    color: #E8F0F6;
-}
-#navToggleBtn:focus-visible{
-    outline: 3px solid #E8F0F6;
-    outline-offset: 2px;
-}
 #mainNavbar,
 #navbar{
       display: flex;
     margin: 0px;
     padding: 0px;
     gap: 10px;
-    
     justify-content: center;
-    /* flex-direction: column; */
     align-items: center;
     list-style-type: none;
-}
-#navCol{
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
 }
 .refLink{
     display: flex;
@@ -164,48 +207,34 @@
     color: #E8F0F6;
     text-decoration: underline;
 }
-.headClockSpan{
+/* RESPONSIVE WEB DESIGN */
+/* MENU BUTTON: opens/closes the links on phones 
+(hidden from 768px up by 'd-md-none') */
+#navToggleBtn{
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     width: 100%;
-    font-family: "Roboto Mono", monospace;
-    font-size: 20px;
-    font-weight: 700;
-    background-color: transparent;
-}
-#headerTimeCard{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    border:none;
-    background-color: transparent;
-}
-#dateItem,
-#timeItem{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    font-family: "Roboto Mono", monospace;
-    font-size: 20px;
-    border:none;
-    font-weight: 700;
-    background-color: transparent;
-}
-.clockListItem{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    font-family: "Roboto Mono", monospace;
-    font-size: 20px;
-    border:none;
+    height: 40px;
     margin: 0px;
     padding: 0px;
+    font-family: "Roboto Mono", monospace;
     font-weight: 700;
-    background-color: transparent;
+    letter-spacing: 2px;
+    color: #000;
+    background-color: #E8F0F6;
+    border: solid 2px #323A42;
+    border-radius: 5px;
+}
+#navToggleBtn:hover,
+#navToggleBtn[aria-expanded="true"]{
+    background-color: #323A42;
+    color: #E8F0F6;
+}
+#navToggleBtn:focus-visible{
+    outline: 3px solid #E8F0F6;
+    outline-offset: 2px;
 }
 /* HEADING */
 #appHeading{
