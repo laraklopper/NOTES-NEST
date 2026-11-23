@@ -1,4 +1,3 @@
-
 /*auth endpoints : mounted at /auth by app.js
 POST: /login - submit user login
 POST: /register - submit registration to add a new user
