@@ -1,19 +1,26 @@
 // userRoutes.js
+// IMPORT REQUIRED MODULES AND PACKAGES
 const express = require('express');// Import the Express.js library
 const mongoose = require('mongoose');// Used to validate ObjectIds
 const bcrypt = require('bcryptjs');// Used to check the current password against the stored hash
+// IMPORT SCHEMAS/MODELS
 const User = require('../models/userSchema');// Import the User model
 const Note = require('../models/noteSchema');// Import the Note model (removed with the user)
 const Notebook = require('../models/notebookSchema');// Import the Notebook model (removed with the user)
 const Tag = require('../models/tagSchema');// Import the Tag model (removed with the user)
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with the user)
 const DocTranslation = require('../models/docTranslateSchema');// Import the DocumentTranslation model (removed with the user)
-const router = express.Router();// Create a new router object using Express.js
+// IMPORT CUSTOM MIDDLEWARE
 const { checkPassword, checkPasswordChange, hashPassword, isDevelopment } = require('../middleware/passwordMiddleware');// Password middleware and the development flag
 const { checkJwtToken, setTokenCookie } = require('../middleware/securityMiddleware');// JWT check and cookie issuing
 const { checkAdmin } = require('../middleware/adminMiddleware');// Admin-only guard
-const { EDITABLE_PROFILE_FIELDS } = require('../util/userUtil');// Form field -> schema path map for /editProfile
 const { passwordUpdateRateLimiter } = require('../middleware/rateLimitMiddleware');// Limits password change attempts
+// IMPORT UTILITY FUNCTIONS
+const { EDITABLE_PROFILE_FIELDS } = require('../util/userUtil');// Form field -> schema path map for /editProfile
+
+
+const router = express.Router();// Create a new router object using Express.js
+
 /*──────────────────────────── GET ROUTES ─────────────────────────────────────
    GET: READ — Used to fetch information from the database
 ────────────────────────────────────────────────────────────────────────────────*/

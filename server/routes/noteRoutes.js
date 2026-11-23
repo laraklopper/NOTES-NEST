@@ -10,18 +10,23 @@ PATCH - /notes/:id/restore - Restore from trash
 DELETE - /notes/:id - Soft delete (move to trash)
 DELETE - /notes/:id/permanent - Permanently delete a trashed note and its translations
 */
-const express = require('express');
+// IMPORT REQUIRED MODULES AND PACKAGES
+const express = require('express');//Express framework for building web applications
 const mongoose = require('mongoose');// Used to validate ObjectIds
+// IMPORT SCHEMAS/MODELS
 const Note = require('../models/noteSchema');// Import the Note model
 const Notebook = require('../models/notebookSchema');// Import the Notebook model
 const Tag = require('../models/tagSchema');// Import the Tag model
 const User = require('../models/userSchema');// Import the User model
 const Translation = require('../models/translationSchema');// Import the Translation model (removed with a permanently deleted note)
+// IMPORT CUSTOM MIDDLEWARE
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
+// IMPORT UTILITY FUNCTIONS
 const { languageCodeRegex, MAX_TAG_LENGTH } = require('../util/schemaUtil');// Used to validate the language filter and tag name length
 const { trashExpiredArchivedNotes } = require('../util/archiveUtil');// 60-day archive rule
 const { parsePagination, paginationInfo } = require('../util/apiUtil');// Shared pagination helpers (same as the translations lists)
-const router = express.Router()
+
+const router = express.Router()// Create Express router instance
 
 /*──────────────────────────── SHARED HELPERS ─────────────────────────────────
    Used by both POST /addNote and PATCH /:id

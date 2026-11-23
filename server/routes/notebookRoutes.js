@@ -6,11 +6,15 @@ PATCH - '/:id' - Rename or recolour a notebook
 DELETE - '/:id' - Delete a notebook: its notes move to "No notebook"
 Notebook names are unique per user, ignoring case (409 on duplicates)
 */
-const express = require('express');
+// IMPORT REQUIRED MODULES AND PACKAGES
+const express = require('express');//Express framework for building web applications
 const mongoose = require('mongoose');// Used to validate ObjectIds and cast the user id for aggregate()
+// IMPORT SCHEMAS/MODELS
 const Notebook = require('../models/notebookSchema');// Import the Notebook model
 const Note = require('../models/noteSchema');// Import the Note model (for note counts)
+// IMPORT MIDDLEWARE
 const { checkJwtToken } = require('../middleware/securityMiddleware');// Import the JWT middleware
+// IMPORT UTILITY FUNCTIONS
 const { DEFAULT_NOTEBOOK_COLOUR, NAME_COLLATION } = require('../util/schemaUtil');
 const router = express.Router();// Create a new router instance
 

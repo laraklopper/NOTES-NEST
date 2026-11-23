@@ -1,4 +1,9 @@
-/*tagRoutes.js: mounted at /tag by app.js*/
+/*tagRoutes.js: mounted at /tag by app.js
+GET - '/fetchTags' - List the signed-in user's tags with active (not archived or trashed) note counts
+POST - '/addTag' - Create a tag for the signed-in user
+PUT - '/:id' - Rename a tag
+DELETE - '/:id' - Delete a tag: $pull it from notes
+*/
 // IMPORT REQUIRED MODULES AND PACKAGES
 const express = require('express');
 const mongoose = require('mongoose');// Used to validate ObjectIds and cast the user id for aggregate()
