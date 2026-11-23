@@ -1,13 +1,18 @@
 //NotesCalender.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useRef, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/Calender.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
+// IMPORT CUSTOM COMPONENTS
 import Calendar from './Calendar';
+// IMPORT UTILITY FUNCTIONS
 import { longDate } from '../util/calenderUtil'
 import { formatTimestamp } from '../util/dateFunctions';
 
@@ -52,6 +57,7 @@ export default function NotesCalender({ onOpenNote }) {
     }
   }, [selectedNote]);
 
+  //Functiont to close Note
   const closeNote = () => {
     latestRequest.current = null;
     setSelectedNote(null);
@@ -59,8 +65,11 @@ export default function NotesCalender({ onOpenNote }) {
     setNoteLoading(false);
   };
 
+  //=============JSX RENDERING==============
+
   return (
     <div id='calenderDisplay'>
+    {/* Row 1: Calender */}
       <Row id='calendarRow1'>
         {/* ----- CALENDAR ----- */}
         <Col xs={12} md={12} id='calendarCol'>
@@ -69,7 +78,7 @@ export default function NotesCalender({ onOpenNote }) {
           />
         </Col>
         </Row>
-        {/* ----- NOTES FOR THE SELECTED DAY ----- */}
+        {/* Row 2 : NOTES FOR THE SELECTED DAY ----- */}
         <Row id='calenderRow2'>
         <Col xs={12} md={12} style={{width: '100%'}} id='calenderCol1'>
           <div id='calendarDayPanal' aria-live='polite'>
@@ -83,7 +92,6 @@ export default function NotesCalender({ onOpenNote }) {
                 {selected.notes.length === 0 ? (
                   <p className='text-muted mb-0'>No notes on this day.</p>
                 ) : (
-                  
                   <ListGroup>
                     {selected.notes.map(n => (
                       <ListGroup.Item

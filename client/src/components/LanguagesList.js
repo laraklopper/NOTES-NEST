@@ -1,12 +1,19 @@
+//LanguagesList.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/ListLayout.css'
 import '../css/componentCss/ListTables.css'
 import '../css/componentCss/ListBtns.css'
-// IMPORT BOOTSTRAP COMPONENTS
+// IMPORT ICONS FROM LUCIDE-REACT
 import { BookA } from 'lucide-react';
+// IMPORT DATA ARRAYS
 import languageData from '../util/languageData';
 
-export default function LanguagesList() {
+//LanguageList Function component
+export default function LanguagesList() {//Export default LanguageList.js component
+
+    //=============JSX RENDERING=================
   return (
     <div id='languageTableWrapper'>
         <table id='languageTable'>

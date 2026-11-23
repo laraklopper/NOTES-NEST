@@ -1,19 +1,29 @@
 //Calendar.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useEffect, useRef, useState } from 'react'
+// IMPORT CSS STYLESHEETS
 import '../css/componentCss/Calender.css'
+// IMPORT BOOTSTRAP COMPONENTS
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Badge from 'react-bootstrap/Badge';
 import Alert from 'react-bootstrap/Alert';
 import Stack from 'react-bootstrap/Stack';
+// IMPORT UTILITY FUNCTIONS
 import { DAY_NAMES, buildMonthGrid, toKey, monthTitle, longDate } from '../util/calenderUtil'
 import { fetchCalendar } from '../util/apiUtil'
+// IMPORT ICONS FROM LUCIDE-REACT
 import { CalendarChevronsLeft , CalendarChevronsRight  } from 'lucide-react';
 
-export default function Calendar({ onSelectDay, selectedDate }) {
+//Calendar function component
+export default function Calendar(
+  {//PROPS PASSED FROM PARENT COMPONENT(NotesCalender.js)
+     onSelectDay, 
+     selectedDate 
+    }) {
   const today = new Date()
   const todayKey = toKey(today.getFullYear(), today.getMonth(), today.getDate())
-
+//=================STATE VARIABLES===============
   const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() })// month 0–11
   const [days, setDays] = useState({}); // { '2026-11-16': { date, count, notes: [{ _id, title }] } }
   const [loading, setLoading] = useState(false);
@@ -96,13 +106,10 @@ export default function Calendar({ onSelectDay, selectedDate }) {
           </Button>
         </div>
       </div>
-      
     </Stack>
-        
       </div>
-
+      {/* Error message */}
       {error && <Alert variant='danger' className='py-1'>{error}</Alert>}
-
       {/* ----- MONTH GRID ----- */}
       <Table bordered className='mb-0 calendarTable' aria-labelledby='calendarTitle'>
         <thead>

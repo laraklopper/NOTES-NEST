@@ -1,4 +1,5 @@
 // AdminRegisForm.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useCallback, useState } from 'react'
 // IMPORT CSS STYLESHEETS
 import '../css/componentCss/RegistrationForm.css'
@@ -11,8 +12,10 @@ import { ShieldUser, X } from 'lucide-react';
 // IMPORT UTILITY FUNCTIONS
 const {ADMIN_STATUS} = require('../util/userFunc')
 
-export default function AdminRegisForm(
-    {
+
+//AdminRegisForm Function component
+export default function AdminRegisForm(//Export default AdminRegisForm.js function component
+    {//PROPS PASSED FROM PARENT COMPONENT(Home.js)
         setCurrentUser,
         exitAdminForm,
         setError
@@ -22,6 +25,7 @@ export default function AdminRegisForm(
     const [submitting, setSubmitting] = useState(false)
 
 
+    //Function to allow user to register as admin
     const setAdmin = useCallback(async () => {
         try {
             /* Send a PATCH request to the '/auth/setAdmin' endpoint.
@@ -55,6 +59,7 @@ export default function AdminRegisForm(
             setSubmitting(false)
         }
     }
+    // Function to exit admin registration form
     const exitForm = () => {
         const confirmExit = window.confirm(
             'Are you sure you want to exit? This option is only available once'

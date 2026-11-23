@@ -1,4 +1,5 @@
 // AddTag.js
+//IMPORT REQUIRED MODULES AND PACKAGES
 import React, { useState } from 'react'
 // IMPORT CSS STYLESHEETS
 import '../css/componentCss/AddNotebook.css'
