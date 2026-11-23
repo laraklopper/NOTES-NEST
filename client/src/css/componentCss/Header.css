@@ -32,11 +32,21 @@
     margin: 0px;
     padding: 0px;
 }
-#headingCol{
+#headerCol1,
+#headerCol3{
     display: flex;
     margin: 0px;
     padding: 0px;
 }
+#headerCol2{
+   margin: 0px;
+   padding: 0px;
+   display: flex;
+   justify-content: center;
+}
+#pageHeadCol1,
+#pageHeadCol2,
+#pageHeadCol3,
 #headingCol2{
     display: flex;
     justify-content: flex-end;
@@ -108,7 +118,9 @@
     margin: 0px;
     padding: 0px;
     gap: 10px;
-    flex-direction: column;
+    
+    justify-content: center;
+    /* flex-direction: column; */
     align-items: center;
     list-style-type: none;
 }

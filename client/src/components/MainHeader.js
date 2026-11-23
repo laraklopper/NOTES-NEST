@@ -65,19 +65,25 @@ export default function MainHeader(//Export default MainHeader function componen
     <header id='mainHeader' role='banner'>
     {loggedIn ? (
       <div id='headerDiv'>
-           {/* Row 1 */}
-      {/* <Row id='headerRow1'>
-        <Col id='headerCol1'/>
-      </Row> */}
-      {/* Row 2: Application and Page Heading */}
-      <Row id='headerRow2'>
-        <Col id='headingCol1' xs='0'/>
-        <Col id='headingCol' xs={12} md='12'>
+           {/* Row 1: Application and Page Heading  */}
+      <Row id='headerRow1'>
+         <Col id='pageHeadCol1' xs={6} md={4}/>
+        <Col xs={6} md={4} id='pageHeadCol2'>
           <div id='pageHeadingBlock'>
+          {/* APPLICATION + PAGE HEADING */}
             <span id='pageHeadingSpan' >
               <h1 id='appHeading'>NOTE NEST</h1>
              <h2 id='pageHeading'>{heading}</h2>
             </span>
+            </div>
+        </Col>
+        <Col id='pageHeadCol3' xs={6} md={4}/>
+      </Row>
+      {/* Row 2: */}
+      <Row id='headerRow2'>
+        <Col id='headerCol1' xs='0' md={0}/>
+        <Col id='headerCol2' xs={12} md='12'>
+          {/* NAVIGATION BAR */}
               <div id='navbarBlock'> 
         {/* Navigation Bar */}
           <nav id='navigation' className={menuOpen ? 'navOpen' : ''} aria-label='Main navigation'>
@@ -124,11 +130,8 @@ export default function MainHeader(//Export default MainHeader function componen
             </ul>
           </nav>
           </div>
-          </div>
         </Col>
-        <Col id='headingCol2' xs='0'>
-       
-        </Col>
+        <Col id='headerCol3' xs='0' md={0}/>
       </Row>
       {/* Row 3*/}
       {/* <Row id='headerRow3'>
