@@ -232,9 +232,8 @@
         letter-spacing: 1px;
     }
     /* ---CLOCK--- */
-    /* Hide the date/time clock in the header (logged-out pages) and footer to save space.
+    /* Hide the date/time clock in the footer to save space (header clock is hidden in Header.css).
        display: none also removes it from screen readers, which is fine since it is decorative. */
-    #root #headerRow1,
     #root #footerRow1{
         display: none;
     }

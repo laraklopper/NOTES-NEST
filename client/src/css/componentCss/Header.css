@@ -20,7 +20,39 @@
     width: 100%;
     gap: 5px;
 }
-
+/* HEADING */
+/* LAYOUT */
+#pageHeadingBlock{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#pageHeadingSpan{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+#appHeading{
+    font-family: "Roboto", sans-serif;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin: 0px;
+    padding: 0px;
+    text-decoration: underline;
+}
+#pageHeading{
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 0px;
+    padding: 0px;
+    font-style: italic;
+}
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 
@@ -130,23 +162,7 @@
     font-weight: 700;
     background-color: transparent;
 }
-/* HEADING */
-/* LAYOUT */
-#pageHeadingBlock{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-}
-#pageHeadingSpan{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0px;
-    padding: 0px;
-}
+
 /* NAVIGATION BAR */
 #navbarBlock{
     display: flex;
@@ -208,6 +224,14 @@
     text-decoration: underline;
 }
 /* RESPONSIVE WEB DESIGN */
+/* Hide the clock row on phones and small tablets (below Bootstrap's md breakpoint: 768px).
+   Scoped to #mainHeaderDiv (logged-out layout) because #headerRow1 in the
+   logged-in layout (#headerDiv) holds the page heading, which must stay visible. */
+@media (max-width: 767.98px) {
+    #mainHeaderDiv > #headerRow1{
+        display: none;
+    }
+}
 /* MENU BUTTON: opens/closes the links on phones 
 (hidden from 768px up by 'd-md-none') */
 #navToggleBtn{
@@ -235,21 +259,4 @@
 #navToggleBtn:focus-visible{
     outline: 3px solid #E8F0F6;
     outline-offset: 2px;
-}
-/* HEADING */
-#appHeading{
-    font-family: "Roboto", sans-serif;
-    font-weight: 800;
-    letter-spacing: 2px;
-    margin: 0px;
-    padding: 0px;
-    text-decoration: underline;
-}
-#pageHeading{
-    font-family: "Roboto", sans-serif;
-    font-weight: 700;
-    letter-spacing: 2px;
-    margin: 0px;
-    padding: 0px;
-    font-style: italic;
 }
