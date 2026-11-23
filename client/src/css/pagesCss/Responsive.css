@@ -436,9 +436,8 @@
         animation: none !important;
         transition: none !important;
     }
-    /* Event bar icon: skip the slide and show it where the animation would finish (centre) */
-    #root .eventSlide{
-        transform: translate(calc(50cqi - var(--event-size) / 2), -50%) !important;
-        will-change: auto;
+    /* Event bar row is removed entirely on every page (Home, Login, NotePad, Notes, Translate) */
+    #root #eventRow{
+        display: none !important;
     }
 }

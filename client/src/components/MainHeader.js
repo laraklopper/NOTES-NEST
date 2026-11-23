@@ -67,8 +67,8 @@ export default function MainHeader(//Export default MainHeader function componen
       <div id='headerDiv'>
            {/* Row 1: Application and Page Heading  */}
       <Row id='headerRow1'>
-         <Col id='pageHeadCol1' xs={6} md={4}/>
-        <Col xs={6} md={4} id='pageHeadCol2'>
+         <Col id='pageHeadCol1' xs={0} md={4}/>
+        <Col xs={12} md={4} id='pageHeadCol2'>
           <div id='pageHeadingBlock'>
           {/* APPLICATION + PAGE HEADING */}
             <span id='pageHeadingSpan' >
@@ -77,7 +77,7 @@ export default function MainHeader(//Export default MainHeader function componen
             </span>
             </div>
         </Col>
-        <Col id='pageHeadCol3' xs={6} md={4}/>
+        <Col id='pageHeadCol3' xs={0} md={4}/>
       </Row>
       {/* Row 2: */}
       <Row id='headerRow2'>
