@@ -65,6 +65,10 @@
         width: 100%;
         max-width: 100%;
     }
+        #root #noteTextInput {
+        height: 200px;
+        font-size: 14px;
+    }
     #root form{
         padding: 8px;
     }

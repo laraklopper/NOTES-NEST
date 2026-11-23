@@ -126,9 +126,6 @@
         outline: 3px solid #323A42;
         outline-offset: 2px;
     }
-
-    /* ---FORMS--- see ResponsiveForms.css */
-
     /* ---TABLES--- */
     /* Wide tables scroll sideways inside their wrapper instead of being clipped */
     #root #tagsTableWrapper,

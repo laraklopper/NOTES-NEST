@@ -79,7 +79,7 @@ export default function MainHeader(//Export default MainHeader function componen
         </Col>
         <Col id='pageHeadCol3' xs={0} md={4}/>
       </Row>
-      {/* Row 2: */}
+      {/* Row 2: Navigation bar */}
       <Row id='headerRow2'>
         <Col id='headerCol1' xs='0' md={0}/>
         <Col id='headerCol2' xs={12} md='12'>
