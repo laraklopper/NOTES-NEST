@@ -7,6 +7,7 @@ import '../css/pagesCss/PageSetup.css'
 import '../css/pagesCss/Admin.css'
 import '../css/pagesCss/Home.css'
 import '../css/componentCss/Profile.css'
+import '../css/componentCss/ResponsiveForms.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';

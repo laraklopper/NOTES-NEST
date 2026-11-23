@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 // IMPORT CSS STYLESHEETS
 import '../css/pagesCss/Notes.css'
 import '../css/pagesCss/PageSetup.css'
+import '../css/componentCss/ResponsiveForms.css'
 // IMPORT BOOTSTRAP COMPONENTS
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
