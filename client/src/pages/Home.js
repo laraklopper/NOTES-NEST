@@ -426,10 +426,10 @@ const notProvided = 'Not provided';
         {showAdminForm && (
           <section id='adminRegisSec' >
             <div id='adminRegisDiv'>
-              <Row>
+              <Row id='adminRegisRow'>
                 <Col id='adminFormCol1' />
                 <Col id='adminFormCol' xs={12} md={10}>
-                  <div>
+                  <div id='adminRegisFormPanal'>
                     <AdminRegisForm
                       exitAdminForm={exitAdminForm}
                       setError={setError}
@@ -437,6 +437,7 @@ const notProvided = 'Not provided';
                     />
                   </div>
                 </Col>
+                <Col id='adminFormCol2' />
               </Row>
             </div>
           </section>

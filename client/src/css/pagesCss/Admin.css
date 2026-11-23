@@ -96,6 +96,26 @@ LAYOUT
     margin: 0px;
     padding: 0px;
 }
+#adminRegisFormPanal{
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    display: flex;
+}
+#adminRegisRow{
+    width: 100%;
+}
+#adminFormCol{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+}
+#adminFormCol1,
+#adminFormCol2{
+    margin: 0px;
+    padding: 0px;
+}
 /* ADMIN REGISTRATION SECTION */
 #adminRegisSec{
     display: flex;
@@ -110,4 +130,11 @@ LAYOUT
 #adminRegisDiv > .row{
     width: 100%;
     margin: 0px;
+}
+#adminRegisInputStack{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    
 }

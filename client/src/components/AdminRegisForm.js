@@ -71,7 +71,7 @@ export default function AdminRegisForm(
             aria-busy={submitting}
         >
             <p id='adminFormTitle' className='visually-hidden'>FORM TO REGISTER AS ADMIN</p>
-            <Stack direction="horizontal" gap={3}>
+            <Stack direction="horizontal" gap={3} id='adminRegisInputStack'>
                 <div className="p-2" id='adminRegisBlock'>
                     <label id='adminLabel' className='regisLabel' htmlFor='regisAdmin'>REGISTER AS ADMIN</label>
                     <select
@@ -110,6 +110,8 @@ export default function AdminRegisForm(
                 <div className="p-2">
                     <Button
                         type='button'
+                        variant='warning'
+                        id='exitAdminBtn'
                         onClick={exitForm}
                         disabled={submitting}
                         //ARIA ATTRIBUTES:
@@ -121,10 +123,10 @@ export default function AdminRegisForm(
                 </div>
             </Stack>
             <div id='adminMessageDiv'>
-                <Stack gap={2} className="col-md-5 mx-auto" id='adminMsgStack'>
+                
                     <p className='infoText' id='adminMsg'>THIS OPTION IS ONLY AVAILABLE ONCE</p>
                     <p className='infoText'>Admin users must be 21 years or older</p>
-                </Stack>
+              
             </div>
         </form>
     )

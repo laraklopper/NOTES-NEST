@@ -221,7 +221,9 @@ RegisAdminForm.js
     padding: 0px;
 }
 /* BUTTONS: https://react-bootstrap.netlify.app/docs/components/buttons */
-#registerBtn{
+#registerBtn,
+#regisAdminBtn,
+#exitAdminBtn{
         width: 180px;
     height: 40px;
     color: #000;
@@ -236,7 +238,88 @@ RegisAdminForm.js
     border: solid 2px #323A42;
 
 }
-#registerBtn:hover{
+#regisAdmin{
+     width: 200px;
+    margin: 0px;
+    padding: 0px;
+    font-weight: 700;
+   font-family: "Roboto Mono", monospace;
+    height: 40px;
+     border: solid 2px #323A42;
+}
+#regisAdmin option{
+
+    margin: 0px;
+    padding: 0px;
+    font-weight: 700;
+   font-family: "Roboto Mono", monospace;
+
+     border: solid 2px #323A42;
+     line-height: 2px;
+}
+
+#regisAdmin:focus-visible{
+    outline: none;
+    box-shadow: 0 0 0 3px #323a4266;
+}
+#registerBtn:hover,
+#regisAdminBtn:hover,
+#exitAdminBtn:hover{
     color: #E8F0F6;
     background:#323A42
+}
+
+#registerAdminForm{
+
+    display: flex;
+    border-radius: 8px;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 10px;
+   width: 100%;
+    background-color: #777d83;
+    border: #323A42 solid 2px;
+    gap: 10px;
+}
+
+#adminRegisForm{
+        display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0px;
+}
+#regisAdminBtn{
+    width: 200px;
+}
+#adminMsgStack{
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+#adminMessageDiv{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    justify-content: center;
+}
+#adminMessageDiv .infoText{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    font-family: "Open Sans", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-decoration: underline;
+    font-weight: 600;
+    font-size: 14px;
+
+}
+#exitAdminBtn{
+width: 120px;
 }
