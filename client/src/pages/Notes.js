@@ -280,9 +280,10 @@ export default function Notes(//Export the default Notes.js function component
       ----------------- */}
       <section id='notesSection1'>
         <div id='notesListDiv'>
-          <Row id='toggleNotesRow'>
-            <Col id='toggleListCol1' />
-            <Col xs={12} md={8} lg={5} id='toggleListCol'>
+          <div id='toggleNotes'>
+    <Row id='toggleNotesRow'>
+            <Col id='toggleListCol1' xs={0} />
+            <Col xs={12} md={12} lg={5} id='toggleListCol'>
               <Stack gap={3} id='toggleNotesStack1'>
                 <div className="p-2" id='toggleNotesBlock1'>
                   {viewNotes ? (
@@ -364,8 +365,10 @@ export default function Notes(//Export the default Notes.js function component
                 </div>
               </Stack>
             </Col>
-            <Col id='toggleListCol2' />
+            <Col id='toggleListCol2' xs={0}/>
           </Row>
+          </div>
+      
           <div id='notesDataListPanal'>
             {/* TOGGLE NOTES LIST */}
             {viewNotes && (
@@ -457,7 +460,8 @@ export default function Notes(//Export the default Notes.js function component
       ========== */}
       <section id='notesSection2'>
         <div id='archiveTrashPanal'>
-          <Row id='toggleArchiveRow'>
+        <div>
+  <Row id='toggleArchiveRow'>
             <Col id='toggleNotesCol1' xs={0}/>
             <Col xs={12} md={5} id='toggleNotesCol'>
               <Stack gap={2} id='toggleNotesStack2'>
@@ -517,6 +521,7 @@ export default function Notes(//Export the default Notes.js function component
             </Col>
             <Col id='toggleNotesCol2' xs='0'/>
           </Row>
+        </div>
           <div id='listsDiv'>
             {/* TOGGLE (NOTES) ARCHIVE LIST */}
             {showArchive && (
