@@ -227,6 +227,13 @@ SECTION 2:ARCHIVED + TRASH
     margin: 0px;
     padding: 0px;
 }
+#toggleNotes,
+#toggleArchiveNotesDiv{
+    display: flex;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 /* BUTTON */
 #toggleNotesBtn{
         width: 180px;

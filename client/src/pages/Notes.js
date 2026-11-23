@@ -282,8 +282,8 @@ export default function Notes(//Export the default Notes.js function component
         <div id='notesListDiv'>
           <div id='toggleNotes'>
     <Row id='toggleNotesRow'>
-            <Col id='toggleListCol1' xs={0} />
-            <Col xs={12} md={12} lg={5} id='toggleListCol'>
+            <Col id='toggleListCol1' xs={0} md={4} />
+            <Col xs={12} md={4} id='toggleListCol'>
               <Stack gap={3} id='toggleNotesStack1'>
                 <div className="p-2" id='toggleNotesBlock1'>
                   {viewNotes ? (
@@ -365,10 +365,9 @@ export default function Notes(//Export the default Notes.js function component
                 </div>
               </Stack>
             </Col>
-            <Col id='toggleListCol2' xs={0}/>
+            <Col id='toggleListCol2' md='4' xs={0}/>
           </Row>
           </div>
-      
           <div id='notesDataListPanal'>
             {/* TOGGLE NOTES LIST */}
             {viewNotes && (
@@ -460,10 +459,10 @@ export default function Notes(//Export the default Notes.js function component
       ========== */}
       <section id='notesSection2'>
         <div id='archiveTrashPanal'>
-        <div>
+        <div id='toggleArchiveNotesDiv'>
   <Row id='toggleArchiveRow'>
-            <Col id='toggleNotesCol1' xs={0}/>
-            <Col xs={12} md={5} id='toggleNotesCol'>
+            <Col id='toggleNotesCol1' xs={0} md={4}/>
+            <Col xs={12} md={4} id='toggleNotesCol'>
               <Stack gap={2} id='toggleNotesStack2'>
                 <div className="p-2" id='toggleNotesBlock5'>
                   {showArchive ? (
@@ -519,7 +518,7 @@ export default function Notes(//Export the default Notes.js function component
                 </div>
               </Stack>
             </Col>
-            <Col id='toggleNotesCol2' xs='0'/>
+            <Col id='toggleNotesCol2' xs='0' md='4'/>
           </Row>
         </div>
           <div id='listsDiv'>

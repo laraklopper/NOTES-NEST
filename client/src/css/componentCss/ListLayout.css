@@ -24,6 +24,9 @@
     background-color: #6f757b;
     width: 100%;
 }
+#notesDataListPanal{
+    background-color: transparent;
+}
 #notesDataList,
 #usersData{
     display: flex;
