@@ -264,7 +264,8 @@ export default function Notes(//Export the default Notes.js function component
 
   //===================JSX RENDERING===============
   return (
-    <div id='pageContainer' role='main'>
+    <div id='pageContainer' role='main' aria-labelledby='pageTitle'>
+    <p className='visually-hidden' id='pageTitle'>NOTES LISTS PAGE</p>
       <MainHeader heading={'NOTES'} currentUser={currentUser} loggedIn={loggedIn} />
       <Row id='eventRow' role='presentation'>
         <Col id='eventCol'>
