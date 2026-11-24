@@ -237,7 +237,7 @@ router.patch('/setAdmin', checkJwtToken, async (req, res) => {
          // Guard clause: checks if the user is found
           if (!user) {
             console.error('[ERROR: authRoutes.js, /setAdmin] User not found');// Log an error message in the console for debugging purposes
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'User not found' });// Send a 404 (Not Found) response with a JSON message
         }
         // Guard clause: checks if the user is already admin
         if (user.admin === true) {
@@ -261,7 +261,7 @@ router.patch('/setAdmin', checkJwtToken, async (req, res) => {
         // Re-set the cookie with a new token so the admin claim is up to date
         setTokenCookie(res, user);
 
-        console.log('[SUCCESS: authRoutes.js, /setAdmin] User registered as admin:', user.username);
+        console.log('[SUCCESS: authRoutes.js, /setAdmin] User registered as admin:', user.username);//Log a message in the console for debugging purposes
         return res.status(200).json({ message: 'Admin registration successful', user: sessionUser(user) });
     } catch (error) {
         console.error('[ERROR: authRoutes.js, /setAdmin]', error.message);// Log an error message in the console for debugging purposes
@@ -274,12 +274,14 @@ router.patch('/setAdmin', checkJwtToken, async (req, res) => {
 router.patch('/clearAdmin', checkJwtToken, async (req, res) => {
     try {
         const user = await User.findById(req.user?.id).exec();// The token payload carries the user id as `id`
+        // Guard clause: check if the user is found
         if (!user) {
-            console.error('[ERROR: authRoutes.js, /clearAdmin] User not found');
-            return res.status(404).json({ message: 'User not found' });
+            console.error('[ERROR: authRoutes.js, /clearAdmin] User not found');//Log an error message in the console for debugging purposes
+            return res.status(404).json({ message: 'User not found' });// Send a 404 (Not Found) response with a JSON message
         }
+        // Guard clause: check if the user is admin
         if (user.admin !== true) {
-            console.error('[ERROR: authRoutes.js, /clearAdmin] User is not an admin:', user.username);
+            console.error('[ERROR: authRoutes.js, /clearAdmin] User is not an admin:', user.username);//Log an error message in the console for debugging purposes
             return res.status(409).json({ message: 'User is not an admin' });// Send a 409 (Conflict) status code with a JSON message if the user is not an admin user
         }
 
@@ -293,7 +295,7 @@ router.patch('/clearAdmin', checkJwtToken, async (req, res) => {
         return res.status(200).json({ message: 'Admin status removed', user: sessionUser(user) });
 
     } catch (error) {
-        console.error('[ERROR: authRoutes.js, /clearAdmin]', error.message);
+        console.error('[ERROR: authRoutes.js, /clearAdmin]', error.message);//Log an error message in the console for debugging purposes
         return res.status(500).json({ message: 'Internal Server Error' });// Return a 500 (Internal Server Error) status code with a message
     }
 })
