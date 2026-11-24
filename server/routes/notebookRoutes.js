@@ -50,7 +50,7 @@ router.get('/', checkJwtToken, async (req, res) => {
             Notebook.find({ user: userId })
                 .select('-__v')
                 .collation(NAME_COLLATION)// A–Z ignoring case: "ideas" before "Personal"
-                .sort({ name: 1 })
+                .sort({ name: 1 })//Sort the documents in ascending order.
                 .lean(),// Plain objects, so no toJSON() is needed
             // Count the active notes per notebook in a single query
             Note.aggregate([
