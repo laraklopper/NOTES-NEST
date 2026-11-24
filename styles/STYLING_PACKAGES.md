@@ -1,5 +1,16 @@
 # STYLING PACKAGES
 
+## TABLE OF CONTENTS
+1. [BOOTSTRAP](#1-bootstrap)
+    - [1.1. INSTALLATION](#11-installation)
+    - [1.2. APPLICATION USAGE](#12-application-usage)
+    - [1.3. BOOTSTRAP BREAKPOINTS]
+    - [1.4. BOOTSTRAP COLOURS]
+2. [LUCIDE-REACT](#2-lucide-react)
+    - [2.1. INSTALLATION](#21-installation)
+    - [2.2. APPLICATION USAGE](#22-application-usage)
+3. [REFERENCES](#3-references)
+
 ## 1. BOOTSTRAP
 <!-- INTRODUCTION -->
 ### 1.1. INSTALLATION
@@ -117,6 +128,12 @@ npm install lucide-react
 
 <!-- HOW LUCIDE-REACT IS USED IN THE APPLICATION -->
 
+```js
+//IMPORT REQUIRED MODULES AND PACKAGES
+import React, { useCallback, useState } from 'react'
+// IMPORT ICONS FROM LUCIDE-REACT
+import { UserKey } from 'lucide-react'
+```
 ## 3. REFERENCES
 
 - https://react-bootstrap.netlify.app/

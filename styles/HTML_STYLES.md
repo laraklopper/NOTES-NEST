@@ -128,14 +128,14 @@ footer{
     padding: 5px;
     background-color: #8797A8;
 }
-#mainNavbar{
+#mainNavbar,
+#navbar{
     margin: 0px;
     padding: 0px;
     display: flex;
     gap: 10px;
     list-style-type: none;
 }
-/* #navbar{} */
 ```
 
 ### 4.2. NAVIGATION LINKS
