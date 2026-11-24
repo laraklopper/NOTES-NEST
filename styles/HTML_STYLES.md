@@ -17,43 +17,46 @@ General styling formats, not all formats apply for all tags.
 8. [BUTTONS](#8-buttons)
 9. [ANIMATIONS](#9-animations)
 10. [ERRORS](#10-errors)
-11. [REFERENCES](#11-references)
+11. [ACCESSIBILITY](#11-accessibility)
+12. [REFERENCES](#12-references)
 
 ---
 
 ## 1. BODY/HTML/ROOT
+`App.css`
 ```css
 #html, #body{
     overflow: visible;
- margin: 0px 0px 0px 0px;
-padding: 0px 0px 0px 0px;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  background-color: #6B4F1C;
-  border-color: #6B4F1C;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-color: #6B4F1C;
+    border-color: #6B4F1C;
 }
 #root {
-   background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  overflow: visible;
-  background-color: #6B4F1C;
-  margin: 0px 0px;
-  padding: 0px;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: visible;
+    background-color: #6B4F1C;
+    margin: 0px 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 ```
 
 ## 2. HEADER/FOOTER
-
+`Header.css`, `Footer.css`
 ```css
-header,
-footer{
+/* Header.css: #mainHeader | Footer.css: #pageFooter */
+#mainHeader,
+#pageFooter{
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -63,46 +66,69 @@ footer{
     background-color: #B78830;
     gap: 10px;
 }
-#appHeading {
+#appHeading{
     font-family: "Roboto", sans-serif;
     font-weight: 800;
     letter-spacing: 2px;
     margin: 0px;
     padding: 0px;
+    text-decoration: underline;
 }
-#pageHeading {
+#pageHeading{
     font-family: "Roboto", sans-serif;
     font-weight: 700;
     letter-spacing: 2px;
     margin: 0px;
     padding: 0px;
+    font-style: italic;
+}
+/* Footer copyright text */
+#copyrightText{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    font-family: "Open Sans", sans-serif;
+    text-transform: uppercase;
+}
+/* Footer clock text */
+.clockItem{
+    margin: 0px;
+    padding: 0px;
+    font-family: "Comic Relief", system-ui;
+    font-weight: 700;
+    font-size: 18px;
 }
 ```
+- The header clock row (`#mainHeaderDiv > #headerRow1`) is hidden below 768px.
+
 ## 3. SECTION
+Each page uses its own section IDs, alternating two background colours.
 
 ```css
-/* SECTION 1 */
-#section1{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin: 0px;
-    padding: 10px;
-    background-color: #946E26;
-}
-/* SECTION 2 */
-#section2{
+/* SECTION 1 (primary): Home.css, Notes.css, NotePad.css, LoggedOut.css
+   e.g. #homeSection1, #notesSection1, #notePadSection1, #loginSection, #regisSection */
+#homeSection1{
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     margin: 0px;
     padding: 0px;
-   background-color: #ac8718;
+    background-color: #946E26;
 }
-/* SECTION 3 */
-#section3
+/* SECTION 2 (alternate): Home.css, e.g. #homeSection2 */
+#homeSection2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: #ac8718;
+}
+/* SECTION 3: Admin.css */
 #adminSection{
     display: flex;
     flex-direction: column;
@@ -113,12 +139,31 @@ footer{
     background-color: #946E26;
 }
 ```
+**Page container**: `PageSetup.css`
+```css
+#pageContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    gap: 10px;
+}
+```
+
 ## 4. NAVIGATION/LINKS
 
 ### 4.1. NAVIGATION BAR
-
+`Header.css`
 ```css
-#navigation {
+#navbarBlock{
+    display: flex;
+    justify-content: flex-end;
+    margin: 0px;
+    padding: 0px;
+}
+#navigation{
     width: fit-content;
     margin: 0px;
     display: flex;
@@ -129,16 +174,45 @@ footer{
 }
 #mainNavbar,
 #navbar{
+    display: flex;
     margin: 0px;
     padding: 0px;
-    display: flex;
     gap: 10px;
+    justify-content: center;
+    align-items: center;
     list-style-type: none;
+}
+/* MENU BUTTON: opens/closes the links on phones (hidden from 768px up by 'd-md-none') */
+#navToggleBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 40px;
+    margin: 0px;
+    padding: 0px;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #000;
+    background-color: #E8F0F6;
+    border: solid 2px #323A42;
+    border-radius: 5px;
+}
+#navToggleBtn:hover,
+#navToggleBtn[aria-expanded="true"]{
+    background-color: #323A42;
+    color: #E8F0F6;
+}
+#navToggleBtn:focus-visible{
+    outline: 3px solid #E8F0F6;
+    outline-offset: 2px;
 }
 ```
 
 ### 4.2. NAVIGATION LINKS
-
+`Header.css`
 ```css
 .refLink{
     display: flex;
@@ -158,59 +232,115 @@ footer{
     background-color: #E8F0F6;
     border: solid 2px #323A42;
 }
-.refLink:hover{
+.refLink:hover,
+.refLink:active,
+.refLink.active{
     background-color: #323A42;
     color: #E8F0F6;
     text-decoration: underline;
 }
-.refLink:active{
-     background-color: #323A42;
+```
+- `.refLink.active` highlights the link for the current page.
+
+### 4.3. LINKS
+CSS styling for external links. `PageSetup.css`
+```css
+.apiLink{
     color: #E8F0F6;
-    text-decoration: underline;
+    font-family: "Roboto Mono", monospace;
+    letter-spacing: 2px;
+    margin: 0px;
+    padding: 5px;
+}
+.apiLink:hover{
+    color: #E8F0F6;
+    background-color: #323A42;
 }
 ```
 
-
-### 4.3. LINKS
-css styling for external links
-
-
 ## 5. FORMS
-```css
-#formPanal{
-    display: flex;
-    justify-content: center;
-    padding: 10px;
-    margin: 0px;
-    width: 100%;
-    margin: 0px;
-    background-color: #9E9E9E;
-    border-radius: 5px;
-}
+Each form has its own ID (e.g. `#loginForm`, `#registrationForm`, `#notePadForm`, `#updateNoteForm`, `#translatorForm`). They share this pattern:
 
-#form{
+`RegistrationForm.css`, `LoginForm.css`
+```css
+/* FORM */
+#registrationForm{
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0px;
     padding: 10px;
-    width: 100%;
+    width: 100%;           /* #loginForm: 450px */
     background-color: #777d83;
     border: #323A42 solid 2px;
     gap: 10px;
 }
-#input{
-    margin: 0px;
+/* INPUT AREA */
+#loginFormInput{
     width: 80%;
+    margin: 0px;
     padding: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: #BFBFBF;
 }
+/* FIELDSET GROUP */
+#regisGroup1{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #999999;
+    gap: 0px;
+    border: #323A42 solid 2px;
+    border-radius: 5px;
+}
+#regisGroup1 > legend{
+    float: none;
+    width: auto;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px 5px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
 ```
+**Shared inputs**: `FormSetup.css`
 ```css
-/* TEXT */
+.inputDiv{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    gap: 5px;
+    align-items: baseline;
+}
+.inputDiv select{
+    width: 200px;
+    margin: 0px;
+    padding: 0px;
+    font-weight: 700;
+    font-family: "Roboto Mono", monospace;
+    height: 40px;
+    border: solid 2px #323A42;
+}
+.input{
+    display: flex;
+    justify-content: center;
+    width: 200px;
+    border-radius: 5px;
+    height: 40px;
+    text-align: center;
+}
+.input:focus-visible{
+    outline: none;
+    box-shadow: 0 0 0 3px #323a4266;
+}
+```
+**Text**: `FormSetup.css`, `LoginForm.css`
+```css
 #formHeadingBlock{
     display: flex;
     justify-content: center;
@@ -231,68 +361,277 @@ css styling for external links
     padding: 0px;
     text-transform: uppercase;
 }
-.label{
+/* LABELS: .loginLabel, .regisLabel (same pattern per form) */
+.loginLabel,
+.regisLabel{
     font-family: "Roboto Mono", monospace;
     font-weight: 700;
-    color: #000;
+    margin: 0px;
+    letter-spacing: 1px;
+    padding: 0px;
 }
-.requiredIcon{
-    color: #C22419;
+/* REQUIRED INFO */
+.requiredInfoSpan{
+    display: flex;
+    align-items: baseline;
+    margin: 0px;
+    padding: 0px;
+    gap: 10px;
+}
+.requiredInfoSpan p{
+    text-transform: uppercase;
+    font-size: 14px;
     font-weight: 700;
-    font-size: 12px;
+}
+.reqInfo{
+    margin: 0px;
+    padding: 0px;
+    font-family: "Open Sans", sans-serif;
+}
+/* FIELD ERRORS */
+#loginUsernameError,
+#loginPasswordError{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 0px;
+    margin: 0px;
+    text-transform: uppercase;
+    font-family: "Open Sans", sans-serif;
+    color: #B82C3A;
 }
 ```
+
 ## 6. LISTS
 
 ### 6.1. TABLES
-<!-- TABLE CSS -->
+`ListTables.css`: the same rules apply to `#notebookTable`, `#documentTranslationsTable`, `#documentTrashTable`, `#usersTable`, `#tagsTable`, `#translationsTable`, `#notesListTable`, `#archiveTable`, `#deleteTranslateTable`, `#trashTable` and `#languageTable`. One table is shown here as an example.
+```css
+/* WRAPPER (e.g. #notesListWrapper, #usersTableWrapper ...) */
+#notesListWrapper{
+    width: 100%;
+    margin: 0px;
+    padding: 5px 0px;
+    display: flex;
+    justify-content: center;
+    background-color: #b3b3b3;
+}
+.tableHeading{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: #f8f9fa;
+    letter-spacing: 2px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 800;
+    margin: 0px;
+    padding: 0px;
+}
+/* TABLE */
+#notesListTable{
+    width: 100%;              /* #archiveTable, #trashTable: 90% */
+    margin: 0px;
+    padding: 0px;
+    border: solid #383838 2px;
+}
+/* THEAD */
+#notesListTable thead tr th{
+    border: solid #383838 2px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 800;
+}
+#notesListTable thead tr:nth-child(even){ background: #fff; }
+#notesListTable thead tr:nth-child(odd){
+    background: #212529;
+    font-weight: 800;
+    color: #f8f9fa;
+    font-family: "Roboto", sans-serif;
+    letter-spacing: 2px;
+    text-decoration: underline;
+}
+/* TBODY */
+#notesListTable tbody tr td{
+    border: solid #383838 2px;
+    text-align: center;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 600;
+}
+#notesListTable tbody tr:nth-child(even){ background: #fff; }
+#notesListTable tbody tr:nth-child(odd){ background: #93A0AB; }
+/* TFOOT */
+#notesListTable tfoot{
+    text-align: center;
+    border: #000 solid 1px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-decoration: underline;
+    font-family: "Roboto Mono", monospace;
+}
+#notesListTable tfoot tr:nth-child(odd){ background: #212529; color: #f8f9fa; }
+#notesListTable tfoot tr:nth-child(even){ background: #383838; color: #f8f9fa; }
+```
 
 ## 7. DATA DETAILS
 
-CSS styling used for selected details panals (e.g. translations, notes) or profile.
+CSS styling used for selected details panals (e.g. translations, notes) or profile. `DetailsPanals.css`
 
 ```css
-.detailsPanal{
-    background-color: #9E9E9E;
+/* PANAL */
+#userPanal,
+#translationPanal,
+#notePanal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0px;
+    padding: 5px;
+    gap: 5px;
+    background-color: #949ca2;
 }
-
+/* PANAL HEADER / FOOTER */
+#panalHeader,
+#translationPanalHead,
+#notePanalHead{
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 5px 0px;
+    width: 100%;
+    border-bottom: solid 1.5px #404040;
+}
+#panalFooter{
+    display: flex;
+    margin: 0px;
+    padding: 5px 0px;
+    align-items: center;
+    border-top: solid 1.5px #404040;
+}
+/* PANAL BODY */
+#translationPanalBody,
+#notePanalBody{
+    display: flex;
+    align-items: baseline;
+    padding: 5px;
+    margin: 0px;
+    width: 100%;
+    background-color: #b7bdc4;
+}
+/* TEXT */
+.panalHeading{
+    font-family: "Comic Relief", system-ui;
+    font-weight: 700;
+    text-decoration: underline;
+    margin: 0px;
+    padding: 0px;
+}
+.dataSpan{
+    display: flex;
+    gap: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+.dataLabel{
+    font-family: "Comic Relief", system-ui;
+    color: #000;
+    margin: 0px;
+    padding: 0px;
+    text-decoration: underline #8a9199 1.5px;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+.dataValue{
+    font-family: "Comic Relief", system-ui;
+    color: #000;
+    margin: 0px;
+    padding: 0px;
+}
 ```
+
 ## 8. BUTTONS
 
+All buttons share one pattern, and only the width changes. Each button has its own ID (e.g. `#toggleUsersBtn` in `Admin.css`, `#showProfileBtn` in `Home.css`, `#clearFormBtn` in `FormSetup.css`, `#logoutBtn` in `Footer.css`, list buttons in `ListBtns.css`).
+
 ```css
-#toggleBtn,
-#submitBtn{
-     display: flex;
+/* TOGGLE BUTTON: Admin.css */
+#toggleUsersBtn{
+    display: flex;
     justify-content: center;
     align-items: center;
     margin: 0px;
     padding: 0px;
     height: 40px;
     width: 180px;
+    text-transform: uppercase;
     color: #000;
     font-family: "Roboto Mono", monospace;
     font-weight: 700;
     letter-spacing: 2px;
     border: solid 2px #323A42;
 }
-#toggleBtn:hover,
-#submitBtn:hover{
-       background-color: #323A42;
+#toggleUsersBtn:hover{
+    background-color: #323A42;
     color: #E8F0F6;
 }
+/* Pressed state for toggle buttons */
+#toggleUsersBtn:active,
+#toggleUsersBtn[aria-pressed='true']{
+    background-color: #323A42;
+    color: #E8F0F6;
+    text-decoration: underline;
+    border: #404040 solid 2px;
+}
+/* BUTTON TEXT + ICON: PageSetup.css */
+.btnTextSpan{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    gap: 5px;
+}
+.btnTextSpan h6{
+    font-family: "Comic Relief", system-ui;
+    font-weight: 700;
+    text-decoration: underline;
+    letter-spacing: 2px;
+    text-align: center;
+    margin: 0px;
+    text-transform: uppercase;
+    padding: 0px;
+}
+.btnTextSpan svg{
+    font-size: 24px;
+}
 ```
+**Common widths**
+| Width | Used for |
+|-------|----------|
+| 100px | `.viewNoteBtn`, `#copyContentBtn` |
+| 120px | Table row actions (`#deleteItemBtn`, `#restoreBtn`, `#copyBtn`, `#viewTranslationBtn` ...) |
+| 150px | Panal actions (`#editNoteBtn`, `#archiveNoteBtn`, `#trashNoteBtn`, `#closePanalBtn`) |
+| 180px | Toggles (`#toggleUsersBtn`, `#toggleNotesBtn`, `#toggleTagsBtn` ...), `#clearFormBtn`, `#loginBtn` |
+| 200px | `#toggleArchiveBtn`, `#toggleTrashBtn`, `#toggleFilterBtn`, `#showPswdBtn`, `#addToCalenderBtn`, `#logoutBtn` |
+| 240px | `#showProfileBtn`, `#toggleCalendarBtn` |
+| 250px | `#toggleExportBtn` |
+
 - Background-color for buttons based on bootstrap variant
 
 ## 9. ANIMATIONS
 
-Styling used for animations using css, bootstrap and lucide-react.
+Styling used for animations using css, bootstrap and lucide-react. `Animations.css`
 
 **CSS**
 ```css
 /* ======BOOTSTRAP LAYOUT============= */
 /* GRID: https://react-bootstrap.netlify.app/docs/layout/grid */
 #eventRow{
-       display: flex;
+    display: flex;
     width: 100%;
     margin: 0px;
     padding: 0px;
@@ -306,9 +645,9 @@ Styling used for animations using css, bootstrap and lucide-react.
 /* JSX(HTML) LAYOUT */
 .eventBar{
     display: flex;
-    align-items: center;    
+    align-items: center;
     width: 100%;
-     background-color: #1e7b1e;
+    background-color: #1e7b1e;
     border-top: 2px solid #000;
     border-bottom: 2px solid #000;
     margin: 0;
@@ -318,15 +657,28 @@ Styling used for animations using css, bootstrap and lucide-react.
 }
 .eventBar2{
     display: flex;
-    align-items: center;    
+    align-items: center;
     width: 100%;
-     background-color: #C22419;
+    background-color: #C22419;
     border-top: 2px solid #000;
     border-bottom: 2px solid #000;
     margin: 0;
     padding: 0;
     height: 40px;
     overflow: hidden;
+}
+/* ---------- Shared track behavior ---------- */
+/* container-type enables cqi units so the keyframes can reference track width */
+.eventTrack {
+    container-type: inline-size;
+    position: relative;
+    width: 100%;
+    height: 40px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
 }
 ```
 **KEY FRAMES**
@@ -360,31 +712,49 @@ Styling used for animations using css, bootstrap and lucide-react.
 }
 ```
 ## 10. ERRORS
+`App.css`
 ```css
 #globalErrorBlock{
-      display: flex;
+    display: flex;
     margin: 0px;
     padding: 0px;
     justify-content: center;
     width: 100%;
 }
 #globalErrorBlock span{
-      display: flex;
+    display: flex;
     align-items: center;
     gap: 10px;
     margin: 0px;
     padding: 0px;
 }
 #errorMessage{
-  margin: 0px;
-  padding: 0px;
-  font-family: "Open Sans", sans-serif;
+    margin: 0px;
+    padding: 0px;
+    font-family: "Open Sans", sans-serif;
 }
 ```
 
-## 11. REFERENCES
+## 11. ACCESSIBILITY
+`PageSetup.css`: hides text visually but keeps it available to screen readers.
+```css
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+```
+
+## 12. REFERENCES
 
 - https://react-bootstrap.netlify.app/
 - https://fonts.google.com/
 - https://color.adobe.com/create/color-wheel
 - https://www.w3schools.com/colors/colors_groups.asp
+- https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA
