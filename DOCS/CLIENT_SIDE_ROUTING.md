@@ -8,34 +8,36 @@
 2. [Route Structure](#2-route-structure)
    - 2.1. [Logged-Out Routes](#21-logged-out-routes)
    - 2.2. [Logged-In Routes](#22-logged-in-routes)
-   - 2.3. [Always-Accessible Routes](#23-always-accessible-routes)
+   - 2.3. [Fallback Route](#23-fallback-route)
 3. [Protected Routes](#3-protected-routes)
    - 3.1. [ProtectedUserRoute](#31-protecteduserroute)
-   - 3.2. [ProtectedAdminRoute](#32-protectedadminroute)
 4. [Application Navigation Components](#4-application-navigation-components)
    - 4.1. [BrowserRouter](#41-browserrouter)
    - 4.2. [Routes](#42-routes)
    - 4.3. [Route](#43-route)
-   - 4.4. [Link](#44-link)
+   - 4.4. [Navigate](#44-navigate)
    - 4.5. [NavLink](#45-navlink)
-   - 4.6. [useParams](#46-useparams)
+   - 4.6. [Link](#46-link)
    - 4.7. [useNavigate](#47-usenavigate)
-5. [Authentication Flow](#5-authentication-flow)
-6. [Key Files](#6-key-files)
-7. [References](#7-references)
+   - 4.8. [useLocation](#48-uselocation)
+5. [Route State](#5-route-state)
+6. [Authentication Flow](#6-authentication-flow)
+7. [Key Files](#7-key-files)
+8. [References](#8-references)
 
 - *View [GLOSSARY.md](/GLOSSARY.md) for terminology*
 ---
 
 ## 1. LIBRARY
 
-**react-router-dom** v7.16.0 is used for all client-side routing.
+**react-router-dom** v7 (`^7.18.5` in [client/package.json](../client/package.json)) is used for all client-side routing.
 
 React Router DOM helps React apps navigate between pages without reloading. It makes switching pages easy and organizes the app with clear routes.
 
 ### 1.1. INSTALLATION
 
 ```bash
+cd client
 npm install react-router-dom
 ```
 
@@ -62,7 +64,17 @@ All route definitions live in [client/src/App.js](../client/src/App.js).
 
 ## 2. ROUTE STRUCTURE
 
-Routes are conditionally rendered based on the `loggedIn` state stored in `App.js`. Two additional routes are always accessible regardless of login state.
+Routes are conditionally rendered based on the `loggedIn` state in `App.js`. The same path (`/`) shows the **Login** page when logged out and the **Home** page when logged in.
+
+```jsx
+<Routes>
+  {loggedIn ? (
+    <>{/* PROTECTED ROUTES (logged in) */}</>
+  ) : (
+    <>{/* PUBLIC ROUTES (logged out) */}</>
+  )}
+</Routes>
+```
 
 ### 2.1. Logged-Out Routes
 
@@ -71,31 +83,35 @@ Rendered when `loggedIn === false`:
 | Path | Component | Description |
 |------|-----------|-------------|
 | `/` | `<Login>` | Landing page / login form |
-| `/reg` | `<Registration>` | New user registration |
+| `/reg` | `<Register>` | New user registration |
+| `*` | `<Navigate to='/' replace/>` | Any other path redirects to Login |
 
 ### 2.2. Logged-In Routes
 
-Rendered when `loggedIn === true`. All routes are wrapped with either `<ProtectedUserRoute>` or `<ProtectedAdminRoute>`:
+Rendered when `loggedIn === true`. Every route is wrapped with `<ProtectedUserRoute>`:
 
 | Path | Component | Guard | Description |
 |------|-----------|-------|-------------|
-| `/` | `<Home>` | `ProtectedUserRoute` | Main dashboard |
-| `/portfolio` | `<Portfolio>` | `ProtectedUserRoute` | Portfolio management |
-| `/watchList` | `<WatchList>` | `ProtectedUserRoute` | Stock watch list |
-| `/accounts` | `<Accounts>` | `ProtectedUserRoute` | Account management |
-| `/transactions` | `<Transactions>` | `ProtectedUserRoute` | Transaction history |
-| `/budget` | `<Budget>` | `ProtectedUserRoute` | Budget tracking |
-| `/users` | `<Users>` | `ProtectedAdminRoute` | Admin user management |
+| `/` | `<Home>` | `ProtectedUserRoute` | Dashboard: profile, calendar and (admins only) users list |
+| `/notepad` | `<NotePad>` | `ProtectedUserRoute` | Write new notes |
+| `/notes` | `<Notes>` | `ProtectedUserRoute` | Notes, notebooks, tags, archive and trash |
+| `/translate` | `<Translate>` | `ProtectedUserRoute` | Text and document translation |
+| `*` | `<Navigate to='/' replace/>` | — | Any other path redirects to Home |
 
-### 2.3. Always-Accessible Routes
+- There is no separate admin route. The users list is shown inside `Home` and only toggled on when `currentUser.admin` is `true` (`toggleUsersList` in `Home.js`).
 
-These routes are rendered outside the `loggedIn` conditional and are accessible regardless of authentication state:
+### 2.3. Fallback Route
 
-| Path | Component | Description |
-|------|-----------|-------------|
-| `/forgotPassword` | `<ForgotPassword>` | Request a password reset email |
-| `/resetPassword/:token` | `<ResetPassword>` | Set a new password via reset token |
-| `*` | 404 Not Found | Catch-all for invalid paths |
+Both route sets end with a catch-all `*` route that redirects to `/` instead of showing a 404 page. `replace` swaps the invalid URL out of the browser history, so the Back button does not return to it.
+
+```jsx
+{/* FALL BACK ROUTE */}
+<Route path='*' element={<Navigate to='/' replace/>}/>
+```
+The older 404 heading is kept commented out in `App.js`:
+```jsx
+{/* <Route path='*' element={<h2 id='pageNotFound'>404: Page Not Found</h2>}/> */}
+```
 
 ---
 
@@ -105,261 +121,306 @@ Two route guard components live in [client/src/protectedRoutes/](../client/src/p
 
 ### 3.1. ProtectedUserRoute
 
-The component Wraps every standard logged-in route. The route redirects unauthenticated users to `/` (the login page).
-[`client/src/protectedRoutes/ProtectedUserRoute.js`](/client/src/protectedRoutes/ProtectedUserRoute.js)
+Wraps every logged-in route. If there is no `currentUser`, it redirects to `/` (the login page).
+
+[`client/src/protectedRoutes/ProtectedUserRoute.js`](../client/src/protectedRoutes/ProtectedUserRoute.js)
 ```js
-/*ProtectedUserRoute.js: This component protects routes that require a user
-to be logged in, regardless of their role.*/
-import React from 'react'// Import the React module to use React functionalities
-//IMPORT REACT-ROUTER-DOM COMPENTS
-import {Navigate} from 'react-router-dom'
+//ProtectedUserRoute.js
+import React from 'react'
+import { Navigate } from 'react-router-dom'
 
 //ProtectedUserRoute Function Component
 export default function ProtectedUserRoute(//Export default ProtectedUserRoute.js Function Component
-  {//PROPS PASSED FROM PARENT COMPONENT(App.js)
-    currentUser, 
-    children
-  }) {
-   // If no user is logged in,
-    // redirect to the home page.
-   if (!currentUser) {
-        return <Navigate to='/' />
+    {//PROPS PASSED FROM PARENT COMPONENT(App.js)
+        children, 
+        currentUser
     }
-    // If a user is logged in,
-    // render the protected content.
-  return children
+) {
+     // If no user is logged in,
+  // redirect to the login(landing) page.
+    if (!currentUser) {
+        return <Navigate to={'/'}/>
+    }
+        // If a user is logged in,
+  // render the protected content.
+    return children
 }
-
 ```
 
 **Usage in App.js:**
 ```jsx
-<Route path='/portfolio' element={
+<Route path='/notes' element={
   <ProtectedUserRoute currentUser={currentUser}>
-    <Portfolio />
+    <Notes currentUser={currentUser} loggedIn={loggedIn} logout={logout} setError={setError}/>
   </ProtectedUserRoute>
-} />
+}/>
 ```
 
-### 3.2. ProtectedAdminRoute
 
-Checks that the current user exists **and** has `admin: true`. Redirects to `/` if either condition fails. Used for the `/users` route.
-
-
-[`client/src/protectedRoutes/ProtectedAdminRoute.js`](/client/src/protectedRoutes/ProtectedAdminRoute.js)
-
-```js
-/*ProtectedAdminRoute.js: This component protects routes that should only be accessible by users who are logged in AND have administrator privileges.*/
-// IMPORT REQUIRED MODULES AND PACKAGES
-import React from 'react'// Import the React module to use React functionalities
-//IMPORT REACT-ROUTER-DOM COMPENTS
-import {Navigate} from 'react-router-dom'
-
-//ProtectedAdminRoute
-export default function ProtectedAdminRoute(//Export default ProtectedUserRoute.js Function Component
-  {//PROPS PASSED FROM PARENT COMPONENT(App.js)
-    currentUser, children}) {
-  // If there is no logged-in user OR the user is not an admin,
-    // redirect them to the home page.
-    if(!currentUser || !currentUser.admin){
-        return <Navigate to='/'/>
-
-    }
-
-    // If the user exists and is an admin,
-    // render the protected content (child component).
-  return children
-}
-```
-
-**Usage in App.js:**
+**Usage (if an admin route is added):**
 ```jsx
-<Route path='/users' element={
+// App.js
+// import ProtectedAdminRoute from './protectedRoutes/ProtectedAdminRoute';
+
+<Route path='/admin' element={
   <ProtectedAdminRoute currentUser={currentUser}>
-    <Users currentUser={currentUser} logout={logout} />
+    <AdminPage currentUser={currentUser} logout={logout}/>
   </ProtectedAdminRoute>
-} />
+}/>
 ```
 
 ---
 
 ## 4. APPLICATION NAVIGATION COMPONENTS
 
-These components are imported from `react-router-dom` and are used throughout the app to define routes, render links, and handle navigation programmatically.
+These components and hooks are imported from `react-router-dom` and are used throughout the app to define routes, render links, and handle navigation programmatically.
 
-| COMPONENT | DESCRIPTIONS|
-|-----------|-------------|
-| *BrowserRouter* |wraps the entire app to enable routing |
-| *Routes* | container that holds all `<Route>` definitions |
-| *Route* | maps a URL path to a component |
-| *Link* | renders a navigable anchor tag without a page reload |
-| *NavLink* | Same purpose as the `Link` component but adds an `active` class when its route is current |
-| *useParams* | Hook to read dynamic URL parameters from the current route |
-| *useNavigate* | Hook to navigate programmatically in response to events |
+| COMPONENT / HOOK | DESCRIPTION | USED IN |
+|------------------|-------------|---------|
+| *BrowserRouter* | Wraps the entire app to enable routing | `index.js` |
+| *Routes* | Container that holds all `<Route>` definitions | `App.js` |
+| *Route* | Maps a URL path to a component | `App.js` |
+| *Navigate* | Component that redirects as soon as it renders | `App.js`, `ProtectedUserRoute.js`, `ProtectedAdminRoute.js` |
+| *NavLink* | Link that adds an `active` class when its route is current | `MainHeader.js` |
+| *Link* | Renders an anchor tag that navigates without a page reload | `NotePanal.js` |
+| *useNavigate* | Hook to navigate programmatically in response to events | `App.js`, `Login.js`, `Register.js`, `Home.js`, `Notes.js` |
+| *useLocation* | Hook to read the current URL and route state | `MainHeader.js`, `Notes.js` |
 
 ### 4.1. BrowserRouter
 
-`BrowserRouter` uses the HTML5 History API to keep the UI in sync with the URL. It is applied once at the root of the app in [client/src/index.js](../client/src/index.js) so all child components can access routing features.
-
-```js
-// client/src/index.js
-import { BrowserRouter } from 'react-router-dom'
-
-root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-)
-```
+`BrowserRouter` uses the HTML5 History API to keep the UI in sync with the URL. It is applied once at the root of the app in [client/src/index.js](../client/src/index.js) so all child components can access routing features (see [1.2](#12-router-setup)).
 
 ### 4.2. Routes
 
-`Routes` is a wrapper that holds all `<Route>` elements. It looks through its children and renders the first `<Route>` whose `path` matches the current URL. Used in [client/src/App.js](../client/src/App.js) to wrap the entire route tree.
+`Routes` is a wrapper that holds all `<Route>` elements. It looks through its children and renders the `<Route>` whose `path` best matches the current URL. Used in [client/src/App.js](../client/src/App.js) to wrap the entire route tree.
 
 ```jsx
 // client/src/App.js
-import { Route, Routes } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 <Routes>
-  <Route path='/' element={<Login />} />
-  <Route path='/reg' element={<Registration />} />
-  {/* ...more routes */}
-  <Route path='*' element={<h2 id='pageNotFound'>404: Page Not Found</h2>} />
+  <Route path='/' element={<Login /* ...props */ />}/>
+  <Route path='/reg' element={<Register loggedIn={loggedIn} setError={setError}/>}/>
+  <Route path='*' element={<Navigate to='/' replace/>}/>
 </Routes>
 ```
 
 ### 4.3. Route
 
-`Route` maps a URL path to the component that should render when that path is active. The `path` prop accepts static segments (`/budget`) and dynamic segments with a colon prefix (`/resetPassword/:token`). The `element` prop receives the JSX to render.
+`Route` maps a URL path to the component that should render when that path is active. The `path` prop holds the URL, and the `element` prop receives the JSX to render. All paths in this app are static (no `:params`).
 
 ```jsx
-// Static path
-<Route path='/budget' element={
+<Route path='/translate' element={
   <ProtectedUserRoute currentUser={currentUser}>
-    <Budget currentUser={currentUser} logout={logout} />
+    <Translate currentUser={currentUser} logout={logout} loggedIn={loggedIn}/>
   </ProtectedUserRoute>
-} />
-
-// Dynamic path — :token is a URL parameter read with useParams()
-<Route path='/resetPassword/:token' element={<ResetPassword />} />
+}/>
 ```
 
-### 4.4. Link
+### 4.4. Navigate
 
-`Link` renders an `<a>` tag that navigates to the given path without a full page reload. Used in [client/src/pages/ForgotPassword.js](../client/src/pages/ForgotPassword.js) and [client/src/pages/ResetPassword.js](../client/src/pages/ResetPassword.js) for simple back-to-login anchors.
+`Navigate` redirects to another path the moment it renders. It is used for the fallback routes and inside the route guards.
 
 ```jsx
-import { Link } from 'react-router-dom'
+// App.js: unknown paths go back to '/', replacing the bad URL in history
+<Route path='*' element={<Navigate to='/' replace/>}/>
 
-// ForgotPassword.js / ResetPassword.js
-<Link to='/'>BACK TO LOGIN</Link>
+// ProtectedUserRoute.js: no user, back to the login page
+if (!currentUser) {
+    return <Navigate to={'/'}/>
+}
 ```
 
 ### 4.5. NavLink
 
-`NavLink` works like `Link` but automatically applies an `active` CSS class to the element when its route matches the current URL. Used in [client/src/components/NavigationBar.js](../client/src/components/NavigationBar.js) and [client/src/components/MainHeader.js](../client/src/components/MainHeader.js).
+`NavLink` works like `Link` but automatically applies an `active` CSS class when its route matches the current URL. All header navigation is in [client/src/components/MainHeader.js](../client/src/components/MainHeader.js), which shows a different set of links depending on `loggedIn`. The `.refLink.active` style highlights the current page (see [HTML_STYLES.md](../styles/HTML_STYLES.md#42-navigation-links)).
 
-The `end` prop on the dashboard and login links prevents them from matching every route that starts with `/`.
+`NavLink to='/'` is only active on `/` itself, not on every path starting with `/`, so it does not need the `end` prop.
 
-**Logged-in navigation** — `NavigationBar.js` renders `null` if `currentUser` is absent, and conditionally shows the `/users` link for admins:
-
+**Logged-in navigation**: only rendered when `currentUser` exists:
 ```jsx
-<NavLink className='refLink' to='/' end>DASHBOARD</NavLink>
-<NavLink className='refLink' to='/portfolio'>PORTFOLIO</NavLink>
-<NavLink className='refLink' to='/watchList'>WATCHLIST</NavLink>
-<NavLink className='refLink' to='/accounts'>ACCOUNTS</NavLink>
-<NavLink className='refLink' to='/transactions'>TRANSACTIONS</NavLink>
-<NavLink className='refLink' to='/budget'>BUDGET</NavLink>
-{currentUser.admin && (
-  <NavLink to='/users' className='refLink'>USERS</NavLink>
-)}
+<ul id='navbar'>
+  {currentUser && (
+    <>
+      <li className='linkItem'>
+        <NavLink to='/' className='refLink'>HOME</NavLink>
+      </li>
+      <li className='linkItem'>
+        <NavLink to='/notepad' className='refLink'>NOTE PAD</NavLink>
+      </li>
+      <li className='linkItem'>
+        <NavLink to='/notes' className='refLink'>NOTES</NavLink>
+      </li>
+      <li className='linkItem'>
+        <NavLink to='/translate' className='refLink'>TRANSLATE</NavLink>
+      </li>
+    </>
+  )}
+</ul>
 ```
 
-**Logged-out navigation** — `MainHeader.js`:
-
+**Logged-out navigation**:
 ```jsx
-<NavLink to='/' className='refLink' end>LOGIN</NavLink>
-<NavLink to='/reg' className='refLink'>REGISTRATION</NavLink>
+<ul id='mainNavbar'>
+  <li className='linkItem'>
+    <NavLink to='/' className='refLink'>LOGIN</NavLink>
+  </li>
+  <li className='linkItem'>
+    <NavLink to='/reg' className='refLink'>REGISTRATION</NavLink>
+  </li>
+</ul>
 ```
 
-### 4.6. useParams
+### 4.6. Link
 
-`useParams` is a hook that returns an object of key/value pairs from dynamic segments in the current URL. Used in [client/src/pages/ResetPassword.js](../client/src/pages/ResetPassword.js) to extract the `:token` parameter from the `/resetPassword/:token` route.
+`Link` renders an `<a>` tag that navigates to the given path without a full page reload. Used in [client/src/components/NotePanal.js](../client/src/components/NotePanal.js) to send the selected note to the Translate page. The `state` prop passes data along with the navigation without putting it in the URL (see [5](#5-route-state)).
 
-```js
-// client/src/pages/ResetPassword.js
-import { useParams } from 'react-router-dom'
+```jsx
+// NotePanal.js
+import { Link } from 'react-router-dom';
 
-export default function ResetPassword() {
-  const { token } = useParams() // reads :token from /resetPassword/:token
-  // token is then sent to the backend to validate the reset request
-}
+<Link className='refLink' to='/translate' state={{ noteId: note._id }}>TRANSLATE</Link>
 ```
 
 ### 4.7. useNavigate
 
-`useNavigate` returns a function used to navigate programmatically — for example, after a form submission or on logout. Used in [client/src/App.js](../client/src/App.js) and [client/src/pages/Registration.js](../client/src/pages/Registration.js).
+`useNavigate` returns a function used to navigate programmatically, for example after a form submission or on logout.
 
 | File | Trigger | Destination |
 |------|---------|-------------|
-| `App.js` | User logs out | `/` (login page) |
-| `Registration.js` | Successful registration | `/` (login page) |
+| `App.js` | User logs out (`logout()`) | `/` (login page) |
+| `Login.js` | Successful login | `/` (Home page, now logged in) |
+| `Register.js` | Successful registration | `/` (login page) |
+| `Home.js` | Note picked on the calendar (`openNote()`) | `/notes` with `state: { noteId }` |
+| `Notes.js` | Linked note opened | Same path with `state: null` (clears the route state) |
 
 ```js
 // client/src/App.js
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
-const navigate = useNavigate()
+const navigate = useNavigate();
 
-function logout() {
-  localStorage.removeItem('token')
-  localStorage.removeItem('username')
-  localStorage.removeItem('loggedIn')
-  setLoggedIn(false)
-  navigate('/')
-}
+const logout = useCallback(async () => {
+  try {
+    await fetch('/auth/logout', { method: 'POST' });// Server clears the JWT cookie
+  } catch (error) {
+    console.error('Error logging out:', error);// Still log out locally
+  }
+  clearSession();
+  navigate('/');// The login page lives at '/' when logged out
+}, [clearSession, navigate]);
+```
+
+### 4.8. useLocation
+
+`useLocation` returns the current location object (`pathname`, `state`, ...).
+
+**MainHeader.js**: closes the phone navigation menu whenever the page changes:
+```js
+const [menuOpen, setMenuOpen] = useState(false);
+const location = useLocation();
+// Close the menu after a link is followed
+useEffect(() => {
+  setMenuOpen(false);
+}, [location.pathname]);
+```
+
+**Notes.js**: reads the note id passed in route state (see [5](#5-route-state)):
+```js
+const location = useLocation()
+const linkedNoteId = location.state?.noteId
 ```
 
 ---
 
-## 5. AUTHENTICATION FLOW
+## 5. ROUTE STATE
 
-1. **Login** — User submits credentials on `/`. On success, `setLoggedIn(true)` is called in `App.js` and the token and username are stored in `localStorage`.
-2. **Route switch** — The conditional route tree re-renders, replacing the logged-out routes with the full set of protected routes.
-3. **Access control** — Every protected route checks `currentUser` via `ProtectedUserRoute`. The `/users` admin route also requires `currentUser.admin === true` via `ProtectedAdminRoute`. If either condition fails, the user is redirected to `/`.
-4. **Logout** — The `logout()` callback in `App.js` clears `localStorage`, resets state, and calls `navigate('/')`, dropping the user back to the login page as `loggedIn` resets to `false`.
-5. **Password reset** — `/forgotPassword` accepts an email and sends a reset link. `/resetPassword/:token` validates the token from the URL and allows the user to set a new password. Both pages are always accessible and have no auth requirement.
+Route state passes data to the next page without adding it to the URL. It is set with `navigate(path, { state })` or `<Link state={...}>`, and read with `useLocation().state`.
+
+**Calendar → Notes** (open a note picked on the calendar):
+
+1. `Home.js` sends the note id:
+    ```js
+    const openNote = useCallback((noteId) => {
+      navigate('/notes', { state: { noteId } })
+    }, [navigate])
+    ```
+2. `Notes.js` reads it, fetches the note (`GET /notes/:id`) and selects it so the details panal opens. The state is then cleared with `replace`, so a refresh or going Back does not reopen the note:
+    ```js
+    const location = useLocation()
+    const navigate = useNavigate()
+    const linkedNoteId = location.state?.noteId
+
+    useEffect(() => {
+      if (!linkedNoteId) return
+      let ignore = false
+      const openLinkedNote = async () => {
+        try {
+          const response = await fetch(`/notes/${linkedNoteId}`, { method: 'GET' });
+          const data = await response.json().catch(() => ({}));
+          if (ignore) return
+          if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch note');
+          }
+          setLinkedNote(data.note)
+          setSelectedId(data.note._id)
+        } catch (error) {
+          if (ignore) return
+          console.error('Error opening note:', error);
+          setError?.('That note could not be opened. It may have been archived or deleted.')
+        } finally {
+          if (!ignore) navigate(location.pathname, { replace: true, state: null })
+        }
+      }
+      openLinkedNote()
+      return () => { ignore = true }
+    }, [linkedNoteId, navigate, location.pathname, setError])
+    ```
+
+**Note panal → Translate**: `NotePanal.js` passes `state={{ noteId: note._id }}` to `/translate`.
+
+> **Not read yet.** No component under `/translate` (`Translate.js`, `TranslateForm.js`, `DocTranslator.js`) calls `useLocation`, so the note id is currently ignored and the link only opens the Translate page.
 
 ---
 
-## 6. KEY FILES
+## 6. AUTHENTICATION FLOW
+
+1. **Login**: the user submits credentials on `/`. `POST /auth/login` sets an HTTP-only JWT cookie. `Login.js` saves `{ userId, fullName, admin }` to `localStorage` as `currentUser`, calls `setCurrentUser()` and `setLoggedIn(true)`, then `navigate('/')`.
+2. **Route switch**: `loggedIn` is now `true`, so `App.js` re-renders `<Routes>` with the protected route set, and `/` now shows `Home`.
+3. **Access control**: every protected route checks `currentUser` via `ProtectedUserRoute` and redirects to `/` if it is missing. Admin-only content inside Home checks `currentUser.admin`.
+4. **Session restore**: on page refresh, `App.js` reads `currentUser` from `localStorage` and shows the logged-in pages straight away. It then calls `GET /user/me` to check the cookie is still valid. If it is not, `clearSession()` logs the user out locally.
+5. **Logout**: `logout()` in `App.js` calls `POST /auth/logout` (the server clears the cookie), then `clearSession()` removes `currentUser` from `localStorage` and resets state, and `navigate('/')` returns to the login page.
+
+---
+
+## 7. KEY FILES
 
 | File | Role |
 |------|------|
 | [client/src/index.js](../client/src/index.js) | Wraps `<App>` with `<BrowserRouter>` |
-| [client/src/App.js](../client/src/App.js) | All route definitions and auth-state logic |
-| [client/src/protectedRoutes/ProtectedUserRoute.js](../client/src/protectedRoutes/ProtectedUserRoute.js) | Auth guard for all standard logged-in routes |
-| [client/src/protectedRoutes/ProtectedAdminRoute.js](../client/src/protectedRoutes/ProtectedAdminRoute.js) | Auth guard for admin-only routes (`/users`) |
-| [client/src/components/NavigationBar.js](../client/src/components/NavigationBar.js) | `NavLink` navigation for logged-in users (conditionally shows admin link) |
-| [client/src/components/MainHeader.js](../client/src/components/MainHeader.js) | `NavLink` navigation for logged-out users |
-| [client/src/components/Header.js](../client/src/components/Header.js) | Static page header (heading display only — no nav links) |
-| [client/src/pages/Registration.js](../client/src/pages/Registration.js) | Registration form — navigates to `/` on success |
-| [client/src/pages/ForgotPassword.js](../client/src/pages/ForgotPassword.js) | Public page — requests a password reset email |
-| [client/src/pages/ResetPassword.js](../client/src/pages/ResetPassword.js) | Public page — sets a new password via reset token |
-| [client/src/pages/Users.js](../client/src/pages/Users.js) | Admin-only user management page |
+| [client/src/App.js](../client/src/App.js) | All route definitions, fallback routes, session restore and `logout()` |
+| [client/src/protectedRoutes/ProtectedUserRoute.js](../client/src/protectedRoutes/ProtectedUserRoute.js) | Auth guard for all logged-in routes |
+| [client/src/protectedRoutes/ProtectedAdminRoute.js](../client/src/protectedRoutes/ProtectedAdminRoute.js) | Admin auth guard (not currently used) |
+| [client/src/components/MainHeader.js](../client/src/components/MainHeader.js) | `NavLink` navigation for logged-in and logged-out users, phone MENU button |
+| [client/src/components/NotePanal.js](../client/src/components/NotePanal.js) | `Link` to `/translate` with the note id in route state |
+| [client/src/pages/Login.js](../client/src/pages/Login.js) | Login form, navigates to `/` on success |
+| [client/src/pages/Register.js](../client/src/pages/Register.js) | Registration form, navigates to `/` on success |
+| [client/src/pages/Home.js](../client/src/pages/Home.js) | Dashboard, navigates to `/notes` with a note id from the calendar |
+| [client/src/pages/Notes.js](../client/src/pages/Notes.js) | Reads the note id from route state and opens that note |
+| [client/src/pages/NotePad.js](../client/src/pages/NotePad.js) | Note pad page (`/notepad`) |
+| [client/src/pages/Translate.js](../client/src/pages/Translate.js) | Translate page (`/translate`) |
 
 ---
 
-## 7. REFERENCES
+## 8. REFERENCES
 
 - https://www.npmjs.com/package/react-router-dom
-- https://github.com/remix-run/react-router-examples/blob/main/basic/src/main.tsx
-- https://reactrouter.com/en/main
+- https://reactrouter.com/home
+- https://reactrouter.com/start/declarative/routing
+- https://reactrouter.com/start/declarative/navigating
+- https://reactrouter.com/api/hooks/useLocation
 - https://www.geeksforgeeks.org/reactjs/what-is-react-router-dom/
 - https://www.geeksforgeeks.org/reactjs/how-to-implement-client-side-routing-in-react/
 - https://www.geeksforgeeks.org/reactjs/reactjs-usenavigate-hook/
-- https://www.geeksforgeeks.org/reactjs/reactjs-useparams-hook/
 - https://www.geeksforgeeks.org/reactjs/link-and-navlink-components-in-react-router-dom/
 - https://medium.com/@mdburkee/describe-how-you-would-implement-client-side-routing-in-a-modern-front-end-framework-cb19645ae141
