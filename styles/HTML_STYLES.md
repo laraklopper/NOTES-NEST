@@ -20,6 +20,7 @@ General styling formats, not all formats apply for all tags.
 11. [ACCESSIBILITY](#11-accessibility)
 12. [REFERENCES](#12-references)
 
+- *View [GLOSSARY.md](../GLOSSARY.md) for terminology*
 ---
 
 ## 1. BODY/HTML/ROOT
