@@ -54,8 +54,16 @@ router.get('/', checkJwtToken, async (req, res) => {
                 .lean(),// Plain objects, so no toJSON() is needed
             // Count the active notes per notebook in a single query
             Note.aggregate([
-                { $match: { user: new mongoose.Types.ObjectId(userId), isArchived: false, deletedAt: null, notebook: { $ne: null } } },
-                { $group: { _id: '$notebook', count: { $sum: 1 } } }
+                { $match: {// Filters documents based on a specified query predicate.
+                    user: new mongoose.Types.ObjectId(userId), 
+                    isArchived: false, 
+                    deletedAt: null, 
+                    notebook: { $ne: null } }},//$ne selects documents where the value of the field is not equal to the specified value
+                { $group: { 
+                    _id: '$notebook', //The `_id`specifies the group key
+                    count: //Returns the number of documents in a group.
+                    { $sum: 1 }//Return a sum of numerical values 
+                }}
             ])
         ]);
         const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));// notebookId -> count
